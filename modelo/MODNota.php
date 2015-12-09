@@ -31,7 +31,6 @@ class MODNota extends MODbase {
 
 		//Definicion de la lista del resultado del query
 		$this -> captura('id_nota', 'int4');
-		$this -> captura('id_factura', 'int4');
 		$this -> captura('id_sucursal', 'int4');
 		$this -> captura('id_moneda', 'int4');
 		$this -> captura('estacion', 'varchar');
@@ -225,10 +224,10 @@ class MODNota extends MODbase {
 						usudep.cuenta,
 						person.nombre_completo1 as desc_usuario,
 						su.estacion as desc_sucursal
-						from ven.tsucursal_usuario sucus
+						from decr.tsucursal_usuario sucus
 						inner join segu.tusuario usudep on usudep.id_usuario=sucus.id_usuario
 			            inner join segu.vpersona person on person.id_persona=usudep.id_persona
-			            inner join ven.tsucursal su on su.id_sucursal = sucus.id_sucursal
+			            inner join decr.tsucursal su on su.id_sucursal = sucus.id_sucursal
 			            where usudep.cuenta = '$usuario' and sucus.tipo = 'RESPONSABLE' limit 1");
 		 $usuario_sucursal->execute();
 		 $usuario_sucursal_result = $usuario_sucursal->fetchAll(PDO::FETCH_ASSOC);
@@ -245,7 +244,7 @@ class MODNota extends MODbase {
 					if($suc_de_liquidacion[0] == $usuario_sucursal_result[0]['desc_sucursal']){
 						//misma sucursal y que el de la liquidacion y puede ser dosificado
 						
-						$sql_in = $this -> informix -> prepare("select dos.glosa_impuestos,dos.llave,dos.nroaut,dos.id_dosificacion,dos.sucursal,dos.inicial,dos.final,dos.estacion
+						$sql_in = $this -> informix -> prepare("select dos.feciniemi,dos.feclimemi, dos.glosa_impuestos,dos.llave,dos.nroaut,dos.id_dosificacion,dos.sucursal,dos.inicial,dos.final,dos.estacion
 						from dosdoccom dos
 						where dos.estacion = '$sucursal'
 						and dos.nombre_sisfac = 'SISTEMA FACTURACION NCD'
@@ -263,7 +262,7 @@ class MODNota extends MODbase {
 					//es por una factura
 					
 					
-					$sql_in = $this -> informix -> prepare("select dos.glosa_impuestos,dos.llave,dos.nroaut,dos.id_dosificacion,dos.sucursal,dos.inicial,dos.final,dos.estacion
+					$sql_in = $this -> informix -> prepare("select dos.feciniemi,dos.feclimemi,dos.glosa_impuestos,dos.llave,dos.nroaut,dos.id_dosificacion,dos.sucursal,dos.inicial,dos.final,dos.estacion
 						from dosdoccom dos
 						where dos.estacion = '$sucursal'
 						and dos.nombre_sisfac = 'SISTEMA FACTURACION NCD'
@@ -323,7 +322,6 @@ class MODNota extends MODbase {
 										  estacion,
 										  id_sucursal,
 										  estado,
-										  id_factura,
 										  nro_nota,
 										  fecha,
 										  razon,
@@ -343,7 +341,8 @@ class MODNota extends MODbase {
 										  nroaut,
 										  fecha_fac,
 										  tipo,
-										  nroaut_anterior
+										  nroaut_anterior,
+										  fecha_limite
 										) 
 			
 										VALUES (
@@ -359,7 +358,6 @@ class MODNota extends MODbase {
 										  'estacion',
 										  '1',
 										  '1',
-										  1,
 										  '" . $nro_siguiente . "',
 										   now(),
 										  trim('" . $razon . "'),
@@ -379,7 +377,8 @@ class MODNota extends MODbase {
 										  '" . $dosificacion[0]['nroaut'] . "',
 										  '" . $item -> fecha_fac . "',
 										  '" . $item -> tipo . "',
-										  '" . $item -> nroaut . "'
+										  '" . $item -> nroaut . "',
+										  '".$dosificacion[0]['feclimemi']."'
 										)RETURNING id_nota;");
 
 		$dosi_up = $this -> link -> prepare("update decr.tdosi_correlativo set nro_siguiente = (cast(nro_siguiente as int) + 1) where id_dosificacion = '$id_dosi'");
@@ -578,7 +577,6 @@ class MODNota extends MODbase {
 										  nota.estacion,
 										  nota.id_sucursal,
 										  nota.estado,
-										  nota.id_factura,
 										  nota.nro_nota,
 										  to_char(nota.fecha,'DD-MM-YYYY') AS fecha,
 										  nota.razon,
@@ -600,14 +598,15 @@ class MODNota extends MODbase {
 										  nota.nroaut_anterior,
 										  to_char(nota.fecha_fac,'DD-MM-YYYY') AS fecha_fac,
 
-										  dosi.nroaut,
-										  to_char(dosi.fecha_limite,'DD-MM-YYYY') AS fecha_limite
+										  nota.nroaut,
+										  to_char(nota.fecha_limite,'DD-MM-YYYY') AS fecha_limite
 										FROM 
 										  decr.tnota nota
-										  inner join decr.tdosificacion dosi on dosi.id_dosificacion = nota.id_dosificacion $cadena_aux");
+										  $cadena_aux");
 
 			$stmt -> execute();
 			$results = $stmt -> fetchAll(PDO::FETCH_ASSOC);
+		
 
 			$this -> link -> commit();
 			$this -> respuesta = new Mensaje();

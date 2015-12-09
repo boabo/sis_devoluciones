@@ -1,5 +1,6 @@
 /***********************************I-SCP-FFP-DECR-3-12/02/2015****************************************/
 
+
 CREATE SCHEMA informix;
 
 CREATE EXTENSION informix_fdw;
@@ -65,18 +66,7 @@ OPTIONS ( query 'SELECT
           client_locale 'en_US.utf8',
           informixserver 'sai1');
 
-CREATE TABLE decr.tactividad_economica (
-  id_usuario_reg INTEGER,
-  id_usuario_mod INTEGER,
-  fecha_reg TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
-  fecha_mod TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
-  estado_reg CHARACTER VARYING(10) DEFAULT 'activo'::character varying,
-  id_usuario_ai INTEGER,
-  usuario_ai CHARACTER VARYING(300),
-  id_actividad_economica INTEGER PRIMARY KEY NOT NULL DEFAULT nextval('fac.tactividad_economica_id_actividad_economica_seq'::regclass),
-  nombre_actividad CHARACTER VARYING(50) NOT NULL,
-  codigo_actividad CHARACTER VARYING(50) NOT NULL
-);
+
 
 CREATE TABLE decr.tdosificacion (
   id_dosificacion SERIAL,
@@ -135,6 +125,10 @@ CREATE TABLE decr.tnota (
 ) INHERITS (pxp.tbase)
 WITHOUT OIDS;
 
+
+ALTER TABLE decr.tnota
+  ADD COLUMN fecha_limite DATE;
+  
 
 CREATE TABLE decr.tnota_detalle (
   id_nota_detalle SERIAL,

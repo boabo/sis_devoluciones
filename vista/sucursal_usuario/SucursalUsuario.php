@@ -144,7 +144,7 @@ Phx.vista.SucursalUsuario=Ext.extend(Phx.gridInterfaz,{
 					baseParams: {par_filtro: 'sucu.sucursal#sucu.estacion'}
 				}),
 				valueField: 'id_sucursal',
-				displayField: 'sucursal_descriptivo',
+				displayField: 'estacion',
 				gdisplayField: 'desc_sucursal',
 				tpl:'<tpl for="."><div class="x-combo-list-item"><p>Sucursal : {sucursal} {estacion}</p><p>Direccion: {direccion}<p> <p>Alcaldia: {alcaldia}<p> </div></tpl>',
 

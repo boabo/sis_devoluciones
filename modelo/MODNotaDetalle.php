@@ -25,7 +25,6 @@ class MODNotaDetalle extends MODbase{
 				
 		//Definicion de la lista del resultado del query
 		$this->captura('id_nota_detalle','int4');
-		$this->captura('id_factura_detalle','int4');
 		$this->captura('id_nota','int4');
 		$this->captura('estado_reg','varchar');
 		$this->captura('importe','numeric');

@@ -90,6 +90,7 @@ class ACTNota extends ACTbase{
 		
 		
 		
+		
 		$html = "";
 		$i = 0;
 		
@@ -129,11 +130,12 @@ class ACTNota extends ACTbase{
 				
 			}
 			
+			
+			
 			$dosificacion = $this->listarDosificacion($item['id_dosificacion']);
 			//var_dump($dosificacion[0]['FECLIMEMI']);
 			//var_dump($dosificacion[0]['GLOSA_IMPUESTOS']);
 			
-
 				
 			//listamos detalle de la nota
 			$this->objFunc2=$this->create('MODNotaDetalle');	

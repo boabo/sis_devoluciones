@@ -46,7 +46,6 @@ BEGIN
     		--Sentencia de la consulta
 			v_consulta:='select
 						deno.id_nota_detalle,
-						deno.id_factura_detalle,
 						deno.id_nota,
 						deno.estado_reg,
 						deno.importe,
@@ -61,7 +60,8 @@ BEGIN
                         deno.exento,
                         deno.total_devuelto,
 						usu1.cuenta as usr_reg,
-						usu2.cuenta as usr_mod	
+						usu2.cuenta as usr_mod
+
 						from decr.tnota_detalle deno
 						inner join segu.tusuario usu1 on usu1.id_usuario = deno.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = deno.id_usuario_mod
