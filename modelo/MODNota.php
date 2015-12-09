@@ -131,6 +131,14 @@ class MODNota extends MODbase {
 			for ($h = 0; $h < count($temp); $h++) {
 				$nota_in = $this -> insertarNotaInformix($temp[$h]);
 			}
+			//TODO PONER SI ESTA LA NOTA CON UNA LIQUIDACION  ENTONCES ACTUALIZAR NOTABOA EN LIQUIDEVOLU
+			if($liquidevolu = $this->aParam->getParametro('liquidevolu') != ''){
+				//es por una liquidacion la nota que se genera
+
+			}else{
+				//no tiene una liquidacion relacionada
+
+			}
 
 			$this -> link -> commit();
 			$this -> informix -> commit();
@@ -462,6 +470,8 @@ class MODNota extends MODbase {
 
 	function insertarNotaInformix($id_nota) {
 
+
+
 		$totales = $this -> detalleTotales($id_nota);
 		$nota = $this -> listarNotaCompleta($id_nota);
 
@@ -484,6 +494,7 @@ class MODNota extends MODbase {
 			$nro_autorizacion_anterior = $nota[0]['nroaut_anterior'];
 		} else {
 			$observaciones = 'LIQUIDACION NRO: ' . $nota[0]['nro_liquidacion'];
+
 		}
 
 		$sql_in = "INSERT INTO ingresos:notaprueba2
@@ -500,7 +511,7 @@ class MODNota extends MODbase {
 						      saldo)
 					VALUES 
 						('".$this->pais."', '" . $this->estacion . "', '".$this->punto_venta."',
-						 '".$this->sucursal_global."', '1', '" . $nota[0]['billete'] . "',
+						 '".$this->sucursal_global."', '1', '" . round($nota[0]['billete'],0) . "',
 						 '" . $nro_factura_anterior . "', '" . $nro_autorizacion_anterior . "', '" . $fecha_fac -> format('d-m-Y') . "', 
 						 '" . $nota[0]['monto_total'] . "', '" . $nota[0]['nro_nota'] . "', '" . $nota[0]['nroaut'] . "', 
 						 '" . $fecha -> format('d-m-Y') . "', '" . $nota[0]['tcambio'] . "', '" . $nota[0]['razon'] . "', 
