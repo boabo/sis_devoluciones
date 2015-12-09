@@ -11,6 +11,7 @@ class MODNota extends MODbase {
 	var $cone;
 	var $link;
 	var $informix;
+	var $sucursal_global;
 
 	function __construct(CTParametro $pParam) {
 		parent::__construct($pParam);
@@ -233,6 +234,7 @@ class MODNota extends MODbase {
 		 $usuario_sucursal_result = $usuario_sucursal->fetchAll(PDO::FETCH_ASSOC);
 		 
 		$sucursal = $usuario_sucursal_result[0]['desc_sucursal'];
+		$this->sucursal_global = $sucursal;
 		$liquidacion = $this-> aParam ->getParametro('liquidevolu');
 		
 		if(count($usuario_sucursal_result) == 1){
@@ -355,7 +357,7 @@ class MODNota extends MODbase {
 										  " . $_SESSION['ss_id_usuario'] . ",
 										  null,
 										
-										  'estacion',
+										  '".$this->sucursal_global."',
 										  '1',
 										  '1',
 										  '" . $nro_siguiente . "',
@@ -473,7 +475,7 @@ class MODNota extends MODbase {
 						     fechareg, horareg, devuelto,
 						      saldo)
 					VALUES 
-						('BO', '" . $estacion . "', '56999913',
+						('BO', '" . $this->sucursal_global . "', '56999913',
 						 '0', '1', '" . $nota[0]['billete'] . "', 
 						 '" . $nro_factura_anterior . "', '" . $nro_autorizacion_anterior . "', '" . $fecha_fac -> format('d-m-Y') . "', 
 						 '" . $nota[0]['monto_total'] . "', '" . $nota[0]['nro_nota'] . "', '" . $nota[0]['nroaut'] . "', 

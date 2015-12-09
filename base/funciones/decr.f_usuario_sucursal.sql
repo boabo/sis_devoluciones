@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION ven.f_usuario_sucursal (
+CREATE OR REPLACE FUNCTION decr.f_usuario_sucursal (
   p_id_usuario integer
 )
   RETURNS varchar AS
@@ -26,15 +26,17 @@ CREATE OR REPLACE FUNCTION ven.f_usuario_sucursal (
     v_registros 		varchar;
      v_filadd			varchar;
  BEGIN
-    v_nombre_funcion:='ven.f_usuario_sucursal';
+    v_nombre_funcion:='decr.f_usuario_sucursal';
     v_respuesta=false;
     v_filadd := 'li.estacion  in (';
 
-    select pxp.list(''''||su.estacion||'''')
+    select pxp.list(''''||su.estacion::VARCHAR||'''')
     into v_registros
-    from ven.tsucursal_usuario suus
-    inner join ven.tsucursal su on su.id_sucursal = suus.id_sucursal
+    from decr.tsucursal_usuario suus
+    inner join decr.tsucursal su on su.id_sucursal = suus.id_sucursal
     where id_usuario = p_id_usuario;
+
+
 
     v_filadd := v_filadd || v_registros ;
     v_filadd := v_filadd || ') and';

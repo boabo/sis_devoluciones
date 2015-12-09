@@ -48,7 +48,7 @@ BEGIN
      				
     	begin
         
-       		v_sucursales := ven.f_usuario_sucursal(p_id_usuario);
+       		v_sucursales := decr.f_usuario_sucursal(p_id_usuario);
     		--Sentencia de la consulta
 			v_consulta:='select
             			 li.pais,
@@ -81,7 +81,7 @@ BEGIN
 
 		begin
         
-        v_sucursales := ven.f_usuario_sucursal(p_id_usuario);
+        v_sucursales := decr.f_usuario_sucursal(p_id_usuario);
         
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='select count(li.nroliqui) 
