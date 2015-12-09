@@ -46,7 +46,6 @@ BEGIN
     		--Sentencia de la consulta
 			v_consulta:='select
                   no.id_nota,
-                  no.id_factura,
                   no.id_sucursal,
                   no.id_moneda,
                   no.estacion,
@@ -70,7 +69,9 @@ BEGIN
                   no.fecha_mod,
                   no.id_usuario_mod,
                   usu1.cuenta as usr_reg,
-                  usu2.cuenta as usr_mod
+                  usu2.cuenta as usr_mod,
+                  no.billete,
+  								no.nroaut
                 from decr.tnota no
                 inner join segu.tusuario usu1 on usu1.id_usuario = no.id_usuario_reg
                 left join segu.tusuario usu2 on usu2.id_usuario = no.id_usuario_mod

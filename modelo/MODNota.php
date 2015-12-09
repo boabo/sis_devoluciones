@@ -59,6 +59,8 @@ class MODNota extends MODbase {
 		$this -> captura('id_usuario_mod', 'int4');
 		$this -> captura('usr_reg', 'varchar');
 		$this -> captura('usr_mod', 'varchar');
+		$this -> captura('billete', 'varchar');
+		$this -> captura('nroaut', 'bigint');
 
 		//Ejecuta la instruccion
 		$this -> armarConsulta();
@@ -134,6 +136,8 @@ class MODNota extends MODbase {
 			//TODO PONER SI ESTA LA NOTA CON UNA LIQUIDACION  ENTONCES ACTUALIZAR NOTABOA EN LIQUIDEVOLU
 			if($liquidevolu = $this->aParam->getParametro('liquidevolu') != ''){
 				//es por una liquidacion la nota que se genera
+
+				//$this->actualizarLiquidacion('S'); //se actualizara la liquidacion notaboa a S
 
 			}else{
 				//no tiene una liquidacion relacionada
@@ -454,6 +458,19 @@ class MODNota extends MODbase {
 	}
 
 
+
+	function actualizarLiquidacion($digito){
+
+		$liquidevolu = $this->aParam->getParametro('liquidevolu');
+
+		$sql = "update liquidevolu set notaboa = '$digito'
+					where nroliqui = '$liquidevolu'";
+
+		$informix_res = $this -> informix -> prepare($sql);
+		$informix_res -> execute();
+
+
+	}
 	function verPuntoVenta(){
 		$sql = "SELECT * from agencias
 					where estacion = '$this->estacion' AND ctoato = 'D'";
@@ -677,7 +694,11 @@ class MODNota extends MODbase {
 			$this -> informix -> beginTransaction();
 
 
-			$sql_in = "select * from dosdoccom where id_dosificacion = '$id_dosificacion'";
+			$sql_in = "select act.nombre_actividad,dos.glosa_impuestos,
+						dos.feciniemi,dos.feclimemi
+						from dosdoccom dos
+						inner join tif_actividad_economica act on act.id_actividad_economica = dos.id_actividad_economica
+						where dos.id_dosificacion = '$id_dosificacion'";
 
 			$info_nota_ins = $this -> informix -> prepare($sql_in);
 			$info_nota_ins -> execute();
@@ -711,17 +732,40 @@ class MODNota extends MODbase {
 
 	function anularNota() {
 
-		$this -> anularNotaPXP();
+		$this->verNotaInformix();
+
 
 	}
 
-	function anularNotaInformix() {
-		try {
-			$this -> informix -> beginTransaction();
+	function verNotaInformix(){
+		$nro_liquidacion = $this->aParam-> getParametro('nro_liquidacion');
+		$nota_informix = $this -> aParam -> getParametro('nota_informix');
+		$nroaut = $this -> aParam -> getParametro('nroaut');
 
-		} catch (Exception $e) {
+		if($nro_liquidacion != ''){ // esta nota tiene liquidacion ligada
+
+			$sql = "select nota.nroliqui,liqui.estpago
+				from notaprueba2 nota
+				inner join liquidevolu liqui on liqui.nroliqui = nota.nroliqui
+				 where   nota.nronota = '$nota_informix' and nota.nroautnota = '$nroaut' ";
+
+			$info_nota = $this -> informix -> prepare($sql);
+			$info_nota -> execute();
+			$results = $info_nota -> fetchAll(PDO::FETCH_ASSOC);
+
+			if($results[0]['ESTPAGO'] == 'P'){
+				throw new Exception('NO SE PUEDE ANULAR, YA ESTA PAGADO');
+			}else{
+				$this -> anularNotaPXP();
+				//TODO ANULAR UNA NOTA LIGADA A UNA LIQUIDACION
+			}
+
+		}else{//no tiene liquidacion
 
 		}
+
+
+		return true;
 	}
 
 	function anularNotaPXP() {

@@ -190,7 +190,7 @@ class ACTNota extends ACTbase{
 					    N&#176; NOTA FISCAL: '.$item['nro_nota'].'<br>
 					    N&#176; AUTORIZACION: '.$item['autorizacion'].'<br />
 					    ORIGINAL<br />
-					    Transporte Regular de Pasajeros y Carga por Via Aerea
+					    '.$dosificacion[0]['NOMBRE_ACTIVIDAD'].'
 					</p>
 					<hr/>';
 					if($item['estado'] == 9){
@@ -306,12 +306,9 @@ class ACTNota extends ACTbase{
 					<p style="text-align: center">
 					
 					
-					    "La reproduccion total <br/>o parcial y/o el uso no autorizado<br/> de esta Nota
-					    Fiscal, <br/>constituye un delito a <br/>ser sancionado conforme a Ley"
+					    " '.$dosificacion[0]['GLOSA_IMPUESTOS'].'"
 					
-					    <!--ESTA FACTURA CONTRIBUYE<br/> AL DESARROLLO
-					    DEL PAIS. EL USO ILICITO<br/> DE ESTA SERA
-					    SANCIONADO DE ACUERDO A LEY.<br />-->
+
 					
 					</p>
 					<p>GRACIAS POR SU PREFERENCIA !
