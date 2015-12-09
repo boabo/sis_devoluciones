@@ -12,6 +12,8 @@ class MODNota extends MODbase {
 	var $link;
 	var $informix;
 	var $sucursal_global;
+	var $punto_venta;
+	var $pais;
 
 	function __construct(CTParametro $pParam) {
 		parent::__construct($pParam);
@@ -232,9 +234,15 @@ class MODNota extends MODbase {
 			            where usudep.cuenta = '$usuario' and sucus.tipo = 'RESPONSABLE' limit 1");
 		 $usuario_sucursal->execute();
 		 $usuario_sucursal_result = $usuario_sucursal->fetchAll(PDO::FETCH_ASSOC);
+
+
+
 		 
 		$sucursal = $usuario_sucursal_result[0]['desc_sucursal'];
 		$this->sucursal_global = $sucursal;
+		$this->verPuntoVenta();
+
+
 		$liquidacion = $this-> aParam ->getParametro('liquidevolu');
 		
 		if(count($usuario_sucursal_result) == 1){
@@ -436,6 +444,20 @@ class MODNota extends MODbase {
 		return $results;
 	}
 
+
+	function verPuntoVenta(){
+		$sql = "SELECT * from agencias
+					where estacion = '$this->sucursal_global' AND ctoato = 'D'";
+
+		$informix_res = $this -> informix -> prepare($sql);
+		$informix_res -> execute();
+		$results = $informix_res -> fetchAll(PDO::FETCH_ASSOC);
+
+		$this->punto_venta = $results[0]['agt'];
+		$this->pais = $results[0]['pais'];
+		return;
+	}
+
 	function insertarNotaInformix($id_nota) {
 
 		$totales = $this -> detalleTotales($id_nota);
@@ -475,12 +497,12 @@ class MODNota extends MODbase {
 						     fechareg, horareg, devuelto,
 						      saldo)
 					VALUES 
-						('BO', '" . $this->sucursal_global . "', '56999913',
+						('".$this->pais."', '" . $this->sucursal_global . "', '".$this->punto_venta."',
 						 '0', '1', '" . $nota[0]['billete'] . "', 
 						 '" . $nro_factura_anterior . "', '" . $nro_autorizacion_anterior . "', '" . $fecha_fac -> format('d-m-Y') . "', 
 						 '" . $nota[0]['monto_total'] . "', '" . $nota[0]['nro_nota'] . "', '" . $nota[0]['nroaut'] . "', 
 						 '" . $fecha -> format('d-m-Y') . "', '" . $nota[0]['tcambio'] . "', '" . $nota[0]['razon'] . "', 
-						 '" . $nota[0]['nit'] . "', '" . $nota[0]['nro_liquidacion'] . "', 'BO',
+						 '" . $nota[0]['nit'] . "', '" . $nota[0]['nro_liquidacion'] . "', 'BOB',
 						  '" . $nota[0]['monto_total'] . "', '" . $nota[0]['excento'] . "', '13.00',
 						   '" . $nota[0]['total_devuelto'] . "', '" . $nota[0]['credfis'] . "', 'COMPUTARIZADA', 
 						   '" . $nota[0]['codigo_control'] . "', '" . $observaciones . "', '" . $usuario . "', 
