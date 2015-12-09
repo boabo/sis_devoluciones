@@ -14,6 +14,7 @@ class MODNota extends MODbase {
 	var $sucursal_global;
 	var $punto_venta;
 	var $pais;
+	var $estacion;
 
 	function __construct(CTParametro $pParam) {
 		parent::__construct($pParam);
@@ -239,7 +240,7 @@ class MODNota extends MODbase {
 
 		 
 		$sucursal = $usuario_sucursal_result[0]['desc_sucursal'];
-		$this->sucursal_global = $sucursal;
+		$this->estacion = $sucursal;
 		$this->verPuntoVenta();
 
 
@@ -365,7 +366,7 @@ class MODNota extends MODbase {
 										  " . $_SESSION['ss_id_usuario'] . ",
 										  null,
 										
-										  '".$this->sucursal_global."',
+										  '".$this->estacion."',
 										  '1',
 										  '1',
 										  '" . $nro_siguiente . "',
@@ -447,7 +448,7 @@ class MODNota extends MODbase {
 
 	function verPuntoVenta(){
 		$sql = "SELECT * from agencias
-					where estacion = '$this->sucursal_global' AND ctoato = 'D'";
+					where estacion = '$this->estacion' AND ctoato = 'D'";
 
 		$informix_res = $this -> informix -> prepare($sql);
 		$informix_res -> execute();
@@ -455,6 +456,7 @@ class MODNota extends MODbase {
 
 		$this->punto_venta = $results[0]['agt'];
 		$this->pais = $results[0]['pais'];
+		$this->sucursal_global = $results[0]['sucursal'];
 		return;
 	}
 
@@ -497,8 +499,8 @@ class MODNota extends MODbase {
 						     fechareg, horareg, devuelto,
 						      saldo)
 					VALUES 
-						('".$this->pais."', '" . $this->sucursal_global . "', '".$this->punto_venta."',
-						 '0', '1', '" . $nota[0]['billete'] . "', 
+						('".$this->pais."', '" . $this->estacion . "', '".$this->punto_venta."',
+						 '".$this->sucursal_global."', '1', '" . $nota[0]['billete'] . "',
 						 '" . $nro_factura_anterior . "', '" . $nro_autorizacion_anterior . "', '" . $fecha_fac -> format('d-m-Y') . "', 
 						 '" . $nota[0]['monto_total'] . "', '" . $nota[0]['nro_nota'] . "', '" . $nota[0]['nroaut'] . "', 
 						 '" . $fecha -> format('d-m-Y') . "', '" . $nota[0]['tcambio'] . "', '" . $nota[0]['razon'] . "', 
