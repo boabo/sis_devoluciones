@@ -259,3 +259,27 @@ CREATE TYPE ven.sucursales_informix_importacion AS (
 
 /***********************************F-SCP-FFP-DECR-1-08/12/2015****************************************/
 
+
+
+/***********************************I-SCP-FFP-DECR-1-15/12/2015****************************************/
+
+
+CREATE TABLE decr.tconcepto_original (
+  id_concepto_original SERIAL,
+  id_nota integer,
+  concepto VARCHAR(255),
+  tipo VARCHAR(50),
+  importe_original NUMERIC(10,2),
+  CONSTRAINT pk_tconcepto_original__id_concepto_original PRIMARY KEY(id_concepto_original)
+) INHERITS (pxp.tbase)
+WITHOUT OIDS;
+
+CREATE TYPE decr.json_conceptos_originales AS (
+  concepto VARCHAR(255),
+  importe_original NUMERIC(10,2),
+  nroaut NUMERIC,
+  nrofac NUMERIC
+);
+
+
+/***********************************F-SCP-FFP-DECR-1-15/12/2015****************************************/

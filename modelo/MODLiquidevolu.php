@@ -51,7 +51,7 @@ class MODLiquidevolu extends MODbase{
 		$cone_in=new conexion();		
 		$informix=$cone_in->conectarPDOInformix();
 		
-		$sql = "select doc.nroaut,doc.nrofac,doc.iddoc from liquidoc doc
+		$sql = "select doc.nroaut,doc.nrofac,doc.iddoc,doc.documento from liquidoc doc
 				where doc.nroliqui = '$nroliqui'";
 				
 		$result = $informix->prepare($sql);
@@ -69,8 +69,15 @@ class MODLiquidevolu extends MODbase{
 	
 	function liquidevolu(){
 		
-		
-		$nroliqui = $this->aParam->getParametro('nroliqui');
+
+
+		if($this->aParam->getParametro('nroliqui2') != ''){
+
+			$nroliqui = $this->aParam->getParametro('nroliqui2'); // es una recursiva
+		}else{
+			$nroliqui = $this->aParam->getParametro('nroliqui'); // es el inicial
+		}
+
 		
 		$documento = $this->verTipoDevolucion($nroliqui);
 		
@@ -102,8 +109,41 @@ class MODLiquidevolu extends MODbase{
 			$this->objParam->addParametro('nroaut',$nroaut);
 			
 			$datos = $this->conceptosManuales();
+
+		}elseif(trim($documento[0]['IDDOC']) == 'BOLNE'){//BOLETOS TTY
+
+			$datos = $this->liquiboletramos($nroliqui);
+
+		}elseif(trim($documento[0]['IDDOC']) == 'BOLCV'){//DEVOLUCION DE BOLETOS POR CANCELACION DE VUELO Y POSTERIOR ANULACION TKT
+
+			$datos = $this->liquiboletramos($nroliqui);
+
+		}elseif(trim($documento[0]['IDDOC']) == 'LIQBO') {//LIQUIDACIONES YA EMITIDAS CON DCTOS BO Y POSTERIOR DEVOLUCION DEL BO AUTH POR JEFATURA
+
+
+			$this->aParam->addParametro('nroliqui2', $documento[0]['DOCUMENTO']);
+			$this->arreglo['nroliqui2'] = $documento[0]['DOCUMENTO'];
+			$this->setParametro('nroliqui2', 'nroliqui2', 'varchar');
+			$mensaje = $this->liquidevolu();
+			$datos = $mensaje->getDatos();
+
+
+
+		}elseif(trim($documento[0]['IDDOC']) == 'LIQEX'){//BOLETOS TTY
+
+			$this->aParam->addParametro('nroliqui2', $documento[0]['DOCUMENTO']);
+			$this->arreglo['nroliqui2'] = $documento[0]['DOCUMENTO'];
+			$this->setParametro('nroliqui2', 'nroliqui2', 'varchar');
+			$mensaje = $this->liquidevolu();
+			$datos = $mensaje->getDatos();
+
+		}else{//otros tipo de documentos
+
+			$datos[0]['tipo'] = 'NO';
+			$datos[0]['iddoc'] = trim($documento[0]['IDDOC']);
 		}
-		
+
+
 		$this->respuesta=new Mensaje();
 				
 		$this->respuesta->setMensaje('EXITO',$this->nombre_archivo,'La consulta se ejecuto con exito','La consulta se ejecuto con exito','base','no tiene','no tiene','SEL','$this->consulta','no tiene');
@@ -979,7 +1019,7 @@ class MODLiquidevolu extends MODbase{
 						fac.nit as nro_nit,
 						fac.nroaut as nro_aut,
 						fac.nrofac as nro_fac,
-						'FACTURA' as tipo,
+						'FACTURA MANUAL' as tipo,
 						'0' as exento,
 						fcon.importe as importe_devolver,
 						fcon.importe as total_devuelto
@@ -1268,9 +1308,7 @@ class MODLiquidevolu extends MODbase{
 			
 			
 			if($item['moneda'] != 'BOB'){
-				
 				$conversion = $this->monedaConvercion($item['moneda'],$item['precio_original'],$item['pais'],$item['fecha']);
-				
 				$conversion[$i]['importe_original'] = "$conversion";
 				$conversion[$i]['precio_unitario'] = "$conversion";
 				
@@ -1286,6 +1324,8 @@ class MODLiquidevolu extends MODbase{
 	
 		
 	}
+
+
 	
 	
 	

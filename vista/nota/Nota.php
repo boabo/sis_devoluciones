@@ -495,7 +495,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         Ext.Ajax.request({
                             url: '../../sis_devoluciones/control/Nota/anularNota',
                             params: {'nro_liquidacion':rec.data['nro_liquidacion'],'notas': rec.data['id_nota'], 'nota_informix': rec.data['nro_nota'],'nroaut':rec.data['nroaut']},
-                            success: this.successExport,
+                            success: this.actualizarNotas,
                             failure: this.conexionFailure,
                             timeout: this.timeout,
                             scope: this
@@ -513,6 +513,11 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             verImpresiones: function () {
                 var rec = this.sm.getSelected();
+            },
+
+
+            actualizarNotas:function(){
+                this.load({params: {start: 0, limit: this.tam_pag}});
             }
 
 

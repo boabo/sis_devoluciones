@@ -20,6 +20,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
             constructor: function (config) {
 
+                this.FACMAN = false;
                 this.detalle = '';
 
                 this.montototal = 0;
@@ -122,6 +123,255 @@ header("content-type: text/javascript; charset=UTF-8");
                 });
 
 
+                this.addTabsBtnfacturaManual = new Ext.Button({
+                    text: '<i class="fa fa-files-o fa-1g"></i> Agregar Nuevo Concepto Original (FACTURA MANUAL)',
+                    handler: this.addTabFacturaManual,
+                    height: 200,
+                    scope: this,
+
+                    //iconCls:'new-tab'
+                });
+                this.addTabsBtnfacturaManual.hide();
+
+                this.arra_factura_manual_conceptos=new Array();
+
+
+
+
+
+
+                var editor_fm = new Ext.ux.grid.RowEditor({
+                    saveText: 'Aceptar',
+                    name: 'btn_editor'
+
+                });
+                var summary_fm = new Ext.ux.grid.GridSummary();
+
+                this.mestore_fm = new Ext.data.ArrayStore({
+                    // store configs
+                    autoDestroy: true,
+                    storeId: 'mestore_fm',
+                    // reader configs
+                    idIndex: 0,
+                    fields: [
+
+                        {name: 'tipo', type: 'string'},
+                        {name: 'concepto', type: 'string'},
+                        {name: 'importe', type: 'numeric'},
+                    ]
+                });
+
+
+                var Items_fm = Ext.data.Record.create([{
+                    name: 'cantidad',
+                    type: 'int'
+                }, {
+                    name: 'Concepto',
+                    type: 'string'
+                }, {
+                    name: 'p/Unit',
+                    type: 'float'
+                }, {
+                    name: 'Importe Original',
+                    type: 'float'
+                }
+                ]);
+
+                this.megrid_facman = new Ext.grid.GridPanel({
+                    padding: '0 0 0 0',
+                    title: 'Conceptos Originales Para la Factura Manual',
+                    store: this.mestore_fm,
+
+                    style: 'margin:0 auto;margin-top:0; width:1200px;',
+                    disabled: false,
+                    plugins: [editor_fm, summary_fm],
+                    stripeRows: true,
+
+
+                    tbar: [{
+                        /*iconCls: 'badd',*/
+                        ref: '../addCon',
+                        text: '<i class="fa fa-plus-circle fa-lg"></i> Agregar',
+                        scope: this,
+                        width: '100',
+
+                        handler: function () {
+                            var e = new Items_fm({
+                                cantidad: 1,
+                                concepto: '',
+                                importe_original: 0,
+
+                            });
+                            editor_fm.stopEditing();
+                            this.mestore_fm.insert(0, e);
+                            this.mestore_fm.getView().refresh();
+                            this.mestore_fm.getSelectionModel().selectRow(0);
+                            editor.startEditing(0);
+                        }
+                    }, {
+                        ref: '../removeBtn',
+                        /*iconCls: 'bdelete',*/
+                        text: '<i class="fa fa-trash fa-lg"></i> Eliminar',
+                        //disabled: true,
+                        scope: this,
+                        handler: function () {
+                            editor_fm.stopEditing();
+                            var s = this.mestore_fm.getSelectionModel().getSelections();
+                            for (var i = 0, r; r = s[i]; i++) {
+                                this.mestore_fm.remove(r);
+                            }
+                        }
+                    }],
+
+                    columns: [
+                        new Ext.grid.RowNumberer(),
+                        {
+
+                            // id: 'cantidad',
+                            header: 'Cant.',
+                            dataIndex: 'cantidad',
+                            width: 60,
+                            sortable: true,
+                            hidden: true,
+                            hideable: false,
+                            editor: {
+                                xtype: 'numberfield',
+                                allowBlank: true,
+                                enable: false,
+                                enableKeyEvents: true,
+                            },
+                            summaryType: 'count',
+
+                            summaryRenderer: function (v, params, data) {
+                                return ((v === 0 || v > 1) ? '(' + v + ' items)' : '(1 item)');
+                            },
+                        },
+                        {
+
+                            header: 'tipo',
+                            dataIndex: 'tipo',
+
+                            hidden: false,
+                            hideable: false,
+                            width: 100,
+                            sortable: false,
+
+                            editor: {
+
+                                xtype: 'combo',
+                                name: 'tipo',
+                                fieldLabel: 'Tipo',
+                                allowBlank: true,
+                                emptyText: 'Tipo...',
+                                typeAhead: true,
+                                triggerAction: 'all',
+                                lazyRender: true,
+                                mode: 'local',
+                                store: [/*'FACTURA','BOLETO',*/'FACTURA'],
+                                width: 200,
+                                enableKeyEvents: true,
+
+                            }
+
+
+                        },
+
+                        {
+                            header: 'Concepto',
+                            dataIndex: 'concepto',
+                            width: 200,
+                            sortable: false,
+                            editor: new Ext.form.TextField({
+
+                                enableKeyEvents: true,
+                                name: 'billete_text',
+                                allowBlank: true,
+                                id: 'input_concepto',
+                            })
+
+
+                        },{
+                            xtype: 'numbercolumn',
+                            header: 'importe_original',
+                            dataIndex: 'importe_original',
+
+                            format: '$0,0.00',
+                            width: 100,
+                            sortable: false,
+                            summaryType: 'sum',
+                            editor: {
+                                xtype: 'numberfield',
+                                allowBlank: true,
+                                // disabled: true,
+                                id: 'importe_original'
+
+                            }
+                        }
+
+
+                    ]
+                });
+
+
+                this.win_factura_manual = new Ext.Window(
+                    {
+                        layout: 'fit',
+                        width: 500,
+                        height: 250,
+                        modal: true,
+                        closeAction: 'hide',
+
+                        items: new Ext.FormPanel({
+                            labelWidth: 75, // label settings here cascade unless overridden
+
+                            frame: true,
+                           // title: 'Factura Manual Concepto',
+                            bodyStyle: 'padding:5px 5px 0',
+                            width: 339,
+                            defaults: {width: 191},
+                            // defaultType: 'textfield',
+
+                            items: [
+                                {
+                                    xtype: 'tabpanel',
+                                    //layout:'fit',
+                                    /*padding:'0 0 0 50',*/
+                                    margins: {top: 0, right: 0, bottom: 0, left: 0},
+
+                                    border: false,
+                                    plain: true,
+                                    width: '100%',
+                                    activeTab: 0,
+                                    height: 235,
+                                    items: [
+                                        this.megrid_facman
+                                    ]
+
+                                },
+
+                            ]
+
+                            /*buttons: [{
+                             text: 'Save'
+                             },{
+                             text: 'Cancel'
+                             }]*/
+                        }),
+                        buttons: [
+
+                            {
+                                text: '<i class="fa fa-check"></i> Aceptar',
+                                handler: this.agregar_arreglo_factura_manual,
+
+                                scope: this
+                            }, {
+                                text: '<i class="fa fa-times"></i> Cancelar',
+                                handler: this.close_win_factura_manual,
+                                scope: this
+                            }]
+                    });
+
+             
                 this.win_pop = new Ext.Window(
                     {
                         layout: 'fit',
@@ -184,7 +434,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     });
 
                 //cantidad,detalle,peso,totalo
-                var Items = Ext.data.Record.create([{
+                this.Items = Ext.data.Record.create([{
                     name: 'cantidad',
                     type: 'int'
                 }, {
@@ -240,7 +490,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         'nroliqui', 'billcupon', 'razon', 'nit', 'exento',
                         'nrofac', 'nroaut', 'fecha_fac', 'precio_unitario',
                         'importe_devolver', 'total_devuelto', 'tipo', 'nro_billete',
-                        'nro_fac', 'nro_aut', 'nro_nit', 'concepto_original'],
+                        'nro_fac', 'nro_aut', 'nro_nit', 'concepto_original','iddoc'],
                     remoteSort: true,
                     baseParams: {dir: 'ASC', sort: 'nroliqui', limit: '50', start: '0'}
 
@@ -286,7 +536,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         width: '100',
 
                         handler: function () {
-                            var e = new Items({
+                            var e = new this.Items({
                                 cantidad: 1,
                                 detalle: '',
                                 peso: 0,
@@ -480,7 +730,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             editor: {
                                 xtype: 'numberfield',
                                 allowBlank: true,
-                                disabled: true,
+                               // disabled: true,
                                 id: 'input_importe_original'
 
                             }
@@ -723,6 +973,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                     defaults: {autoHeight: true},
                                     items: [
                                         this.addTabsBtn,
+                                        this.addTabsBtnfacturaManual,
                                         this.tabs
                                     ]
                                 },
@@ -919,6 +1170,12 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.Cmp.liquidevolu.on('select', function (combo, record) {
 
 
+                    this.FACMAN = false;
+
+
+
+
+
                     this.tabs.removeAll();
                     this.resetGroup(10);
                     this.megrid.enable();
@@ -935,14 +1192,28 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.megrid.store.load({
                         params: {start: 0, limit: 20},
                         callback: function (r, a) {
+                            console.log(r)
                             console.log(r.length)
-                            if (r[0].data['tipo'] == 'FACTURA') {
-                            	
+                            if(r[0].data['tipo'] == 'NO') {
+
+                                this.mensaje_('TIPO', r[0].data['iddoc']+' esta liquidacion no tiene NCD BOA', 'ERROR');
+
+                            }else if(r[0].data['tipo'] == 'FACTURA MANUAL'){
+                                this.agregarDatosCampo(r[0].data['nro_fac'], r[0].data['razon'], r[0].data['nro_nit'], r[0].data['fecha_fac'], total_factura, r[0].data['nro_aut']);
+
+                                //todo factura manual
+                                this.FACMAN = true;
+                                this.addTabsBtnfacturaManual.show();
+
+                                alert('es una factura manual');
+
+                            }else if (r[0].data['tipo'] == 'FACTURA') {
+
                                 var arra = new Array();
                                 var total_factura = 0;
                                 for (var i = 0; i < r.length; i++) {
-                                    arra[i] = r[i].data;
-                                    total_factura = parseFloat(total_factura) + parseFloat(r[i].data['importe_original']);
+                                        arra[i] = r[i].data;
+                                        total_factura = parseFloat(total_factura) + parseFloat(r[i].data['importe_original']);
                                 }
                                 this.tabsFactura(arra);
                                 this.agregarDatosCampo(r[0].data['nro_fac'], r[0].data['razon'], r[0].data['nro_nit'], r[0].data['fecha_fac'], total_factura, r[0].data['nro_aut']);
@@ -1508,8 +1779,9 @@ header("content-type: text/javascript; charset=UTF-8");
                 //console.log(objRes.ROOT.datos[0].length)
 
 
+                objetoDatos = (objRes.ROOT == undefined)?objRes.datos:objRes.ROOT.datos;
                 var i = 0;
-                objRes.ROOT.datos.forEach(function (item) {
+                objetoDatos.forEach(function (item) {
 
                     var texto = item;
                     ifrm = document.createElement("IFRAME");
@@ -1572,6 +1844,24 @@ header("content-type: text/javascript; charset=UTF-8");
                 var arra = new Array();
 
 
+                //todo submit
+
+                var arra_facman = new Array();
+
+
+                this.megrid_facman.getStore().data.each(function (a,b) {
+                    arra_facman[b] = new Object({
+                        concepto: a.data.concepto,
+                        importe_original: a.data.importe_original,
+                        nroaut: this.Cmp.autorizacion.getValue(),
+                        nrofac: this.Cmp.nro_factura.getValue()
+
+                    });
+                },this);
+
+
+
+
                 for (var i = 0; i < cantidad_registros; i++) {
 
                     record = this.megrid.store.getAt(i);
@@ -1600,7 +1890,13 @@ header("content-type: text/javascript; charset=UTF-8");
                 //console.log(arra);
 
 
-                this.argumentExtraSubmit = {'newRecords': Ext.encode(arra)};
+                if(this.FACMAN ==true){
+                    this.argumentExtraSubmit = {'newRecords': Ext.encode(arra),'conceptos_originales_facman': Ext.encode(arra_facman)};
+
+                }else{
+                    this.argumentExtraSubmit = {'newRecords': Ext.encode(arra)};
+
+                }
                 Phx.vista.FormNota.superclass.onSubmit.call(this, this.o);
 
                 //para limpiar despues de guardar
@@ -1666,6 +1962,8 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
             },
+
+
 
             agregarDatosCampo: function (nro_fac, razon, nro_nit, fecha, importe_original, nro_aut) {
 
@@ -2275,6 +2573,62 @@ header("content-type: text/javascript; charset=UTF-8");
                     icon: tipo
                 })
 
+            },
+            addTabFacturaManual:function(){
+                this.win_factura_manual.show();
+            },
+            agregar_arreglo_factura_manual: function () {
+
+
+
+                var aut = this.Cmp.autorizacion.getValue();
+                var fac = this.Cmp.nro_factura.getValue();
+                var fecha_fac = this.Cmp.fecha.getValue();
+                var nit = this.Cmp.nit.getValue();
+                var razon = this.Cmp.razon.getValue();
+
+
+                console.log(this.mestore)
+                //todo agregar arreglo
+                var arra = new Array();
+
+
+                this.megrid_facman.getStore().data.each(function (a,b) {
+                    arra[b] = new Object({
+                        concepto: a.data.concepto,
+                        importe_original: a.data.importe_original,
+                        nroaut: aut,
+                            nrofac:fac
+
+                    });
+
+                    var e = new this.Items({
+                        tipo:'FACTURA MANUAL',
+                        cantidad: 1,
+                        concepto:a.data.concepto,
+                        detalle: '',
+                        peso: 0,
+                        total: 1,
+                        importe_devolver:a.data.importe_original,
+                        importe_original:a.data.importe_original,
+                        exento:0,
+                        nro_fac:fac,
+                        nro_aut:aut,
+                        fecha_fac : fecha_fac,
+                        nro_nit:nit,
+                        razon:razon
+                    });
+                    this.mestore.add(e);
+                    this.megrid.getView().refresh();
+
+                },this);
+                this.tabsFactura(arra);
+
+
+
+
+            },
+            close_win_factura_manual: function () {
             }
 
 

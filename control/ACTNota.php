@@ -82,7 +82,7 @@ class ACTNota extends ACTbase{
 			$this->res->imprimirRespuesta($this->res->generarJson());
 			exit;
 		}*/
-		
+
 		$notas = $this->res->getDatos();
 		
 		
@@ -109,8 +109,7 @@ class ACTNota extends ACTbase{
 			$cadena_qr = '|154422029|BOLIVIANA DE AVIACION|123|123|02/10/2014|'.$item['total_devuelto'].'|'.$item['codigo_control'].'| '.$item['nit'].' | '.trim($item['razon']).'|';
 			$barcodeobj = new TCPDF2DBarcode($cadena_qr, 'QRCODE,H');
 			
-			$this->objParam->parametros_consulta['filtro'] = ' 0 = 0 ';
-			$this->objParam->addFiltro("deno.id_nota = ". $item['id_nota']);
+
 			
 			//obtenemos conceptos originales de esta factura o boleto
 			
@@ -122,12 +121,15 @@ class ACTNota extends ACTbase{
 				
 				$original = $this->listarBoletosOriginales($item['factura']);
 				
-			}else{
+			}else if($item['tipo'] == 'FACTURA'){
 				
 				$original = $this->listarFacturaOriginales($item['factura'],$item['nroaut_anterior']);
-				
-				
-				
+
+
+			}else if($item['tipo'] == 'FACTURA MANUAL'){
+
+				$original = $this->listarFacturaManualOriginal($item['id_nota']);
+
 			}
 			
 			
@@ -135,8 +137,15 @@ class ACTNota extends ACTbase{
 			$dosificacion = $this->listarDosificacion($item['id_dosificacion']);
 			//var_dump($dosificacion[0]['FECLIMEMI']);
 			//var_dump($dosificacion[0]['GLOSA_IMPUESTOS']);
-			
-				
+
+
+
+			$this->objParam->defecto('dir_ordenacion','asc');
+			$this->objParam->parametros_consulta['ordenacion'] = 'id_nota_detalle';
+
+			$this->objParam->parametros_consulta['filtro'] = ' 0 = 0 ';
+			$this->objParam->addFiltro("deno.id_nota = ". $item['id_nota']);
+
 			//listamos detalle de la nota
 			$this->objFunc2=$this->create('MODNotaDetalle');	
 			$this->res2=$this->objFunc2->listarNotaDetalle($this->objParam);
@@ -366,6 +375,27 @@ window.onload=function(){self.print();}
 		return $ori;
 	}
 
+	function listarFacturaManualOriginal($id_nota){
+
+		$this->objParam->defecto('dir_ordenacion','asc');
+		$this->objParam->parametros_consulta['filtro'] = ' 0 = 0 ';
+		$this->objParam->parametros_consulta['ordenacion'] = 'id_concepto_original';
+
+
+		$this->objParam->addFiltro("cono.id_nota = ".$id_nota);
+
+
+
+
+		$this->objFunc2=$this->create('MODConceptoOriginal');
+		$this->res = $this->objFunc2->listarConceptoOriginal($this->objParam);
+		$datos = $this->res->getDatos();
+		return $datos;
+
+
+
+	}
+
 	function listarDosificacion($id_dosificacion){
 			
 		$this->objFunc=$this->create('MODNota');	
@@ -391,7 +421,7 @@ window.onload=function(){self.print();}
 		$this->objFunc=$this->create('MODNota');
 
 		$re =$this->objFunc->anularNota($this->objParam);
-		$this->generarNota();
+		//$this->generarNota();
 
 	}
 
