@@ -462,10 +462,13 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
 
-                console.log(objRes)
+                console.log(objRes);
 
+
+                objetoDatos = (objRes.ROOT == undefined)?objRes.datos:objRes.ROOT.datos;
                 var i = 0;
-                objRes.ROOT.datos.forEach(function (item) {
+
+                objetoDatos.forEach(function (item) {
 
                     var texto = item;
                     ifrm = document.createElement("IFRAME");

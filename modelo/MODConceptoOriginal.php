@@ -34,7 +34,9 @@ class MODConceptoOriginal extends MODbase{
 		$this->captura('fecha_mod','timestamp');
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
-		
+		$this->captura('precio_unitario','numeric');
+		$this->captura('cantidad','int4');
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 

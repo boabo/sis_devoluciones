@@ -165,6 +165,7 @@ class MODLiquidevolu extends MODbase{
 		$informix->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
 		
 		$sql = "select
+
             			lite.pais,
                           lite.estacion,
                           lite.docmnt,
@@ -323,6 +324,7 @@ class MODLiquidevolu extends MODbase{
 				                         bo.importe as importe_devolver,
 				                         bo.billete as nro_fac,
 				                         '1' as nro_aut,
+				                         '1' as cantidad,
 				                         
 				                         'BOLETO' as tipo
 				                          

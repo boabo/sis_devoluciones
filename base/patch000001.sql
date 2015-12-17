@@ -282,4 +282,10 @@ CREATE TYPE decr.json_conceptos_originales AS (
 );
 
 
+ALTER TABLE decr.tconcepto_original ADD precio_unitario NUMERIC(10,2) NULL;
+
+ALTER TABLE decr.tnota_detalle ADD precio_unitario NUMERIC(10,2) NULL;
+
+ALTER TABLE decr.tconcepto_original ADD cantidad INT NULL;
+
 /***********************************F-SCP-FFP-DECR-1-15/12/2015****************************************/

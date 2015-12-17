@@ -60,7 +60,8 @@ BEGIN
                         deno.exento,
                         deno.total_devuelto,
 						usu1.cuenta as usr_reg,
-						usu2.cuenta as usr_mod
+						usu2.cuenta as usr_mod,
+						deno.precio_unitario
 
 						from decr.tnota_detalle deno
 						inner join segu.tusuario usu1 on usu1.id_usuario = deno.id_usuario_reg

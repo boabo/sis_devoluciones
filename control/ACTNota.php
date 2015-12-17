@@ -240,10 +240,14 @@ class ACTNota extends ACTbase{
 					$total_original = 0;
 					
 					foreach ($original as $item_detalle) {
-					    $html .= '<tr>
-							<td>1</td>
+
+						$precio_unitario = ($item_detalle['precio_unitario']!=null)?$item_detalle['precio_unitario']:$item_detalle['importe_original'];
+						$cantidad = ($item_detalle['cantidad']!=null)?$item_detalle['cantidad']:1;
+
+					     $html .= '<tr>
+							<td>'.$cantidad.'</td>
 							<td>'.str_replace( "/", " / ", $item_detalle['concepto'] ).'</td>
-							<td>'.number_format($item_detalle['importe_original'], 2, '.', '').'</td>
+							<td>'.number_format($precio_unitario, 2, '.', '').'</td>
 							<td align="center">'.number_format($item_detalle['importe_original'], 2, '.', '').'</td>
 							</tr>';
 					    $total_original = $total_original + $item_detalle['importe_original'];
@@ -277,9 +281,9 @@ class ACTNota extends ACTbase{
 					    $importe_total = $importe_total + $item_detalle['importe'];
 					
 					    $html .= '<tr>
-							<td>1</td>
+							<td>'.$item_detalle['cantidad'].'</td>
 							<td>'.str_replace( "/", " / ", $item_detalle['concepto'] ).'</td>
-							<td>'.number_format($item_detalle['importe'], 2, '.', '').'</td>
+							<td>'.number_format($item_detalle['precio_unitario'], 2, '.', '').'</td>
 							<td align="center">'.number_format($item_detalle['importe'], 2, '.', '').'</td>
 							</tr>';
 					    }

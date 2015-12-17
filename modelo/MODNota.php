@@ -445,18 +445,22 @@ class MODNota extends MODbase
 				  cantidad,
 				  concepto,
 				  exento,
-				  total_devuelto
+				  total_devuelto,
+				  precio_unitario
 				)
 				VALUES (
 				  " . $_SESSION['ss_id_usuario'] . ",
 				  'activo',
 				  '" . $id_nota . "',
 				  '" . $item->importe_devolver . "',
-				  1,
+				    " . $item->cantidad.",
 				   '" . $item->concepto . "',
 				   '" . $item->exento . "',
-				   '" . $item->total_devuelto . "'
+				   '" . $item->total_devuelto . "',
+				   '" . $item->precio_unitario . "'
 				);");
+
+
         $stmt2->execute();
     }
 
@@ -880,7 +884,9 @@ class MODNota extends MODbase
                                   usuario_ai,
                                   id_usuario_ai,
                                   id_usuario_mod,
-                                  fecha_mod
+                                  fecha_mod,
+                                  precio_unitario,
+                                  cantidad
                                 ) values(
                                   'activo',
                                  'manual',
@@ -892,7 +898,10 @@ class MODNota extends MODbase
                                   'NULL',
                                   null,
                                   null,
-                                  null)");
+                                  null,
+                                  $item->precio_unitario,
+                                  $item->cantidad)");
+
 
             $res->execute();
 

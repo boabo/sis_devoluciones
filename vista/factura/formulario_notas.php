@@ -61,7 +61,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                             //console.log()
                             if (this.tabs.activeTab != undefined) {
-                                var nrofac = this.tabs.activeTab.id
+                                var nrofac = this.tabs.activeTab.id;
                                 this.megrid.store.filter("nro_fac", nrofac);
 
                                 if (this.tabs.activeTab.name == 1) { // se fija si es boleto para bloquear agregar concepto
@@ -72,6 +72,8 @@ header("content-type: text/javascript; charset=UTF-8");
                                     this.megrid.addCon.disabled = false;
                                     this.megrid.removeBtn.disabled = false;
                                 }
+
+                                this.total_porcentaje();
 
 
                             }
@@ -100,7 +102,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                 var nrofac = this.tabs.activeTab.id
                                 this.megrid.store.filter("nro_fac", nrofac);
                             }
-
+                            this.total_porcentaje();
                         }
 
                     },
@@ -155,8 +157,10 @@ header("content-type: text/javascript; charset=UTF-8");
                     idIndex: 0,
                     fields: [
 
+                        {name: 'cantidad', type: 'numeric'},
                         {name: 'tipo', type: 'string'},
                         {name: 'concepto', type: 'string'},
+                        {name: 'precio_unitario', type: 'numeric'},
                         {name: 'importe', type: 'numeric'},
                     ]
                 });
@@ -232,7 +236,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             dataIndex: 'cantidad',
                             width: 60,
                             sortable: true,
-                            hidden: true,
+                            hidden: false,
                             hideable: false,
                             editor: {
                                 xtype: 'numberfield',
@@ -284,12 +288,29 @@ header("content-type: text/javascript; charset=UTF-8");
                             editor: new Ext.form.TextField({
 
                                 enableKeyEvents: true,
-                                name: 'billete_text',
+                                name: 'concepto',
                                 allowBlank: true,
                                 id: 'input_concepto',
                             })
 
 
+                        }
+                        ,{
+                            xtype: 'numbercolumn',
+                            header: 'precio_unitario',
+                            dataIndex: 'precio_unitario',
+
+                            format: '$0,0.00',
+                            width: 100,
+                            sortable: false,
+                            //summaryType: 'sum',
+                            editor: {
+                                xtype: 'numberfield',
+                                allowBlank: true,
+                                // disabled: true,
+                                id: 'precio_unitario'
+
+                            }
                         },{
                             xtype: 'numbercolumn',
                             header: 'importe_original',
@@ -496,11 +517,17 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 });
 
-                var editor = new Ext.ux.grid.RowEditor({
+                this.editor = new Ext.ux.grid.RowEditor({
                     saveText: 'Aceptar',
                     name: 'btn_editor'
 
                 });
+
+
+
+                this.editor.on('afteredit', this.onAfterEdit, this);
+                this.editor.on('beforeremove', this.onBeforeRemove, this);
+
 
 
                 // utilize custom extension for Group Summary
@@ -521,7 +548,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                     //margins: '0 5 5 60',
                     //autoExpandColumn: 'name',
-                    plugins: [editor, summary],
+                    plugins: [this.editor, summary],
                     stripeRows: true,
                     //plugins: summary,
                     /* view: new Ext.grid.GroupingView({
@@ -544,11 +571,11 @@ header("content-type: text/javascript; charset=UTF-8");
                                 importe_devolver:0,
                                 exento:0
                             });
-                            editor.stopEditing();
+                            this.editor.stopEditing();
                             this.mestore.insert(0, e);
                             this.megrid.getView().refresh();
                             this.megrid.getSelectionModel().selectRow(0);
-                            editor.startEditing(0);
+                            this.editor.startEditing(0);
                         }
                     }, {
                         ref: '../removeBtn',
@@ -557,7 +584,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         //disabled: true,
                         scope: this,
                         handler: function () {
-                            editor.stopEditing();
+                            this.editor.stopEditing();
                             var s = this.megrid.getSelectionModel().getSelections();
                             for (var i = 0, r; r = s[i]; i++) {
                                 this.mestore.remove(r);
@@ -574,7 +601,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             dataIndex: 'cantidad',
                             width: 60,
                             sortable: true,
-                            hidden: true,
+                            hidden: false,
                             hideable: false,
                             editor: {
                                 xtype: 'numberfield',
@@ -710,7 +737,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             editor: {
                                 xtype: 'numberfield',
                                 allowBlank: true,
-                                disabled: true,
+                                disabled: false,
                                 //readOnly:true,
                                 id: 'input_pu',
                                 enableKeyEvents: true,
@@ -994,6 +1021,81 @@ header("content-type: text/javascript; charset=UTF-8");
                                     ]
                                 },
 
+                                {
+                                    xtype: 'fieldset',
+                                    border: false,
+                                    split: true,
+                                    layout: 'column',
+                                    region: 'south',
+                                    autoScroll: true,
+                                    autoHeight: true,
+                                    collapseFirst: false,
+                                    collapsible: true,
+                                    width: '100%',
+                                    //autoHeight: true,
+                                    padding: '0 0 0 10',
+                                    items: [
+
+                                        {
+                                            bodyStyle: 'padding-right:2px;',
+
+                                            border: false,
+                                            autoHeight: true,
+                                            items: [{
+                                                xtype: 'fieldset',
+                                                frame: true,
+                                                layout: 'form',
+                                                title: 'Devolucion',
+                                                width: '33%',
+                                                border: false,
+                                                //margins: '0 0 0 5',
+                                                padding: '0 0 0 10',
+                                                bodyStyle: 'padding-left:2px;',
+                                                id_grupo: 9,
+                                                items: [],
+                                            }]
+                                        },
+                                        {
+                                            bodyStyle: 'padding-right:5px;',
+
+                                            border: false,
+                                            autoHeight: true,
+                                            items: [{
+                                                xtype: 'fieldset',
+                                                frame: true,
+                                                layout: 'form',
+                                                title: 'Porcentaje',
+                                                width: '33%',
+                                                border: false,
+                                                //margins: '0 0 0 5',
+                                                padding: '0 0 0 10',
+                                                bodyStyle: 'padding-left:5px;',
+                                                id_grupo: 10,
+                                                items: [],
+                                            }]
+                                        },
+                                        {
+                                            bodyStyle: 'padding-right:5px;',
+
+                                            border: false,
+                                            autoHeight: true,
+                                            items: [{
+                                                xtype: 'fieldset',
+                                                frame: true,
+                                                layout: 'form',
+                                                title: '',
+                                                width: '33%',
+                                                border: false,
+                                                //margins: '0 0 0 5',
+                                                padding: '0 0 0 10',
+                                                bodyStyle: 'padding-left:5px;',
+                                                id_grupo: 11,
+                                                items: [],
+                                            }]
+                                        },
+                                    ]
+                                },
+
 
                             ]
                         }
@@ -1074,12 +1176,12 @@ header("content-type: text/javascript; charset=UTF-8");
                         this.megrid.enable();
 
 
-                        this.megrid.initialConfig.columns[1].hidden = false;
+                        //this.megrid.initialConfig.columns[1].hidden = false;
+
                         this.megrid.getView().refresh(true);
 
-                        Ext.getCmp('input_pu').disabled = false;
-
-                        Ext.getCmp('input_pu').enable(true);
+                        //Ext.getCmp('input_pu').disabled = false;
+                        //Ext.getCmp('input_pu').enable(true);
 
 
                     }
@@ -1090,15 +1192,15 @@ header("content-type: text/javascript; charset=UTF-8");
                         this.addTabsBtn.disable();
 
 
-                        this.megrid.initialConfig.columns[1].hidden = true;
+                        //this.megrid.initialConfig.columns[1].hidden = true;
 
                         this.megrid.getView().refresh(true);
 
 
-                        Ext.getCmp('input_pu').disabled = true;
-                        Ext.getCmp('input_pu').addClass('x-item-disabled');
-                        Ext.getCmp('input_pu').enable(false);
-                        Ext.getCmp('input_pu').disable(false);
+                       // Ext.getCmp('input_pu').disabled = true;
+                       // Ext.getCmp('input_pu').addClass('x-item-disabled');
+                        //Ext.getCmp('input_pu').enable(false);
+                        //Ext.getCmp('input_pu').disable(false);
 
 
                         this.Cmp.liquidevolu.disable();
@@ -1141,13 +1243,13 @@ header("content-type: text/javascript; charset=UTF-8");
                         this.resetearPanels();
                         this.addTabsBtn.enable();
 
-                        this.megrid.initialConfig.columns[1].hidden = true;
+                        //this.megrid.initialConfig.columns[1].hidden = true;
                         this.megrid.getView().refresh(true);
 
-                        Ext.getCmp('input_pu').disabled = true;
+                        /*Ext.getCmp('input_pu').disabled = true;
                         Ext.getCmp('input_pu').addClass('x-item-disabled');
                         Ext.getCmp('input_pu').enable(false);
-                        Ext.getCmp('input_pu').disable(false);
+                        Ext.getCmp('input_pu').disable(false);*/
 
 
                         this.resetear();
@@ -1192,7 +1294,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.megrid.store.load({
                         params: {start: 0, limit: 20},
                         callback: function (r, a) {
-                            console.log(r)
+
                             console.log(r.length)
                             if(r[0].data['tipo'] == 'NO') {
 
@@ -1231,6 +1333,10 @@ header("content-type: text/javascript; charset=UTF-8");
                             }
                         }, scope: this
                     });
+
+
+
+
                 }, this);
 
 
@@ -1400,14 +1506,18 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.megrid.initialConfig.columns[11].editor.setValue(devol);
 
 
+
                 }, this);
 
 
-                this.megrid.initialConfig.columns[10].editor.on('keyup', function () {
+                this.megrid.initialConfig.columns[10].editor.on('valid', function () {
 
                     var devol = this.megrid.initialConfig.columns[9].editor.getValue() - this.megrid.initialConfig.columns[10].editor.getValue();
 
                     this.megrid.initialConfig.columns[11].editor.setValue(devol);
+
+
+
                 }, this);
 
 
@@ -1455,6 +1565,79 @@ header("content-type: text/javascript; charset=UTF-8");
                  */
 
 
+                //este es de la grilla de factura manual conceptos el precio unitario
+                this.megrid_facman.initialConfig.columns[4].editor.on('valid', function () {
+
+
+                    var cantidad = this.megrid_facman.initialConfig.columns[1].editor.getValue();
+                    var precio_unitario = this.megrid_facman.initialConfig.columns[4].editor.getValue();
+
+                    var importe_original = parseInt(cantidad)*parseFloat(precio_unitario);
+
+                    this.megrid_facman.initialConfig.columns[5].editor.setValue(importe_original);
+
+                }, this);
+
+
+                //este es de la grilla de factura manual conceptos la cantidad
+                this.megrid_facman.initialConfig.columns[1].editor.on('valid', function () {
+
+
+                    var cantidad = this.megrid_facman.initialConfig.columns[1].editor.getValue();
+                    var precio_unitario = this.megrid_facman.initialConfig.columns[4].editor.getValue();
+
+                    var importe_original = parseInt(cantidad)*parseFloat(precio_unitario);
+
+                    this.megrid_facman.initialConfig.columns[5].editor.setValue(importe_original);
+
+                }, this);
+
+
+
+                this.megrid.initialConfig.columns[7].editor.on('valid', function () {
+
+
+                    var cantidad = this.megrid.initialConfig.columns[1].editor.getValue();
+                    var precio_unitario = this.megrid.initialConfig.columns[7].editor.getValue();
+                    var exento = this.megrid.initialConfig.columns[10].editor.getValue();
+                    var importe_original = (parseInt(cantidad)*parseFloat(precio_unitario));
+                    var importe_devolver = (parseInt(cantidad)*parseFloat(precio_unitario))-parseFloat(exento);
+                    console.log(importe_original);
+                    this.megrid.initialConfig.columns[9].editor.setValue(importe_original);
+                    this.megrid.initialConfig.columns[8].editor.setValue(importe_original);
+                    this.megrid.initialConfig.columns[11].editor.setValue(importe_devolver);
+
+                }, this);
+                
+                this.mestore.on( 'load', function( store, records, options ) {
+                    this.total_porcentaje();
+                },this );
+                this.mestore.on('remove', function( store, records, options ) {
+
+                    this.total_porcentaje();
+                },this );
+
+
+
+
+
+                this.megrid.initialConfig.columns[1].editor.on('valid', function () {
+
+                    var cantidad = this.megrid.initialConfig.columns[1].editor.getValue();
+                    var precio_unitario = this.megrid.initialConfig.columns[7].editor.getValue();
+                    var exento = this.megrid.initialConfig.columns[10].editor.getValue();
+                    var importe_original = (parseInt(cantidad)*parseFloat(precio_unitario));
+                    var importe_devolver = (parseInt(cantidad)*parseFloat(precio_unitario))-parseFloat(exento);
+                    console.log(importe_original);
+                    this.megrid.initialConfig.columns[9].editor.setValue(importe_original);
+                    this.megrid.initialConfig.columns[8].editor.setValue(importe_original);
+                    this.megrid.initialConfig.columns[11].editor.setValue(importe_devolver);
+
+
+
+                }, this);
+
+
             },
 
 
@@ -1473,8 +1656,6 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
             Atributos: [
-
-
                 {
                     config: {
                         name: 'tipo_id',
@@ -1492,11 +1673,6 @@ header("content-type: text/javascript; charset=UTF-8");
                     id_grupo: 1,
                     form: true
                 },
-                
-                
-                 
-
-
                 {
                     config: {
                         name: 'liquidevolu',
@@ -1555,7 +1731,6 @@ header("content-type: text/javascript; charset=UTF-8");
                     form: true
                 },
                 
-                
                 /*{
                     config: {
                         name: 'sucursal',
@@ -1573,7 +1748,6 @@ header("content-type: text/javascript; charset=UTF-8");
                     id_grupo: 1,
                     form: true
                 },*/
-
 
                 {
                     config: {
@@ -1718,7 +1892,31 @@ header("content-type: text/javascript; charset=UTF-8");
                     type: 'TextField',
                     id_grupo: 8,
                     form: true
-                }
+                },
+                {
+                    config:{
+                        name: 'importe_total_devolver',
+                        fieldLabel: 'importe total devolver porcentaje',
+                        allowBlank: true,
+                        anchor: '100%',
+                        gwidth: 100,
+                    },
+                    type:'NumberField',
+                    id_grupo:9,
+                    form:true
+                },
+                {
+                    config:{
+                        name: 'importe_porcentaje',
+                        fieldLabel: 'importe porcentaje',
+                        allowBlank: true,
+                        anchor: '100%',
+                        gwidth: 100,
+                    },
+                    type:'NumberField',
+                    id_grupo:10,
+                    form:true
+                },
 
 
             ],
@@ -1854,7 +2052,9 @@ header("content-type: text/javascript; charset=UTF-8");
                         concepto: a.data.concepto,
                         importe_original: a.data.importe_original,
                         nroaut: this.Cmp.autorizacion.getValue(),
-                        nrofac: this.Cmp.nro_factura.getValue()
+                        nrofac: this.Cmp.nro_factura.getValue(),
+                        precio_unitario: a.data.precio_unitario,
+                        cantidad: a.data.cantidad
 
                     });
                 },this);
@@ -1865,7 +2065,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 for (var i = 0; i < cantidad_registros; i++) {
 
                     record = this.megrid.store.getAt(i);
-
 
                     arra[i] = new Object();
                     arra[i].nroliqui = this.Cmp.liquidevolu.getValue();
@@ -1883,6 +2082,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     arra[i].nrofac = record.data.nro_fac;
                     arra[i].nroaut = record.data.nro_aut;
                     arra[i].tipo = record.data.tipo;
+                    arra[i].cantidad = record.data.cantidad;
 
 
                 }
@@ -2160,6 +2360,8 @@ header("content-type: text/javascript; charset=UTF-8");
 
                                 var se = this.megrid.getSelectionModel().getSelections();
 
+                                this.total_porcentaje();
+
                                 /*for(var i = 0, r; r = se[i]; i++){
 
 
@@ -2292,6 +2494,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                     this.megrid.getView().refresh();
 
 
+                                    this.total_porcentaje();
                                     /*for(var i = 0, r; r = se[i]; i++){
 
 
@@ -2358,11 +2561,13 @@ header("content-type: text/javascript; charset=UTF-8");
                 for (var i = 0; i < countData.length; i++) {
 
 
+                    var precio_unitario = (countData[i].precio_unitario !=undefined)?countData[i].precio_unitario:countData[i].importe_original;
+                    var cantidad = (countData[i].cantidad!=undefined)?countData[i].cantidad:1;
                     m += '<tr class="x-grid3-hd-row">';
 
                     m += '<td class="x-grid3-hd x-grid3-cell x-grid3-td-1 " style="width: 58px;">';
                     m += '<div class="x-grid3-hd-inner x-grid3-hd-1" unselectable="on" style="">';
-                    m += '<a class="x-grid3-hd-btn" href="#"></a>1.<img alt="" class="x-grid3-sort-icon" src="resources/s.gif">';
+                    m += '<a class="x-grid3-hd-btn" href="#"></a>'+cantidad+'<img alt="" class="x-grid3-sort-icon" src="resources/s.gif">';
                     m += '</div>';
                     m += '</td>';
 
@@ -2375,7 +2580,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                     m += '<td class="x-grid3-hd x-grid3-cell x-grid3-td-1 " style="width: 58px;">';
                     m += '<div class="x-grid3-hd-inner x-grid3-hd-1" unselectable="on" style="">';
-                    m += '<a class="x-grid3-hd-btn" href="#"></a>' + countData[i].importe_original + '<img alt="" class="x-grid3-sort-icon" src="resources/s.gif">';
+                    m += '<a class="x-grid3-hd-btn" href="#"></a>' +precio_unitario + '<img alt="" class="x-grid3-sort-icon" src="resources/s.gif">';
                     m += '</div>';
                     m += '</td>';
 
@@ -2538,6 +2743,9 @@ header("content-type: text/javascript; charset=UTF-8");
                 }).show();
 
 
+
+
+
             },
 
             resetearPanels: function () {
@@ -2588,33 +2796,40 @@ header("content-type: text/javascript; charset=UTF-8");
                 var razon = this.Cmp.razon.getValue();
 
 
+                var fecha_formateada = fecha_fac.dateFormat('Y-m-d');
+
+
                 console.log(this.mestore)
                 //todo agregar arreglo
                 var arra = new Array();
 
 
                 this.megrid_facman.getStore().data.each(function (a,b) {
+                    console.log(a.data)
                     arra[b] = new Object({
                         concepto: a.data.concepto,
+                        precio_unitario: a.data.precio_unitario,
                         importe_original: a.data.importe_original,
                         nroaut: aut,
-                            nrofac:fac
+                            nrofac:fac,
+                        cantidad: a.data.cantidad
 
                     });
 
                     var e = new this.Items({
                         tipo:'FACTURA MANUAL',
-                        cantidad: 1,
+                        cantidad: a.data.cantidad,
                         concepto:a.data.concepto,
                         detalle: '',
                         peso: 0,
                         total: 1,
+                        precio_unitario: a.data.precio_unitario,
                         importe_devolver:a.data.importe_original,
                         importe_original:a.data.importe_original,
                         exento:0,
                         nro_fac:fac,
                         nro_aut:aut,
-                        fecha_fac : fecha_fac,
+                        fecha_fac : fecha_formateada,
                         nro_nit:nit,
                         razon:razon
                     });
@@ -2629,6 +2844,29 @@ header("content-type: text/javascript; charset=UTF-8");
 
             },
             close_win_factura_manual: function () {
+            },
+
+            total_porcentaje : function(){
+
+                var importe=0;
+                var exento=0;
+               this.megrid.getStore().each(function (a,b) {
+
+                   importe = parseFloat(a.data.importe_devolver)+importe;
+                   exento = parseFloat(a.data.exento)+exento;
+
+
+                });
+                this.Cmp.importe_porcentaje.setValue((Number(importe-exento)*0.13).toFixed(2));
+                this.Cmp.importe_total_devolver.setValue(Number(importe-exento).toFixed(2));
+
+            },
+            onAfterEdit: function (re, o, rec, num) {
+                this.total_porcentaje();
+                console.log(this.editor)
+            },
+            onBeforeRemove:function(){
+                this.total_porcentaje();
             }
 
 

@@ -42,7 +42,8 @@ class MODNotaDetalle extends MODbase{
 		$this->captura('total_devuelto','numeric');
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
-		
+		$this->captura('precio_unitario','numeric');
+
 		
 
 		
