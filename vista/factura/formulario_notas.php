@@ -337,7 +337,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.win_factura_manual = new Ext.Window(
                     {
                         layout: 'fit',
-                        width: 500,
+                        width: 700,
                         height: 250,
                         modal: true,
                         closeAction: 'hide',
@@ -619,7 +619,6 @@ header("content-type: text/javascript; charset=UTF-8");
 
                             header: 'tipo',
                             dataIndex: 'tipo',
-
                             hidden: false,
                             hideable: false,
                             width: 100,
@@ -636,7 +635,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                 triggerAction: 'all',
                                 lazyRender: true,
                                 mode: 'local',
-                                store: [/*'FACTURA','BOLETO',*/'FACTURA'],
+                                store: ['FACTURA','FACTURA MAMUAL'],
                                 width: 200,
                                 enableKeyEvents: true,
 
@@ -1896,7 +1895,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {
                     config:{
                         name: 'importe_total_devolver',
-                        fieldLabel: 'importe total devolver porcentaje',
+                        fieldLabel: 'importe total devolver ',
                         allowBlank: true,
                         anchor: '100%',
                         gwidth: 100,
@@ -2831,7 +2830,8 @@ header("content-type: text/javascript; charset=UTF-8");
                         nro_aut:aut,
                         fecha_fac : fecha_formateada,
                         nro_nit:nit,
-                        razon:razon
+                        razon:razon,
+                        total_devuelto:a.data.importe_original
                     });
                     this.mestore.add(e);
                     this.megrid.getView().refresh();
@@ -2839,6 +2839,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 },this);
                 this.tabsFactura(arra);
 
+                //this.megrid_facman.remove();
+                //this.megrid_facman.store.removeAll();
 
 
 

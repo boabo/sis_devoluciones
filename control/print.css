@@ -1,18 +1,18 @@
-/* -------------------------------------------------------------- 
-  
+/* --------------------------------------------------------------
+
  Hartija Css Print  Framework
-   * Version:   1.0 
-	 
+   * Version:   1.0
+
 -------------------------------------------------------------- */
 
-body { 
+body {
 width:100% !important;
 margin:0 !important;
 padding:0 !important;
 line-height: 0.80;
-font-family: Garamond,"Times New Roman", serif; 
-color: #000; 
-background: none; 
+font-family: Garamond,"Times New Roman", serif;
+color: #000;
+background: none;
 font-size: 14pt; }
 
 /* Headings */
@@ -24,11 +24,11 @@ h4,h5,h6{font-size:14pt;}
 
 .text_center{
 	text-align: center;
-	
+
 }
 p, h2, h3 { orphans: 3; widows: 3; }
 
-code { font: 12pt Courier, monospace; } 
+code { font: 12pt Courier, monospace; }
 blockquote { margin: 1.2em; padding: 1em;  font-size: 12pt; }
 hr {height:1px; background-color: #ccc; }
 
@@ -50,9 +50,11 @@ a[href$=".jpg"]:after, a[href$=".jpeg"]:after, a[href$=".gif"]:after, a[href$=".
 a[href^="#"]:after, a[href^="javascript:"]:after {content: "";}
 
 /* Table */
+
 table { margin: 1px; text-align:left; }
-th { border-bottom: 1px solid #333;  font-weight: bold; }
+/*th { border-bottom: 1px solid #333;  font-weight: bold; }
 td { border-bottom: 1px solid #333; }
+tr { border-bottom: 1px solid #333; }*/
 th,td { padding: 4px 10px 4px 0; }
 tfoot { /*font-style: italic;*/ }
 caption { background: #fff; margin-bottom:2em; text-align:left; }
@@ -62,7 +64,8 @@ img,tr {page-break-inside: avoid;}
 
 
 
+
 /* Hide various parts from the site
-#header, #footer, #navigation, #rightSideBar, #leftSideBar 
+#header, #footer, #navigation, #rightSideBar, #leftSideBar
 {display:none;}
 */

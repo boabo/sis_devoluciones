@@ -165,180 +165,207 @@ class ACTNota extends ACTbase{
 			setlocale(LC_ALL,"es_ES@euro","es_ES","esp");
 			
 
-			
+
 			
 			$html.='<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
 					   "http://www.w3.org/TR/html4/strict.dtd">
 					<html>
 					<head>
-						<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-						<title>devoluciones</title>
-						<meta name="author" content="favio figueroa">
-						    
-					
+						<meta http-equiv="Content-Type" content="text/html;">
+
+
 					  <link rel="stylesheet" href="../../../sis_devoluciones/control/print.css" type="text/css" media="print" charset="utf-8">
 					  
 					</head>
-					<body >
-					<center>
-					<p text-align: center;">
-					    &nbsp;&nbsp;&nbsp;&nbsp;BOLIVIANA DE AVIACION BOA</br>
-					    &nbsp;&nbsp;Av. SIMON LOPEZ No 1582 <br />
-					    &nbsp;&nbsp;ZONA CONDEBAMBA <br />
-					    TELF. 4122438-4140873 <br />
-					    &nbsp;&nbsp;COCHABAMBA-BOLIVIA <br />
-					</p>
-					</center>
-					<hr />
-					<p style="text-align: center;">
-					    &nbsp;&nbsp;&nbsp;&nbsp;NOTA DE CREDITO-DEBITO
-					</p>
-					<hr />
-					<p style="text-align: center;">
-					    NIT: 154422029 <br/>
-					    N&#176; NOTA FISCAL: '.$item['nro_nota'].'<br>
-					    N&#176; AUTORIZACION: '.$item['autorizacion'].'<br />
-					    ORIGINAL<br />
+					<body  style="line-height: 18px;">
+
+
+
+
+					<table style="width: 390px;">
+					<thead  >
+						<tr   >
+
+						<td colspan="2" style=" text-align: center;" align="center" >
+
+						BOLIVIANA DE AVIACION BOA<br />
+						SUCURSAL '.trim($dosificacion[0]['SUCURSAL']).' -  '.trim($dosificacion[0]['TIPO_AUTOIMPRESOR']).' '.trim($dosificacion[0]['AUTOIMPRESOR']).'<br />
+						'.trim($dosificacion[0]['DIRECCION']).'<br />
+
+						TELF : '.trim($dosificacion[0]['TELEFONOS']).'<br />
+						'.trim($dosificacion[0]['ALCALDIA']).'<br />
+<hr/>
+						</td>
+						</tr>
+
+
+						<tr><td colspan="2" align="center" style="text-align: center;">NOTA DE CREDITO-DEBITO <br/> ORIGINAL<hr/></td></tr>
+
+						<tr>
+						<td style="width: 200px;" colspan="1"  align="right">NIT:&nbsp;&nbsp;&nbsp;&nbsp;</td><td colspan="1" align="left">154422029</td>
+						</tr>
+						<tr>
+						<td  colspan="1" align="right">N&#176; NOTA FISCAL:&nbsp;&nbsp;&nbsp;</td><td colspan="1" align="left">'.$item['nro_nota'].'</td>
+						</tr>
+						<tr>
+						<td  colspan="1" align="right"> N&#176; AUTORIZACION:</td><td colspan="1" align="left">'.$item['autorizacion'].'</td>
+						</tr>
+
+						<tr>
+						<td colspan="2"  align="center" style="text-align: center;">
+					   <hr/>
 					    '.$dosificacion[0]['NOMBRE_ACTIVIDAD'].'
-					</p>
-					<hr/>';
-					if($item['estado'] == 9){
-					    $html.='<div style="text-align: center; width:350px; font-size: 30pt; ">
-					
-								        N/C ANULADA<br />
-					
-								      <hr/>
-					
-					
-								    </div>';
-					}
-					$html.='<p>
-					    Cochabamba '.strftime("%d de %B de %Y", strtotime($item['fecha'])).'<br/>
+						</td>
+						</tr>';
+
+
+			if($item['estado'] == 9) {
+				$html .= '<tr><td colspan="2" align="center" style="text-align: center; font-size: 30pt;">
+ N/C ANULADA<hr/>
+</td></tr>';
+			}
+
+			$html.='<tr><td colspan="2">
+ 						Cochabamba '.strftime("%d de %B de %Y", strtotime($item['fecha'])).'<br/>
 					    Senor(es): '.trim($item['razon']).'<br/>
-					    NIT/CI: '.$item['nit'].'
-					</p>
-					<hr/>
-					<p style="text-align: center;">
-					    &nbsp;&nbsp;&nbsp;&nbsp;DATOS DE LA TRANSACCION ORIGINAL
-					</p>
-					<hr/>
-					<p>
-					    FACTURA: '.$item['factura'].' <br/>
+					    NIT/CI: '.$item['nit'].'<hr/>
+					</td></tr>';
+
+
+			$html.='<tr><td colspan="2"  width="390px;" align="center" style="text-align: center;">DATOS DE LA TRANSACCION ORIGINAL<hr/></td></tr>';
+
+			$html.='<tr><td colspan="2">
+ 						FACTURA: '.$item['factura'].' <br/>
 					    AUTORIZACION : '.$item['nroaut_anterior'].'<br>
 					    FECHA DE EMISION: '.$item['fecha_fac'].'
-					</p>
-					
-					<table>
-					    <!-- <caption>Lorem ipsum dolor sit amet</caption> -->
-					
-					
+					</td></tr>';
+
+					$html.='</thead>
+					</table>';
+
+
+
+
+
+					$html.='
+					<table  style="width: 390px;">
+
 					<thead>
-					
-						<tr><th>Ca</th><th>Concepto</th><th>PU</th><th>SubTotal</th></tr>
+
+						<tr><th>Cant<hr/></th><th style="width:60px;">Concepto<hr/></th><th align="center">PU<hr/></th><th align="right">SubTotal<hr/></th></tr>
+
 					</thead>
 					<tbody>';
 					$total_original = 0;
-					
+
 					foreach ($original as $item_detalle) {
 
 						$precio_unitario = ($item_detalle['precio_unitario']!=null)?$item_detalle['precio_unitario']:$item_detalle['importe_original'];
 						$cantidad = ($item_detalle['cantidad']!=null)?$item_detalle['cantidad']:1;
 
 					     $html .= '<tr>
-							<td>'.$cantidad.'</td>
-							<td>'.str_replace( "/", " / ", $item_detalle['concepto'] ).'</td>
-							<td>'.number_format($precio_unitario, 2, '.', '').'</td>
-							<td align="center">'.number_format($item_detalle['importe_original'], 2, '.', '').'</td>
+							<td style="width: 11px;">'.$cantidad.'</td>
+							<td style="width:60px;">'.str_replace( "/", " / ", $item_detalle['concepto'] ).'</td>
+							<td align="center">'.number_format($precio_unitario, 2, '.', '').'</td>
+							<td align="right">'.number_format($item_detalle['importe_original'], 2, '.', '').'</td>
 							</tr>';
 					    $total_original = $total_original + $item_detalle['importe_original'];
-					
+
 					}
 
-					$html.='<tr><td colspan="4"></td></tr>';
+			$html.='<tr><td colspan="4"><hr/></td></tr>';
 					$html.='</tbody>
 					    <tfoot>
-					    <tr><td colspan="4" align="right">Total Bs. '.number_format($total_original, 2, '.', '').' &nbsp;&nbsp;&nbsp;</td></tr>
+					    <tr><td colspan="2" align="left">Total Bs. <hr/></td><td colspan="2" align="right"> ' .number_format($total_original, 2, '.', '').'<hr/></td></tr>
 					    </tfoot>
 					</table>
-					
+
 					<p style="text-align: center;">
-					    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DETALLE DE LA DEVOLUCION O &nbsp;&nbsp;RESCISION DEL SERVICIO
+					    DETALLE DE LA DEVOLUCION O RESCISION DEL SERVICIO
 					</p>
 					<hr/>
-					<table>
-					    <!-- <caption>Lorem ipsum dolor sit amet</caption> -->
+					<table style="width: 390px;">
 					    <thead>
-					
-					    <tr><th>Ca</th><th>Concepto</th><th>PU</th><th>SubTotal</th></tr>
+
+					    <tr><th>Cant<hr/></th><th style="width:60px;">Concepto<hr/></th><th align="center"> PU<hr/></th><th align="right">SubTotal<hr/></th></tr>
 					    </thead>
 					    <tbody>';
-					
+
 					    $exento_total = 0;
 					    $importe_total = 0;
 					    foreach ($detalles as $item_detalle) {
-					
+
 					    $exento_total = $exento_total + $item_detalle['exento'];
 					    $importe_total = $importe_total + $item_detalle['importe'];
-					
+
 					    $html .= '<tr>
-							<td>'.$item_detalle['cantidad'].'</td>
-							<td>'.str_replace( "/", " / ", $item_detalle['concepto'] ).'</td>
-							<td>'.number_format($item_detalle['precio_unitario'], 2, '.', '').'</td>
-							<td align="center">'.number_format($item_detalle['importe'], 2, '.', '').'</td>
+							<td style="width: 11px;">'.$item_detalle['cantidad'].'</td>
+							<td style="width:60px;">'.str_replace( "/", " / ", $item_detalle['concepto'] ).'</td>
+							<td align="center">'.number_format($item_detalle['precio_unitario'], 2, '.', '').'</td>
+							<td align="right">'.number_format($item_detalle['importe'], 2, '.', '').'</td>
 							</tr>';
 					    }
 					    $total_devolver = $importe_total - $exento_total;
-					
-					    $html.='</tbody>
-					    <tfoot>
-					    <tr><td colspan="4" align="right">Total Bs. '.number_format($importe_total, 2, '.', '').' &nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
-					    <tr><td colspan="3" align="left">MENOS: Importes Exentos :</td><td colspan="1" align="right"> '.number_format($exento_total, 2, '.', '').' &nbsp;</td></tr>
-					    <tr><td colspan="4" align="right">Importe Total Devuelto: '.number_format($total_devolver, 2, '.', '').' &nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
-					    </tfoot>
-					</table>
-					
-					
-					<p>
-					    Son: '.$V->ValorEnLetras(number_format($total_devolver, 2, '.', ''),"").' <br/>
+
+			$html.='<tr><td colspan="4"><hr/></td></tr>';
+						$html.='</tbody></table>
+
+							<table style="width: 390px;">
+							<thead >
+							<tr ><td colspan="2" align="left">Total Bs. <hr/></td><td  align="right" colspan="2">'.number_format($importe_total, 2, '.', '').'<hr/></td></tr>
+
+							<tr><td colspan="2" align="left">MENOS: Importes Exentos :<hr/></td><td colspan="2" align="right"> '.number_format($exento_total, 2, '.', '').'<hr/></td></tr>
+ 							<tr><td colspan="2" align="left">Importe Total Devuelto: <hr/></td><td colspan="2" align="right">'.number_format($total_devolver, 2, '.', '').'<hr/></td></tr>
+							</head>
+						</table><br/>';
+
+
+
+
+
+			$html.='<table style="width: 390px;">
+					<tbody>
+					<tr><td style="text-align: left;">Son:<br/> '.$V->ValorEnLetras(number_format($total_devolver, 2, '.', ''),"").'<br/>
 					    Monto efectivo del Crédito o Débito <br/>
 					    (13% del Importe total Devuelto) '.number_format($item['credfis'], 2, '.', '').'
-					</p>
-					<hr/>
-					<p>
-					    Codigo de Control: '.$item['codigo_control'].' <br/>
+					    <hr/>
+					</td></tr>
+
+					<tr><td align="left" style="text-align:left;">
+					 Codigo de Control: '.$item['codigo_control'].' <br/>
 					    Fecha Limite de Emision: '.$dosificacion[0]['FECLIMEMI'].' <br/>
-					    OBS: '.$item['nro_liquidacion'].' <br/>
-					</p>
-					
-					
-					
+					    OBS: '.$item['nro_liquidacion'].' <hr/>
+					</td></tr>
+
+					<tr>
+					<td style="text-align:center;">
 					<!--<div align="center">
 								    '.$barcodeobj->getBarcodeHTML(3, 3, 'black').'
 								    </div>-->
-				
-					<p style="text-align: center">
-					
-					
-					    " '.$dosificacion[0]['GLOSA_IMPUESTOS'].'"
-					
+					</td>
+					</tr>
 
-					
-					</p>
+
+
+
+					</tbody>
+					</table>
+
+					<div style="width:250px; text-align: center;">
+					   " '.$dosificacion[0]['GLOSA_IMPUESTOS'].'"
+					</div>
+
+<p>Usuario: '.$_SESSION['_LOGIN'].' Id:'.$item['id_nota'].'  Hora: '.strftime("%H:%M", strtotime($item['fecha_reg'])).' </p>
+
+					<hr/>
+
+
 					<p>GRACIAS POR SU PREFERENCIA !
 					    <br/> www.boa.bo</p>
-					    
-						<script language="VBScript">
-Sub Print()
-       OLECMDID_PRINT = 6
-       OLECMDEXECOPT_DONTPROMPTUSER = 2
-       OLECMDEXECOPT_PROMPTUSER = 1
-       call WB.ExecWB(OLECMDID_PRINT, OLECMDEXECOPT_DONTPROMPTUSER,1)
-End Sub
-document.write "<object ID="WB" WIDTH=0 HEIGHT=0 CLASSID="CLSID:8856F961-340A-11D0-A96B-00C04FD705A2"></object>"
-</script>
 
-<script type="text/javascript"> 
-window.onload=function(){self.print();} 
+
+<script type="text/javascript">
+window.onload=function(){self.print();}
 </script> 
 					
 					</body>

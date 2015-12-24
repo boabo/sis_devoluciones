@@ -727,18 +727,16 @@ class MODNota extends MODbase
 
 
             $sql_in = "select act.nombre_actividad,dos.glosa_impuestos,
-						dos.feciniemi,dos.feclimemi
+						dos.feciniemi,TO_CHAR(dos.feclimemi, '%d-%m-%Y') as feclimemi,suc.direccion,suc.telefonos,suc.alcaldia,dos.sucursal,dos.tipo_autoimpresor,dos.autoimpresor
 						from dosdoccom dos
+						inner join sucursal suc on suc.sucursal = dos.sucursal
 						inner join tif_actividad_economica act on act.id_actividad_economica = dos.id_actividad_economica
 						where dos.id_dosificacion = '$id_dosificacion'";
 
             $info_nota_ins = $this->informix->prepare($sql_in);
             $info_nota_ins->execute();
 
-
             $results = $info_nota_ins->fetchAll(PDO::FETCH_ASSOC);
-
-
             $this->informix->commit();
             return $results;
 
