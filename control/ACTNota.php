@@ -166,6 +166,7 @@ class ACTNota extends ACTbase{
 			
 
 
+
 			
 			$html.='<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
 					   "http://www.w3.org/TR/html4/strict.dtd">
@@ -182,10 +183,9 @@ class ACTNota extends ACTbase{
 
 
 
-					<table style="width: 390px;">
+					<table style="width: 395px;">
 					<thead  >
 						<tr   >
-
 						<td colspan="2" style=" text-align: center;" align="center" >
 
 						BOLIVIANA DE AVIACION BOA<br />
@@ -248,7 +248,7 @@ class ACTNota extends ACTbase{
 
 
 					$html.='
-					<table  style="width: 390px;">
+					<table  style="width: 385px;">
 
 					<thead>
 
@@ -266,8 +266,8 @@ class ACTNota extends ACTbase{
 					     $html .= '<tr>
 							<td style="width: 11px;">'.$cantidad.'</td>
 							<td style="width:60px;">'.str_replace( "/", " / ", $item_detalle['concepto'] ).'</td>
-							<td align="center">'.number_format($precio_unitario, 2, '.', '').'</td>
-							<td align="right">'.number_format($item_detalle['importe_original'], 2, '.', '').'</td>
+							<td align="center">'.number_format($precio_unitario, 2, '.', ',').'</td>
+							<td align="right">'.number_format($item_detalle['importe_original'], 2, '.', ',').'</td>
 							</tr>';
 					    $total_original = $total_original + $item_detalle['importe_original'];
 
@@ -276,7 +276,7 @@ class ACTNota extends ACTbase{
 			$html.='<tr><td colspan="4"><hr/></td></tr>';
 					$html.='</tbody>
 					    <tfoot>
-					    <tr><td colspan="2" align="left">Total Bs. <hr/></td><td colspan="2" align="right"> ' .number_format($total_original, 2, '.', '').'<hr/></td></tr>
+					    <tr><td colspan="2" align="left">Total Bs. <hr/></td><td colspan="2" align="right"> ' .number_format($total_original, 2, '.', ',').'<hr/></td></tr>
 					    </tfoot>
 					</table>
 
@@ -284,7 +284,7 @@ class ACTNota extends ACTbase{
 					    DETALLE DE LA DEVOLUCION O RESCISION DEL SERVICIO
 					</p>
 					<hr/>
-					<table style="width: 390px;">
+					<table style="width: 385px;">
 					    <thead>
 
 					    <tr><th>Cant<hr/></th><th style="width:60px;">Concepto<hr/></th><th align="center"> PU<hr/></th><th align="right">SubTotal<hr/></th></tr>
@@ -301,40 +301,48 @@ class ACTNota extends ACTbase{
 					    $html .= '<tr>
 							<td style="width: 11px;">'.$item_detalle['cantidad'].'</td>
 							<td style="width:60px;">'.str_replace( "/", " / ", $item_detalle['concepto'] ).'</td>
-							<td align="center">'.number_format($item_detalle['precio_unitario'], 2, '.', '').'</td>
-							<td align="right">'.number_format($item_detalle['importe'], 2, '.', '').'</td>
+							<td align="center">'.number_format($item_detalle['precio_unitario'], 2, '.', ',').'</td>
+							<td align="right" >'.number_format($item_detalle['importe'], 2, '.', ',').'</td>
 							</tr>';
 					    }
 					    $total_devolver = $importe_total - $exento_total;
 
-			$html.='<tr><td colspan="4"><hr/></td></tr>';
-						$html.='</tbody></table>
+			$html.='<tr><td colspan="4"><hr/></td></tr>
 
-							<table style="width: 390px;">
-							<thead >
-							<tr ><td colspan="2" align="left">Total Bs. <hr/></td><td  align="right" colspan="2">'.number_format($importe_total, 2, '.', '').'<hr/></td></tr>
+							<tr ><td colspan="3" align="left">Total Bs. <hr/></td><td  align="right" colspan="1">'.number_format($importe_total, 2, '.', ',').'<hr/></td></tr>
 
-							<tr><td colspan="2" align="left">MENOS: Importes Exentos :<hr/></td><td colspan="2" align="right"> '.number_format($exento_total, 2, '.', '').'<hr/></td></tr>
- 							<tr><td colspan="2" align="left">Importe Total Devuelto: <hr/></td><td colspan="2" align="right">'.number_format($total_devolver, 2, '.', '').'<hr/></td></tr>
+							<tr><td colspan="3" align="left">MENOS: Importes Exentos :<hr/></td><td colspan="1" align="right"> '.number_format($exento_total, 2, '.', ',').'<hr/></td></tr>
+ 							<tr><td colspan="3" align="left">Importe Total Devuelto: <hr/></td><td colspan="1" align="right">'.number_format($total_devolver, 2, '.', ',').'<hr/></td></tr>
 							</head>
-						</table><br/>';
+						</tbody></table><br/>';
 
 
 
-
-
-			$html.='<table style="width: 390px;">
+			$html.='<table style="width: 300px;">
 					<tbody>
-					<tr><td style="text-align: left;">Son:<br/> '.$V->ValorEnLetras(number_format($total_devolver, 2, '.', ''),"").'<br/>
+					<tr><td style="text-align: left;">Son: '.$V->ValorEnLetras(number_format($total_devolver, 2, '.', ''),"").'<br/>
 					    Monto efectivo del Crédito o Débito <br/>
-					    (13% del Importe total Devuelto) '.number_format($item['credfis'], 2, '.', '').'
-					    <hr/>
+					    (13% del Importe total Devuelto)  
+					  
 					</td></tr>
+					</tbody>
+					</table>
 
-					<tr><td align="left" style="text-align:left;">
+					<table style="width:380px;">
+					<tbody>
+					<tr>
+					<td style="text-align: right;">
+					'.number_format($item['credfis'], 2, '.', ',').'
+					</td>
+					</tr>
+					</tbody>
+					</table>
+
+					<hr />
+					<table style="width: 300px;"><tbody><tr><td align="left" style="text-align:left;">
 					 Codigo de Control: '.$item['codigo_control'].' <br/>
 					    Fecha Limite de Emision: '.$dosificacion[0]['FECLIMEMI'].' <br/>
-					    OBS: '.$item['nro_liquidacion'].' <hr/>
+					    OBS: '.$item['nro_liquidacion'].' 
 					</td></tr>
 
 					<tr>
