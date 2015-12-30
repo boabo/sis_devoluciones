@@ -841,6 +841,8 @@ class MODNota extends MODbase
             $info_nota_ins->execute();
 
 
+
+
             //funciona si esta en produccion
             if($this->tabla_nota_informix == 'notacrdb'){
                 $this->actualizarLiquidacion('N');

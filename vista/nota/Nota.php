@@ -497,7 +497,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                         Ext.Ajax.request({
                             url: '../../sis_devoluciones/control/Nota/anularNota',
-                            params: {'nro_liquidacion':rec.data['nro_liquidacion'],'notas': rec.data['id_nota'], 'nota_informix': rec.data['nro_nota'],'nroaut':rec.data['nroaut']},
+                            params: {'liquidevolu':rec.data['nro_liquidacion'],'nro_liquidacion':rec.data['nro_liquidacion'],'notas': rec.data['id_nota'], 'nota_informix': rec.data['nro_nota'],'nroaut':rec.data['nroaut']},
                             success: this.actualizarNotas,
                             failure: this.conexionFailure,
                             timeout: this.timeout,
