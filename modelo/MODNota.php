@@ -158,7 +158,11 @@ class MODNota extends MODbase
             if ($liquidevolu = $this->aParam->getParametro('liquidevolu') != '') {
                 //es por una liquidacion la nota que se genera
 
-                //$this->actualizarLiquidacion('S'); //se actualizara la liquidacion notaboa a S
+                //funciona si esta en produccion
+                if($this->tabla_nota_informix == 'notacrdb'){
+                    $this->actualizarLiquidacion('S'); //se actualizara la liquidacion notaboa a S
+
+                }
 
             } else {
                 //no tiene una liquidacion relacionada
@@ -836,7 +840,12 @@ class MODNota extends MODbase
             $info_nota_ins = $this->informix->prepare($sql_in);
             $info_nota_ins->execute();
 
-            //$this->actualizarLiquidacion('N');
+
+            //funciona si esta en produccion
+            if($this->tabla_nota_informix == 'notacrdb'){
+                $this->actualizarLiquidacion('N');
+            }
+
 
             //$results = $res2->fetchAll(PDO::FETCH_ASSOC);
 
