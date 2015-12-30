@@ -429,7 +429,7 @@ header("content-type: text/javascript; charset=UTF-8");
             ],
             sortInfo: {
                 field: 'id_nota',
-                direction: 'ASC'
+                direction: 'DESC'
             },
             bdel: false,
             bsave: false,
