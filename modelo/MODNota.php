@@ -727,7 +727,7 @@ class MODNota extends MODbase
 
 
             $sql_in = "select act.nombre_actividad,dos.glosa_impuestos,
-						dos.feciniemi,TO_CHAR(dos.feclimemi, '%d-%m-%Y') as feclimemi,suc.direccion,suc.telefonos,suc.alcaldia,dos.sucursal,dos.tipo_autoimpresor,dos.autoimpresor
+						dos.feciniemi,TO_CHAR(dos.feclimemi, '%d-%m-%Y') as feclimemi,suc.direccion,suc.telefonos,suc.alcaldia,dos.sucursal,dos.tipo_autoimpresor,dos.autoimpresor,suc.razon
 						from dosdoccom dos
 						inner join sucursal suc on suc.sucursal = dos.sucursal
 						inner join tif_actividad_economica act on act.id_actividad_economica = dos.id_actividad_economica

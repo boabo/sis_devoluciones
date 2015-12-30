@@ -190,7 +190,9 @@ class ACTNota extends ACTbase{
 
 						BOLIVIANA DE AVIACION BOA<br />
 						SUCURSAL '.trim($dosificacion[0]['SUCURSAL']).' -  '.trim($dosificacion[0]['TIPO_AUTOIMPRESOR']).' '.trim($dosificacion[0]['AUTOIMPRESOR']).'<br />
+						'.trim($dosificacion[0]['RAZON']).'<br />
 						'.trim($dosificacion[0]['DIRECCION']).'<br />
+
 
 						TELF : '.trim($dosificacion[0]['TELEFONOS']).'<br />
 						'.trim($dosificacion[0]['ALCALDIA']).'<br />
