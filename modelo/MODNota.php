@@ -16,6 +16,7 @@ class MODNota extends MODbase
     var $punto_venta;
     var $pais;
     var $estacion;
+    var $tabla_nota_informix;
 
     function __construct(CTParametro $pParam)
     {
@@ -26,6 +27,8 @@ class MODNota extends MODbase
         // conexion a informix
         $this->link = $this->cone->conectarpdo();
         //conexion a pxp(postgres)
+
+        $this->tabla_nota_informix = $_SESSION['tabla_nota_informix'];
     }
 
     function listarNota()
@@ -542,7 +545,7 @@ class MODNota extends MODbase
 
         }
 
-        $sql_in = "INSERT INTO ingresos:notaprueba2
+        $sql_in = "INSERT INTO ingresos:$this->tabla_nota_informix
 						(pais, estacion, puntoven,
 						 sucursal, estado, billete,
 						  nrofac, nroaut, fechafac,
@@ -778,7 +781,7 @@ class MODNota extends MODbase
         if ($nro_liquidacion != '') { // esta nota tiene liquidacion ligada
 
             $sql = "select nota.nroliqui,liqui.estpago
-				from notaprueba2 nota
+				from $this->tabla_nota_informix nota
 				inner join liquidevolu liqui on liqui.nroliqui = nota.nroliqui
 				 where   nota.nronota = '$nota_informix' and nota.nroautnota = '$nroaut' ";
 
@@ -828,7 +831,7 @@ class MODNota extends MODbase
             $res2 = $this->link->prepare($sql_conceptos);
             $res2->execute();
 
-            $sql_in = "UPDATE notaprueba2 SET estado = 9 WHERE nronota ='$nota_informix'  and nroautnota = '$nroaut'";
+            $sql_in = "UPDATE $this->tabla_nota_informix SET estado = 9 WHERE nronota ='$nota_informix'  and nroautnota = '$nroaut'";
 
             $info_nota_ins = $this->informix->prepare($sql_in);
             $info_nota_ins->execute();
