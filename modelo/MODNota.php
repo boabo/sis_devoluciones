@@ -534,7 +534,7 @@ class MODNota extends MODbase
 
         $observaciones = '';
         $usuario = $_SESSION['_LOGIN'];
-        if ($nota[0]['tipo'] == 'FACTURA') {
+        if ($nota[0]['tipo'] == 'FACTURA' || $nota[0]['tipo'] == 'FACTURA MANUAL') {
             $nro_factura_anterior = $nota[0]['nrofac'];
             $nro_autorizacion_anterior = $nota[0]['nroaut_anterior'];
         } else {
