@@ -25,7 +25,7 @@ CREATE FOREIGN TABLE informix.liquidevolu (
 
 ) SERVER sai1
 
-OPTIONS ( query 'SELECT pais,estacion,docmnt,nroliqui,fecha,estpago,estado,notaboa FROM liquidevolu',
+OPTIONS ( query 'SELECT pais,estacion,docmnt,nroliqui,fecha,estpago,estado,notaboa FROM liquidevolu where estado = ''1'' and estpago = ''N'' AND notaboa=''N'' ',
 database 'ingresos',
   informixdir '/opt/informix',
   client_locale 'en_US.utf8',

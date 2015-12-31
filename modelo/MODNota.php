@@ -16,7 +16,7 @@ class MODNota extends MODbase
     var $punto_venta;
     var $pais;
     var $estacion;
-    var $tabla_nota_informix;
+    var $tabla_nota_informix; //tabla que contenera la tabla de prueba o de produccion
 
     function __construct(CTParametro $pParam)
     {
@@ -843,10 +843,13 @@ class MODNota extends MODbase
 
 
 
-            //funciona si esta en produccion
-            if($this->tabla_nota_informix == 'notacrdb'){
-                $this->actualizarLiquidacion('N');
+            if ($liquidevolu = $this->aParam->getParametro('liquidevolu') != '') {
+                //funciona si esta en produccion
+                if($this->tabla_nota_informix == 'notacrdb'){
+                    $this->actualizarLiquidacion('N');
+                }
             }
+
 
 
             //$results = $res2->fetchAll(PDO::FETCH_ASSOC);
