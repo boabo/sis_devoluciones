@@ -835,7 +835,17 @@ class MODNota extends MODbase
             $res2 = $this->link->prepare($sql_conceptos);
             $res2->execute();
 
-            $sql_in = "UPDATE $this->tabla_nota_informix SET estado = 9 WHERE nronota ='$nota_informix'  and nroautnota = '$nroaut'";
+            $sql_in = "UPDATE $this->tabla_nota_informix SET razon='ANULADA',
+                                                            nit=0,
+                                                            monto=0,
+                                                            exento=0,
+                                                            neto=0,
+                                                            credfis=0,
+                                                            devuelto=0,
+                                                            saldo=0,
+                                                            estado = 9
+                                                            WHERE nronota ='$nota_informix'
+                                                            and nroautnota = '$nroaut'";
 
             $info_nota_ins = $this->informix->prepare($sql_in);
             $info_nota_ins->execute();

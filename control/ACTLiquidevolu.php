@@ -22,6 +22,7 @@ class ACTLiquidevolu extends ACTbase{
 		
 
 
+
 		
 		//$this->objParam->addFiltro("li.estado=''1''"); //que no este anulada
 		//$this->objParam->addFiltro("li.estpago=''N''"); // que no este pagada
@@ -231,11 +232,11 @@ class ACTLiquidevolu extends ACTbase{
 		}
 		
 		else if($this->objParam->getParametro('nrofac')!='' && $this->objParam->getParametro('nroaut')!=''){
-			
-			
-			
+
+
+
 			$this->objFunc=$this->create('MODLiquidevolu');
-			
+
 			$this->res=$this->objFunc->conceptosComputarizada($this->objParam);
 			
 			//$this->res->imprimirRespuesta($this->res->generarJson());
