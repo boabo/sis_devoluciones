@@ -135,7 +135,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 });
                 this.addTabsBtnfacturaManual.hide();
 
-                this.arra_factura_manual_conceptos=new Array();
+                this.arra_factura_manual_conceptos =new Array();
 
 
 
@@ -855,6 +855,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             header: 'razon',
                             dataIndex: 'razon',
 
+
                             hidden: false,
                             hideable: false,
                             width: 100,
@@ -865,6 +866,9 @@ header("content-type: text/javascript; charset=UTF-8");
                                 id: 'razon',
                                 name: 'razon',
                                 allowBlank: true,
+                                maxLength: 150,
+
+
 
                             })
 

@@ -41,7 +41,8 @@ BEGIN
 	***********************************/
 
 	if(p_transaccion='FAC_DENO_SEL')then
-     				
+
+		
     	begin
     		--Sentencia de la consulta
 			v_consulta:='select

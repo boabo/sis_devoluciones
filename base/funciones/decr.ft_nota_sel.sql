@@ -76,9 +76,17 @@ BEGIN
                 inner join segu.tusuario usu1 on usu1.id_usuario = no.id_usuario_reg
                 left join segu.tusuario usu2 on usu2.id_usuario = no.id_usuario_mod
 				        where  ';
-      
-      
-			
+
+
+        IF p_administrador !=1 THEN
+
+          v_consulta:=v_consulta||'no.id_usuario_reg='||p_id_usuario||'  and ';
+
+
+
+        END IF;
+
+
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;

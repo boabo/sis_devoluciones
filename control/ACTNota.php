@@ -15,7 +15,6 @@ class ACTNota extends ACTbase{
 
 		$this->objParam->defecto('dir_ordenacion','asc');
 
-
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
 			$this->objReporte = new Reporte($this->objParam,$this);
 			$this->res = $this->objReporte->generarReporteListado('MODNota','listarNota');
@@ -228,9 +227,9 @@ class ACTNota extends ACTbase{
 			}
 
 			$html.='<tr><td colspan="2">
- 						Cochabamba '.strftime("%d de %B de %Y", strtotime($item['fecha'])).'<br/>
-					    Senor(es): '.trim($item['razon']).'<br/>
-					    NIT/CI: '.$item['nit'].'<hr/>
+ 						 Fecha: '.strftime("%d/%m/%Y", strtotime($item['fecha'])).'<br/>
+					    NIT/CI: '.$item['nit'].'<br/>
+					     Senor(es): '.trim($item['razon']).'<hr/>
 					</td></tr>';
 
 
