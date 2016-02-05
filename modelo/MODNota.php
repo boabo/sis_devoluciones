@@ -843,9 +843,14 @@ class MODNota extends MODbase
                                                             credfis=0,
                                                             devuelto=0,
                                                             saldo=0,
-                                                            estado = 9
+                                                            estado = 9,
+                                                            nroliqui = '',
+                                                            ptjiva=0,
+                                                            billete='',
+                                                            codcontrol=''
                                                             WHERE nronota ='$nota_informix'
-                                                            and nroautnota = '$nroaut'";
+            and nroautnota = '$nroaut'";
+            
 
             $info_nota_ins = $this->informix->prepare($sql_in);
             $info_nota_ins->execute();
