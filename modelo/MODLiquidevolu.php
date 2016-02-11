@@ -182,7 +182,7 @@ class MODLiquidevolu extends MODbase{
                          lite.origen,
                         lite.destino,
                         factu.nit,
-                         factu.razon,
+                         TRIM(factu.razon) as razon,
                          factu.monto,
                          factu.exento,
                          factu.fecha as fecha_fac,
@@ -281,7 +281,8 @@ class MODLiquidevolu extends MODbase{
 		
 		// obtengo los datos de razon social y nit
 		$resultado = $prepare->fetchAll(PDO::FETCH_ASSOC); 
-		
+
+		$i=0;
 		foreach ($resultado as $item) {
 			if($i == 0){
 				$billete .= "/".$item["origen"]."/".$item["destino"];
@@ -313,7 +314,7 @@ class MODLiquidevolu extends MODbase{
 				                        bo.estado,
 				                        factu.nit,
 				                        factu.nit as nro_nit,
-				                         factu.razon,
+				                         trim(factu.razon) as razon,
 				                         factu.monto,
 				                         factu.exento,
 				                         factu.fecha as fecha_fac,
@@ -799,7 +800,7 @@ class MODLiquidevolu extends MODbase{
 					$tipo_de_factura = $this->facturaManual();
 					$conceptos = $this->ConceptosManual();
 					
-					$monto = $monto + $manual[0]['monto'];
+					//$monto = $monto + $manual[0]['monto'];
 					
 					if($this->siExisteFacturas()){
 						

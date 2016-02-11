@@ -25,21 +25,49 @@ CREATE OR REPLACE FUNCTION decr.f_usuario_sucursal (
 
     v_registros 		varchar;
      v_filadd			varchar;
+     v_aux				varchar;
  BEGIN
     v_nombre_funcion:='decr.f_usuario_sucursal';
     v_respuesta=false;
-    v_filadd := 'li.estacion  in (';
-
-    select pxp.list(''''||su.estacion::VARCHAR||'''')
-    into v_registros
-    from decr.tsucursal_usuario suus
-    inner join decr.tsucursal su on su.id_sucursal = suus.id_sucursal
-    where id_usuario = p_id_usuario;
 
 
 
-    v_filadd := v_filadd || v_registros ;
-    v_filadd := v_filadd || ') and';
+
+     v_filadd := 'li.estacion  in (';
+    IF ((select count (*) from decr.tsucursal_usuario where id_usuario=p_id_usuario)=1)
+    then
+    --raise exception '%','solo uno';
+     select pxp.list(''''||su.estacion::VARCHAR||'''')
+      into v_registros
+      from decr.tsucursal_usuario suus
+      inner join decr.tsucursal su on su.id_sucursal = suus.id_sucursal
+      where id_usuario = p_id_usuario;
+
+
+
+      v_registros:= v_registros ||','|| v_registros;
+      --raise exception '%',v_registros;
+
+    elsif ((select count (*) from decr.tsucursal_usuario where id_usuario=p_id_usuario)>1)
+    then
+    --raise exception '%','mas uno';
+
+
+
+
+      select pxp.list(''''||su.estacion::VARCHAR||'''')
+      into v_registros
+      from decr.tsucursal_usuario suus
+        inner join decr.tsucursal su on su.id_sucursal = suus.id_sucursal
+      where id_usuario = p_id_usuario;
+
+
+
+    end if;
+
+
+     v_filadd := v_filadd || v_registros ;
+     v_filadd := v_filadd || ') and';
 
     return v_filadd;
 
