@@ -504,8 +504,6 @@ header("content-type: text/javascript; charset=UTF-8");
                             scope: this
 
                         });
-
-
                     } else {
                         //si el usuario canceló
                         //alert('Decidiste Cancelar la Anulacion de la nota');

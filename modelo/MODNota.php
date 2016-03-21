@@ -327,8 +327,17 @@ class MODNota extends MODbase
         }
 
 
+
+
         $sql_in->execute();
         $results = $sql_in->fetchAll(PDO::FETCH_ASSOC);
+
+        //si agarro mas de una dosificacion solo deberia agarrar una
+        if(count($results) > 1){
+            throw new Exception('existe un problema hay dos dosificaciones tomadas consulte con sistemas');
+
+        }
+
 
 
         return $results;
@@ -734,6 +743,7 @@ class MODNota extends MODbase
 
 
             $sql_in = "select act.nombre_actividad,dos.glosa_impuestos,
+                        dos.glosa_boa,dos.glosa_consumidor,dos.nro_resolucion,
 						dos.feciniemi,TO_CHAR(dos.feclimemi, '%d-%m-%Y') as feclimemi,suc.direccion,suc.telefonos,suc.alcaldia,dos.sucursal,dos.tipo_autoimpresor,dos.autoimpresor,suc.razon
 						from dosdoccom dos
 						inner join sucursal suc on suc.sucursal = dos.sucursal

@@ -166,7 +166,21 @@ class ACTNota extends ACTbase{
 
 
 
-			
+			if($dosificacion[0]['NRO_RESOLUCION'] =='RND 10-0016-07'){
+				//antigua resolucion
+
+				$desc = 'SUCURSAL '.trim($dosificacion[0]['SUCURSAL']).' -  '.trim($dosificacion[0]['TIPO_AUTOIMPRESOR']).' '.trim($dosificacion[0]['AUTOIMPRESOR']).'<br />';
+
+				$desc2 = 'ORIGINAL';
+
+			}else if($dosificacion[0]['NRO_RESOLUCION'] =='RND 10-0025-14'){
+
+				//nueva resolucion
+				$desc = 'SUCURSAL '.trim($dosificacion[0]['SUCURSAL']).'<br />';
+				$desc2 = '';
+
+
+			}
 			$html.='<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
 					   "http://www.w3.org/TR/html4/strict.dtd">
 					<html>
@@ -187,8 +201,9 @@ class ACTNota extends ACTbase{
 						<tr   >
 						<td colspan="2" style=" text-align: center;" align="center" >
 
+
 						BOLIVIANA DE AVIACION BOA<br />
-						SUCURSAL '.trim($dosificacion[0]['SUCURSAL']).' -  '.trim($dosificacion[0]['TIPO_AUTOIMPRESOR']).' '.trim($dosificacion[0]['AUTOIMPRESOR']).'<br />
+						'.$desc.'
 						'.trim($dosificacion[0]['RAZON']).'<br />
 						'.trim($dosificacion[0]['DIRECCION']).'<br />
 
@@ -200,7 +215,7 @@ class ACTNota extends ACTbase{
 						</tr>
 
 
-						<tr><td colspan="2" align="center" style="text-align: center;">NOTA DE CREDITO-DEBITO <br/> ORIGINAL<hr/></td></tr>
+						<tr><td colspan="2" align="center" style="text-align: center;">NOTA DE CREDITO-DEBITO <br/> '.$desc2.'<hr/></td></tr>
 
 						<tr>
 						<td style="width: 200px;" colspan="1"  align="right">NIT:&nbsp;&nbsp;&nbsp;&nbsp;</td><td colspan="1" align="left">154422029</td>
@@ -356,12 +371,14 @@ class ACTNota extends ACTbase{
 
 
 
-
 					</tbody>
 					</table>
 
 					<div style="width:250px; text-align: center;">
 					   " '.$dosificacion[0]['GLOSA_IMPUESTOS'].'"
+					</div>
+					<div style="width:250px; text-align: center;">
+						   " '.$dosificacion[0]['GLOSA_CONSUMIDOR'].'"
 					</div>
 
 <p>Usuario: '.$_SESSION['_LOGIN'].' Id:'.$item['id_nota'].'  Hora: '.strftime("%H:%M", strtotime($item['fecha_reg'])).' </p>
@@ -369,7 +386,7 @@ class ACTNota extends ACTbase{
 					<hr/>
 
 
-					<p>GRACIAS POR SU PREFERENCIA !
+					<p>'.$dosificacion[0]['GLOSA_BOA'].'
 					    <br/> www.boa.bo</p>
 
 
