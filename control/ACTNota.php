@@ -172,15 +172,19 @@ class ACTNota extends ACTbase{
 				$desc = 'SUCURSAL '.trim($dosificacion[0]['SUCURSAL']).' -  '.trim($dosificacion[0]['TIPO_AUTOIMPRESOR']).' '.trim($dosificacion[0]['AUTOIMPRESOR']).'<br />';
 
 				$desc2 = 'ORIGINAL';
+				$glosa_consumidor = '';
 
 			}else if($dosificacion[0]['NRO_RESOLUCION'] =='RND 10-0025-14'){
 
 				//nueva resolucion
 				$desc = 'SUCURSAL '.trim($dosificacion[0]['SUCURSAL']).'<br />';
 				$desc2 = '';
+				$glosa_consumidor = '" '.$dosificacion[0]['GLOSA_CONSUMIDOR'].'"';
 
 
 			}
+
+
 			$html.='<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
 					   "http://www.w3.org/TR/html4/strict.dtd">
 					<html>
@@ -378,7 +382,7 @@ class ACTNota extends ACTbase{
 					   " '.$dosificacion[0]['GLOSA_IMPUESTOS'].'"
 					</div>
 					<div style="width:250px; text-align: center;">
-						   " '.$dosificacion[0]['GLOSA_CONSUMIDOR'].'"
+					'.$glosa_consumidor.'
 					</div>
 
 <p>Usuario: '.$_SESSION['_LOGIN'].' Id:'.$item['id_nota'].'  Hora: '.strftime("%H:%M", strtotime($item['fecha_reg'])).' </p>
