@@ -390,7 +390,7 @@ class ACTNota extends ACTbase{
 					<hr/>
 
 
-					<p>'.$dosificacion[0]['GLOSA_BOA'].'
+					<p>¡ '.$dosificacion[0]['GLOSA_BOA'].' !
 					    <br/> www.boa.bo</p>
 
 
