@@ -257,6 +257,7 @@ class ACTLiquidevolu extends ACTbase{
 		}*/
 
 
+
 		$this->res->imprimirRespuesta($this->res->generarJson());
 		
 	}

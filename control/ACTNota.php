@@ -378,10 +378,10 @@ class ACTNota extends ACTbase{
 					</tbody>
 					</table>
 
-					<div style="width:250px; text-align: center;">
+					<div style="width:270px; text-align: center;">
 					   " '.$dosificacion[0]['GLOSA_IMPUESTOS'].'"
 					</div>
-					<div style="width:250px; text-align: center;">
+					<div style="width:270px; text-align: center;">
 					'.$glosa_consumidor.'
 					</div>
 

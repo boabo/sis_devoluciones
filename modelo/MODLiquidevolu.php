@@ -80,6 +80,8 @@ class MODLiquidevolu extends MODbase{
 
 		
 		$documento = $this->verTipoDevolucion($nroliqui);
+
+
 		
 		
 		
@@ -98,6 +100,12 @@ class MODLiquidevolu extends MODbase{
 			$this->objParam->addParametro('nroaut',$nroaut);
 			
 			$datos = $this->conceptosComputarizada();
+
+
+
+
+
+
 		
 			
 		}elseif(trim($documento[0]['IDDOC']) == 'FACMAN'){//DOCUMENTO FACTURA MANUAL
@@ -149,9 +157,9 @@ class MODLiquidevolu extends MODbase{
 		$this->respuesta->setMensaje('EXITO',$this->nombre_archivo,'La consulta se ejecuto con exito','La consulta se ejecuto con exito','base','no tiene','no tiene','SEL','$this->consulta','no tiene');
 		$this->respuesta->setTotal(1);
 		$this->respuesta->setDatos($datos);
-			
-		
-		
+
+
+
 		return $this->respuesta;
 		
 		
@@ -944,9 +952,10 @@ class MODLiquidevolu extends MODbase{
 		$nroaut = $this->aParam->getParametro('nroaut');
 		$cone_in=new conexion();
 		$informix=$cone_in->conectarPDOInformix();
+
 		
 		$informix->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
-		
+
 		$sql = "select con.concepto,
 						con.concepto as concepto_original,
 						faco.pais,
@@ -978,14 +987,31 @@ class MODLiquidevolu extends MODbase{
 						 
 						 
 		$prepare_con = $informix->prepare($sql);
+
+
 		$prepare_con->execute();
 		
 	
-		$resultado_con = $prepare_con->fetchAll(PDO::FETCH_ASSOC); 
-		
-		
-	
-		
+		$resultado_con = $prepare_con->fetchAll(PDO::FETCH_ASSOC);
+
+		//TODO
+
+
+
+
+		//cambias el caracter especial a la Ñ
+		for($i = 0; $i < 2 ;$i++){
+
+			$quitarene=str_replace("?","Ñ",utf8_decode($resultado_con[$i]['razon']));
+
+			$resultado_con[$i]['razon'] = $quitarene;
+		}
+
+
+
+
+
+
 		
 		return $resultado_con;
 		
