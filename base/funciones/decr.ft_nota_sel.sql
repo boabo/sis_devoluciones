@@ -74,7 +74,8 @@ BEGIN
                   usu1.cuenta as usr_reg,
                   usu2.cuenta as usr_mod,
                   no.billete,
-  								no.nroaut
+  								no.nroaut,
+  								usu1.cuenta
                 from decr.tnota no
                 inner join segu.tusuario usu1 on usu1.id_usuario = no.id_usuario_reg
                 left join segu.tusuario usu2 on usu2.id_usuario = no.id_usuario_mod
@@ -135,7 +136,38 @@ BEGIN
 					    inner join segu.tusuario usu1 on usu1.id_usuario = no.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = no.id_usuario_mod
 					    where ';
-			
+
+
+
+
+			IF p_administrador !=1 THEN
+
+
+
+
+				select pxp.list(distinct '''' ||suc.estacion|| '''')
+				into v_sucursales
+				from decr.tsucursal_usuario ussuc
+					INNER JOIN decr.tsucursal suc on suc.id_sucursal = ussuc.id_sucursal
+				where id_usuario = p_id_usuario;
+
+
+
+
+
+				--v_suc = ' ''CBB'',''LPB'' ';
+
+
+				--	RAISE EXCEPTION '%',v_sucursales;
+				v_consulta:=v_consulta||'no.estacion  in (' || v_sucursales ||')  and ';
+
+
+
+
+
+
+			END IF;
+
 			--Definicion de la respuesta		    
 			v_consulta:=v_consulta||v_parametros.filtro;
 

@@ -67,6 +67,7 @@ class MODNota extends MODbase
         $this->captura('usr_mod', 'varchar');
         $this->captura('billete', 'varchar');
         $this->captura('nroaut', 'bigint');
+        $this->captura('cuenta', 'varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
@@ -701,9 +702,11 @@ class MODNota extends MODbase
 										  to_char(nota.fecha_fac,'DD-MM-YYYY') AS fecha_fac,
 
 										  nota.nroaut,
-										  to_char(nota.fecha_limite,'DD-MM-YYYY') AS fecha_limite
+										  to_char(nota.fecha_limite,'DD-MM-YYYY') AS fecha_limite,
+										  usu1.cuenta
 										FROM
 										  decr.tnota nota
+										  inner join segu.tusuario usu1 on usu1.id_usuario = nota.id_usuario_reg
 										  $cadena_aux");
 
             $stmt->execute();

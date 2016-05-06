@@ -94,9 +94,9 @@ class ACTNota extends ACTbase{
 		$i = 0;
 		
 		$V = new EnLetras();
-		
-		
-		
+
+
+
 		
 		
 		foreach ($notas as $item) {
@@ -267,6 +267,7 @@ class ACTNota extends ACTbase{
 
 
 
+
 					$html.='
 					<table  style="width: 385px;">
 
@@ -385,7 +386,7 @@ class ACTNota extends ACTbase{
 					'.$glosa_consumidor.'
 					</div>
 
-<p>Usuario: '.$_SESSION['_LOGIN'].' Id:'.$item['id_nota'].'  Hora: '.strftime("%H:%M", strtotime($item['fecha_reg'])).' </p>
+<p>Usuario: '.$item['cuenta'].' Id:'.$item['id_nota'].'  Hora: '.strftime("%H:%M", strtotime($item['fecha_reg'])).' </p>
 
 					<hr/>
 
@@ -401,7 +402,8 @@ window.onload=function(){self.print();}
 					</body>
 					</html>';
 
-	
+
+
 		
 			$temp[] = $html;
 			$i++;
