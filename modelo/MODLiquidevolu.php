@@ -996,17 +996,15 @@ class MODLiquidevolu extends MODbase{
 
 		//TODO
 
-
-
-
+		$tamanio= count($resultado_con);
+		
 		//cambias el caracter especial a la Ñ
-		for($i = 0; $i < 2 ;$i++){
+		for($i = 0; $i < $tamanio ;$i++){
 
 			$quitarene=str_replace("?","Ñ",utf8_decode($resultado_con[$i]['razon']));
 
 			$resultado_con[$i]['razon'] = $quitarene;
 		}
-
 
 
 

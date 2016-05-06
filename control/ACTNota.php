@@ -106,9 +106,10 @@ class ACTNota extends ACTbase{
 			|Fecha de emisión|Importe de la compra |Código de Contro|Fecha Límite de Emisión| NIT comprador | razon comprador| */
 			//$cadena_qr = "|154422029|BOLIVIANA DE AVIACION|123|123|28/12/2014|67.10|73-65-52-A5-FE|29/12/2014"; 
 			$cadena_qr = '|154422029|BOLIVIANA DE AVIACION|123|123|02/10/2014|'.$item['total_devuelto'].'|'.$item['codigo_control'].'| '.$item['nit'].' | '.trim($item['razon']).'|';
+								
+
 			$barcodeobj = new TCPDF2DBarcode($cadena_qr, 'QRCODE,H');
 			
-
 			
 			//obtenemos conceptos originales de esta factura o boleto
 			
@@ -123,7 +124,7 @@ class ACTNota extends ACTbase{
 			}else if($item['tipo'] == 'FACTURA'){
 				
 				$original = $this->listarFacturaOriginales($item['factura'],$item['nroaut_anterior']);
-
+				
 
 			}else if($item['tipo'] == 'FACTURA MANUAL'){
 
@@ -137,7 +138,7 @@ class ACTNota extends ACTbase{
 			//var_dump($dosificacion[0]['FECLIMEMI']);
 			//var_dump($dosificacion[0]['GLOSA_IMPUESTOS']);
 
-
+			
 
 			$this->objParam->defecto('dir_ordenacion','asc');
 			$this->objParam->parametros_consulta['ordenacion'] = 'id_nota_detalle';
@@ -156,7 +157,6 @@ class ACTNota extends ACTbase{
 			}
 			
 			$detalles = $this->res2->getDatos();
-			
 			
 			
 			
@@ -406,7 +406,6 @@ window.onload=function(){self.print();}
 			$temp[] = $html;
 			$i++;
 		}
-		
 		
 		$this->res->setDatos($temp);
 		$this->res->imprimirRespuesta($this->res->generarJson());		
