@@ -3,6 +3,7 @@ CREATE OR REPLACE FUNCTION decr.ft_nota_sel (
   p_id_usuario integer,
   p_tabla varchar,
   p_transaccion varchar
+
 )
 RETURNS varchar AS
 $body$
@@ -27,7 +28,8 @@ DECLARE
 	v_parametros  		record;
 	v_nombre_funcion   	text;
 	v_resp				varchar;
-			    
+	v_sucursales VARCHAR  ;
+	v_suc VARCHAR;
 BEGIN
 
 	v_nombre_funcion = 'decr.ft_nota_sel';
@@ -39,6 +41,7 @@ BEGIN
  	#AUTOR:		favio figueroa
  	#FECHA:		11-02-2015 11:30:03
 	***********************************/
+
 
 	if(p_transaccion='FAC_NOT_SEL')then
      				
@@ -77,10 +80,30 @@ BEGIN
                 left join segu.tusuario usu2 on usu2.id_usuario = no.id_usuario_mod
 				        where  ';
 
-
+				      --	RAISE EXCEPTION '%','asd';
         IF p_administrador !=1 THEN
 
-          v_consulta:=v_consulta||'no.id_usuario_reg='||p_id_usuario||'  and ';
+
+
+
+					select pxp.list(distinct '''' ||suc.estacion|| '''')
+					into v_sucursales
+					from decr.tsucursal_usuario ussuc
+					INNER JOIN decr.tsucursal suc on suc.id_sucursal = ussuc.id_sucursal
+					where id_usuario = p_id_usuario;
+
+
+
+
+
+					--v_suc = ' ''CBB'',''LPB'' ';
+
+
+				--	RAISE EXCEPTION '%',v_sucursales;
+          v_consulta:=v_consulta||'no.estacion  in (' || v_sucursales ||')  and ';
+
+
+
 
 
 
