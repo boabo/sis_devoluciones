@@ -359,12 +359,15 @@ class ACTNota extends ACTbase{
 					</tbody>
 					</table>
 
+
 					<hr />
-					<table style="width: 300px;"><tbody><tr><td align="left" style="text-align:left;">
+					<table style="width: 350px;"><tbody><tr><td align="left" style="text-align:left;">
 					 Codigo de Control: '.$item['codigo_control'].' <br/>
 					    Fecha Limite de Emision: '.$dosificacion[0]['FECLIMEMI'].' <br/>
 					    OBS: '.$item['nro_liquidacion'].' 
 					</td></tr>
+
+
 
 					<tr>
 					<td style="text-align:center;">
