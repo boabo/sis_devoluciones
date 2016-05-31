@@ -195,7 +195,7 @@ class ACTNota extends ACTbase{
 					  <link rel="stylesheet" href="../../../sis_devoluciones/control/print.css" type="text/css" media="print" charset="utf-8">
 					  
 					</head>
-					<body  style="line-height: 18px; font-size: 11pt;">
+					<body  style="line-height: 18px; font-size: 14pt;">
 
 
 
