@@ -63,6 +63,13 @@ class ACTNota extends ACTbase{
 			$this->reImpresion();
 		}
 
+
+		if($this->objParam->getParametro('vista_previa') != ''){
+
+		}
+
+		
+
 		$this->objParam->defecto('ordenacion','nro_nota');
 
 		$this->objParam->defecto('dir_ordenacion','asc');
@@ -396,14 +403,20 @@ class ACTNota extends ACTbase{
 
 
 					<p>¡ '.$dosificacion[0]['GLOSA_BOA'].' !
-					    <br/> www.boa.bo</p>
+					    <br/> www.boa.bo</p>';
 
+			if($this->objParam->getParametro('vista_previa') == '' || $this->objParam->getParametro('vista_previa') == null){
 
-<script type="text/javascript">
+				$html.= '
+				<script type="text/javascript">
 window.onload=function(){self.print();}
 </script> 
+				';
+			}
+
+
 					
-					</body>
+				$html.='</body>
 					</html>';
 
 

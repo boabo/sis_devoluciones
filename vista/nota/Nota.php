@@ -32,6 +32,14 @@ header("content-type: text/javascript; charset=UTF-8");
                     handler: this.anular
                 });
 
+                this.addButton('ver', {
+                    argument: {imprimir: 'ver'},
+                    text: '<i class="fa fa-file-excel-o fa-3x"></i> ver', /*iconCls:'' ,*/
+                    disabled: false,
+                    handler: this.verImpresiones
+                });
+
+
                 //this.addButton('Ver Reimpresiones',{argument: {imprimir: 'verImpresiones'},text:'<i class="fa fa-files-o fa-3x"></i> ver ReImpresiones',/*iconCls:'' ,*/disabled:false,handler:this.verImpresiones});
 
 
@@ -514,6 +522,31 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             verImpresiones: function () {
                 var rec = this.sm.getSelected();
+
+                Ext.Ajax.request({
+                    url: '../../sis_devoluciones/control/Nota/generarNota',
+                    params: {'notas': rec.data['id_nota'], 'reimpresion': 'si','vista_previa':'si'},
+                    success: this.successVistaPrevia,
+                    failure: this.conexionFailure,
+                    timeout: this.timeout,
+                    scope: this
+                });
+
+
+
+            },
+            successVistaPrevia:function (resp) {
+                var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+
+
+
+                objetoDatos = (objRes.ROOT == undefined)?objRes.datos:objRes.ROOT.datos;
+                console.log(objetoDatos[0])
+               var myWindow = window.open("", "_blank");
+                myWindow.document.write(objetoDatos[0]);
+
+
+
             },
 
 
