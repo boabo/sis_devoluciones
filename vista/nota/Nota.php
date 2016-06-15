@@ -34,7 +34,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 this.addButton('ver', {
                     argument: {imprimir: 'ver'},
-                    text: '<i class="fa fa-file-excel-o fa-3x"></i> ver', /*iconCls:'' ,*/
+                    text: '<i class="fa fa-eye fa-3x"></i> ver', /*iconCls:'' ,*/
                     disabled: false,
                     handler: this.verImpresiones
                 });
