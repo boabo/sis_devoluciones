@@ -202,13 +202,19 @@ class ACTNota extends ACTbase{
 					  <link rel="stylesheet" href="../../../sis_devoluciones/control/print.css" type="text/css" media="print" charset="utf-8">
 					  
 					</head>
-					<body  style="line-height: 18px; font-size: 14pt;">
+					
+					
+					<body  style="line-height: 18px; font-size: 14pt;">';
 
 
 
+			if($this->objParam->getParametro('vista_previa') == '' || $this->objParam->getParametro('vista_previa') == null) {
 
 
-					<table style="width: 395px;">
+			}else{
+				$html .= '<center>';
+			}
+					$html.='<table style="width: 395px;">
 					<thead  >
 						<tr   >
 						<td colspan="2" style=" text-align: center;" align="center" >
@@ -309,10 +315,12 @@ class ACTNota extends ACTbase{
 					    </tfoot>
 					</table>
 
-					<p style="text-align: center;">
+					<p style="text-align: center; width: 385px;">
 					    DETALLE DE LA DEVOLUCION O RESCISION DEL SERVICIO
 					</p>
-					<hr/>
+					<hr  />
+					<br />
+					<br />
 					<table style="width: 385px;">
 					    <thead>
 
@@ -368,7 +376,9 @@ class ACTNota extends ACTbase{
 					</table>
 
 
-					<hr />
+					<hr  />
+					<br />
+					<br />
 					<table style="width: 350px;"><tbody><tr><td align="left" style="text-align:left;">
 					 Codigo de Control: '.$item['codigo_control'].' <br/>
 					    Fecha Limite de Emision: '.$dosificacion[0]['FECLIMEMI'].' <br/>
@@ -399,7 +409,9 @@ class ACTNota extends ACTbase{
 
 <p>Usuario: '.$item['cuenta'].' Id:'.$item['id_nota'].'  Hora: '.strftime("%H:%M", strtotime($item['fecha_reg'])).' </p>
 
-					<hr/>
+					<hr />
+					<br />
+					<br />
 
 
 					<p>¡ '.$dosificacion[0]['GLOSA_BOA'].' !
@@ -412,6 +424,8 @@ class ACTNota extends ACTbase{
 window.onload=function(){self.print();}
 </script> 
 				';
+			}else{
+				$html.='</center>';
 			}
 
 
