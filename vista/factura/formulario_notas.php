@@ -10,7 +10,7 @@ header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
     Phx.vista.FormNota = Ext.extend(Phx.frmInterfaz, {
-    	
+
             ActSave: '../../sis_devoluciones/control/Nota/saveForm',
             botones: false,
             ciudadOrigen: '',
@@ -135,11 +135,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 });
                 this.addTabsBtnfacturaManual.hide();
 
-                this.arra_factura_manual_conceptos =new Array();
-
-
-
-
+                this.arra_factura_manual_conceptos = new Array();
 
 
                 var editor_fm = new Ext.ux.grid.RowEditor({
@@ -295,7 +291,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
                         }
-                        ,{
+                        , {
                             xtype: 'numbercolumn',
                             header: 'precio_unitario',
                             dataIndex: 'precio_unitario',
@@ -311,7 +307,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                 id: 'precio_unitario'
 
                             }
-                        },{
+                        }, {
                             xtype: 'numbercolumn',
                             header: 'importe_original',
                             dataIndex: 'importe_original',
@@ -346,7 +342,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             labelWidth: 75, // label settings here cascade unless overridden
 
                             frame: true,
-                           // title: 'Factura Manual Concepto',
+                            // title: 'Factura Manual Concepto',
                             bodyStyle: 'padding:5px 5px 0',
                             width: 339,
                             defaults: {width: 191},
@@ -392,7 +388,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             }]
                     });
 
-             
+
                 this.win_pop = new Ext.Window(
                     {
                         layout: 'fit',
@@ -511,9 +507,14 @@ header("content-type: text/javascript; charset=UTF-8");
                         'nroliqui', 'billcupon', 'razon', 'nit', 'exento',
                         'nrofac', 'nroaut', 'fecha_fac', 'precio_unitario',
                         'importe_devolver', 'total_devuelto', 'tipo', 'nro_billete',
-                        'nro_fac', 'nro_aut', 'nro_nit', 'concepto_original','iddoc'],
+                        'nro_fac', 'nro_aut', 'nro_nit', 'concepto_original', 'iddoc'],
                     remoteSort: true,
-                    baseParams: {dir: 'ASC', sort: 'nroliqui', limit: '50', start: '0'}
+                    baseParams: {dir: 'ASC', sort: 'nroliqui', limit: '50', start: '0'},
+                    failure: function (r) {
+
+                        console.log(r)
+                    }
+
 
                 });
 
@@ -524,10 +525,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 });
 
 
-
                 this.editor.on('afteredit', this.onAfterEdit, this);
                 this.editor.on('beforeremove', this.onBeforeRemove, this);
-
 
 
                 // utilize custom extension for Group Summary
@@ -568,8 +567,8 @@ header("content-type: text/javascript; charset=UTF-8");
                                 detalle: '',
                                 peso: 0,
                                 total: 1,
-                                importe_devolver:0,
-                                exento:0
+                                importe_devolver: 0,
+                                exento: 0
                             });
                             this.editor.stopEditing();
                             this.mestore.insert(0, e);
@@ -635,7 +634,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                 triggerAction: 'all',
                                 lazyRender: true,
                                 mode: 'local',
-                                store: ['FACTURA','FACTURA MAMUAL'],
+                                store: ['FACTURA', 'FACTURA MAMUAL'],
                                 width: 200,
                                 enableKeyEvents: true,
 
@@ -721,8 +720,7 @@ header("content-type: text/javascript; charset=UTF-8");
                              }*/
 
                         },
-                        
-                        
+
 
                         {
                             xtype: 'numbercolumn',
@@ -756,7 +754,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             editor: {
                                 xtype: 'numberfield',
                                 allowBlank: true,
-                               // disabled: true,
+                                // disabled: true,
                                 id: 'input_importe_original'
 
                             }
@@ -867,7 +865,6 @@ header("content-type: text/javascript; charset=UTF-8");
                                 name: 'razon',
                                 allowBlank: true,
                                 maxLength: 150,
-
 
 
                             })
@@ -1143,7 +1140,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.megrid.enable();
 
 
-                this.Cmp.tipo_id.on('select', function (rec,record) {
+                this.Cmp.tipo_id.on('select', function (rec, record) {
 
                     if (this.Cmp.tipo_id.getValue() == 'FACTURA') {
 
@@ -1200,8 +1197,8 @@ header("content-type: text/javascript; charset=UTF-8");
                         this.megrid.getView().refresh(true);
 
 
-                       // Ext.getCmp('input_pu').disabled = true;
-                       // Ext.getCmp('input_pu').addClass('x-item-disabled');
+                        // Ext.getCmp('input_pu').disabled = true;
+                        // Ext.getCmp('input_pu').addClass('x-item-disabled');
                         //Ext.getCmp('input_pu').enable(false);
                         //Ext.getCmp('input_pu').disable(false);
 
@@ -1239,9 +1236,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     }
 
                     else if (this.Cmp.tipo_id.getValue() == 'LIQUIDACION') {
-                    	
-                    	
-                    	
+
 
                         this.resetearPanels();
                         this.addTabsBtn.enable();
@@ -1250,9 +1245,9 @@ header("content-type: text/javascript; charset=UTF-8");
                         this.megrid.getView().refresh(true);
 
                         /*Ext.getCmp('input_pu').disabled = true;
-                        Ext.getCmp('input_pu').addClass('x-item-disabled');
-                        Ext.getCmp('input_pu').enable(false);
-                        Ext.getCmp('input_pu').disable(false);*/
+                         Ext.getCmp('input_pu').addClass('x-item-disabled');
+                         Ext.getCmp('input_pu').enable(false);
+                         Ext.getCmp('input_pu').disable(false);*/
 
 
                         this.resetear();
@@ -1278,9 +1273,6 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.FACMAN = false;
 
 
-
-
-
                     this.tabs.removeAll();
                     this.resetGroup(10);
                     this.megrid.enable();
@@ -1296,48 +1288,54 @@ header("content-type: text/javascript; charset=UTF-8");
 
                     this.megrid.store.load({
                         params: {start: 0, limit: 20},
-                        callback: function (r, a) {
+                        callback: function (r, a, success, e) {
+                            console.log(success)
 
-                            console.log(r.length)
-                            if(r[0].data['tipo'] == 'NO') {
 
-                                this.mensaje_('TIPO', r[0].data['iddoc']+' esta liquidacion no tiene NCD BOA', 'ERROR');
+                            if (success) {
 
-                            }else if(r[0].data['tipo'] == 'FACTURA MANUAL'){
-                                this.agregarDatosCampo(r[0].data['nro_fac'], r[0].data['razon'], r[0].data['nro_nit'], r[0].data['fecha_fac'], total_factura, r[0].data['nro_aut']);
 
-                                //todo factura manual
-                                this.FACMAN = true;
-                                this.addTabsBtnfacturaManual.show();
+                                if (r[0].data['tipo'] == 'NO') {
 
-                                alert('es una factura manual');
+                                    this.mensaje_('TIPO', r[0].data['iddoc'] + ' esta liquidacion no tiene NCD BOA', 'ERROR');
 
-                            }else if (r[0].data['tipo'] == 'FACTURA') {
+                                } else if (r[0].data['tipo'] == 'FACTURA MANUAL') {
+                                    this.agregarDatosCampo(r[0].data['nro_fac'], r[0].data['razon'], r[0].data['nro_nit'], r[0].data['fecha_fac'], total_factura, r[0].data['nro_aut']);
 
-                                var arra = new Array();
-                                var total_factura = 0;
-                                for (var i = 0; i < r.length; i++) {
+                                    //todo factura manual
+                                    this.FACMAN = true;
+                                    this.addTabsBtnfacturaManual.show();
+
+                                    alert('es una factura manual');
+
+                                } else if (r[0].data['tipo'] == 'FACTURA') {
+
+                                    var arra = new Array();
+                                    var total_factura = 0;
+                                    for (var i = 0; i < r.length; i++) {
                                         arra[i] = r[i].data;
                                         total_factura = parseFloat(total_factura) + parseFloat(r[i].data['importe_original']);
-                                }
-                                this.tabsFactura(arra);
-                                this.agregarDatosCampo(r[0].data['nro_fac'], r[0].data['razon'], r[0].data['nro_nit'], r[0].data['fecha_fac'], total_factura, r[0].data['nro_aut']);
+                                    }
+                                    this.tabsFactura(arra);
+                                    this.agregarDatosCampo(r[0].data['nro_fac'], r[0].data['razon'], r[0].data['nro_nit'], r[0].data['fecha_fac'], total_factura, r[0].data['nro_aut']);
 
+                                } else {
+                                    var concepto = r[0].data['billcupon'];
+                                    var importe_original = r[0].data['importe_original'];
+                                    var billete = r[0].data['nro_billete'];
+                                    var concepto_original = r[0].data['concepto_original'];
+                                    //aca va la agregacion del los datos originales
+                                    //if(r[])
+                                    this.tabsBoleto(concepto_original, importe_original, billete);
+                                    //termina agregacion de los datos originales
+                                    this.agregarDatosCampo(r[0].data['nro_fac'], r[0].data['razon'], r[0].data['nro_nit'], r[0].data['fecha_fac'], r[0].data['importe_original'], r[0].data['nro_aut']);
+                                }
                             } else {
-                                var concepto = r[0].data['billcupon'];
-                                var importe_original = r[0].data['importe_original'];
-                                var billete = r[0].data['nro_billete'];
-                                var concepto_original = r[0].data['concepto_original'];
-                                //aca va la agregacion del los datos originales
-                                //if(r[])
-                                this.tabsBoleto(concepto_original, importe_original, billete);
-                                //termina agregacion de los datos originales
-                                this.agregarDatosCampo(r[0].data['nro_fac'], r[0].data['razon'], r[0].data['nro_nit'], r[0].data['fecha_fac'], r[0].data['importe_original'], r[0].data['nro_aut']);
+                                //hay error
                             }
+
                         }, scope: this
                     });
-
-
 
 
                 }, this);
@@ -1509,7 +1507,6 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.megrid.initialConfig.columns[11].editor.setValue(devol);
 
 
-
                 }, this);
 
 
@@ -1518,7 +1515,6 @@ header("content-type: text/javascript; charset=UTF-8");
                     var devol = this.megrid.initialConfig.columns[9].editor.getValue() - this.megrid.initialConfig.columns[10].editor.getValue();
 
                     this.megrid.initialConfig.columns[11].editor.setValue(devol);
-
 
 
                 }, this);
@@ -1575,7 +1571,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     var cantidad = this.megrid_facman.initialConfig.columns[1].editor.getValue();
                     var precio_unitario = this.megrid_facman.initialConfig.columns[4].editor.getValue();
 
-                    var importe_original = parseInt(cantidad)*parseFloat(precio_unitario);
+                    var importe_original = parseInt(cantidad) * parseFloat(precio_unitario);
 
                     this.megrid_facman.initialConfig.columns[5].editor.setValue(importe_original);
 
@@ -1589,12 +1585,11 @@ header("content-type: text/javascript; charset=UTF-8");
                     var cantidad = this.megrid_facman.initialConfig.columns[1].editor.getValue();
                     var precio_unitario = this.megrid_facman.initialConfig.columns[4].editor.getValue();
 
-                    var importe_original = parseInt(cantidad)*parseFloat(precio_unitario);
+                    var importe_original = parseInt(cantidad) * parseFloat(precio_unitario);
 
                     this.megrid_facman.initialConfig.columns[5].editor.setValue(importe_original);
 
                 }, this);
-
 
 
                 this.megrid.initialConfig.columns[7].editor.on('valid', function () {
@@ -1603,25 +1598,26 @@ header("content-type: text/javascript; charset=UTF-8");
                     var cantidad = this.megrid.initialConfig.columns[1].editor.getValue();
                     var precio_unitario = this.megrid.initialConfig.columns[7].editor.getValue();
                     var exento = this.megrid.initialConfig.columns[10].editor.getValue();
-                    var importe_original = (parseInt(cantidad)*parseFloat(precio_unitario));
-                    var importe_devolver = (parseInt(cantidad)*parseFloat(precio_unitario))-parseFloat(exento);
+                    var importe_original = (parseInt(cantidad) * parseFloat(precio_unitario));
+                    var importe_devolver = (parseInt(cantidad) * parseFloat(precio_unitario)) - parseFloat(exento);
                     console.log(importe_original);
                     this.megrid.initialConfig.columns[9].editor.setValue(importe_original);
                     this.megrid.initialConfig.columns[8].editor.setValue(importe_original);
                     this.megrid.initialConfig.columns[11].editor.setValue(importe_devolver);
 
                 }, this);
-                
-                this.mestore.on( 'load', function( store, records, options ) {
+
+                this.mestore.on('load', function (store, records, options) {
                     this.total_porcentaje();
-                },this );
-                this.mestore.on('remove', function( store, records, options ) {
+
+                }, this);
+                this.mestore.on('remove', function (store, records, options) {
 
                     this.total_porcentaje();
-                },this );
+                }, this);
 
 
-
+                this.mestore.on('exception', this.conexionFailure);
 
 
                 this.megrid.initialConfig.columns[1].editor.on('valid', function () {
@@ -1629,13 +1625,12 @@ header("content-type: text/javascript; charset=UTF-8");
                     var cantidad = this.megrid.initialConfig.columns[1].editor.getValue();
                     var precio_unitario = this.megrid.initialConfig.columns[7].editor.getValue();
                     var exento = this.megrid.initialConfig.columns[10].editor.getValue();
-                    var importe_original = (parseInt(cantidad)*parseFloat(precio_unitario));
-                    var importe_devolver = (parseInt(cantidad)*parseFloat(precio_unitario))-parseFloat(exento);
+                    var importe_original = (parseInt(cantidad) * parseFloat(precio_unitario));
+                    var importe_devolver = (parseInt(cantidad) * parseFloat(precio_unitario)) - parseFloat(exento);
                     console.log(importe_original);
                     this.megrid.initialConfig.columns[9].editor.setValue(importe_original);
                     this.megrid.initialConfig.columns[8].editor.setValue(importe_original);
                     this.megrid.initialConfig.columns[11].editor.setValue(importe_devolver);
-
 
 
                 }, this);
@@ -1733,24 +1728,24 @@ header("content-type: text/javascript; charset=UTF-8");
                     id_grupo: 2,
                     form: true
                 },
-                
+
                 /*{
-                    config: {
-                        name: 'sucursal',
-                        fieldLabel: 'sucursal',
-                        allowBlank: true,
-                        emptyText: 'Tipo...',
-                        typeAhead: true,
-                        triggerAction: 'all',
-                        lazyRender: true,
-                        mode: 'local',
-                        store: ['CBB', 'LPB', 'VVI'],
-                        width: 200
-                    },
-                    type: 'ComboBox',
-                    id_grupo: 1,
-                    form: true
-                },*/
+                 config: {
+                 name: 'sucursal',
+                 fieldLabel: 'sucursal',
+                 allowBlank: true,
+                 emptyText: 'Tipo...',
+                 typeAhead: true,
+                 triggerAction: 'all',
+                 lazyRender: true,
+                 mode: 'local',
+                 store: ['CBB', 'LPB', 'VVI'],
+                 width: 200
+                 },
+                 type: 'ComboBox',
+                 id_grupo: 1,
+                 form: true
+                 },*/
 
                 {
                     config: {
@@ -1897,28 +1892,28 @@ header("content-type: text/javascript; charset=UTF-8");
                     form: true
                 },
                 {
-                    config:{
+                    config: {
                         name: 'importe_total_devolver',
                         fieldLabel: 'importe total devolver ',
                         allowBlank: true,
                         anchor: '100%',
                         gwidth: 100,
                     },
-                    type:'NumberField',
-                    id_grupo:9,
-                    form:true
+                    type: 'NumberField',
+                    id_grupo: 9,
+                    form: true
                 },
                 {
-                    config:{
+                    config: {
                         name: 'importe_porcentaje',
                         fieldLabel: 'importe porcentaje',
                         allowBlank: true,
                         anchor: '100%',
                         gwidth: 100,
                     },
-                    type:'NumberField',
-                    id_grupo:10,
-                    form:true
+                    type: 'NumberField',
+                    id_grupo: 10,
+                    form: true
                 },
 
 
@@ -1937,16 +1932,16 @@ header("content-type: text/javascript; charset=UTF-8");
 
             onSubmit: function (o) {
                 //this.win.html = this.getVistaPreviaHtml();
-                 
-                 if(!this.megrid.plugins[0].isVisible()){
-                 	this.win.show();
-                	this.win.body.update(this.getVistaPreviaHtml());
-                	this.o = o;
-                 }else{
-                 	alert('esta activo el editor de conceptos por favor cierre')
-                 }	
-                 	
-   
+
+                if (!this.megrid.plugins[0].isVisible()) {
+                    this.win.show();
+                    this.win.body.update(this.getVistaPreviaHtml());
+                    this.o = o;
+                } else {
+                    alert('esta activo el editor de conceptos por favor cierre')
+                }
+
+
             },
             successSave: function (resp) {
 
@@ -1980,7 +1975,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 //console.log(objRes.ROOT.datos[0].length)
 
 
-                objetoDatos = (objRes.ROOT == undefined)?objRes.datos:objRes.ROOT.datos;
+                objetoDatos = (objRes.ROOT == undefined) ? objRes.datos : objRes.ROOT.datos;
                 var i = 0;
                 objetoDatos.forEach(function (item) {
 
@@ -2050,7 +2045,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 var arra_facman = new Array();
 
 
-                this.megrid_facman.getStore().data.each(function (a,b) {
+                this.megrid_facman.getStore().data.each(function (a, b) {
                     arra_facman[b] = new Object({
                         concepto: a.data.concepto,
                         importe_original: a.data.importe_original,
@@ -2060,9 +2055,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         cantidad: a.data.cantidad
 
                     });
-                },this);
-
-
+                }, this);
 
 
                 for (var i = 0; i < cantidad_registros; i++) {
@@ -2093,10 +2086,13 @@ header("content-type: text/javascript; charset=UTF-8");
                 //console.log(arra);
 
 
-                if(this.FACMAN ==true){
-                    this.argumentExtraSubmit = {'newRecords': Ext.encode(arra),'conceptos_originales_facman': Ext.encode(arra_facman)};
+                if (this.FACMAN == true) {
+                    this.argumentExtraSubmit = {
+                        'newRecords': Ext.encode(arra),
+                        'conceptos_originales_facman': Ext.encode(arra_facman)
+                    };
 
-                }else{
+                } else {
                     this.argumentExtraSubmit = {'newRecords': Ext.encode(arra)};
 
                 }
@@ -2165,7 +2161,6 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
             },
-
 
 
             agregarDatosCampo: function (nro_fac, razon, nro_nit, fecha, importe_original, nro_aut) {
@@ -2564,13 +2559,13 @@ header("content-type: text/javascript; charset=UTF-8");
                 for (var i = 0; i < countData.length; i++) {
 
 
-                    var precio_unitario = (countData[i].precio_unitario !=undefined)?countData[i].precio_unitario:countData[i].importe_original;
-                    var cantidad = (countData[i].cantidad!=undefined)?countData[i].cantidad:1;
+                    var precio_unitario = (countData[i].precio_unitario != undefined) ? countData[i].precio_unitario : countData[i].importe_original;
+                    var cantidad = (countData[i].cantidad != undefined) ? countData[i].cantidad : 1;
                     m += '<tr class="x-grid3-hd-row">';
 
                     m += '<td class="x-grid3-hd x-grid3-cell x-grid3-td-1 " style="width: 58px;">';
                     m += '<div class="x-grid3-hd-inner x-grid3-hd-1" unselectable="on" style="">';
-                    m += '<a class="x-grid3-hd-btn" href="#"></a>'+cantidad+'<img alt="" class="x-grid3-sort-icon" src="resources/s.gif">';
+                    m += '<a class="x-grid3-hd-btn" href="#"></a>' + cantidad + '<img alt="" class="x-grid3-sort-icon" src="resources/s.gif">';
                     m += '</div>';
                     m += '</td>';
 
@@ -2583,7 +2578,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                     m += '<td class="x-grid3-hd x-grid3-cell x-grid3-td-1 " style="width: 58px;">';
                     m += '<div class="x-grid3-hd-inner x-grid3-hd-1" unselectable="on" style="">';
-                    m += '<a class="x-grid3-hd-btn" href="#"></a>' +precio_unitario + '<img alt="" class="x-grid3-sort-icon" src="resources/s.gif">';
+                    m += '<a class="x-grid3-hd-btn" href="#"></a>' + precio_unitario + '<img alt="" class="x-grid3-sort-icon" src="resources/s.gif">';
                     m += '</div>';
                     m += '</td>';
 
@@ -2746,9 +2741,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 }).show();
 
 
-
-
-
             },
 
             resetearPanels: function () {
@@ -2756,8 +2748,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.megrid.remove();
                 this.megrid.store.removeAll();
             },
-            
-            
 
 
             mensaje_: function (titulo, mensaje, icono) {
@@ -2785,11 +2775,10 @@ header("content-type: text/javascript; charset=UTF-8");
                 })
 
             },
-            addTabFacturaManual:function(){
+            addTabFacturaManual: function () {
                 this.win_factura_manual.show();
             },
             agregar_arreglo_factura_manual: function () {
-
 
 
                 var aut = this.Cmp.autorizacion.getValue();
@@ -2807,72 +2796,76 @@ header("content-type: text/javascript; charset=UTF-8");
                 var arra = new Array();
 
 
-                this.megrid_facman.getStore().data.each(function (a,b) {
+                this.megrid_facman.getStore().data.each(function (a, b) {
                     console.log(a.data)
                     arra[b] = new Object({
                         concepto: a.data.concepto,
                         precio_unitario: a.data.precio_unitario,
                         importe_original: a.data.importe_original,
                         nroaut: aut,
-                            nrofac:fac,
+                        nrofac: fac,
                         cantidad: a.data.cantidad
 
                     });
 
                     var e = new this.Items({
-                        tipo:'FACTURA MANUAL',
+                        tipo: 'FACTURA MANUAL',
                         cantidad: a.data.cantidad,
-                        concepto:a.data.concepto,
+                        concepto: a.data.concepto,
                         detalle: '',
                         peso: 0,
                         total: 1,
                         precio_unitario: a.data.precio_unitario,
-                        importe_devolver:a.data.importe_original,
-                        importe_original:a.data.importe_original,
-                        exento:0,
-                        nro_fac:fac,
-                        nro_aut:aut,
-                        fecha_fac : fecha_formateada,
-                        nro_nit:nit,
-                        razon:razon,
-                        total_devuelto:a.data.importe_original
+                        importe_devolver: a.data.importe_original,
+                        importe_original: a.data.importe_original,
+                        exento: 0,
+                        nro_fac: fac,
+                        nro_aut: aut,
+                        fecha_fac: fecha_formateada,
+                        nro_nit: nit,
+                        razon: razon,
+                        total_devuelto: a.data.importe_original
                     });
                     this.mestore.add(e);
                     this.megrid.getView().refresh();
 
-                },this);
+                }, this);
                 this.tabsFactura(arra);
 
                 //this.megrid_facman.remove();
                 //this.megrid_facman.store.removeAll();
 
 
-
             },
             close_win_factura_manual: function () {
             },
 
-            total_porcentaje : function(){
+            total_porcentaje: function () {
 
-                var importe=0;
-                var exento=0;
-               this.megrid.getStore().each(function (a,b) {
+                var importe = 0;
+                var exento = 0;
+                this.megrid.getStore().each(function (a, b) {
 
-                   importe = parseFloat(a.data.importe_devolver)+importe;
-                   exento = parseFloat(a.data.exento)+exento;
+                    importe = parseFloat(a.data.importe_devolver) + importe;
+                    exento = parseFloat(a.data.exento) + exento;
 
 
                 });
-                this.Cmp.importe_porcentaje.setValue((Number(importe-exento)*0.13).toFixed(2));
-                this.Cmp.importe_total_devolver.setValue(Number(importe-exento).toFixed(2));
+                this.Cmp.importe_porcentaje.setValue((Number(importe - exento) * 0.13).toFixed(2));
+                this.Cmp.importe_total_devolver.setValue(Number(importe - exento).toFixed(2));
 
             },
             onAfterEdit: function (re, o, rec, num) {
                 this.total_porcentaje();
                 console.log(this.editor)
             },
-            onBeforeRemove:function(){
+            onBeforeRemove: function () {
                 this.total_porcentaje();
+            },
+
+
+            errorMeGrid: function () {
+                alert('asd')
             }
 
 

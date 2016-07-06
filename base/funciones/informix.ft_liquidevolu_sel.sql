@@ -29,6 +29,7 @@ DECLARE
 	v_resp				varchar;
     us 					varchar;
     v_sucursales		varchar;
+	v_nombre_tabla VARCHAR;
 			    
 BEGIN
 
@@ -47,7 +48,24 @@ BEGIN
 	if(p_transaccion='FAC_LIQUI_SEL')then
      				
     	begin
-        
+
+
+				IF EXISTS (select 0 from decr.tdevweb
+				where id_usuario = p_id_usuario )
+				THEN
+					--existe en devweb
+
+
+					v_nombre_tabla = 'liquidevolu_devweb';
+
+				ELSE --no tiene devweb
+
+					v_nombre_tabla = 'liquidevolu';
+
+
+				END IF;
+
+
        		v_sucursales := decr.f_usuario_sucursal(p_id_usuario);
     		--Sentencia de la consulta
 			v_consulta:='select
@@ -58,9 +76,13 @@ BEGIN
                          li.fecha,
                          li.estpago,
                          li.estado
-                         FROM informix.liquidevolu li
-				        where  ' || v_sucursales;
-			
+                         FROM informix.'||v_nombre_tabla||' li
+				        where '|| v_sucursales ;
+
+
+
+
+
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
@@ -80,13 +102,29 @@ BEGIN
 	elsif(p_transaccion='FAC_LIQUI_CONT')then
 
 		begin
-        
+
+			IF EXISTS (select 0 from decr.tdevweb
+			where id_usuario = p_id_usuario )
+			THEN
+				--existe en devweb
+
+				RAISE EXCEPTION '%','tiene';
+				v_nombre_tabla = 'liquidevolu_devweb';
+
+
+			ELSE --no tiene devweb
+
+
+				v_nombre_tabla = 'liquidevolu';
+
+			END IF;
+
         v_sucursales := decr.f_usuario_sucursal(p_id_usuario);
         
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='select count(li.nroliqui) 
-                         FROM informix.liquidevolu li 
-					    where ' || v_sucursales;
+                         FROM informix.'||v_nombre_tabla||' li
+					    where  '|| v_sucursales ;
 			
 			--Definicion de la respuesta		    
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -103,7 +141,7 @@ BEGIN
 	end if;
 					
 EXCEPTION
-					
+
 	WHEN OTHERS THEN
 			v_resp='';
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);

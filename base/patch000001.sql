@@ -31,6 +31,26 @@ database 'ingresos',
   client_locale 'en_US.utf8',
   informixserver 'sai1');
 
+
+CREATE FOREIGN TABLE informix.liquidevolu_devweb (
+  pais varchar(3),
+  estacion varchar(3),
+  docmnt varchar(6),
+  nroliqui varchar(20),
+  fecha date,
+  estpago varchar(1),
+  estado varchar(1),
+  notaboa varchar(1)
+
+) SERVER sai1
+
+OPTIONS ( query 'SELECT pais,estacion,docmnt,nroliqui,fecha,estpago,estado,notaboa FROM liquidevolu where estado = ''1'' and estpago = ''P'' AND notaboa=''N'' and docmnt = ''DEVWEB'' ',
+database 'ingresos',
+  informixdir '/opt/informix',
+  client_locale 'en_US.utf8',
+  informixserver 'sai1');
+
+
   CREATE FOREIGN TABLE informix.liquitra (
 
  	pais varchar(3),
@@ -291,5 +311,17 @@ ALTER TABLE decr.tconcepto_original ADD cantidad INT NULL;
 
 ALTER TABLE decr.tnota
 ALTER COLUMN razon TYPE VARCHAR(150) COLLATE pg_catalog."default";
+
+
+
+CREATE TABLE decr.tdevweb (
+  id_devweb SERIAL,
+  id_usuario INTEGER,
+  estado VARCHAR(255),
+
+  CONSTRAINT pk_tdevweb__id_devweb PRIMARY KEY(id_devweb)
+) INHERITS (pxp.tbase)
+WITHOUT OIDS;
+
 
 /***********************************F-SCP-FFP-DECR-1-15/12/2015****************************************/

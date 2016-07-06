@@ -96,13 +96,35 @@ header("content-type: text/javascript; charset=UTF-8");
                         allowBlank: false,
                         anchor: '80%',
                         gwidth: 100,
-                        maxLength: 50
+                        maxLength: 50,
+                        renderer: function (value, meta, record) {
+                            console.log('meta',meta)
+                            var resp;
+                            resp = value;
+                            var css;
+
+                            var lista_negra = '';
+
+                            if(record.json.estado == '9' || record.json.estado == 9){
+                                css = "color:red; font-weight: bold; display:block;"
+                                lista_negra = '<div>(anulado)</div>'
+                            }else{
+                                css = "";
+                            }
+
+
+
+                            return  String.format('<div style="vertical-align:middle;text-align:center;"><span style="{0}">{1}{2}</span></div>',css,resp,lista_negra);
+                            //return resp;
+                        }
+
                     },
                     type: 'TextField',
-                    filters: {pfiltro: 'not.nro_nota', type: 'string'},
+                    filters: {pfiltro: 'no.nro_nota', type: 'string'},
                     id_grupo: 1,
                     grid: true,
-                    form: true
+                    form: true, bottom_filter:true
+
                 },
 
 
@@ -116,10 +138,11 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength: 50
                     },
                     type: 'TextField',
-                    filters: {pfiltro: 'not.nro_liquidacion', type: 'string'},
+                    filters: {pfiltro: 'no.nro_liquidacion', type: 'string'},
                     id_grupo: 1,
                     grid: true,
-                    form: true
+                    form: true,
+                    bottom_filter:true
                 },
 
                 {
@@ -132,7 +155,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength: 1179654
                     },
                     type: 'NumberField',
-                    filters: {pfiltro: 'not.total_devuelto', type: 'numeric'},
+                    filters: {pfiltro: 'no.total_devuelto', type: 'numeric'},
                     id_grupo: 1,
                     grid: true,
                     form: true
@@ -149,7 +172,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength: 1179654
                     },
                     type: 'NumberField',
-                    filters: {pfiltro: 'not.excento', type: 'numeric'},
+                    filters: {pfiltro: 'no.excento', type: 'numeric'},
                     id_grupo: 1,
                     grid: true,
                     form: true
@@ -166,7 +189,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength: 20
                     },
                     type: 'TextField',
-                    filters: {pfiltro: 'not.estacion', type: 'string'},
+                    filters: {pfiltro: 'no.estacion', type: 'string'},
                     id_grupo: 1,
                     grid: true,
                     form: true
@@ -184,7 +207,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         }
                     },
                     type: 'DateField',
-                    filters: {pfiltro: 'not.fecha', type: 'date'},
+                    filters: {pfiltro: 'no.fecha', type: 'date'},
                     id_grupo: 1,
                     grid: true,
                     form: true
@@ -201,7 +224,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength: 1179654
                     },
                     type: 'NumberField',
-                    filters: {pfiltro: 'not.tcambio', type: 'numeric'},
+                    filters: {pfiltro: 'no.tcambio', type: 'numeric'},
                     id_grupo: 1,
                     grid: true,
                     form: true
@@ -217,7 +240,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength: 50
                     },
                     type: 'TextField',
-                    filters: {pfiltro: 'not.nit', type: 'string'},
+                    filters: {pfiltro: 'no.nit', type: 'string'},
                     id_grupo: 1,
                     grid: true,
                     form: true
@@ -232,10 +255,11 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength: 50
                     },
                     type: 'TextField',
-                    filters: {pfiltro: 'not.razon', type: 'string'},
+                    filters: {pfiltro: 'no.razon', type: 'string'},
                     id_grupo: 1,
                     grid: true,
-                    form: true
+                    form: true,
+                    bottom_filter:true
                 },
                 {
                     config: {
@@ -247,7 +271,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength: 50
                     },
                     type: 'TextField',
-                    filters: {pfiltro: 'not.estado', type: 'string'},
+                    filters: {pfiltro: 'no.estado', type: 'string'},
                     id_grupo: 1,
                     grid: true,
                     form: true
@@ -262,7 +286,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength: 1179654
                     },
                     type: 'NumberField',
-                    filters: {pfiltro: 'not.credfis', type: 'numeric'},
+                    filters: {pfiltro: 'no.credfis', type: 'numeric'},
                     id_grupo: 1,
                     grid: true,
                     form: true
@@ -278,7 +302,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength: 1179654
                     },
                     type: 'NumberField',
-                    filters: {pfiltro: 'not.monto_total', type: 'numeric'},
+                    filters: {pfiltro: 'no.monto_total', type: 'numeric'},
                     id_grupo: 1,
                     grid: true,
                     form: true
@@ -293,7 +317,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength: 10
                     },
                     type: 'TextField',
-                    filters: {pfiltro: 'not.estado_reg', type: 'string'},
+                    filters: {pfiltro: 'no.estado_reg', type: 'string'},
                     id_grupo: 1,
                     grid: true,
                     form: false
@@ -310,7 +334,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength: 4
                     },
                     type: 'Field',
-                    filters: {pfiltro: 'not.id_usuario_ai', type: 'numeric'},
+                    filters: {pfiltro: 'no.id_usuario_ai', type: 'numeric'},
                     id_grupo: 1,
                     grid: false,
                     form: false
@@ -325,7 +349,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength: 300
                     },
                     type: 'TextField',
-                    filters: {pfiltro: 'not.usuario_ai', type: 'string'},
+                    filters: {pfiltro: 'no.usuario_ai', type: 'string'},
                     id_grupo: 1,
                     grid: true,
                     form: false
@@ -343,7 +367,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         }
                     },
                     type: 'DateField',
-                    filters: {pfiltro: 'not.fecha_reg', type: 'date'},
+                    filters: {pfiltro: 'no.fecha_reg', type: 'date'},
                     id_grupo: 1,
                     grid: true,
                     form: false
@@ -376,7 +400,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         }
                     },
                     type: 'DateField',
-                    filters: {pfiltro: 'not.fecha_mod', type: 'date'},
+                    filters: {pfiltro: 'no.fecha_mod', type: 'date'},
                     id_grupo: 1,
                     grid: true,
                     form: false

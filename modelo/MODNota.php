@@ -163,6 +163,7 @@ class MODNota extends MODbase
                 if($this->tabla_nota_informix == 'notacrdb'){
                     $this->actualizarLiquidacion('S'); //se actualizara la liquidacion notaboa a S
 
+
                 }
 
             } else {
@@ -302,6 +303,7 @@ class MODNota extends MODbase
 						AND dos.estado = 'activo'
 						and dos.feciniemi <= '" . $fecha_now->format('d-m-Y') . "'
 						and dos.feclimemi >= '" . $fecha_now->format('d-m-Y') . "' ");
+
 
 
                 } else {
