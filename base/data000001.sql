@@ -14,4 +14,8 @@ select pxp.f_insert_tgui ('sucursal', 'sucursal', 'SUCD', 'si', 1, 'sis_devoluci
 select pxp.f_insert_tgui ('usuario_suc', 'usuario sucursal', 'USUSUC', 'si', 2, 'sis_devoluciones/vista/sucursal_usuario/SucursalUsuario.php', 3, '', 'SucursalUsuario', 'DECR');
 
 
+
+
+select pxp.f_insert_tgui ('devweb', 'devweb', 'DEWE', 'si', 3, 'sis_devoluciones/vista/devweb/Devweb.php', 3, '', 'Devweb', 'DECR');
+
 /********************************************F-DAT-FFP-DECR-0-18/09/2015********************************************/

@@ -9,6 +9,6 @@ select pxp.f_insert_testructura_gui ('CONFIDE', 'DECR');
 select pxp.f_insert_testructura_gui ('SUCD', 'CONFIDE');
 select pxp.f_insert_testructura_gui ('USUSUC', 'CONFIDE');
 
-
+select pxp.f_insert_testructura_gui ('DEWE', 'CONFIDE');
 
 /***********************************F-DEP-FFP-DECR-1-12/02/2015****************************************/

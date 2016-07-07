@@ -203,6 +203,14 @@ class MODLiquidevolu extends MODbase
 
     }
 
+    function getUltimoDiaMes($fecha) {
+
+        $date = DateTime::createFromFormat("Y-m-d", $fecha);
+
+
+        return date("Y-m-d",(mktime(0,0,0,$date->format("m")+1,1,$date->format("Y"))-1));
+    }
+
     function liquiboletramos($nroliqui)
     {
 
@@ -251,6 +259,19 @@ class MODLiquidevolu extends MODbase
 
         $concepto = "";
         $concepto = $fetch_result[0]['billcupon'];
+
+
+        //veremos si la fecha no sea del mismo periodo
+
+
+        $fecha_fac_billete =strtotime($this->getUltimoDiaMes($fetch_result[0]["fecha_fac"]));
+        $fecha_ahora =strtotime($this->getUltimoDiaMes(date("Y-m-d")));
+
+
+        if($fecha_fac_billete >= $fecha_ahora ){
+            throw new Exception('la fecha del boleto es reciente intente el proximo mes');
+        }
+
 
         foreach ($fetch_result as $item) {
             if ($i == 0) {
@@ -988,6 +1009,16 @@ class MODLiquidevolu extends MODbase
 
 
         $resultado_con = $prepare_con->fetchAll(PDO::FETCH_ASSOC);
+
+
+        $fecha_fac_billete =strtotime($this->getUltimoDiaMes($resultado_con[0]["fecha_fac"]));
+        $fecha_ahora =strtotime($this->getUltimoDiaMes(date("Y-m-d")));
+
+
+        if($fecha_fac_billete >= $fecha_ahora ){
+            throw new Exception('la fecha del boleto es reciente intente el proximo mes, fecha del documento:'.$resultado_con[0]["fecha_fac"]);
+        }
+
 
         //TODO
 
