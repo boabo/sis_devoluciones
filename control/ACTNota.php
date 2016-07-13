@@ -181,8 +181,9 @@ class ACTNota extends ACTbase{
 				$desc2 = 'ORIGINAL';
 				$glosa_consumidor = '';
 
-			}else if($dosificacion[0]['NRO_RESOLUCION'] =='RND 10-0025-14'){
+			}else if($dosificacion[0]['NRO_RESOLUCION'] =='RND 10-0025-14' || $dosificacion[0]['NRO_RESOLUCION'] =='RND 10-0021-16' ){
 
+				
 				//nueva resolucion
 				$desc = 'SUCURSAL '.trim($dosificacion[0]['SUCURSAL']).'<br />';
 				$desc2 = '';
