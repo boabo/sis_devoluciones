@@ -176,9 +176,8 @@ ALTER TABLE decr.tnota ADD fecha_fac DATE NULL;
 
 
 /***********************************I-SCP-FFP-DECR-1-02/09/2015****************************************/
-ALTER TABLE decr.tdosificacion ALTER COLUMN glosa_impuestos SET NULL;
-ALTER TABLE decr.tdosificacion ALTER COLUMN glosa_consumidor SET NULL;
-ALTER TABLE decr.tdosificacion ALTER COLUMN glosa_empresa SET NULL;
+ALTER TABLE decr.tdosificacion ALTER COLUMN glosa_impuestos DROP NOT NULL;
+ALTER TABLE decr.tdosificacion ALTER COLUMN glosa_consumidor DROP NOT NULL;
 
 ALTER TABLE decr.tnota
   DROP COLUMN reimpresion;
@@ -201,7 +200,7 @@ ALTER TABLE decr.tnota
   codigo_de_control_impuestos VARCHAR(255),
   codigo_control_pxp VARCHAR(255),
   validacion VARCHAR(255)
-) 
+);
 
 /***********************************F-SCP-FFP-DECR-1-02/09/2015****************************************/
 

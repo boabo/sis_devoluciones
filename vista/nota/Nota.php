@@ -113,6 +113,25 @@ header("content-type: text/javascript; charset=UTF-8");
                             }
 
 
+                            var value = parseFloat(202020.1234).toFixed(2),
+                                format = "0,000.00";
+
+                            Number.prototype.formatDinero = function(c, d, t){
+                                var n = this,
+                                    c = isNaN(c = Math.abs(c)) ? 2 : c,
+                                    d = d == undefined ? "." : d,
+                                    t = t == undefined ? "," : t,
+                                    s = n < 0 ? "-" : "",
+                                    i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
+                                    j = (j = i.length) > 3 ? j % 3 : 0;
+                                return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+                            };
+
+                            console.log('value',(1123123.1234).formatDinero(2, ',', '.'))
+
+                            Ext.util.Format.thousandSeparator = ".";
+                            Ext.util.Format.decimalSeparator = ",";
+                            console.log(Ext.util.Format.number(value, format)); // devuelve 202.020,12
 
                             return  String.format('<div style="vertical-align:middle;text-align:center;"><span style="{0}">{1}{2}</span></div>',css,resp,lista_negra);
                             //return resp;
@@ -135,14 +154,16 @@ header("content-type: text/javascript; charset=UTF-8");
                         allowBlank: false,
                         anchor: '80%',
                         gwidth: 100,
-                        maxLength: 50
+                        maxLength: 50,
+
                     },
                     type: 'TextField',
                     filters: {pfiltro: 'no.nro_liquidacion', type: 'string'},
                     id_grupo: 1,
                     grid: true,
                     form: true,
-                    bottom_filter:true
+                    bottom_filter:true,
+
                 },
 
                 {

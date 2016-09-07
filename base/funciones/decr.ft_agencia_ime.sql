@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION "ven"."ft_agencia_ime" (	
+CREATE OR REPLACE FUNCTION "decr"."ft_agencia_ime" (
 				p_administrador integer, p_id_usuario integer, p_tabla character varying, p_transaccion character varying)
 RETURNS character varying AS
 $BODY$

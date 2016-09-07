@@ -214,6 +214,8 @@ class MODLiquidevolu extends MODbase
     function liquiboletramos($nroliqui)
     {
 
+
+
         $cone_in = new conexion();
         $informix = $cone_in->conectarPDOInformix();
 
@@ -255,15 +257,64 @@ class MODLiquidevolu extends MODbase
 
         $fetch_result = $result->fetchAll(PDO::FETCH_ASSOC);
 
+
         $i = 0;
 
         $concepto = "";
+
+
+
+
+
+        //si no tiene factura entonces es un canje ex y debemos buscar su original
+        if($fetch_result[0]["nrofac"] == null){
+
+            $billcupon_buscar = $fetch_result[0]["billcupon"];
+            $sql = "select * from boletoori where billete = '$billcupon_buscar' ";
+
+            $result_busqueda_anterior = $informix->prepare($sql);
+
+            $result_busqueda_anterior->execute();
+
+
+            $fetch_result_anterior = $result_busqueda_anterior->fetchAll(PDO::FETCH_ASSOC);
+
+            $bolori_original =$fetch_result_anterior[0]["bolori"];
+
+            $sql = "SELECT cu.estacion,
+                            cu.billete,
+                            cu.billete as billcupon,
+                            cu.cupon,
+                            cu.origen,
+                            cu.destino,
+                            cu.origen,
+                            cu.destino,
+                            factu.nit,
+                            TRIM(factu.razon) as razon,
+                            factu.monto,
+                            factu.exento,
+                            factu.fecha as fecha_fac,
+                            factu.nroaut,
+                            factu.nrofac 
+                            from cupon cu
+                            inner join facturas factu on factu.billete = cu.billete
+                            where factu.billete= '$bolori_original' and cu.billete = '$bolori_original' and cu.bill_cupon = '$bolori_original' ";
+
+            $result = $informix->prepare($sql);
+
+            $result->execute();
+
+
+            $fetch_result = $result->fetchAll(PDO::FETCH_ASSOC);
+
+
+
+
+        }
+
         $concepto = $fetch_result[0]['billcupon'];
 
-
         //veremos si la fecha no sea del mismo periodo
-
-
         $fecha_fac_billete =strtotime($this->getUltimoDiaMes($fetch_result[0]["fecha_fac"]));
         $fecha_ahora =strtotime($this->getUltimoDiaMes(date("Y-m-d")));
 
