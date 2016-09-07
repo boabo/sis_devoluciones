@@ -221,9 +221,7 @@ class MODLiquidevolu extends MODbase
 
         $informix->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
 
-        $sql = "select
-
-            			lite.pais,
+        $sql = "select lite.pais,
                           lite.estacion,
                           lite.docmnt,
                           lite.nroliqui,
@@ -267,7 +265,7 @@ class MODLiquidevolu extends MODbase
 
 
         //si no tiene factura entonces es un canje ex y debemos buscar su original
-        if($fetch_result[0]["nrofac"] == null){
+        if($fetch_result[0]["fecha_fac"] == null){
 
             $billcupon_buscar = $fetch_result[0]["billcupon"];
             $sql = "select * from boletoori where billete = '$billcupon_buscar' ";
@@ -306,6 +304,7 @@ class MODLiquidevolu extends MODbase
 
 
             $fetch_result = $result->fetchAll(PDO::FETCH_ASSOC);
+
 
 
 
