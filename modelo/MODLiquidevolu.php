@@ -309,6 +309,7 @@ class MODLiquidevolu extends MODbase
 
 
 
+
         }
 
         $concepto = $fetch_result[0]['billcupon'];
@@ -700,7 +701,9 @@ class MODLiquidevolu extends MODbase
 
             $billete = $this->aParam->getParametro('billete');
 
-            $sql_doc = "select count(*) as count from liquidoc where billete = '$billete' ";
+            $sql_doc = "select count(*) as count from liquidoc where billete = '$billete' and estado != 9 ";
+            
+
 
             $stmt = $link->prepare($sql_doc);
             $stmt->execute();
