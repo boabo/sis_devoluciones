@@ -93,10 +93,10 @@ class MODLiquidevolu extends MODbase
 
         $id_liqui = $liqui_result[0]['id_nota'];
 
-        /*if ($id_liqui != null) {
+        if ($id_liqui != null) {
             throw new Exception('esta liquidacion ya se encuentra registrado  ');
 
-        }*/
+        }
 
 
 
