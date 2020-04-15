@@ -324,3 +324,82 @@ WITHOUT OIDS;
 
 
 /***********************************F-SCP-FFP-DECR-1-15/12/2015****************************************/
+
+
+
+/***********************************I-SCP-FFP-DECR-1-15/04/2020****************************************/
+
+
+--create tables
+
+--tipo document de la liquidacion
+CREATE TABLE decr.ttipo_doc_liquidacion (
+  id_tipo_doc_liquidacion SERIAL,
+  tipo_documento varchar(255),
+  CONSTRAINT pk_ttipo_doc_liquidacion__id_tipo_doc_liquidacion PRIMARY KEY(id_tipo_doc_liquidacion)
+) INHERITS (pxp.tbase)
+WITHOUT OIDS;
+
+
+CREATE TABLE decr.ttipo_liquidacion (
+  id_tipo_liquidacion SERIAL,
+  tipo_liquidacion varchar(255),
+  CONSTRAINT pk_ttipo_liquidacion__id_tipo_liquidacion PRIMARY KEY(id_tipo_liquidacion)
+) INHERITS (pxp.tbase)
+WITHOUT OIDS;
+
+
+CREATE TABLE decr.tliquidacion (
+  id_liquidacion SERIAL,
+  nro_liquidacion varchar(255),
+  estado VARCHAR(255),
+  estacion varchar(255),
+  tramo VARCHAR(255),
+  pv_agt VARCHAR(255),
+  noiata VARCHAR(255),
+  descripcion VARCHAR(255),
+  fecha_liqui date,
+  tipo_de_cambio NUMERIC(10,2),
+  moneda_liq VARCHAR(3),
+  nombre VARCHAR(255),
+  nombre_cheque VARCHAR(255),
+  util VARCHAR(255),
+  tramo_devolucion VARCHAR(255),
+  fecha_pago date,
+  cheque VARCHAR(255),
+
+  CONSTRAINT pk_ttipo_liquidacion__id_tipo_liquidacion PRIMARY KEY(id_tipo_liquidacion)
+) INHERITS (pxp.tbase)
+WITHOUT OIDS;
+
+
+
+
+
+
+CREATE TABLE decr.tconcepto_liquidacion (
+  id_concepto_liquidacion SERIAL,
+  concepto varchar(255),
+  descripcion varchar(255),
+  CONSTRAINT pk_tconcepto_liquidacion__id_concepto_liquidacion PRIMARY KEY(id_concepto_liquidacion)
+) INHERITS (pxp.tbase)
+WITHOUT OIDS;
+
+
+
+CREATE TABLE decr.tdescuento_liquidacion (
+  id_descuento_liquidacion SERIAL,
+  id_concepto_liquidacion INTEGER,
+  sobre varchar(10),
+  importe NUMERIC(10,2),
+  contabilizar VARCHAR(2)-- SI O NO
+  CONSTRAINT pk_ttipo_liquidacion__id_tipo_liquidacion PRIMARY KEY(id_tipo_liquidacion)
+) INHERITS (pxp.tbase)
+WITHOUT OIDS;
+
+
+
+/***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
+
+
+
