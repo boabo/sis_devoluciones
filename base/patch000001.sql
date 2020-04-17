@@ -329,7 +329,7 @@ WITHOUT OIDS;
 
 /***********************************I-SCP-FFP-DECR-1-15/04/2020****************************************/
 
-
+-- LIQUIDACION
 --create tables
 
 --tipo document de la liquidacion
@@ -351,6 +351,9 @@ WITHOUT OIDS;
 
 CREATE TABLE decr.tliquidacion (
   id_liquidacion SERIAL,
+  id_forma_pago INTEGER, -- relationship with obingresos.tforma_pago
+  id_tipo_doc_liquidacion INTEGER,
+  id_tipo_liquidacion INTEGER,
   nro_liquidacion varchar(255),
   estado VARCHAR(255),
   estacion varchar(255),
@@ -368,20 +371,7 @@ CREATE TABLE decr.tliquidacion (
   fecha_pago date,
   cheque VARCHAR(255),
 
-  CONSTRAINT pk_ttipo_liquidacion__id_tipo_liquidacion PRIMARY KEY(id_tipo_liquidacion)
-) INHERITS (pxp.tbase)
-WITHOUT OIDS;
-
-
-
-
-
-
-CREATE TABLE decr.tconcepto_liquidacion (
-  id_concepto_liquidacion SERIAL,
-  concepto varchar(255),
-  descripcion varchar(255),
-  CONSTRAINT pk_tconcepto_liquidacion__id_concepto_liquidacion PRIMARY KEY(id_concepto_liquidacion)
+  CONSTRAINT pk_tliquidacion__id_liquidacion PRIMARY KEY(id_liquidacion)
 ) INHERITS (pxp.tbase)
 WITHOUT OIDS;
 
@@ -389,11 +379,12 @@ WITHOUT OIDS;
 
 CREATE TABLE decr.tdescuento_liquidacion (
   id_descuento_liquidacion SERIAL,
-  id_concepto_liquidacion INTEGER,
+  id_liquidacion INTEGER,
+  id_concepto_ingas INTEGER, -- relationship with param.tconcepto_ingas
   sobre varchar(10),
   importe NUMERIC(10,2),
-  contabilizar VARCHAR(2)-- SI O NO
-  CONSTRAINT pk_ttipo_liquidacion__id_tipo_liquidacion PRIMARY KEY(id_tipo_liquidacion)
+  contabilizar VARCHAR(2),-- SI O NO
+  CONSTRAINT pk_tdescuento_liquidacion__id_descuento_liquidacion PRIMARY KEY(id_descuento_liquidacion)
 ) INHERITS (pxp.tbase)
 WITHOUT OIDS;
 
