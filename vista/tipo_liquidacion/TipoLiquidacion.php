@@ -53,7 +53,7 @@ Phx.vista.TipoLiquidacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'tipo_liquidacion',
-				fieldLabel: 'tipo_liquidacion',
+				fieldLabel: 'Tipo Liquidacion',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -68,7 +68,7 @@ Phx.vista.TipoLiquidacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'obs_dba',
-				fieldLabel: 'obs_dba',
+				fieldLabel: 'obs dba',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,

@@ -35,10 +35,142 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 			type:'Field',
 			form:true 
 		},
+        {
+            config: {
+                name: 'id_forma_pago',
+                fieldLabel: 'Forma Pago',
+                allowBlank: true,
+                emptyText: 'Elija una opción...',
+                store: new Ext.data.JsonStore({
+                    url: '../../sis_obingresos/control/FormaPago/listarFormaPago',
+                    id: 'id_forma_pago',
+                    root: 'datos',
+                    sortInfo: {
+                        field: 'nombre',
+                        direction: 'ASC'
+                    },
+                    totalProperty: 'total',
+                    fields: ['id_forma_pago', 'nombre', 'codigo', 'forma_pago'],
+                    remoteSort: true,
+                    baseParams: {par_filtro: 'fop.nombre#fop.codigo'}
+                }),
+                valueField: 'id_forma_pago',
+                displayField: 'nombre',
+                gdisplayField: 'desc_forma_pago',
+                hiddenName: 'id_forma_pago',
+                forceSelection: true,
+                typeAhead: false,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'remote',
+                pageSize: 15,
+                queryDelay: 1000,
+                anchor: '100%',
+                gwidth: 150,
+                minChars: 2,
+                renderer : function(value, p, record) {
+                    return String.format('{0}', record.data['desc_']);
+                }
+            },
+            type: 'ComboBox',
+            id_grupo: 0,
+            filters: {pfiltro: 'movtip.nombre',type: 'string'},
+            grid: true,
+            form: true
+        },
+        {
+            config: {
+                name: 'id_tipo_doc_liquidacion',
+                fieldLabel: 'Tipo doc Liqui',
+                allowBlank: true,
+                emptyText: 'Elija una opción...',
+                store: new Ext.data.JsonStore({
+                    url: '../../sis_devoluciones/control/TipoDocLiquidacion/listarTipoDocLiquidacion',
+                    id: 'id_tipo_doc_liquidacion',
+                    root: 'datos',
+                    sortInfo: {
+                        field: 'tipo_documento',
+                        direction: 'ASC'
+                    },
+                    totalProperty: 'total',
+                    fields: ['id_tipo_doc_liquidacion', 'tipo_documento'],
+                    remoteSort: true,
+                    baseParams: {par_filtro: 'tdocliq.tipo_documento'}
+                }),
+                valueField: 'id_tipo_doc_liquidacion',
+                displayField: 'tipo_documento',
+                gdisplayField: 'desc_tipo_doc_liqui',
+                hiddenName: 'id_tipo_doc_liquidacion',
+                forceSelection: true,
+                typeAhead: false,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'remote',
+                pageSize: 15,
+                queryDelay: 1000,
+                anchor: '100%',
+                gwidth: 150,
+                minChars: 2,
+                renderer : function(value, p, record) {
+                    return String.format('{0}', record.data['desc_']);
+                }
+            },
+            type: 'ComboBox',
+            id_grupo: 0,
+            filters: {pfiltro: 'movtip.nombre',type: 'string'},
+            grid: true,
+            form: true
+        },
+
+        {
+            config: {
+                name: 'id_tipo_liquidacion',
+                fieldLabel: 'Tipo Liqui',
+                allowBlank: true,
+                emptyText: 'Elija una opción...',
+                store: new Ext.data.JsonStore({
+                    url: '../../sis_devoluciones/control/TipoLiquidacion/listarTipoLiquidacion',
+                    id: 'id_tipo_liquidacion',
+                    root: 'datos',
+                    sortInfo: {
+                        field: 'tipo_liquidacion',
+                        direction: 'ASC'
+                    },
+                    totalProperty: 'total',
+                    fields: ['id_tipo_liquidacion', 'tipo_liquidacion'],
+                    remoteSort: true,
+                    baseParams: {par_filtro: 'tipoliqu.tipo_liquidacion'}
+                }),
+                valueField: 'id_tipo_liquidacion',
+                displayField: 'tipo_liquidacion',
+                gdisplayField: 'desc_',
+                hiddenName: 'id_tipo_liquidacion',
+                forceSelection: true,
+                typeAhead: false,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'remote',
+                pageSize: 15,
+                queryDelay: 1000,
+                anchor: '100%',
+                gwidth: 150,
+                minChars: 2,
+                renderer : function(value, p, record) {
+                    return String.format('{0}', record.data['desc_']);
+                }
+            },
+            type: 'ComboBox',
+            id_grupo: 0,
+            filters: {pfiltro: 'movtip.nombre',type: 'string'},
+            grid: true,
+            form: true
+        },
+
+
 		{
 			config:{
 				name: 'estacion',
-				fieldLabel: 'estacion',
+				fieldLabel: 'Estacion',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -53,7 +185,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'nro_liquidacion',
-				fieldLabel: 'nro_liquidacion',
+				fieldLabel: 'Nro liquidacion',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -65,6 +197,23 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
+
+        {
+            config:{
+                name: 'tramo',
+                fieldLabel: 'Tramo',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:255
+            },
+            type:'TextField',
+            filters:{pfiltro:'liqui.tramo',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
+
 		{
 			config:{
 				name: 'estado_reg',
@@ -83,7 +232,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'tipo_de_cambio',
-				fieldLabel: 'tipo_de_cambio',
+				fieldLabel: 'tipo de cambio',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -98,7 +247,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'descripcion',
-				fieldLabel: 'descripcion',
+				fieldLabel: 'Descripcion',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -113,7 +262,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'nombre_cheque',
-				fieldLabel: 'nombre_cheque',
+				fieldLabel: 'Nombre cheque',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -128,7 +277,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'fecha_liqui',
-				fieldLabel: 'fecha_liqui',
+				fieldLabel: 'Fecha Liqui',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -144,7 +293,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'tramo_devolucion',
-				fieldLabel: 'tramo_devolucion',
+				fieldLabel: 'Tramo devolucion',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -174,7 +323,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'fecha_pago',
-				fieldLabel: 'fecha_pago',
+				fieldLabel: 'Fecha Pago',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -187,53 +336,11 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
-		{
-			config: {
-				name: 'id_tipo_doc_liquidacion',
-				fieldLabel: 'id_tipo_doc_liquidacion',
-				allowBlank: true,
-				emptyText: 'Elija una opción...',
-				store: new Ext.data.JsonStore({
-					url: '../../sis_/control/Clase/Metodo',
-					id: 'id_',
-					root: 'datos',
-					sortInfo: {
-						field: 'nombre',
-						direction: 'ASC'
-					},
-					totalProperty: 'total',
-					fields: ['id_', 'nombre', 'codigo'],
-					remoteSort: true,
-					baseParams: {par_filtro: 'movtip.nombre#movtip.codigo'}
-				}),
-				valueField: 'id_',
-				displayField: 'nombre',
-				gdisplayField: 'desc_',
-				hiddenName: 'id_tipo_doc_liquidacion',
-				forceSelection: true,
-				typeAhead: false,
-				triggerAction: 'all',
-				lazyRender: true,
-				mode: 'remote',
-				pageSize: 15,
-				queryDelay: 1000,
-				anchor: '100%',
-				gwidth: 150,
-				minChars: 2,
-				renderer : function(value, p, record) {
-					return String.format('{0}', record.data['desc_']);
-				}
-			},
-			type: 'ComboBox',
-			id_grupo: 0,
-			filters: {pfiltro: 'movtip.nombre',type: 'string'},
-			grid: true,
-			form: true
-		},
+
 		{
 			config:{
 				name: 'pv_agt',
-				fieldLabel: 'pv_agt',
+				fieldLabel: 'pv agt',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -260,111 +367,13 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
-		{
-			config: {
-				name: 'id_tipo_liquidacion',
-				fieldLabel: 'id_tipo_liquidacion',
-				allowBlank: true,
-				emptyText: 'Elija una opción...',
-				store: new Ext.data.JsonStore({
-					url: '../../sis_/control/Clase/Metodo',
-					id: 'id_',
-					root: 'datos',
-					sortInfo: {
-						field: 'nombre',
-						direction: 'ASC'
-					},
-					totalProperty: 'total',
-					fields: ['id_', 'nombre', 'codigo'],
-					remoteSort: true,
-					baseParams: {par_filtro: 'movtip.nombre#movtip.codigo'}
-				}),
-				valueField: 'id_',
-				displayField: 'nombre',
-				gdisplayField: 'desc_',
-				hiddenName: 'id_tipo_liquidacion',
-				forceSelection: true,
-				typeAhead: false,
-				triggerAction: 'all',
-				lazyRender: true,
-				mode: 'remote',
-				pageSize: 15,
-				queryDelay: 1000,
-				anchor: '100%',
-				gwidth: 150,
-				minChars: 2,
-				renderer : function(value, p, record) {
-					return String.format('{0}', record.data['desc_']);
-				}
-			},
-			type: 'ComboBox',
-			id_grupo: 0,
-			filters: {pfiltro: 'movtip.nombre',type: 'string'},
-			grid: true,
-			form: true
-		},
-		{
-			config: {
-				name: 'id_forma_pago',
-				fieldLabel: 'id_forma_pago',
-				allowBlank: true,
-				emptyText: 'Elija una opción...',
-				store: new Ext.data.JsonStore({
-					url: '../../sis_/control/Clase/Metodo',
-					id: 'id_',
-					root: 'datos',
-					sortInfo: {
-						field: 'nombre',
-						direction: 'ASC'
-					},
-					totalProperty: 'total',
-					fields: ['id_', 'nombre', 'codigo'],
-					remoteSort: true,
-					baseParams: {par_filtro: 'movtip.nombre#movtip.codigo'}
-				}),
-				valueField: 'id_',
-				displayField: 'nombre',
-				gdisplayField: 'desc_',
-				hiddenName: 'id_forma_pago',
-				forceSelection: true,
-				typeAhead: false,
-				triggerAction: 'all',
-				lazyRender: true,
-				mode: 'remote',
-				pageSize: 15,
-				queryDelay: 1000,
-				anchor: '100%',
-				gwidth: 150,
-				minChars: 2,
-				renderer : function(value, p, record) {
-					return String.format('{0}', record.data['desc_']);
-				}
-			},
-			type: 'ComboBox',
-			id_grupo: 0,
-			filters: {pfiltro: 'movtip.nombre',type: 'string'},
-			grid: true,
-			form: true
-		},
-		{
-			config:{
-				name: 'tramo',
-				fieldLabel: 'tramo',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:255
-			},
-				type:'TextField',
-				filters:{pfiltro:'liqui.tramo',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
+
+
+
 		{
 			config:{
 				name: 'nombre',
-				fieldLabel: 'nombre',
+				fieldLabel: 'Nombre',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
