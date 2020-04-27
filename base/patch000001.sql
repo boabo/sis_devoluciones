@@ -390,14 +390,14 @@ WITHOUT OIDS;
 
 
 
-
 --nota agenca
 -- preguntar si los datos de factura  se deben jalar desde el libre de ventas
 -- que pasa si no existe esa factura en el libro de ventas
 CREATE TABLE decr.tnota_agencia (
   id_nota_agencia SERIAL,
-  iestacion VARCHAR(20),
-  id_sucursal INTEGER,
+  id_doc_compra_venta INTEGER,
+  id_depto_conta INTEGER,
+  id_moneda INTEGER NOT NULL,
   estado VARCHAR(50) NOT NULL,
   nit VARCHAR(50) NOT NULL,
   nro_nota VARCHAR(50) NOT NULL,
@@ -405,14 +405,12 @@ CREATE TABLE decr.tnota_agencia (
   fecha DATE DEFAULT now() NOT NULL,
   razon VARCHAR(50) NOT NULL,
   tcambio NUMERIC(18,6) NOT NULL,
-  id_moneda INTEGER NOT NULL,
   monto_total NUMERIC(18,6) NOT NULL,
   excento NUMERIC(18,6) NOT NULL,
   total_devuelto NUMERIC(18,6) NOT NULL,
   credfis NUMERIC(18,6) NOT NULL,
   billete VARCHAR(255),
   codigo_control VARCHAR(255),
-  id_dosificacion INTEGER,
   nrofac BIGINT,
   nroaut BIGINT,
   fecha_fac date,
@@ -421,8 +419,7 @@ CREATE TABLE decr.tnota_agencia (
   iva VARCHAR(10),
   neto NUMERIC(10,2),
   obs varchar(255),
-  reimpresion VARCHAR(100)[],
-  CONSTRAINT pk_tdescuento_liquidacion__id_descuento_liquidacion PRIMARY KEY(id_descuento_liquidacion)
+  CONSTRAINT pk_tnota_agencia__id_nota_agencia PRIMARY KEY(id_nota_agencia)
 ) INHERITS (pxp.tbase)
 WITHOUT OIDS;
 
