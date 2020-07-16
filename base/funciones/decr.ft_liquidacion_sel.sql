@@ -31,12 +31,12 @@ BEGIN
 	/*********************************    
  	#TRANSACCION:  'DECR_LIQUI_SEL'
  	#DESCRIPCION:	Consulta de datos
- 	#AUTOR:		admin	
+ 	#AUTOR:		Favio Figueroa
  	#FECHA:		17-04-2020 01:54:37
 	***********************************/
 
 	if(p_transaccion='DECR_LIQUI_SEL')then
-     				
+
     	begin
     		--Sentencia de la consulta
 			v_consulta:='select
@@ -56,11 +56,11 @@ BEGIN
 						liqui.noiata,
 						liqui.id_tipo_liquidacion,
 						liqui.id_forma_pago,
+						liqui.id_boleto,
 						liqui.tramo,
 						liqui.nombre,
 						liqui.moneda_liq,
 						liqui.estado,
-						liqui.obs_dba,
 						liqui.cheque,
 						liqui.id_usuario_reg,
 						liqui.fecha_reg,
@@ -69,25 +69,25 @@ BEGIN
 						liqui.id_usuario_mod,
 						liqui.fecha_mod,
 						usu1.cuenta as usr_reg,
-						usu2.cuenta as usr_mod	
+						usu2.cuenta as usr_mod
 						from decr.tliquidacion liqui
 						inner join segu.tusuario usu1 on usu1.id_usuario = liqui.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = liqui.id_usuario_mod
 				        where  ';
-			
+
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
 			--Devuelve la respuesta
 			return v_consulta;
-						
+
 		end;
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'DECR_LIQUI_CONT'
  	#DESCRIPCION:	Conteo de registros
- 	#AUTOR:		admin	
+ 	#AUTOR:		Favio Figueroa
  	#FECHA:		17-04-2020 01:54:37
 	***********************************/
 
@@ -100,19 +100,96 @@ BEGIN
 					    inner join segu.tusuario usu1 on usu1.id_usuario = liqui.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = liqui.id_usuario_mod
 					    where ';
-			
-			--Definicion de la respuesta		    
+
+			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 
 			--Devuelve la respuesta
 			return v_consulta;
 
 		end;
-					
+
+	/*********************************
+ 	#TRANSACCION:  'DECR_TRAMO_SEL'
+ 	#DESCRIPCION:	Consulta de datos
+ 	#AUTOR:		Favio Figueroa
+ 	#FECHA:		17-04-2020 01:54:37
+	***********************************/
+
+	elsif(p_transaccion='DECR_TRAMO_SEL')then
+
+    	begin
+    		--Sentencia de la consulta
+			v_consulta:='WITH billete as
+                        (
+                            select bc.billete, bc.origen, bc.destino
+                            from informix.boletos_cupon2 bc
+                            where bc.i = '||v_parametros.billete||'
+                            order by bc.cupon asc
+                        )
+                        SELECT string_agg(concat_ws(''/'', b.origen, b.destino), ''/'') AS list_tramo
+                        FROM billete b
+                        GROUP BY 1';
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+
+	/*********************************
+ 	#TRANSACCION:  'DECR_BOL_SEL'
+ 	#DESCRIPCION:	Consulta de datos
+ 	#AUTOR:		Favio Figueroa
+ 	#FECHA:		17-04-2020 01:54:37
+	***********************************/
+
+	elsif(p_transaccion='DECR_BOL_SEL')then
+
+    	begin
+    		--Sentencia de la consulta
+            v_consulta:='select
+						bol.id_boleto, bol.nro_boleto
+						from obingresos.tboleto bol
+				        where  ';
+
+            --Definicion de la respuesta
+            v_consulta:=v_consulta||v_parametros.filtro;
+            v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
+            --Devuelve la respuesta
+            return v_consulta;
+
+		end;
+
+
+    /*********************************
+     #TRANSACCION:  'DECR_BOL_CONT'
+     #DESCRIPCION:	Conteo de registros
+     #AUTOR:		Favio Figueroa
+     #FECHA:		17-04-2020 01:54:37
+    ***********************************/
+
+    elsif(p_transaccion='DECR_BOL_CONT')then
+
+        begin
+            --Sentencia de la consulta de conteo de registros
+            v_consulta:='select
+						count(bol.id_boleto)
+						from obingresos.tboleto bol
+				        where  ';
+
+
+            --Definicion de la respuesta
+            v_consulta:=v_consulta||v_parametros.filtro;
+
+            --Devuelve la respuesta
+            return v_consulta;
+
+        end;
 	else
-					     
+
 		raise exception 'Transaccion inexistente';
-					         
+
 	end if;
 					
 EXCEPTION

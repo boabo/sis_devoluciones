@@ -43,7 +43,6 @@ BEGIN
 						tdocliq.id_tipo_doc_liquidacion,
 						tdocliq.estado_reg,
 						tdocliq.tipo_documento,
-						tdocliq.obs_dba,
 						tdocliq.id_usuario_reg,
 						tdocliq.fecha_reg,
 						tdocliq.usuario_ai,

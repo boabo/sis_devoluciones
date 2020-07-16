@@ -354,6 +354,7 @@ CREATE TABLE decr.tliquidacion (
   id_forma_pago INTEGER, -- relationship with obingresos.tforma_pago
   id_tipo_doc_liquidacion INTEGER,
   id_tipo_liquidacion INTEGER,
+  id_boleto INTEGER,
   nro_liquidacion varchar(255),
   estado VARCHAR(255),
   estacion varchar(255),

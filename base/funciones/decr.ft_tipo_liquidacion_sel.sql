@@ -43,7 +43,6 @@ BEGIN
 						tipoliqu.id_tipo_liquidacion,
 						tipoliqu.estado_reg,
 						tipoliqu.tipo_liquidacion,
-						tipoliqu.obs_dba,
 						tipoliqu.usuario_ai,
 						tipoliqu.fecha_reg,
 						tipoliqu.id_usuario_reg,

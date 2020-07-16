@@ -46,7 +46,6 @@ BEGIN
         	insert into decr.ttipo_doc_liquidacion(
 			estado_reg,
 			tipo_documento,
-			obs_dba,
 			id_usuario_reg,
 			fecha_reg,
 			usuario_ai,
@@ -56,7 +55,6 @@ BEGIN
           	) values(
 			'activo',
 			v_parametros.tipo_documento,
-			v_parametros.obs_dba,
 			p_id_usuario,
 			now(),
 			v_parametros._nombre_usuario_ai,
@@ -90,7 +88,6 @@ BEGIN
 			--Sentencia de la modificacion
 			update decr.ttipo_doc_liquidacion set
 			tipo_documento = v_parametros.tipo_documento,
-			obs_dba = v_parametros.obs_dba,
 			id_usuario_mod = p_id_usuario,
 			fecha_mod = now(),
 			id_usuario_ai = v_parametros._id_usuario_ai,

@@ -46,7 +46,6 @@ BEGIN
         	insert into decr.ttipo_liquidacion(
 			estado_reg,
 			tipo_liquidacion,
-			obs_dba,
 			usuario_ai,
 			fecha_reg,
 			id_usuario_reg,
@@ -90,7 +89,6 @@ BEGIN
 			--Sentencia de la modificacion
 			update decr.ttipo_liquidacion set
 			tipo_liquidacion = v_parametros.tipo_liquidacion,
-			obs_dba = v_parametros.obs_dba,
 			id_usuario_mod = p_id_usuario,
 			fecha_mod = now(),
 			id_usuario_ai = v_parametros._id_usuario_ai,

@@ -19,3 +19,14 @@ select pxp.f_insert_tgui ('usuario_suc', 'usuario sucursal', 'USUSUC', 'si', 2, 
 select pxp.f_insert_tgui ('devweb', 'devweb', 'DEWE', 'si', 3, 'sis_devoluciones/vista/devweb/Devweb.php', 3, '', 'Devweb', 'DECR');
 
 /********************************************F-DAT-FFP-DECR-0-18/09/2015********************************************/
+
+/********************************************I-DAT-FFP-DECR-0-07/07/2020********************************************/
+
+
+select pxp.f_insert_tgui ('Liquidacion', 'Liquidacion', 'LIQFILE', 'si', 1, '', 2, '', '', 'DECR');
+select pxp.f_insert_tgui ('Tipo Liquidacion', 'Tipo Liquidacion', 'TYPELIQ', 'si', 1, 'sis_devoluciones/vista/tipo_liquidacion/TipoLiquidacion.php', 3, '', 'TipoLiquidacion', 'DECR');
+select pxp.f_insert_tgui ('Tipo Doc Liquidacion', 'Tipo Doc Liquidacion', 'TDOCLIQ', 'si', 2, 'sis_devoluciones/vista/tipo_doc_liquidacion/TipoDocLiquidacion.php', 3, '', 'TipoDocLiquidacion', 'DECR');
+select pxp.f_insert_tgui ('Liquidacion', 'Liquidacion', 'SCREENLIQ', 'si', 3, 'sis_devoluciones/vista/liquidacion/Liquidacion.php', 3, '', 'Liquidacion', 'DECR');
+select pxp.f_insert_tgui ('Descuento Liquidacion', 'Descuento Liquidacion', 'SCREENDESL', 'si', 4, 'sis_devoluciones/vista/descuento_liquidacion/DescuentoLiquidacion.php', 3, '', 'DescuentoLiquidacion', 'DECR');
+
+/********************************************F-DAT-FFP-DECR-0-07/07/2015********************************************/

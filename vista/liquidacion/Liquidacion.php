@@ -21,7 +21,9 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
     	//llama al constructor de la clase padre
 		Phx.vista.Liquidacion.superclass.constructor.call(this,config);
 		this.init();
-		this.load({params:{start:0, limit:this.tam_pag}})
+        this.iniciarEventos();
+
+        this.load({params:{start:0, limit:this.tam_pag}})
 	},
 			
 	Atributos:[
@@ -197,6 +199,88 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
+        {
+            config: {
+                name: 'id_boleto',
+                fieldLabel: 'Boleto',
+                allowBlank: true,
+                emptyText: 'Elija una opción...',
+                store: new Ext.data.JsonStore({
+                    url: '../../sis_devoluciones/control/Liquidacion/listarBoleto',
+                    id: 'id_boleto',
+                    root: 'datos',
+                    sortInfo: {
+                        field: 'id_boleto',
+                        direction: 'desc'
+                    },
+                    totalProperty: 'total',
+                    fields: ['id_boleto', 'nro_boleto'],
+                    remoteSort: true,
+                    baseParams: {par_filtro: 'bol.nro_boleto'}
+                }),
+                valueField: 'id_boleto',
+                displayField: 'nro_boleto',
+                gdisplayField: 'desc_boleto',
+                hiddenName: 'id_boleto',
+                forceSelection: true,
+                typeAhead: false,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'remote',
+                pageSize: 15,
+                queryDelay: 1000,
+                anchor: '100%',
+                gwidth: 150,
+                minChars: 2,
+                renderer : function(value, p, record) {
+                    return String.format('{0}', record.data['desc_']);
+                }
+            },
+            type: 'ComboBox',
+            id_grupo: 0,
+            filters: {pfiltro: 'movtip.nombre',type: 'string'},
+            grid: true,
+            form: true
+        },
+
+
+        {
+            config:{
+                name:'tramos',
+                fieldLabel:'Tramos',
+                allowBlank:true,
+                emptyText:'Tramos...',
+                store: new Ext.data.JsonStore({
+                    url: '../../sis_devoluciones/control/Liquidacion/obtenerTramosSql',
+                    id: 'id',
+                    root: 'datos',
+                    totalProperty: 'total',
+                    fields: ['id','desc'],
+                    // turn on remote sorting
+                    remoteSort: true,
+                    //baseParams:{par_filtro:'rol'}
+
+                }),
+
+                valueField: 'id',
+                displayField: 'desc',
+                forceSelection:true,
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender:true,
+                mode:'remote',
+                pageSize:10,
+                queryDelay:1000,
+                width:250,
+                minChars:2,
+                enableMultiSelect:true,
+            },
+            type:'AwesomeCombo',
+            id_grupo:0,
+            grid:false,
+            form:true
+        },
+
 
         {
             config:{
@@ -582,7 +666,38 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 		direction: 'ASC'
 	},
 	bdel:true,
-	bsave:true
+	bsave:true,
+    iniciarEventos : function () {
+
+        this.Cmp.tramos.disable();
+
+        this.Cmp.id_boleto.on('select', function (rec, d) {
+
+            this.Cmp.tramos.store.setBaseParam('billete', d.data.nro_boleto);
+
+
+            this.Cmp.tramos.enable();
+            this.Cmp.tramos.reset();
+            this.Cmp.tramos.store.baseParams.billete = d.data.nro_boleto;
+            this.Cmp.tramos.modificado = true;
+
+            console.log(rec)
+            console.log(d)
+          /*  Ext.Ajax.request({
+                url: '../../sis_devoluciones/control/Liquidacion/obtenerTramosSql',
+                params: {
+                    billete: d.data.nro_boleto,
+                },
+                success: this.successPagar,
+                failure: this.conexionFailure,
+                timeout: this.timeout,
+                scope: this
+            });*/
+
+            console.log(rec)
+            console.log(d)
+        }, this);
+    }
 	}
 )
 </script>

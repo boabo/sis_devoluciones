@@ -40,11 +40,11 @@ class MODLiquidacion extends MODbase{
 		$this->captura('noiata','varchar');
 		$this->captura('id_tipo_liquidacion','int4');
 		$this->captura('id_forma_pago','int4');
+		$this->captura('id_boleto','int4');
 		$this->captura('tramo','varchar');
 		$this->captura('nombre','varchar');
 		$this->captura('moneda_liq','varchar');
 		$this->captura('estado','varchar');
-		$this->captura('obs_dba','varchar');
 		$this->captura('cheque','varchar');
 		$this->captura('id_usuario_reg','int4');
 		$this->captura('fecha_reg','timestamp');
@@ -89,8 +89,8 @@ class MODLiquidacion extends MODbase{
 		$this->setParametro('nombre','nombre','varchar');
 		$this->setParametro('moneda_liq','moneda_liq','varchar');
 		$this->setParametro('estado','estado','varchar');
-		$this->setParametro('obs_dba','obs_dba','varchar');
 		$this->setParametro('cheque','cheque','varchar');
+		$this->setParametro('id_boleto','id_boleto','int4');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -127,10 +127,11 @@ class MODLiquidacion extends MODbase{
 		$this->setParametro('nombre','nombre','varchar');
 		$this->setParametro('moneda_liq','moneda_liq','varchar');
 		$this->setParametro('estado','estado','varchar');
-		$this->setParametro('obs_dba','obs_dba','varchar');
 		$this->setParametro('cheque','cheque','varchar');
+        $this->setParametro('id_boleto','id_boleto','int4');
 
-		//Ejecuta la instruccion
+
+        //Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
 
@@ -153,6 +154,46 @@ class MODLiquidacion extends MODbase{
 
 		//Devuelve la respuesta
 		return $this->respuesta;
+	}
+
+	function listarBoleto(){
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='decr.ft_liquidacion_sel';
+        $this->transaccion='DECR_BOL_SEL';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+
+        //Definicion de la lista del resultado del query
+        $this->captura('id_boleto','int4');
+        $this->captura('nro_boleto','varchar');
+
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+	}
+	function obtenerTramos(){
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='decr.ft_liquidacion_sel';
+        $this->transaccion='DECR_TRAMO_SEL';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+        $this->count = false;
+
+        //Definicion de la lista del resultado del query
+        $this->setParametro('billete','billete','varchar');
+
+        $this->captura('billete','numeric');
+        $this->captura('list_tramo','text');
+
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
 	}
 			
 }

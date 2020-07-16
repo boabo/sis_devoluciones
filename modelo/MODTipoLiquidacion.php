@@ -27,7 +27,6 @@ class MODTipoLiquidacion extends MODbase{
 		$this->captura('id_tipo_liquidacion','int4');
 		$this->captura('estado_reg','varchar');
 		$this->captura('tipo_liquidacion','varchar');
-		$this->captura('obs_dba','varchar');
 		$this->captura('usuario_ai','varchar');
 		$this->captura('fecha_reg','timestamp');
 		$this->captura('id_usuario_reg','int4');
@@ -54,7 +53,6 @@ class MODTipoLiquidacion extends MODbase{
 		//Define los parametros para la funcion
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('tipo_liquidacion','tipo_liquidacion','varchar');
-		$this->setParametro('obs_dba','obs_dba','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -74,7 +72,6 @@ class MODTipoLiquidacion extends MODbase{
 		$this->setParametro('id_tipo_liquidacion','id_tipo_liquidacion','int4');
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('tipo_liquidacion','tipo_liquidacion','varchar');
-		$this->setParametro('obs_dba','obs_dba','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

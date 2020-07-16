@@ -10,6 +10,7 @@
  #0				17-04-2020 01:54:37								CREACION
 
 */
+include_once(dirname(__FILE__).'/../../lib/lib_modelo/ConexionSqlServer.php');
 
 class ACTLiquidacion extends ACTbase{    
 			
@@ -42,6 +43,62 @@ class ACTLiquidacion extends ACTbase{
 			$this->objFunc=$this->create('MODLiquidacion');	
 		$this->res=$this->objFunc->eliminarLiquidacion($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+	function listarBoleto(){
+			$this->objFunc=$this->create('MODLiquidacion');
+		$this->res=$this->objFunc->listarBoleto($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+	function obtenerTramos(){
+			$this->objFunc=$this->create('MODLiquidacion');
+		$this->res=$this->objFunc->obtenerTramos($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+	function obtenerTramosSql(){
+
+		$billete = $this->objParam->getParametro('billete');
+        $param_conex = array();
+
+        $conexion = new ConexionSqlServer('172.17.58.22', 'SPConnection', 'Passw0rd', 'DBStage');
+        $conn = $conexion->conectarSQL();
+
+        //EXECUTE [dbo].[spa_getRoutingTicket] @ticketNumber
+        if($conn=='connect') {
+            $error = 'connect';
+            throw new Exception("connect: La conexión a la bd SQL Server ".$param_conex[1]." ha fallado.");
+        }else if($conn=='select_db'){
+            $error = 'select_db';
+            throw new Exception("select_db: La seleccion de la bd SQL Server ".$param_conex[1]." ha fallado.");
+        }else {
+
+            $query_string = "exec DBStage.dbo.spa_getRoutingTicket @ticketNumber= ".$billete." "; // boleto miami 9303852215072
+
+            //$query_string = "select * from AuxBSPVersion";
+            //$query_string = utf8_decode("select FlightItinerary from FactTicket where TicketNumber = '9302400056027'");
+
+            $query = @mssql_query($query_string, $conn);
+            //$query = @mssql_query(utf8_decode('select * from AuxBSPVersion'), $conn);
+
+            $data = array();
+
+            while ($row = mssql_fetch_array($query, MSSQL_ASSOC)){
+
+                $row["id"] = $row["Origin"] .'-'.$row["Destination"];
+                $row["desc"] = $row["Origin"] .'-'.$row["Destination"] . '(' .$row["CouponStatus"] . ')';
+
+                $data[] = $row;
+            }
+
+
+            $send = array(
+                "total" => count($row),
+                "datos"=> $data
+            );
+            $send = json_encode($send, true);
+            echo $send;
+            mssql_free_result($query);
+            $conexion->closeSQL();
+        }
 	}
 			
 }
