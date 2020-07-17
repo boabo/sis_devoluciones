@@ -54,7 +54,20 @@ class MODLiquidacion extends MODbase{
 		$this->captura('fecha_mod','timestamp');
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
-		
+		$this->captura('desc_tipo_documento','varchar');
+		$this->captura('desc_tipo_liquidacion','varchar');
+		$this->captura('desc_nro_boleto','varchar');
+		$this->captura('nro_nit','varchar');
+		$this->captura('razon','varchar');
+		$this->captura('fecha_fac','date');
+		$this->captura('total','numeric');
+        $this->captura('nro_aut','int4');
+        $this->captura('nro_fac','varchar');
+        $this->captura('concepto','varchar');
+        $this->captura('tipo','varchar');
+        $this->captura('precio_unitario','numeric');
+        $this->captura('importe_original','numeric');
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();

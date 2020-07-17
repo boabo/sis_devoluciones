@@ -69,10 +69,27 @@ BEGIN
 						liqui.id_usuario_mod,
 						liqui.fecha_mod,
 						usu1.cuenta as usr_reg,
-						usu2.cuenta as usr_mod
-						from decr.tliquidacion liqui
-						inner join segu.tusuario usu1 on usu1.id_usuario = liqui.id_usuario_reg
-						left join segu.tusuario usu2 on usu2.id_usuario = liqui.id_usuario_mod
+						usu2.cuenta as usr_mod,
+						ttdl.tipo_documento as desc_tipo_documento,
+       ttl.tipo_liquidacion as desc_tipo_liquidacion,
+       tb.nro_boleto as desc_nro_boleto,
+			            tb.nit::varchar as nro_nit,
+       tb.razon,
+       tb.fecha_emision as fecha_fac,
+       tb.total,
+       1 as nro_aut,
+       tb.nro_boleto as nro_fac,
+			       concat(tb.nro_boleto,''/'',liqui.tramo_devolucion):: varchar as concepto,
+			''BOLETO''::VARCHAR AS tipo,
+			tb.total AS precio_unitario,
+			tb.total AS importe_original
+
+from decr.tliquidacion liqui
+         inner join segu.tusuario usu1 on usu1.id_usuario = liqui.id_usuario_reg
+         left join segu.tusuario usu2 on usu2.id_usuario = liqui.id_usuario_mod
+inner join decr.ttipo_doc_liquidacion ttdl on ttdl.id_tipo_doc_liquidacion = liqui.id_tipo_doc_liquidacion
+inner join decr.ttipo_liquidacion ttl on ttl.id_tipo_liquidacion = liqui.id_tipo_liquidacion
+INNER JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
 				        where  ';
 
 			--Definicion de la respuesta
@@ -97,8 +114,11 @@ BEGIN
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='select count(id_liquidacion)
 					    from decr.tliquidacion liqui
-					    inner join segu.tusuario usu1 on usu1.id_usuario = liqui.id_usuario_reg
-						left join segu.tusuario usu2 on usu2.id_usuario = liqui.id_usuario_mod
+         inner join segu.tusuario usu1 on usu1.id_usuario = liqui.id_usuario_reg
+         left join segu.tusuario usu2 on usu2.id_usuario = liqui.id_usuario_mod
+inner join decr.ttipo_doc_liquidacion ttdl on ttdl.id_tipo_doc_liquidacion = liqui.id_tipo_doc_liquidacion
+inner join decr.ttipo_liquidacion ttl on ttl.id_tipo_liquidacion = liqui.id_tipo_liquidacion
+INNER JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
 					    where ';
 
 			--Definicion de la respuesta

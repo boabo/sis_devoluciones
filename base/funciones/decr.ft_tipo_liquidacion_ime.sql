@@ -55,7 +55,6 @@ BEGIN
           	) values(
 			'activo',
 			v_parametros.tipo_liquidacion,
-			v_parametros.obs_dba,
 			v_parametros._nombre_usuario_ai,
 			now(),
 			p_id_usuario,

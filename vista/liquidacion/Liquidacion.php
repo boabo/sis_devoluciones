@@ -101,7 +101,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
                 }),
                 valueField: 'id_tipo_doc_liquidacion',
                 displayField: 'tipo_documento',
-                gdisplayField: 'desc_tipo_doc_liqui',
+                gdisplayField: 'desc_tipo_documento',
                 hiddenName: 'id_tipo_doc_liquidacion',
                 forceSelection: true,
                 typeAhead: false,
@@ -113,9 +113,6 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
                 anchor: '100%',
                 gwidth: 150,
                 minChars: 2,
-                renderer : function(value, p, record) {
-                    return String.format('{0}', record.data['desc_']);
-                }
             },
             type: 'ComboBox',
             id_grupo: 0,
@@ -145,7 +142,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
                 }),
                 valueField: 'id_tipo_liquidacion',
                 displayField: 'tipo_liquidacion',
-                gdisplayField: 'desc_',
+                gdisplayField: 'desc_tipo_liquidacion',
                 hiddenName: 'id_tipo_liquidacion',
                 forceSelection: true,
                 typeAhead: false,
@@ -157,9 +154,6 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
                 anchor: '100%',
                 gwidth: 150,
                 minChars: 2,
-                renderer : function(value, p, record) {
-                    return String.format('{0}', record.data['desc_']);
-                }
             },
             type: 'ComboBox',
             id_grupo: 0,
@@ -220,7 +214,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
                 }),
                 valueField: 'id_boleto',
                 displayField: 'nro_boleto',
-                gdisplayField: 'desc_boleto',
+                gdisplayField: 'desc_nro_boleto',
                 hiddenName: 'id_boleto',
                 forceSelection: true,
                 typeAhead: false,
@@ -233,7 +227,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
                 gwidth: 150,
                 minChars: 2,
                 renderer : function(value, p, record) {
-                    return String.format('{0}', record.data['desc_']);
+                    return String.format('{0}', record.data['desc_nro_boleto']);
                 }
             },
             type: 'ComboBox',
@@ -246,8 +240,8 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 
         {
             config:{
-                name:'tramos',
-                fieldLabel:'Tramos',
+                name:'tramo_devolucion',
+                fieldLabel:'Tramos Devolucion',
                 allowBlank:true,
                 emptyText:'Tramos...',
                 store: new Ext.data.JsonStore({
@@ -277,7 +271,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
             },
             type:'AwesomeCombo',
             id_grupo:0,
-            grid:false,
+            grid:true,
             form:true
         },
 
@@ -374,7 +368,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
-		{
+		/*{
 			config:{
 				name: 'tramo_devolucion',
 				fieldLabel: 'Tramo devolucion',
@@ -388,7 +382,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 				id_grupo:1,
 				grid:true,
 				form:true
-		},
+		},*/
 		{
 			config:{
 				name: 'util',
@@ -659,7 +653,10 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
-		
+		'desc_tipo_documento',
+		'desc_tipo_liquidacion',
+		'desc_nro_boleto',
+
 	],
 	sortInfo:{
 		field: 'id_liquidacion',
@@ -669,17 +666,17 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 	bsave:true,
     iniciarEventos : function () {
 
-        this.Cmp.tramos.disable();
+        this.Cmp.tramo_devolucion.disable();
 
         this.Cmp.id_boleto.on('select', function (rec, d) {
 
-            this.Cmp.tramos.store.setBaseParam('billete', d.data.nro_boleto);
+            this.Cmp.tramo_devolucion.store.setBaseParam('billete', d.data.nro_boleto);
 
 
-            this.Cmp.tramos.enable();
-            this.Cmp.tramos.reset();
-            this.Cmp.tramos.store.baseParams.billete = d.data.nro_boleto;
-            this.Cmp.tramos.modificado = true;
+            this.Cmp.tramo_devolucion.enable();
+            this.Cmp.tramo_devolucion.reset();
+            this.Cmp.tramo_devolucion.store.baseParams.billete = d.data.nro_boleto;
+            this.Cmp.tramo_devolucion.modificado = true;
 
             console.log(rec)
             console.log(d)
