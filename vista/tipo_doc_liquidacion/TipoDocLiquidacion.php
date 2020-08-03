@@ -67,19 +67,20 @@ Phx.vista.TipoDocLiquidacion=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config:{
-				name: 'obs_dba',
-				fieldLabel: 'obs dba',
+				name: 'descripcion',
+				fieldLabel: 'descripcion',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:-5
+				maxLength:255
 			},
 				type:'TextField',
-				filters:{pfiltro:'tdocliq.obs_dba',type:'string'},
+				filters:{pfiltro:'tdocliq.descripcion',type:'string'},
 				id_grupo:1,
 				grid:true,
 				form:true
 		},
+
 		{
 			config:{
 				name: 'usr_reg',
@@ -192,7 +193,8 @@ Phx.vista.TipoDocLiquidacion=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
-		
+		{name:'descripcion', type: 'string'},
+
 	],
 	sortInfo:{
 		field: 'id_tipo_doc_liquidacion',

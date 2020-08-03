@@ -48,6 +48,53 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
 		},
 
         {
+
+            config:{
+                name: 'id_doc_compra_venta',
+                fieldLabel: 'Documento',
+                allowBlank: false,
+                emptyText:'Elija una plantilla...',
+                store:new Ext.data.JsonStore(
+                    {
+                        url: '../../sis_contabilidad/control/DocCompraVenta/listarDocCompraVenta',
+                        id: 'id_doc_compra_venta',
+                        root:'datos',
+                        sortInfo:{
+                            field:'dcv.nro_documento',
+                            direction:'asc'
+                        },
+                        totalProperty:'total',
+                        fields: ['id_doc_compra_venta','revisado','nro_documento','nit',
+                            'desc_plantilla', 'desc_moneda','importe_doc','nro_documento',
+                            'tipo','razon_social','fecha'],
+                        remoteSort: true,
+                        baseParams:{par_filtro:'pla.desc_plantilla#dcv.razon_social#dcv.nro_documento#dcv.nit#dcv.importe_doc#dcv.codigo_control', filgestion: 'si'},
+                    }),
+                tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{razon_social}</b>,  NIT: {nit}</p><p>{desc_plantilla} </p><p ><span style="color: #F00000">Doc: {nro_documento}</span> de Fecha: {fecha}</p><p style="color: green;"> {importe_doc} {desc_moneda}  </p></div></tpl>',
+                valueField: 'id_doc_compra_venta',
+                hiddenValue: 'id_doc_compra_venta',
+                displayField: 'desc_plantilla',
+                gdisplayField:'nro_documento',
+                listWidth:'401',
+                forceSelection:true,
+                typeAhead: false,
+                triggerAction: 'all',
+                lazyRender:true,
+                mode:'remote',
+                pageSize:20,
+                queryDelay:500,
+                gwidth: 250,
+                minChars:2,
+                resizable: true,
+                anchor: '100%'
+            },
+            type:'ComboBox',
+            id_grupo: 0,
+            grid: false,
+            bottom_filter: true,
+            form: true
+        },
+     /*   {
             config:{
                 name: 'id_doc_compra_venta',
                 fieldLabel: 'Documento',
@@ -93,7 +140,7 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
             bottom_filter: true,
             form: true
         },
-
+*/
 
 
         {

@@ -426,6 +426,26 @@ WITHOUT OIDS;
 
 
 
+alter table decr.ttipo_doc_liquidacion
+    add descripcion varchar(255);
+
+
+
+alter table decr.tliquidacion
+    add punto_venta varchar(255);
+alter table decr.tliquidacion
+    add moneda_emision varchar(255);
+alter table decr.tliquidacion
+    add importe_neto numeric(10,2);
+alter table decr.tliquidacion
+    add tasas numeric(10,2);
+alter table decr.tliquidacion
+    add importe_total numeric(10,2);
+
+
+
+
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
 

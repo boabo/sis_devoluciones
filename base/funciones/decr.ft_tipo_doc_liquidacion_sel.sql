@@ -49,6 +49,7 @@ BEGIN
 						tdocliq.id_usuario_ai,
 						tdocliq.id_usuario_mod,
 						tdocliq.fecha_mod,
+						tdocliq.descripcion,
 						usu1.cuenta as usr_reg,
 						usu2.cuenta as usr_mod	
 						from decr.ttipo_doc_liquidacion tdocliq

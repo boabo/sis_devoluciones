@@ -82,8 +82,12 @@ BEGIN
 			       concat(tb.nro_boleto,''/'',liqui.tramo_devolucion):: varchar as concepto,
 			''BOLETO''::VARCHAR AS tipo,
 			tb.total AS precio_unitario,
-			tb.total AS importe_original
-
+			tb.total AS importe_original,
+			liqui.punto_venta,
+			liqui.moneda_emision,
+			liqui.importe_neto,
+			liqui.tasas,
+			liqui.importe_total
 from decr.tliquidacion liqui
          inner join segu.tusuario usu1 on usu1.id_usuario = liqui.id_usuario_reg
          left join segu.tusuario usu2 on usu2.id_usuario = liqui.id_usuario_mod
@@ -150,6 +154,33 @@ INNER JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
                         SELECT string_agg(concat_ws(''/'', b.origen, b.destino), ''/'') AS list_tramo
                         FROM billete b
                         GROUP BY 1';
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+
+	/*********************************
+ 	#TRANSACCION:  'DECR_NUMLIQ_SEL'
+ 	#DESCRIPCION:	Consulta de datos
+ 	#AUTOR:		Favio Figueroa
+ 	#FECHA:		17-04-2020 01:54:37
+	***********************************/
+
+	elsif(p_transaccion='DECR_NUMLIQ_SEL')then
+
+    	begin
+    		--Sentencia de la consulta
+			v_consulta:='SELECT * FROM param.f_obtener_correlativo(
+                            ''LIQ'||v_parametros.estacion||'DEV'', --codigo documento
+                            NULL,-- par_id,
+                            NULL, --id_uo
+                            NULL, --depto
+                            1, --usuario
+                            ''DECR'',
+                            NULL,--formato
+                            1,
+                        4)';
 
 			--Devuelve la respuesta
 			return v_consulta;

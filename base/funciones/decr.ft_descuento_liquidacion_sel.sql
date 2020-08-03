@@ -42,7 +42,6 @@ BEGIN
 			v_consulta:='select
 						desliqui.id_descuento_liquidacion,
 						desliqui.contabilizar,
-						desliqui.obs_dba,
 						desliqui.importe,
 						desliqui.estado_reg,
 						desliqui.id_concepto_ingas,
@@ -55,10 +54,12 @@ BEGIN
 						desliqui.fecha_mod,
 						desliqui.id_usuario_mod,
 						usu1.cuenta as usr_reg,
-						usu2.cuenta as usr_mod	
+						usu2.cuenta as usr_mod,
+						tci.desc_ingas as desc_desc_ingas
 						from decr.tdescuento_liquidacion desliqui
 						inner join segu.tusuario usu1 on usu1.id_usuario = desliqui.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = desliqui.id_usuario_mod
+						INNER JOIN param.tconcepto_ingas tci on tci.id_concepto_ingas = desliqui.id_concepto_ingas
 				        where  ';
 			
 			--Definicion de la respuesta
@@ -85,6 +86,7 @@ BEGIN
 					    from decr.tdescuento_liquidacion desliqui
 					    inner join segu.tusuario usu1 on usu1.id_usuario = desliqui.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = desliqui.id_usuario_mod
+						INNER JOIN param.tconcepto_ingas tci on tci.id_concepto_ingas = desliqui.id_concepto_ingas
 					    where ';
 			
 			--Definicion de la respuesta		    

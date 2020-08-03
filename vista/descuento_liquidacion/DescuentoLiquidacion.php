@@ -21,7 +21,7 @@ Phx.vista.DescuentoLiquidacion=Ext.extend(Phx.gridInterfaz,{
     	//llama al constructor de la clase padre
 		Phx.vista.DescuentoLiquidacion.superclass.constructor.call(this,config);
 		this.init();
-		this.load({params:{start:0, limit:this.tam_pag}})
+		//this.load({params:{start:0, limit:this.tam_pag}})
 	},
 			
 	Atributos:[
@@ -35,6 +35,16 @@ Phx.vista.DescuentoLiquidacion=Ext.extend(Phx.gridInterfaz,{
 			type:'Field',
 			form:true 
 		},
+        {
+            //configuracion del componente
+            config:{
+                labelSeparator:'',
+                inputType:'hidden',
+                name: 'id_liquidacion'
+            },
+            type:'Field',
+            form:true
+        },
 		{
 			config:{
 				name: 'contabilizar',
@@ -50,21 +60,7 @@ Phx.vista.DescuentoLiquidacion=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
-		{
-			config:{
-				name: 'obs_dba',
-				fieldLabel: 'obs_dba',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:-5
-			},
-				type:'TextField',
-				filters:{pfiltro:'desliqui.obs_dba',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
+
 		{
 			config:{
 				name: 'importe',
@@ -102,21 +98,21 @@ Phx.vista.DescuentoLiquidacion=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				emptyText: 'Elija una opción...',
 				store: new Ext.data.JsonStore({
-					url: '../../sis_/control/Clase/Metodo',
-					id: 'id_',
+					url: '../../sis_parametros/control/ConceptoIngas/listarConceptoIngasMasPartida',
+					id: 'id_concepto_ingas',
 					root: 'datos',
 					sortInfo: {
-						field: 'nombre',
+						field: 'desc_ingas',
 						direction: 'ASC'
 					},
 					totalProperty: 'total',
-					fields: ['id_', 'nombre', 'codigo'],
+					fields: ['id_concepto_ingas', 'desc_ingas'],
 					remoteSort: true,
-					baseParams: {par_filtro: 'movtip.nombre#movtip.codigo'}
+					baseParams: {par_filtro: 'conig.id_concepto_ingas#conig.desc_ingas'}
 				}),
-				valueField: 'id_',
-				displayField: 'nombre',
-				gdisplayField: 'desc_',
+				valueField: 'id_concepto_ingas',
+				displayField: 'desc_ingas',
+				gdisplayField: 'desc_desc_ingas',
 				hiddenName: 'id_concepto_ingas',
 				forceSelection: true,
 				typeAhead: false,
@@ -129,55 +125,12 @@ Phx.vista.DescuentoLiquidacion=Ext.extend(Phx.gridInterfaz,{
 				gwidth: 150,
 				minChars: 2,
 				renderer : function(value, p, record) {
-					return String.format('{0}', record.data['desc_']);
+					return String.format('{0}', record.data['desc_desc_ingas']);
 				}
 			},
 			type: 'ComboBox',
 			id_grupo: 0,
-			filters: {pfiltro: 'movtip.nombre',type: 'string'},
-			grid: true,
-			form: true
-		},
-		{
-			config: {
-				name: 'id_liquidacion',
-				fieldLabel: 'id_liquidacion',
-				allowBlank: true,
-				emptyText: 'Elija una opción...',
-				store: new Ext.data.JsonStore({
-					url: '../../sis_/control/Clase/Metodo',
-					id: 'id_',
-					root: 'datos',
-					sortInfo: {
-						field: 'nombre',
-						direction: 'ASC'
-					},
-					totalProperty: 'total',
-					fields: ['id_', 'nombre', 'codigo'],
-					remoteSort: true,
-					baseParams: {par_filtro: 'movtip.nombre#movtip.codigo'}
-				}),
-				valueField: 'id_',
-				displayField: 'nombre',
-				gdisplayField: 'desc_',
-				hiddenName: 'id_liquidacion',
-				forceSelection: true,
-				typeAhead: false,
-				triggerAction: 'all',
-				lazyRender: true,
-				mode: 'remote',
-				pageSize: 15,
-				queryDelay: 1000,
-				anchor: '100%',
-				gwidth: 150,
-				minChars: 2,
-				renderer : function(value, p, record) {
-					return String.format('{0}', record.data['desc_']);
-				}
-			},
-			type: 'ComboBox',
-			id_grupo: 0,
-			filters: {pfiltro: 'movtip.nombre',type: 'string'},
+			filters: {pfiltro: 'conig.desc_ingas',type: 'string'},
 			grid: true,
 			form: true
 		},
@@ -298,7 +251,6 @@ Phx.vista.DescuentoLiquidacion=Ext.extend(Phx.gridInterfaz,{
 	fields: [
 		{name:'id_descuento_liquidacion', type: 'numeric'},
 		{name:'contabilizar', type: 'string'},
-		{name:'obs_dba', type: 'string'},
 		{name:'importe', type: 'numeric'},
 		{name:'estado_reg', type: 'string'},
 		{name:'id_concepto_ingas', type: 'numeric'},
@@ -312,14 +264,24 @@ Phx.vista.DescuentoLiquidacion=Ext.extend(Phx.gridInterfaz,{
 		{name:'id_usuario_mod', type: 'numeric'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
-		
+		{name:'desc_desc_ingas', type: 'string'},
+
 	],
 	sortInfo:{
 		field: 'id_descuento_liquidacion',
 		direction: 'ASC'
 	},
 	bdel:true,
-	bsave:true
+	bsave:true,
+    onReloadPage:function(m){
+        this.maestro=m;
+        this.store.baseParams={id_liquidacion:this.maestro.id_liquidacion};
+        this.load({params: {start: 0, limit: 50}});
+    },
+    loadValoresIniciales: function () {
+        this.Cmp.id_liquidacion.setValue(this.maestro.id_liquidacion);
+        Phx.vista.DescuentoLiquidacion.superclass.loadValoresIniciales.call(this);
+    }
 	}
 )
 </script>

@@ -24,7 +24,11 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
         this.iniciarEventos();
 
         this.load({params:{start:0, limit:this.tam_pag}})
-	},
+
+        this.addButton('verLiquidacion',{argument: {imprimir: 'verLiquidacion'},text:'<i class="fa fa-file-text-o fa-2x"></i> Ver Liquidación',/*iconCls:'' ,*/disabled:false,handler:this.verLiquidacion});
+
+
+    },
 			
 	Atributos:[
 		{
@@ -37,49 +41,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 			type:'Field',
 			form:true 
 		},
-        {
-            config: {
-                name: 'id_forma_pago',
-                fieldLabel: 'Forma Pago',
-                allowBlank: true,
-                emptyText: 'Elija una opción...',
-                store: new Ext.data.JsonStore({
-                    url: '../../sis_obingresos/control/FormaPago/listarFormaPago',
-                    id: 'id_forma_pago',
-                    root: 'datos',
-                    sortInfo: {
-                        field: 'nombre',
-                        direction: 'ASC'
-                    },
-                    totalProperty: 'total',
-                    fields: ['id_forma_pago', 'nombre', 'codigo', 'forma_pago'],
-                    remoteSort: true,
-                    baseParams: {par_filtro: 'fop.nombre#fop.codigo'}
-                }),
-                valueField: 'id_forma_pago',
-                displayField: 'nombre',
-                gdisplayField: 'desc_forma_pago',
-                hiddenName: 'id_forma_pago',
-                forceSelection: true,
-                typeAhead: false,
-                triggerAction: 'all',
-                lazyRender: true,
-                mode: 'remote',
-                pageSize: 15,
-                queryDelay: 1000,
-                anchor: '100%',
-                gwidth: 150,
-                minChars: 2,
-                renderer : function(value, p, record) {
-                    return String.format('{0}', record.data['desc_']);
-                }
-            },
-            type: 'ComboBox',
-            id_grupo: 0,
-            filters: {pfiltro: 'movtip.nombre',type: 'string'},
-            grid: true,
-            form: true
-        },
+
         {
             config: {
                 name: 'id_tipo_doc_liquidacion',
@@ -163,36 +125,66 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
         },
 
 
-		{
-			config:{
-				name: 'estacion',
-				fieldLabel: 'Estacion',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:255
-			},
-				type:'TextField',
-				filters:{pfiltro:'liqui.estacion',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
-		{
-			config:{
-				name: 'nro_liquidacion',
-				fieldLabel: 'Nro liquidacion',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:255
-			},
-				type:'TextField',
-				filters:{pfiltro:'liqui.nro_liquidacion',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
+
+        {
+            config : {
+                name : 'estacion',
+                fieldLabel : 'Estacion',
+                anchor : '90%',
+                tinit : false,
+                allowBlank : false,
+                origen : 'CATALOGO',
+                gdisplayField : 'estacion',
+
+
+                gwidth : 200,
+                anchor : '100%',
+                baseParams : {
+                    cod_subsistema : 'DECR',
+                    catalogo_tipo : 'tliquidacion_estacion'
+                },
+                renderer:function(value, p, record){return String.format('{0}', record.data['estacion']);}
+            },
+            type : 'ComboRec',
+            id_grupo : 0,
+            filters : {pfiltro : 'dos.nombre_sistema', type : 'string'},
+            grid : true,
+            form : true
+        },
+
+
+        {
+            config:{
+                name: 'nro_liquidacion',
+                fieldLabel: 'Nro liquidacion',
+                allowBlank: false,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:255,
+                disabled: true,
+            },
+            type:'TextField',
+            filters:{pfiltro:'liqui.nro_liquidacion',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
+        {
+            config:{
+                name: 'fecha_liqui',
+                fieldLabel: 'Fecha Liqui',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                format: 'd/m/Y',
+                renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
+            },
+            type:'DateField',
+            filters:{pfiltro:'liqui.fecha_liqui',type:'date'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
         {
             config: {
                 name: 'id_boleto',
@@ -238,6 +230,123 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
         },
 
 
+
+
+
+        {
+            config:{
+                name: 'nombre',
+                fieldLabel: 'Nombre',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:255
+            },
+            type:'TextField',
+            filters:{pfiltro:'liqui.nombre',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
+
+
+        {
+            config:{
+                name: 'punto_venta',
+                fieldLabel: 'Punto de Venta',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:255,
+                disabled: true,
+            },
+            type:'TextField',
+            filters:{pfiltro:'liqui.punto_venta',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
+        {
+            config:{
+                name: 'moneda_emision',
+                fieldLabel: 'Moneda Emision',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:255,
+                disabled: true,
+            },
+            type:'TextField',
+            filters:{pfiltro:'liqui.importe_neto',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
+        {
+            config:{
+                name: 'importe_neto',
+                fieldLabel: 'Importe Neto',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:255,
+                disabled: true,
+            },
+            type:'TextField',
+            filters:{pfiltro:'liqui.importe_neto',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
+        {
+            config:{
+                name: 'tasas',
+                fieldLabel: 'tasas',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:255,
+                disabled: true,
+            },
+            type:'TextField',
+            filters:{pfiltro:'liqui.tasas',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
+        {
+            config:{
+                name: 'importe_total',
+                fieldLabel: 'Importe Total',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:255,
+                disabled: true,
+            },
+            type:'TextField',
+            filters:{pfiltro:'liqui.importe_total',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
+
+        {
+            config:{
+                name: 'tramo',
+                fieldLabel: 'Tramo',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:255,
+                disabled: true,
+            },
+            type:'TextField',
+            filters:{pfiltro:'liqui.tramo',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
         {
             config:{
                 name:'tramo_devolucion',
@@ -274,22 +383,109 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
             grid:true,
             form:true
         },
-
-
         {
             config:{
-                name: 'tramo',
-                fieldLabel: 'Tramo',
+                name: 'util',
+                fieldLabel: 'Tramo Utilizado(facturable)',
                 allowBlank: true,
                 anchor: '80%',
                 gwidth: 100,
                 maxLength:255
             },
             type:'TextField',
-            filters:{pfiltro:'liqui.tramo',type:'string'},
+            filters:{pfiltro:'liqui.util',type:'string'},
             id_grupo:1,
             grid:true,
             form:true
+        },
+
+        {
+            config: {
+                name: 'id_concepto_ingas',
+                fieldLabel: 'Descuentos',
+                allowBlank: true,
+                emptyText: 'Elija una opción...',
+                store: new Ext.data.JsonStore({
+                    url: '../../sis_parametros/control/ConceptoIngas/listarConceptoIngasMasPartida',
+                    id: 'id_concepto_ingas',
+                    root: 'datos',
+                    sortInfo: {
+                        field: 'desc_ingas',
+                        direction: 'ASC'
+                    },
+                    totalProperty: 'total',
+                    fields: ['id_concepto_ingas', 'desc_ingas'],
+                    remoteSort: true,
+                    baseParams: {par_filtro: 'conig.id_concepto_ingas#conig.desc_ingas'}
+                }),
+                valueField: 'id_concepto_ingas',
+                displayField: 'desc_ingas',
+                gdisplayField: 'desc_desc_ingas',
+                hiddenName: 'id_concepto_ingas',
+                forceSelection: true,
+                typeAhead: false,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'remote',
+                pageSize: 15,
+                queryDelay: 1000,
+                anchor: '100%',
+                gwidth: 150,
+                minChars: 2,
+                renderer : function(value, p, record) {
+                    return String.format('{0}', record.data['desc_desc_ingas']);
+                },
+                enableMultiSelect:true,
+            },
+            type:'AwesomeCombo',
+            id_grupo: 0,
+            filters: {pfiltro: 'conig.desc_ingas',type: 'string'},
+            grid: true,
+            form: true
+        },
+
+        {
+            config: {
+                name: 'id_forma_pago',
+                fieldLabel: 'Forma Pago',
+                allowBlank: true,
+                emptyText: 'Elija una opción...',
+                store: new Ext.data.JsonStore({
+                    url: '../../sis_obingresos/control/FormaPago/listarFormaPago',
+                    id: 'id_forma_pago',
+                    root: 'datos',
+                    sortInfo: {
+                        field: 'nombre',
+                        direction: 'ASC'
+                    },
+                    totalProperty: 'total',
+                    fields: ['id_forma_pago', 'nombre', 'codigo', 'forma_pago'],
+                    remoteSort: true,
+                    baseParams: {par_filtro: 'fop.nombre#fop.codigo'}
+                }),
+                valueField: 'id_forma_pago',
+                displayField: 'nombre',
+                gdisplayField: 'desc_forma_pago',
+                hiddenName: 'id_forma_pago',
+                forceSelection: true,
+                typeAhead: false,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'remote',
+                pageSize: 15,
+                queryDelay: 1000,
+                anchor: '100%',
+                gwidth: 150,
+                minChars: 2,
+                renderer : function(value, p, record) {
+                    return String.format('{0}', record.data['desc_']);
+                }
+            },
+            type: 'ComboBox',
+            id_grupo: 0,
+            filters: {pfiltro: 'movtip.nombre',type: 'string'},
+            grid: true,
+            form: true
         },
 
 		{
@@ -352,22 +548,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
-		{
-			config:{
-				name: 'fecha_liqui',
-				fieldLabel: 'Fecha Liqui',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-							format: 'd/m/Y', 
-							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
-			},
-				type:'DateField',
-				filters:{pfiltro:'liqui.fecha_liqui',type:'date'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
+
 		/*{
 			config:{
 				name: 'tramo_devolucion',
@@ -383,21 +564,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},*/
-		{
-			config:{
-				name: 'util',
-				fieldLabel: 'util',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:255
-			},
-				type:'TextField',
-				filters:{pfiltro:'liqui.util',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
+
 		{
 			config:{
 				name: 'fecha_pago',
@@ -412,7 +579,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 				filters:{pfiltro:'liqui.fecha_pago',type:'date'},
 				id_grupo:1,
 				grid:true,
-				form:true
+				form:false
 		},
 
 		{
@@ -448,21 +615,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 
 
 
-		{
-			config:{
-				name: 'nombre',
-				fieldLabel: 'Nombre',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:255
-			},
-				type:'TextField',
-				filters:{pfiltro:'liqui.nombre',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
+
 		{
 			config:{
 				name: 'moneda_liq',
@@ -493,21 +646,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
-		{
-			config:{
-				name: 'obs_dba',
-				fieldLabel: 'obs_dba',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:-5
-			},
-				type:'TextField',
-				filters:{pfiltro:'liqui.obs_dba',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
+
 		{
 			config:{
 				name: 'cheque',
@@ -656,6 +795,11 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 		'desc_tipo_documento',
 		'desc_tipo_liquidacion',
 		'desc_nro_boleto',
+        'punto_venta',
+        'moneda_emision',
+        'importe_neto',
+        'tasas',
+        'importe_total',
 
 	],
 	sortInfo:{
@@ -664,9 +808,38 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 	},
 	bdel:true,
 	bsave:true,
+    tabeast:[
+        {
+            url:'../../../sis_devoluciones/vista/descuento_liquidacion/DescuentoLiquidacion.php',
+            title:'Descuentos Liquidacion',
+            width:400,
+            cls:'DescuentoLiquidacion'
+        },
+
+    ],
     iniciarEventos : function () {
 
         this.Cmp.tramo_devolucion.disable();
+
+        this.Cmp.estacion.on('select', function (rec, d) {
+
+
+            Ext.Ajax.request({
+                url: '../../sis_devoluciones/control/Liquidacion/obtenerLiquidacionCorrelativo',
+                params: {estacion: d.json.codigo},
+                success: (resp) => {
+                    const data = JSON.parse(resp.responseText);
+                    const { f_obtener_correlativo } = data.datos[0];
+                    this.Cmp.nro_liquidacion.setValue(f_obtener_correlativo);
+                },
+                failure: this.conexionFailure,
+                timeout: this.timeout,
+                scope:   this
+            });
+
+        }, this);
+
+
 
         this.Cmp.id_boleto.on('select', function (rec, d) {
 
@@ -680,21 +853,293 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 
             console.log(rec)
             console.log(d)
-          /*  Ext.Ajax.request({
-                url: '../../sis_devoluciones/control/Liquidacion/obtenerTramosSql',
+            Ext.Ajax.request({
+                url: '../../sis_devoluciones/control/Liquidacion/getTicketInformation',
                 params: {
                     billete: d.data.nro_boleto,
                 },
-                success: this.successPagar,
+                success: (resp) => {
+                    console.log(resp)
+                    const data = JSON.parse(resp.responseText);
+                    const boletoInfoJson = data[0];
+                    console.log(boletoInfoJson);
+                    this.Cmp.tramo.setValue(boletoInfoJson.itinerary);
+                    this.Cmp.importe_neto.setValue(boletoInfoJson.netAmount);
+                    this.Cmp.importe_total.setValue(boletoInfoJson.totalAmount);
+                    this.Cmp.tasas.setValue(boletoInfoJson.totalAmount - boletoInfoJson.netAmount);
+                    this.Cmp.nombre.setValue(boletoInfoJson.passengerName);
+                    this.Cmp.moneda_emision.setValue(boletoInfoJson.currency);
+                    this.Cmp.punto_venta.setValue(boletoInfoJson.issueOfficeID);
+
+
+                    // nombre
+                    //punto de venta --issueOfficeID
+                    // moneda de emision --currency
+                    //importe neto
+                    //tasas
+                    // total
+
+                    // tramo total
+                    // tramo utilizado
+                    // tramo devolver
+                    //
+
+                    //descuento que no figure en la liquidacion
+
+                    //issueOfficeID punto de venda
+                    /*const  = data.datos[0];
+                    this.Cmp.nro_liquidacion.setValue(f_obtener_correlativo);*/
+                   /* const data = JSON.parse(resp)
+                    console.log(data)*/
+                },
                 failure: this.conexionFailure,
                 timeout: this.timeout,
                 scope: this
-            });*/
+            });
 
             console.log(rec)
             console.log(d)
         }, this);
-    }
+    },
+    onButtonNew:function(){
+        this.accionFormulario = 'NEW';
+        Phx.vista.Liquidacion.superclass.onButtonNew.call(this);//habilita el boton y se abre
+    },
+    verLiquidacion : function () {
+
+        var rec = this.sm.getSelected();
+
+        Ext.Ajax.request({
+            url: '../../sis_devoluciones/control/Liquidacion/verLiquidacion',
+            params: {'id_liquidacion': rec.data['id_liquidacion']},
+            success: this.successVistaPrevia,
+            failure: this.conexionFailure,
+            timeout: this.timeout,
+            scope: this
+        });
+    },
+    descuentoHtml: function(descuento) {
+	    const tr = `
+	     <tr>
+            <td width="20%">codigo</td>
+            <td width="60%">${descuento.desc_ingas}</td>
+            <td width="10%">${descuento.importe}</td>
+            <td width="10%"></td>
+        </tr>
+	    `;
+    },
+    successVistaPrevia: function (resp) {
+        var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+        console.log(JSON.parse(objRes.ROOT.datos.mensaje));
+        const {liquidacion, descuentos, sum_descuentos} = JSON.parse(objRes.ROOT.datos.mensaje);
+
+        const descuentoHtmlAux = this.descuentoHtml;
+        const htmlPreview = `
+
+<table width="100%" style=" font-size: 12px; letter-spacing: 1px;">
+    <tr>
+        <td>
+            <table width="100%" align="center" >
+                <tr>
+                    <td width="20%">
+                        BOLIVIANA DE AVIACION
+
+                        (BOA)
+                        <br>
+                        COCHABAMBA-BOLIVIA
+                    </td>
+                    <td align="center" width="60%" style="letter-spacing: 3px;">LIQUIDACION POR DEVOLUCION
+                        <br>
+                        ****** APROBADO ******
+                    </td>
+                    <td width="20%">
+                        Nro: ${liquidacion.nro_liquidacion}
+                        <br>
+                        Fecha: ${liquidacion.fecha_reg}
+                        <br>
+                        Fecha-Aprob:
+                        <br>
+                        Fecha-Pago:
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <table width="100%">
+                <tr>
+                    <td width="20%">Nombre o Razon Social: </td>
+                    <td>${liquidacion.nombre}</td>
+                </tr>
+                <tr align="left">
+                    <td>P-Venta/Agencia: </td>
+                    <td>${liquidacion.punto_venta} ${liquidacion.estacion}</td>
+                </tr>
+                <tr align="left">
+                    <td colspan="2">AGT-NO-IATA</td>
+                </tr>
+                <tr align="left">
+                    <td colspan="2">${liquidacion.descripcion}</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <table width="100%">
+                <tr>
+                    <td align="center">Punto Devolucion</td>
+                    <td align="center">T/C</td>
+                    <td align="center">Est-Pago</td>
+                    <td align="center">Moneda</td>
+                </tr>
+                <tr>
+                    <td>${liquidacion.punto_venta}</td>
+                    <td align="center">6.9600</td>
+                    <td align="center">${liquidacion.estacion}</td>
+                    <td align="center">Bolivianos</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <hr>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table width="100%">
+                <tr>
+                    <td align="center" width="80%">DETALLE</td>
+                    <td width="10%">PARCIALES</td>
+                    <td width="10%">TOTALES</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <hr>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table width="100%">
+                <tr>
+                    <td width="80%" colspan="2">BOLETO: ETI 9303090212010 21/12/2018 6.96000 Factura:
+                    </td>
+                    <td width="10%"></td>
+                    <td width="10%"></td>
+                </tr>
+                <tr>
+                    <td width="80%" colspan="2">P-VENTA/AGENCIA: 56454545 TROPICAL TOURS LTDA. (SRZ)
+                    </td>
+                    <td width="10%"></td>
+                    <td width="10%"></td>
+                </tr>
+                <tr>
+                    <td width="80%" colspan="2">Tramos Utilizados: (MENOS)</td>
+                    <td width="10%">0.00</td>
+                    <td width="10%"></td>
+                </tr>
+                <tr>
+                    <td width="60%">Tramos a Devolver:    TOTAL A DEVOLVER</td>
+                    <td width="20%">TOTAL A DEVOLVER</td>
+                    <td width="10%" ></td>
+                    <td width="10%" align="right">-----------</td>
+                </tr>
+                <tr>
+                    <td width="80%" colspan="2">${liquidacion.tramo_devolucion}</td>
+                    <td width="10%"></td>
+                    <td width="10%" align="right">2,964.75</td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <table width="100%">
+                <tr>
+                    <td width="20%">(MENOS)</td>
+                    <td width="60%" style="letter-spacing: 3px;">DESCUENTOS:</td>
+                    <td width="10%"></td>
+                    <td width="10%"></td>
+                </tr>
+                <tr>
+                    <td width="20%"></td>
+                    <td width="60%" style="letter-spacing: 3px;">-----------------</td>
+                    <td width="10%"></td>
+                    <td width="10%"></td>
+                </tr>
+${descuentos.map(function (descuento) {
+    console.log('descuento',descuento)
+            return '<tr>'
+                +'<td width="20%">COD</td>'
+                +'<td width="60%">'+descuento.desc_ingas+'</td>'
+                +'<td width="10%">'+descuento.importe+'</td>'
+                +'<td width="10%"></td>'
+                +'</tr>';
+        }).join("")}
+
+
+
+                <tr>
+                    <td width="20%"></td>
+                    <td width="60%" style="letter-spacing: 3px;" align="right">TOTAL DECUENTOS:</td>
+                    <td width="10%"></td>
+                    <td width="10%" align="right">1300.22</td>
+                </tr>
+                <tr>
+                    <td width="20%"></td>
+                    <td width="60%"></td>
+                    <td width="10%"></td>
+                    <td width="10%" align="right">================</td>
+                </tr>
+                <tr>
+                    <td width="20%"></td>
+                    <td width="60%" align="right" style="letter-spacing: 3px;">TOTAL REEMBOLSO BOB:</td>
+                    <td width="10%"></td>
+                    <td width="10%" align="right">*****2,077.71</td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <hr>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Nro. Factura: 123123123131231123
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            Nro. Cheque: Nombre Cheque: ESCARLET GIIOVANI JIMENEZ MEJIA
+        </td>
+    </tr>
+
+
+
+</table>
+        `;
+
+        var myWindow = window.open("", "_blank");
+        myWindow.document.write(htmlPreview);
+
+
+    },
+
 	}
 )
 </script>

@@ -33,6 +33,7 @@ class MODTipoDocLiquidacion extends MODbase{
 		$this->captura('id_usuario_ai','int4');
 		$this->captura('id_usuario_mod','int4');
 		$this->captura('fecha_mod','timestamp');
+		$this->captura('descripcion','varchar');
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
 		
@@ -53,6 +54,7 @@ class MODTipoDocLiquidacion extends MODbase{
 		//Define los parametros para la funcion
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('tipo_documento','tipo_documento','varchar');
+		$this->setParametro('descripcion','descripcion','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -72,6 +74,7 @@ class MODTipoDocLiquidacion extends MODbase{
 		$this->setParametro('id_tipo_doc_liquidacion','id_tipo_doc_liquidacion','int4');
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('tipo_documento','tipo_documento','varchar');
+		$this->setParametro('descripcion','descripcion','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

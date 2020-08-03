@@ -26,7 +26,6 @@ class MODDescuentoLiquidacion extends MODbase{
 		//Definicion de la lista del resultado del query
 		$this->captura('id_descuento_liquidacion','int4');
 		$this->captura('contabilizar','varchar');
-		$this->captura('obs_dba','varchar');
 		$this->captura('importe','numeric');
 		$this->captura('estado_reg','varchar');
 		$this->captura('id_concepto_ingas','int4');
@@ -40,7 +39,8 @@ class MODDescuentoLiquidacion extends MODbase{
 		$this->captura('id_usuario_mod','int4');
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
-		
+		$this->captura('desc_desc_ingas','varchar');
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -57,7 +57,6 @@ class MODDescuentoLiquidacion extends MODbase{
 				
 		//Define los parametros para la funcion
 		$this->setParametro('contabilizar','contabilizar','varchar');
-		$this->setParametro('obs_dba','obs_dba','varchar');
 		$this->setParametro('importe','importe','numeric');
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('id_concepto_ingas','id_concepto_ingas','int4');
@@ -81,7 +80,6 @@ class MODDescuentoLiquidacion extends MODbase{
 		//Define los parametros para la funcion
 		$this->setParametro('id_descuento_liquidacion','id_descuento_liquidacion','int4');
 		$this->setParametro('contabilizar','contabilizar','varchar');
-		$this->setParametro('obs_dba','obs_dba','varchar');
 		$this->setParametro('importe','importe','numeric');
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('id_concepto_ingas','id_concepto_ingas','int4');

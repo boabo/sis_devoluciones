@@ -45,7 +45,6 @@ BEGIN
         	--Sentencia de la insercion
         	insert into decr.tdescuento_liquidacion(
 			contabilizar,
-			obs_dba,
 			importe,
 			estado_reg,
 			id_concepto_ingas,
@@ -59,7 +58,6 @@ BEGIN
 			id_usuario_mod
           	) values(
 			v_parametros.contabilizar,
-			v_parametros.obs_dba,
 			v_parametros.importe,
 			'activo',
 			v_parametros.id_concepto_ingas,
@@ -98,7 +96,6 @@ BEGIN
 			--Sentencia de la modificacion
 			update decr.tdescuento_liquidacion set
 			contabilizar = v_parametros.contabilizar,
-			obs_dba = v_parametros.obs_dba,
 			importe = v_parametros.importe,
 			id_concepto_ingas = v_parametros.id_concepto_ingas,
 			id_liquidacion = v_parametros.id_liquidacion,

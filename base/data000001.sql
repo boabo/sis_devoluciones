@@ -29,4 +29,15 @@ select pxp.f_insert_tgui ('Tipo Doc Liquidacion', 'Tipo Doc Liquidacion', 'TDOCL
 select pxp.f_insert_tgui ('Liquidacion', 'Liquidacion', 'SCREENLIQ', 'si', 3, 'sis_devoluciones/vista/liquidacion/Liquidacion.php', 3, '', 'Liquidacion', 'DECR');
 select pxp.f_insert_tgui ('Descuento Liquidacion', 'Descuento Liquidacion', 'SCREENDESL', 'si', 4, 'sis_devoluciones/vista/descuento_liquidacion/DescuentoLiquidacion.php', 3, '', 'DescuentoLiquidacion', 'DECR');
 
+
+--configuracion para el documento para los autocorrelativos
+SELECT param.f_import_tdocumento('insert', 'LIQCBBDEV', 'LIQCBBDEV', 'DECR', 'tabla', 'gestion', '',
+                                 'CBB-DEVCBB-gestioncorrelativo');
+
+
+select param.f_import_tcatalogo_tipo ('insert','tliquidacion_estacion','DECR','tliquidacion');
+select param.f_import_tcatalogo ('insert','DECR','CBB','CBB','tliquidacion_estacion');
+select param.f_import_tcatalogo ('insert','DECR','LPB','LPB','tliquidacion_estacion');
+
+
 /********************************************F-DAT-FFP-DECR-0-07/07/2015********************************************/
