@@ -11,7 +11,7 @@ header("content-type: text/javascript; charset=UTF-8");
 <script>
     Phx.vista.FormNota = Ext.extend(Phx.frmInterfaz, {
 
-            ActSave: '../../sis_devoluciones/control/Nota/saveForm',
+            ActSave: '../../sis_devoluciones/control/Nota/generarNotaPxp',
             botones: false,
             ciudadOrigen: '',
             sucursalOrigen: '',
@@ -545,7 +545,8 @@ header("content-type: text/javascript; charset=UTF-8");
                         'nro_aut',
                         'tipo',
                         'precio_unitario',
-                        'importe_original'
+                        'importe_original',
+                        'importe_devolver'
                     ],
                     remoteSort: true,
                     baseParams: {dir: 'ASC', sort: 'id_liquidacion', limit: '50', start: '0'},
@@ -1328,7 +1329,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                                 const json = r[0].json;
                                 console.log('json', json)
-                                this.agregarDatosCampo(json.desc_nro_boleto, json.razon, json.nit, json.fecha_emision, json.total, 1);
+                                this.agregarDatosCampo(json.desc_nro_boleto, json.razon, json.nro_nit, json.fecha_fac, json.total, 1);
 
 
                                 /*if (r[0].data['tipo'] == 'NO') {

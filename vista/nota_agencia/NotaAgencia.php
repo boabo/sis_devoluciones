@@ -17,9 +17,10 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
     	//llama al constructor de la clase padre
 		Phx.vista.NotaAgencia.superclass.constructor.call(this,config);
 		this.init();
-		this.load({params:{start:0, limit:this.tam_pag}})
+        this.iniciarEventos();
+		this.load({params:{start:0, limit:this.tam_pag, id_liquidacion:config.id_liquidacion}})
 	},
-			
+
 	Atributos:[
 		{
 			//configuracion del componente
@@ -29,7 +30,7 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
 					name: 'id_nota_agencia'
 			},
 			type:'Field',
-			form:true 
+			form:true
 		},
 		{
 			config:{
@@ -94,6 +95,99 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
             bottom_filter: true,
             form: true
         },
+
+        {
+            config:{
+                name: 'nrofac',
+                fieldLabel: 'Nro Fac',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:8
+            },
+            type:'TextField',
+            filters:{pfiltro:'notage.nrofac',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
+        {
+            config:{
+                name: 'nroaut',
+                fieldLabel: 'Nro Aut',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:8
+            },
+            type:'TextField',
+            filters:{pfiltro:'notage.nroaut',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
+        {
+            config:{
+                name: 'fecha_fac',
+                fieldLabel: 'Fecha Fac',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                format: 'd/m/Y',
+                renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
+            },
+            type:'DateField',
+            filters:{pfiltro:'notage.fecha_fac',type:'date'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
+        {
+            config:{
+                name: 'codito_control_fac',
+                fieldLabel: 'Codito Control Fac',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:255
+            },
+            type:'TextField',
+            filters:{pfiltro:'notage.codito_control_fac',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
+        {
+            config:{
+                name: 'monto_total_fac',
+                fieldLabel: 'Monto Total Fac',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:655362
+            },
+            type:'NumberField',
+            filters:{pfiltro:'notage.monto_total_fac',type:'numeric'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
+        {
+            config:{
+                name: 'iva',
+                fieldLabel: 'Iva',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:10
+            },
+            type:'TextField',
+            filters:{pfiltro:'notage.iva',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
+
      /*   {
             config:{
                 name: 'id_doc_compra_venta',
@@ -316,7 +410,7 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
-							format: 'd/m/Y', 
+							format: 'd/m/Y',
 							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
 			},
 				type:'DateField',
@@ -431,97 +525,7 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
-		{
-			config:{
-				name: 'nrofac',
-				fieldLabel: 'Nro Fac',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:8
-			},
-				type:'TextField',
-				filters:{pfiltro:'notage.nrofac',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
-		{
-			config:{
-				name: 'nroaut',
-				fieldLabel: 'Nro Aut',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:8
-			},
-				type:'TextField',
-				filters:{pfiltro:'notage.nroaut',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
-		{
-			config:{
-				name: 'fecha_fac',
-				fieldLabel: 'Fecha Fac',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-							format: 'd/m/Y', 
-							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
-			},
-				type:'DateField',
-				filters:{pfiltro:'notage.fecha_fac',type:'date'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
-		{
-			config:{
-				name: 'codito_control_fac',
-				fieldLabel: 'Codito Control Fac',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:255
-			},
-				type:'TextField',
-				filters:{pfiltro:'notage.codito_control_fac',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
-		{
-			config:{
-				name: 'monto_total_fac',
-				fieldLabel: 'Monto Total Fac',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:655362
-			},
-				type:'NumberField',
-				filters:{pfiltro:'notage.monto_total_fac',type:'numeric'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
-		{
-			config:{
-				name: 'iva',
-				fieldLabel: 'Iva',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:10
-			},
-				type:'TextField',
-				filters:{pfiltro:'notage.iva',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
+
 		{
 			config:{
 				name: 'neto',
@@ -574,7 +578,7 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-							format: 'd/m/Y', 
+							format: 'd/m/Y',
 							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
 			},
 				type:'DateField',
@@ -635,7 +639,7 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-							format: 'd/m/Y', 
+							format: 'd/m/Y',
 							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
 			},
 				type:'DateField',
@@ -645,7 +649,7 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
 				form:false
 		}
 	],
-	tam_pag:50,	
+	tam_pag:50,
 	title:'Nota Agencia',
 	ActSave:'../../sis_devoluciones/control/NotaAgencia/insertarNotaAgencia',
 	ActDel:'../../sis_devoluciones/control/NotaAgencia/eliminarNotaAgencia',
@@ -694,8 +698,23 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
 		direction: 'ASC'
 	},
 	bdel:true,
-	bsave:true
-	}
+	bsave:true,
+    iniciarEventos : function () {
+        this.Cmp.id_doc_compra_venta.on('select', function (rec, d) {
+
+            console.log('llega')
+            this.Cmp.nrofac.setValue(d.json.nro_documento);
+            this.Cmp.nroaut.setValue(d.json.nro_autorizacion);
+            this.Cmp.fecha_fac.setValue(d.json.fecha);
+            this.Cmp.codito_control_fac.setValue();
+            this.Cmp.monto_total_fac.setValue(d.json.importe_doc);
+
+            console.log(d.json)
+
+        }, this);
+    },
+
+    }
 )
 </script>
 		

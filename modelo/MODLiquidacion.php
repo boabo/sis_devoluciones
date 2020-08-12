@@ -73,6 +73,8 @@ class MODLiquidacion extends MODbase{
         $this->captura('importe_neto','numeric');
         $this->captura('tasas','numeric');
         $this->captura('importe_total','numeric');
+        $this->captura('sum_descuentos','numeric');
+        $this->captura('importe_devolver','numeric');
 
 
 

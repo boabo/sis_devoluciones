@@ -30,7 +30,7 @@ DECLARE
 	v_nombre_funcion        text;
 	v_mensaje_error         text;
 	v_id_nota	integer;
-			    
+    v_parametros_json record;
 BEGIN
 
     v_nombre_funcion = 'decr.ft_nota_ime';
@@ -172,6 +172,33 @@ BEGIN
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Notas eliminado(a)'); 
             v_resp = pxp.f_agrega_clave(v_resp,'id_nota',v_parametros.id_nota::varchar);
               
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+
+	/*********************************
+ 	#TRANSACCION:  'FAC_NOT_JSONIME'
+ 	#DESCRIPCION:	REGISTRO DE NOTA PXP
+ 	#AUTOR:		FAVIO FIGUEROA
+ 	#FECHA:		18-08-2020 19:30:03
+	***********************************/
+
+	elsif(p_transaccion='FAC_NOT_JSONIME')then
+
+		begin
+			--Sentencia de la eliminacion
+
+            select *
+            INTO v_parametros_json
+            from json_to_record(v_parametros.values_json::json) as (tipo_id varchar, liquidevolu varchar);
+
+            RAISE EXCEPTION '%', v_parametros_json.liquidevolu;
+
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Notas eliminado(a)');
+            v_resp = pxp.f_agrega_clave(v_resp,'id_nota',v_parametros.id_nota::varchar);
+
             --Devuelve la respuesta
             return v_resp;
 

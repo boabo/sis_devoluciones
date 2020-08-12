@@ -74,7 +74,8 @@ BEGIN
 						notage.fecha_mod,
 						usu1.cuenta as usr_reg,
 						usu2.cuenta as usr_mod,
-						mon.moneda as desc_moneda
+						mon.moneda as desc_moneda,
+						notage.id_liquidacion
 						from decr.tnota_agencia notage
 						inner join param.tmoneda mon on mon.id_moneda = notage.id_moneda
 						inner join segu.tusuario usu1 on usu1.id_usuario = notage.id_usuario_reg

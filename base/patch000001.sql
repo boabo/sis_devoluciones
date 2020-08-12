@@ -444,6 +444,10 @@ alter table decr.tliquidacion
 
 
 
+alter table decr.tnota_agencia
+    add id_liquidacion integer;
+
+
 
 
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/

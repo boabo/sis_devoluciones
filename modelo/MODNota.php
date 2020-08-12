@@ -22,13 +22,13 @@ class MODNota extends MODbase
     {
         parent::__construct($pParam);
 
-        $this->cone = new conexion();
+       /* $this->cone = new conexion();
         $this->informix = $this->cone->conectarPDOInformix();
         // conexion a informix
         $this->link = $this->cone->conectarpdo();
         //conexion a pxp(postgres)
 
-        $this->tabla_nota_informix = $_SESSION['tabla_nota_informix'];
+        $this->tabla_nota_informix = $_SESSION['tabla_nota_informix'];*/
     }
 
     function listarNota()
@@ -816,7 +816,7 @@ class MODNota extends MODbase
             }
 
         } else {//no tiene liquidacion
-
+            //$this->anularNotaLiquidacion(); // esto solo cuando sucede casos excepcionales debe estar comentado
         }
 
 
@@ -958,6 +958,34 @@ class MODNota extends MODbase
 
 
     }
+
+
+    function generarNotaPxp(){
+
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento = 'decr.ft_nota_ime';
+        $this->transaccion = 'FAC_NOT_JSONIME';
+        $this->tipo_procedimiento = 'IME';
+
+        $valuesJson = json_encode($this->aParam->arreglo_parametros);
+
+
+        //$this->aParam->addParametro('values_json', '{"tipo_id":"LIQUIDACION","liquidevolu":"10"}');
+        //$this->arreglo['values_json'] = '{"tipo_id":"LIQUIDACION","liquidevolu":"10"}';
+
+        $this->aParam->addParametro('values_json', $valuesJson);
+        $this->arreglo['values_json'] = $valuesJson;
+        $this->setParametro('values_json','values_json','text');
+        $this->setParametro('tipo_id','tipo_id','varchar');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
 
 
 }

@@ -55,6 +55,7 @@ class MODNotaAgencia extends MODbase{
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
 		$this->captura('desc_moneda','varchar');
+		$this->captura('id_liquidacion','int4');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -96,6 +97,7 @@ class MODNotaAgencia extends MODbase{
 		$this->setParametro('iva','iva','varchar');
 		$this->setParametro('neto','neto','numeric');
 		$this->setParametro('obs','obs','varchar');
+		$this->setParametro('id_liquidacion','id_liquidacion','int4');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -138,8 +140,10 @@ class MODNotaAgencia extends MODbase{
 		$this->setParametro('iva','iva','varchar');
 		$this->setParametro('neto','neto','numeric');
 		$this->setParametro('obs','obs','varchar');
+        $this->setParametro('id_liquidacion','id_liquidacion','int4');
 
-		//Ejecuta la instruccion
+
+        //Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
 

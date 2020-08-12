@@ -524,6 +524,13 @@ window.onload=function(){self.print();}
 		
 		
 	}
+
+	// nota para la nueva version todo en el pxp
+	function generarNotaPxp() {
+        $this->objFunc=$this->create('MODNota');
+        $this->res=$this->objFunc->generarNotaPxp($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
 			
 }
 

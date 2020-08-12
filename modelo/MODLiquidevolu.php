@@ -124,7 +124,13 @@ class MODLiquidevolu extends MODbase
             $documento = $this->verTipoDevolucion($nroliqui);
 
 
-            if (trim($documento[0]['IDDOC']) == 'BOL') {//CUANDO EL DOCUMENTO SEA BOLETO
+
+            if (trim($documento[0]['IDDOC']) == 'BOL' ) {//CUANDO EL DOCUMENTO SEA BOLETO
+
+                $datos = $this->liquiboletramos($nroliqui);
+
+
+            } elseif (trim($documento[0]['IDDOC']) == 'EMD' ) {//CUANDO EL DOCUMENTO SEA BOLETO
 
                 $datos = $this->liquiboletramos($nroliqui);
 
@@ -708,9 +714,10 @@ class MODLiquidevolu extends MODbase
             $stmt = $link->prepare($sql_doc);
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            //$results[0]['COUNT'] =0;//solo para quitar la validacion en casos de que queramos meter a la fuerza una factura como emc
 
-
-            if ($results[0]['COUNT'] == 0) {
+            $validarSiExisteEnLiquidacion = false;
+            if ($results[0]['COUNT'] == 0 || $validarSiExisteEnLiquidacion == false) {
 
                 $sql_nota = "select count(*) as count from notacrdb where billete = '$billete' ";
                 $statement2 = $link->prepare($sql_nota);

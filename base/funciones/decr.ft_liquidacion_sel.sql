@@ -22,7 +22,9 @@ DECLARE
 	v_parametros  		record;
 	v_nombre_funcion   	text;
 	v_resp				varchar;
-			    
+    v_sum_descuentos  numeric(10,2) DEFAULT 0;
+    v_importe_devolver  numeric(10,2) DEFAULT 0;
+
 BEGIN
 
 	v_nombre_funcion = 'decr.ft_liquidacion_sel';
@@ -38,6 +40,17 @@ BEGIN
 	if(p_transaccion='DECR_LIQUI_SEL')then
 
     	begin
+
+    	    --obtener descuentos si existe un filtro de id_liquidacion
+    	    IF pxp.f_existe_parametro(p_tabla, 'id_liquidacion') THEN
+                SELECT sum(tci.precio) as sum_descuentos
+                INTO v_sum_descuentos
+    	        FROM decr.tdescuento_liquidacion tdl
+                inner JOIN param.tconcepto_ingas tci on tci.id_concepto_ingas = tdl.id_concepto_ingas
+    	        WHERE tdl.id_liquidacion = v_parametros.id_liquidacion;
+
+            END IF;
+
     		--Sentencia de la consulta
 			v_consulta:='select
 						liqui.id_liquidacion,
@@ -87,7 +100,9 @@ BEGIN
 			liqui.moneda_emision,
 			liqui.importe_neto,
 			liqui.tasas,
-			liqui.importe_total
+			liqui.importe_total,
+			'||v_sum_descuentos||' as sum_descuentos,
+			liqui.importe_total - '||v_sum_descuentos||' as importe_devolver -- solo funciona para generar nota
 from decr.tliquidacion liqui
          inner join segu.tusuario usu1 on usu1.id_usuario = liqui.id_usuario_reg
          left join segu.tusuario usu2 on usu2.id_usuario = liqui.id_usuario_mod

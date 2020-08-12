@@ -1295,7 +1295,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             if (success) {
 
 
-                                if (r[0].data['tipo'] == 'NO') {
+                                if (r[0].data['tipo'] == 'NOO') { // 03-NOV-2019  esto era NO PERO por peticion de shirley se cambio ya que estas igual podran tener notas
 
                                     this.mensaje_('TIPO', r[0].data['iddoc'] + ' esta liquidacion no tiene NCD BOA', 'ERROR');
 

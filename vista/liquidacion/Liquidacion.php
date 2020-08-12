@@ -25,7 +25,18 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 
         this.load({params:{start:0, limit:this.tam_pag}})
 
-        this.addButton('verLiquidacion',{argument: {imprimir: 'verLiquidacion'},text:'<i class="fa fa-file-text-o fa-2x"></i> Ver Liquidación',/*iconCls:'' ,*/disabled:false,handler:this.verLiquidacion});
+        this.addButton('verLiquidacion', {
+            argument: {imprimir: 'verLiquidacion'},
+            text: '<i class="fa fa-file-text-o fa-2x"></i> Ver Liquidación',/*iconCls:'' ,*/
+            disabled: false,
+            handler: this.verLiquidacion
+        });
+        this.addButton('Nota Agencia', {
+            argument: {imprimir: 'notaAgencia'},
+            text: '<i class="fa fa-file-text-o fa-2x"></i> Nota Agencia',/*iconCls:'' ,*/
+            disabled: false,
+            handler: this.notaAgencia
+        });
 
 
     },
@@ -905,6 +916,18 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
         this.accionFormulario = 'NEW';
         Phx.vista.Liquidacion.superclass.onButtonNew.call(this);//habilita el boton y se abre
     },
+    notaAgencia: function () {
+        var rec=this.sm.getSelected();
+        Phx.CP.loadWindows('../../../sis_devoluciones/vista/nota_agencia/NotaAgencia.php',
+                'Nota Agencia con Liquidacion',
+            {
+                width:'90%',
+                height:500
+            },
+            rec.data,
+            this.idContenedor,
+            'NotaAgencia')
+    },
     verLiquidacion : function () {
 
         var rec = this.sm.getSelected();
@@ -918,22 +941,11 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
             scope: this
         });
     },
-    descuentoHtml: function(descuento) {
-	    const tr = `
-	     <tr>
-            <td width="20%">codigo</td>
-            <td width="60%">${descuento.desc_ingas}</td>
-            <td width="10%">${descuento.importe}</td>
-            <td width="10%"></td>
-        </tr>
-	    `;
-    },
+
     successVistaPrevia: function (resp) {
         var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
         console.log(JSON.parse(objRes.ROOT.datos.mensaje));
         const {liquidacion, descuentos, sum_descuentos} = JSON.parse(objRes.ROOT.datos.mensaje);
-
-        const descuentoHtmlAux = this.descuentoHtml;
         const htmlPreview = `
 
 <table width="100%" style=" font-size: 12px; letter-spacing: 1px;">
@@ -1040,7 +1052,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
                     <td width="80%" colspan="2">P-VENTA/AGENCIA: 56454545 TROPICAL TOURS LTDA. (SRZ)
                     </td>
                     <td width="10%"></td>
-                    <td width="10%"></td>
+                    <td width="10%" align="right">${liquidacion.importe_total}</td>
                 </tr>
                 <tr>
                     <td width="80%" colspan="2">Tramos Utilizados: (MENOS)</td>
@@ -1056,7 +1068,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
                 <tr>
                     <td width="80%" colspan="2">${liquidacion.tramo_devolucion}</td>
                     <td width="10%"></td>
-                    <td width="10%" align="right">2,964.75</td>
+                    <td width="10%" align="right">0 (necesito agregar un nuevo campo aca?)</td>
                 </tr>
 
             </table>
@@ -1094,7 +1106,7 @@ ${descuentos.map(function (descuento) {
                     <td width="20%"></td>
                     <td width="60%" style="letter-spacing: 3px;" align="right">TOTAL DECUENTOS:</td>
                     <td width="10%"></td>
-                    <td width="10%" align="right">1300.22</td>
+                    <td width="10%" align="right">${sum_descuentos}</td>
                 </tr>
                 <tr>
                     <td width="20%"></td>
@@ -1106,7 +1118,7 @@ ${descuentos.map(function (descuento) {
                     <td width="20%"></td>
                     <td width="60%" align="right" style="letter-spacing: 3px;">TOTAL REEMBOLSO BOB:</td>
                     <td width="10%"></td>
-                    <td width="10%" align="right">*****2,077.71</td>
+                    <td width="10%" align="right">*****${liquidacion.total_liquidacion}</td>
                 </tr>
 
             </table>

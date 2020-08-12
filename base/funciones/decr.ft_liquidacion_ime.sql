@@ -263,8 +263,9 @@ BEGIN
                          SELECT * FROM decr.tliquidacion tl
                          WHERE tl.id_liquidacion = v_parametros.id_liquidacion
                      ), t_descuentos AS (
-                SELECT tdl.id_concepto_ingas, tdl.importe, tci.desc_ingas FROM decr.tdescuento_liquidacion tdl
-                                                                                   INNER JOIN param.tconcepto_ingas tci on tci.id_concepto_ingas = tdl.id_concepto_ingas
+                SELECT tdl.id_liquidacion,tdl.id_concepto_ingas, tdl.importe, tci.desc_ingas
+                FROM decr.tdescuento_liquidacion tdl
+                INNER JOIN param.tconcepto_ingas tci on tci.id_concepto_ingas = tdl.id_concepto_ingas
                 WHERE tdl.id_liquidacion = v_parametros.id_liquidacion
             )SELECT TO_JSON(ROW_TO_JSON(jsonData) :: TEXT) #>> '{}' as json
             INTO v_json
@@ -275,7 +276,13 @@ BEGIN
                             SELECT TO_JSON(liqui)
                             FROM
                                 (
-                                    SELECT * FROM t_liqui
+                                    SELECT tl.*,
+                                           (
+                                                   tl.importe_total - (SELECT sum(importe)
+                                                                       FROM t_descuentos td
+                                                                       WHERE td.id_liquidacion = tl.id_liquidacion )
+                                               ) as total_liquidacion
+                                    FROM t_liqui tl
                                 ) liqui
                         ) as liquidacion,
                         (
