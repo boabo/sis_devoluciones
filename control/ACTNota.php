@@ -7,6 +7,7 @@
 *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
 */
 require_once(dirname(__FILE__).'/numLetra.php');
+require_once(dirname(__FILE__).'/ACTLiquidacion.php');
 require_once(dirname(__FILE__).'/../../lib/tcpdf/tcpdf_barcodes_2d.php');
 class ACTNota extends ACTbase{
 
@@ -76,9 +77,10 @@ class ACTNota extends ACTbase{
 		
 		
 		$this->objFunc=$this->create('MODNota');
-		
 		$this->res=$this->objFunc->generarNota($this->objParam);
-		
+
+
+
 		
 		
 
@@ -124,10 +126,28 @@ class ACTNota extends ACTbase{
 			
 			
 			if($item['tipo'] == 'BOLETO'){ //esta autorizacion es de la nota ya sea de factura o boleto
-				
-				
-				$original = $this->listarBoletosOriginales($item['factura']);
-				
+
+                $version = $this->objParam->getParametro('version');
+                if($version == 2) {
+
+                    $this->objParam->addParametro('typeReturn', 'return');
+                    $this->controlLiquidacion = new ACTLiquidacion($this->objParam);
+                    $stringBoletoOriginal = $this->controlLiquidacion->getTicketInformation();
+                    $dataBoletoOriginal = json_decode($stringBoletoOriginal);
+                    
+                    $original = [];
+                    array_push($original, array("precio_unitario"=> $dataBoletoOriginal[0]->netAmount,
+                        "importe_original"=> $dataBoletoOriginal[0]->totalAmount,
+                        "cantidad"=> 1,
+                        "concepto"=>$dataBoletoOriginal[0]->itinerary
+                    ));
+
+
+                } else {
+                    $original = $this->listarBoletosOriginales($item['factura']);
+                }
+
+
 			}else if($item['tipo'] == 'FACTURA'){
 				
 				$original = $this->listarFacturaOriginales($item['factura'],$item['nroaut_anterior']);

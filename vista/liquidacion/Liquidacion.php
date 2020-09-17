@@ -136,6 +136,53 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
         },
 
 
+        {
+            config: {
+                name: 'id_punto_venta',
+                id: 'id_punto_venta',
+                fieldLabel: 'Punto Venta',
+                allowBlank: true,
+                emptyText:'Punto de Venta...',
+                blankText: 'Año',
+                store: new Ext.data.JsonStore({
+                    url: '../../sis_ventas_facturacion/control/PuntoVenta/listarPuntoVenta',
+                    id: 'id_punto_venta',
+                    root: 'datos',
+                    sortInfo: {
+                        field: 'nombre',
+                        direction: 'ASC'
+                    },
+                    totalProperty: 'total',
+                    fields: ['id_punto_venta', 'id_sucursal','nombre', 'codigo','habilitar_comisiones','formato_comprobante'],
+                    remoteSort: true,
+                    baseParams: {tipo_usuario: 'cajero',par_filtro: 'puve.nombre#puve.codigo', tipo_factura: this.tipo_factura}
+                }),
+                tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Codigo:</b> {codigo}</p><p><b>Nombre:</b> {nombre}</p></div></tpl>',
+                valueField: 'id_punto_venta',
+                triggerAction: 'all',
+                displayField: 'nombre',
+                hiddenName: 'id_punto_venta',
+                mode:'remote',
+                pageSize:50,
+                queryDelay:500,
+                listWidth:'300',
+                hidden:false,
+                width:300,
+                gdisplayField: 'desc_punto_venta',
+                forceSelection: true,
+                typeAhead: false,
+                lazyRender: true,
+                anchor: '100%',
+                gwidth: 150,
+                minChars: 2,
+            },
+            type: 'ComboBox',
+            id_grupo: 0,
+            filters: {pfiltro: 'movtip.nombre',type: 'string'},
+            grid: true,
+            form: true
+        },
+
 
         {
             config : {
@@ -811,6 +858,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
         'importe_neto',
         'tasas',
         'importe_total',
+        'desc_punto_venta',
 
 	],
 	sortInfo:{

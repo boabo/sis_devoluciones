@@ -647,30 +647,87 @@ class MODNota extends MODbase
 
     function generarNota()
     {
+        //esta version es la ultima version todo en el pxp
+        if($this->aParam->getParametro('version') == '2') {
 
-        $items_notas = $this->aParam->getParametro('notas');
-        //llega los id notas
-        $cadena_aux = "";
-        if (count($items_notas) == 1) {
-            $cadena_aux .= "where nota.id_nota = '$items_notas'";
+            //Definicion de variables para ejecucion del procedimiento
+            $this->procedimiento='decr.ft_nota_sel';
+            $this->transaccion='NOTA_GEN_SEL';
+            $this->tipo_procedimiento='SEL';
+
+            $this->setParametro('notas','notas','varchar');
+
+
+            //Definicion de la lista del resultado del query
+
+             $this->captura('id_usuario_reg','int4');
+             $this->captura('id_usuario_mod','int4');
+             $this->captura('fecha_reg','timestamp');
+             $this->captura('fecha_mod','timestamp');
+             $this->captura('estado_reg','varchar');
+             $this->captura('id_usuario_ai','int4');
+             $this->captura('usuario_ai','varchar');
+             $this->captura('id_nota','int4');
+             $this->captura('estacion','varchar');
+             $this->captura('id_sucursal','int4');
+             $this->captura('estado','varchar');
+             $this->captura('nro_nota','varchar');
+             $this->captura('fecha','varchar');
+             $this->captura('razon','varchar');
+             $this->captura('tcambio','numeric');
+             $this->captura('nit','varchar');
+             $this->captura('id_liquidacion','varchar');
+             $this->captura('nro_liquidacion','varchar');
+             $this->captura('id_moneda','int4');
+             $this->captura('monto_total','numeric');
+             $this->captura('excento','numeric');
+             $this->captura('total_devuelto','numeric');
+             $this->captura('credfis','numeric');
+             $this->captura('billete','varchar');
+             $this->captura('codigo_control','varchar');
+             $this->captura('id_dosificacion','int4');
+             $this->captura('factura','bigint');
+             $this->captura('autorizacion','bigint');
+             $this->captura('tipo','varchar');
+             $this->captura('nroaut_anterior','bigint');
+             $this->captura('fecha_fac','varchar');
+             $this->captura('nroaut','bigint');
+             $this->captura('fecha_limite','varchar');
+             $this->captura('cuenta','varchar');
+
+
+            //Ejecuta la instruccion
+            $this->armarConsulta();
+            $this->ejecutarConsulta();
+
+            //Devuelve la respuesta
+            return $this->respuesta;
+
         } else {
-            $coun = count($items_notas) - 1;
-            $cadena_aux .= "where nota.id_nota in (";
-            for ($i = 0; $i <= $coun; $i++) {
-                if ($i < $coun) {
-                    $cadena_aux .= "'$items_notas[$i]',";
-                } else {
-                    $cadena_aux .= "'$items_notas[$i]'";
-                }
-            }
-            $cadena_aux .= ")";
-        }
 
-        try {
-            //obtener sucursal del usuario
-            $this->link->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->link->beginTransaction();
-            $stmt = $this->link->prepare("SELECT
+            $items_notas = $this->aParam->getParametro('notas');
+            //llega los id notas
+            $cadena_aux = "";
+            if (count($items_notas) == 1) {
+                $cadena_aux .= "where nota.id_nota = '$items_notas'";
+            } else {
+                $coun = count($items_notas) - 1;
+                $cadena_aux .= "where nota.id_nota in (";
+                for ($i = 0; $i <= $coun; $i++) {
+                    if ($i < $coun) {
+                        $cadena_aux .= "'$items_notas[$i]',";
+                    } else {
+                        $cadena_aux .= "'$items_notas[$i]'";
+                    }
+                }
+                $cadena_aux .= ")";
+            }
+
+            try {
+                //obtener sucursal del usuario
+                $this->link->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $this->link->beginTransaction();
+                $stmt = $this->link->prepare("SELECT
 										  nota.id_usuario_reg,
 										  nota.id_usuario_mod,
 										  nota.fecha_reg,
@@ -711,31 +768,34 @@ class MODNota extends MODbase
 										  inner join segu.tusuario usu1 on usu1.id_usuario = nota.id_usuario_reg
 										  $cadena_aux");
 
-            $stmt->execute();
-            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $stmt->execute();
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
-            $this->link->commit();
-            $this->respuesta = new Mensaje();
-            $this->respuesta->setMensaje($resp_procedimiento['tipo_respuesta'], $this->nombre_archivo, $resp_procedimiento['mensaje'], $resp_procedimiento['mensaje_tec'], 'base', $this->procedimiento, $this->transaccion, $this->tipo_procedimiento, $this->consulta);
-
-            $this->respuesta->setDatos($results);
-
-            $this->respuesta->getDatos();
-
-        } catch (Exception $e) {
-            $this->link->rollBack();
-            $this->respuesta = new Mensaje();
-            if ($e->getCode() == 3) {//es un error de un procedimiento almacenado de pxp
+                $this->link->commit();
+                $this->respuesta = new Mensaje();
                 $this->respuesta->setMensaje($resp_procedimiento['tipo_respuesta'], $this->nombre_archivo, $resp_procedimiento['mensaje'], $resp_procedimiento['mensaje_tec'], 'base', $this->procedimiento, $this->transaccion, $this->tipo_procedimiento, $this->consulta);
-            } else if ($e->getCode() == 2) {//es un error en bd de una consulta
-                $this->respuesta->setMensaje('ERROR', $this->nombre_archivo, $e->getMessage(), $e->getMessage(), 'modelo', '', '', '', '');
-            } else {//es un error lanzado con throw exception
-                throw new Exception($e->getMessage(), 2);
+
+                $this->respuesta->setDatos($results);
+
+                $this->respuesta->getDatos();
+
+            } catch (Exception $e) {
+                $this->link->rollBack();
+                $this->respuesta = new Mensaje();
+                if ($e->getCode() == 3) {//es un error de un procedimiento almacenado de pxp
+                    $this->respuesta->setMensaje($resp_procedimiento['tipo_respuesta'], $this->nombre_archivo, $resp_procedimiento['mensaje'], $resp_procedimiento['mensaje_tec'], 'base', $this->procedimiento, $this->transaccion, $this->tipo_procedimiento, $this->consulta);
+                } else if ($e->getCode() == 2) {//es un error en bd de una consulta
+                    $this->respuesta->setMensaje('ERROR', $this->nombre_archivo, $e->getMessage(), $e->getMessage(), 'modelo', '', '', '', '');
+                } else {//es un error lanzado con throw exception
+                    throw new Exception($e->getMessage(), 2);
+                }
             }
+
+            return $this->respuesta;
+
         }
 
-        return $this->respuesta;
 
     }
 
@@ -977,6 +1037,8 @@ class MODNota extends MODbase
         $this->arreglo['values_json'] = $valuesJson;
         $this->setParametro('values_json','values_json','text');
         $this->setParametro('tipo_id','tipo_id','varchar');
+
+        $this->setParametro('detalle','newRecords','text');
 
         //Ejecuta la instruccion
         $this->armarConsulta();

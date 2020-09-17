@@ -1984,7 +1984,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 Ext.Ajax.request({
                     url: '../../sis_devoluciones/control/Nota/generarNota',
-                    params: {'notas': objRes.datos},
+                    params: {'notas': objRes.ROOT.datos.id_nota, 'version': '2'}, // cambiar esto en la bd para que podamos enviar varios si se desea
                     success: this.successExport,
                     failure: this.conexionFailure,
                     timeout: this.timeout,

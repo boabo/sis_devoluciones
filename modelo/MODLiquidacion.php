@@ -75,6 +75,9 @@ class MODLiquidacion extends MODbase{
         $this->captura('importe_total','numeric');
         $this->captura('sum_descuentos','numeric');
         $this->captura('importe_devolver','numeric');
+        $this->captura('id_punto_venta','int4');
+
+        $this->captura('desc_punto_venta','varchar');
 
 
 
@@ -120,6 +123,7 @@ class MODLiquidacion extends MODbase{
 		$this->setParametro('tasas','tasas','numeric');
 		$this->setParametro('importe_total','importe_total','numeric');
 		$this->setParametro('id_concepto_ingas','id_concepto_ingas','varchar');
+		$this->setParametro('id_punto_venta','id_punto_venta','int4');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

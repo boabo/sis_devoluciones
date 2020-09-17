@@ -86,7 +86,8 @@ BEGIN
             moneda_emision,
             importe_neto,
             tasas,
-            importe_total
+            importe_total,
+            id_punto_venta
           	) values(
 			v_parametros.estacion,
 			v_parametros.nro_liquidacion,
@@ -119,7 +120,8 @@ BEGIN
           	         v_parametros.moneda_emision,
           	         v_parametros.importe_neto,
           	         v_parametros.tasas,
-          	         v_parametros.importe_total
+          	         v_parametros.importe_total,
+          	         v_parametros.id_punto_venta
 
 			
 			
