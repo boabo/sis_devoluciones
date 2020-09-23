@@ -195,10 +195,28 @@ BEGIN
 
                           nota.nroaut,
                           to_char(nota.fecha_limite,''DD-MM-YYYY'')::varchar AS fecha_limite,
-                          usu1.cuenta
+                          usu1.cuenta,
+			                    ae.id_actividad_economica,
+                        ae.nombre as nombre_actividad,
+                           d.glosa_impuestos,
+                           d.glosa_empresa as glosa_boa,
+                           ''d.glosa_consumidor''::varchar as glosa_consumidor,
+                           ''d.nro_resolucion''::varchar as nro_resolucion,
+                        to_char(d.fecha_inicio_emi,''DD-MM-YYYY'')::varchar AS feciniemi,
+                        to_char(d.fecha_limite,''DD-MM-YYYY'')::varchar AS feclimemi,
+                           s.direccion,
+                           s.telefono as telefonos,
+                           ''s.alcaldia''::varchar as alcaldia,
+                           ''d.tipo_autoimpresor''::varchar as tipo_autoimpresor,
+                           ''d.autoimpresor''::varchar as autoimpresor,
+                           ''s.razon''::varchar as razon_sucursal
+
                         FROM
                           decr.tnota nota
                           inner join segu.tusuario usu1 on usu1.id_usuario = nota.id_usuario_reg
+                          inner join vef.tdosificacion d on d.id_dosificacion = nota.id_dosificacion
+                            INNER JOIN vef.tactividad_economica ae on ae.id_actividad_economica =  ANY(d.id_activida_economica)
+                            INNER JOIN vef.tsucursal s on s.id_sucursal = d.id_sucursal
 				        where nota.id_nota in ('||v_parametros.notas||')  ';
 
 
@@ -224,6 +242,9 @@ BEGIN
 					    FROM
                           decr.tnota nota
                           inner join segu.tusuario usu1 on usu1.id_usuario = nota.id_usuario_reg
+                          inner join vef.tdosificacion d on d.id_dosificacion = nota.id_dosificacion
+                            INNER JOIN vef.tactividad_economica ae on ae.id_actividad_economica =  ANY(d.id_activida_economica)
+                            INNER JOIN vef.tsucursal s on s.id_sucursal = d.id_sucursal
 					    where nota.id_nota in ('||v_parametros.notas||')';
 
 			--Devuelve la respuesta

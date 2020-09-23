@@ -78,6 +78,7 @@ class MODLiquidacion extends MODbase{
         $this->captura('id_punto_venta','int4');
 
         $this->captura('desc_punto_venta','varchar');
+        $this->captura('nro_nota','varchar');
 
 
 

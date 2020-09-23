@@ -295,6 +295,13 @@ BEGIN
                                 ) descuentos
                         ) as descuentos,
                         (
+                            SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(nota)))
+                            FROM
+                                (
+                                    SELECT * FROM decr.tnota where id_liquidacion::integer = v_parametros.id_liquidacion
+                                ) nota
+                        ) as notas,
+                        (
                             select sum(importe) from t_descuentos
                         ) as sum_descuentos
 

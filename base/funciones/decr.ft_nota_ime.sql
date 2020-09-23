@@ -330,7 +330,7 @@ BEGIN
                             v_registros_json.razon,
                             '6.9',
                             v_nro_nit,
-                            1,
+                            v_id_liquidacion,
                             v_registros_json.nroliqui,
                             1,
                             v_parametros_json.importe_total_devolver,

@@ -104,7 +104,8 @@ BEGIN
 			'||v_sum_descuentos||' as sum_descuentos,
 			liqui.importe_total - '||v_sum_descuentos||' as importe_devolver, -- solo funciona para generar nota
 			liqui.id_punto_venta,
-			pv.nombre as desc_punto_venta
+			pv.nombre as desc_punto_venta,
+			nota.nro_nota
 from decr.tliquidacion liqui
          inner join segu.tusuario usu1 on usu1.id_usuario = liqui.id_usuario_reg
          left join segu.tusuario usu2 on usu2.id_usuario = liqui.id_usuario_mod
@@ -112,6 +113,7 @@ inner join decr.ttipo_doc_liquidacion ttdl on ttdl.id_tipo_doc_liquidacion = liq
 inner join decr.ttipo_liquidacion ttl on ttl.id_tipo_liquidacion = liqui.id_tipo_liquidacion
 INNER JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
 			            inner join vef.tpunto_venta pv on pv.id_punto_venta = liqui.id_punto_venta
+			            left join decr.tnota nota on nota.id_liquidacion::integer = liqui.id_liquidacion
 				        where  ';
 
 			--Definicion de la respuesta
@@ -134,7 +136,7 @@ INNER JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
 
 		begin
 			--Sentencia de la consulta de conteo de registros
-			v_consulta:='select count(id_liquidacion)
+			v_consulta:='select count(liqui.id_liquidacion)
 					    from decr.tliquidacion liqui
          inner join segu.tusuario usu1 on usu1.id_usuario = liqui.id_usuario_reg
          left join segu.tusuario usu2 on usu2.id_usuario = liqui.id_usuario_mod
@@ -142,6 +144,7 @@ inner join decr.ttipo_doc_liquidacion ttdl on ttdl.id_tipo_doc_liquidacion = liq
 inner join decr.ttipo_liquidacion ttl on ttl.id_tipo_liquidacion = liqui.id_tipo_liquidacion
 INNER JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
 			            inner join vef.tpunto_venta pv on pv.id_punto_venta = liqui.id_punto_venta
+			            left join decr.tnota nota on nota.id_liquidacion::integer = liqui.id_liquidacion
 					    where ';
 
 			--Definicion de la respuesta

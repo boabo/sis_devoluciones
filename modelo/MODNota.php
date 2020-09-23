@@ -695,6 +695,24 @@ class MODNota extends MODbase
              $this->captura('fecha_limite','varchar');
              $this->captura('cuenta','varchar');
 
+            $this->captura('id_actividad_economica','int4');
+            $this->captura('nombre_actividad','varchar');
+            $this->captura('glosa_impuestos','varchar');
+            $this->captura('glosa_empresa','varchar');
+            $this->captura('glosa_consumidor','varchar');
+            $this->captura('nro_resolucion','varchar');
+            $this->captura('feciniemi','varchar');
+            $this->captura('feclimemi','varchar');
+            $this->captura('direccion','varchar');
+            $this->captura('telefonos','varchar');
+            $this->captura('alcaldia','varchar');
+            $this->captura('tipo_autoimpresor','varchar');
+            $this->captura('autoimpresor','varchar');
+            $this->captura('razon_sucursal','varchar');
+
+
+
+
 
             //Ejecuta la instruccion
             $this->armarConsulta();

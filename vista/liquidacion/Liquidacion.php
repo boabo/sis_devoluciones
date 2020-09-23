@@ -993,7 +993,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
     successVistaPrevia: function (resp) {
         var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
         console.log(JSON.parse(objRes.ROOT.datos.mensaje));
-        const {liquidacion, descuentos, sum_descuentos} = JSON.parse(objRes.ROOT.datos.mensaje);
+        const {liquidacion, descuentos, sum_descuentos, notas} = JSON.parse(objRes.ROOT.datos.mensaje);
         const htmlPreview = `
 
 <table width="100%" style=" font-size: 12px; letter-spacing: 1px;">
@@ -1188,6 +1188,13 @@ ${descuentos.map(function (descuento) {
             Nro. Cheque: Nombre Cheque: ESCARLET GIIOVANI JIMENEZ MEJIA
         </td>
     </tr>
+${notas.map(function (nota) {
+            console.log('nota',nota)
+            return '<tr>'
+                +'<td>Nro Nota : '+nota.nro_nota+'</td>'
+                +'</tr>';
+        }).join("")}
+
 
 
 

@@ -141,10 +141,28 @@ class ACTNota extends ACTbase{
                         "cantidad"=> 1,
                         "concepto"=>$dataBoletoOriginal[0]->itinerary
                     ));
+                    $dosificacion = [];
+
+                    array_push($dosificacion, array(
+                       "nombre_actividad" => $original[0]['nombre_actividad'],
+                       "glosa_impuestos" => $original[0]['glosa_impuestos'],
+                       "glosa_empresa" => $original[0]['glosa_empresa'],
+                       "glosa_consumidor" => $original[0]['glosa_consumidor'],
+                       "nro_resolucion" => $original[0]['nro_resolucion'],
+                       "feciniemi" => $original[0]['feciniemi'],
+                       "feclimemi" => $original[0]['feclimemi'],
+                       "direccion" => $original[0]['direccion'],
+                       "telefonos" => $original[0]['telefonos'],
+                       "alcaldia" => $original[0]['alcaldia'],
+                       "tipo_autoimpresor" => $original[0]['tipo_autoimpresor'],
+                       "autoimpresor" => $original[0]['autoimpresor'],
+                       "razon" => $original[0]['razon_sucursal'],
+                    ));
 
 
                 } else {
                     $original = $this->listarBoletosOriginales($item['factura']);
+                    $dosificacion = $this->listarDosificacion($item['id_dosificacion']);
                 }
 
 
@@ -161,7 +179,6 @@ class ACTNota extends ACTbase{
 			
 			
 			
-			$dosificacion = $this->listarDosificacion($item['id_dosificacion']);
 			//var_dump($dosificacion[0]['FECLIMEMI']);
 			//var_dump($dosificacion[0]['GLOSA_IMPUESTOS']);
 
@@ -511,10 +528,10 @@ window.onload=function(){self.print();}
 	}
 
 	function listarDosificacion($id_dosificacion){
-			
-		$this->objFunc=$this->create('MODNota');	
+
+		$this->objFunc=$this->create('MODNota');
 		$dosi =$this->objFunc->listarDosificacion($id_dosificacion);
-		
+
 		return $dosi;
 	}
 
