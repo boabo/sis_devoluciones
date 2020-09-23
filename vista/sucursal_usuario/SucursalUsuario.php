@@ -76,7 +76,7 @@ Phx.vista.SucursalUsuario=Ext.extend(Phx.gridInterfaz,{
 				valueField: 'id_usuario',
 				displayField: 'desc_person',
 				gdisplayField:'desc_usuario',//dibuja el campo extra de la consulta al hacer un inner join con orra tabla
-				tpl:'<tpl for="."><div class="x-combo-list-item"><p>{desc_person}</p><p>CI:{ci}</p> </div></tpl>',
+				tpl:'<tpl for="."><div class="x-combo-list-item"><p>{desc_person}</p><p>Cuenta:{cuenta}</p> </div></tpl>',
 				hiddenName: 'id_usuario',
 				forceSelection:true,
 				typeAhead: true,
