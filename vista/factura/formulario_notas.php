@@ -1269,73 +1269,86 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 this.Cmp.liquidevolu.on('select', function (combo, record) {
 
+                    console.log('combo', combo)
+                    console.log('record', record.json.fecha)
 
-                    this.FACMAN = false;
-
-
-                    this.tabs.removeAll();
-                    this.resetGroup(10);
-                    this.megrid.enable();
-
-                    this.megrid.remove();
-                    this.megrid.store.removeAll();
-
-
-                    this.megrid.store.baseParams = {}; // limpio los parametro enviados
-                    this.megrid.store.baseParams.nroliqui = this.Cmp.liquidevolu.getValue();
-                    //this.Cmp.id_factura.modificado=true;
+                    const fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
+                    const fechaBoleto = moment(record.json.fecha);
+                    console.log('fechaBoleto', fechaBoleto.toDate())
+                    console.log('fechaActual', fechaActualMenos18Meses.toDate())
+                    if (fechaBoleto.toDate() >= fechaActualMenos18Meses.toDate()) {
+                        console.log('se puede emitir')
 
 
-                    this.megrid.store.load({
-                        params: {start: 0, limit: 20},
-                        callback: function (r, a, success, e) {
-                            console.log(success)
+                        this.FACMAN = false;
 
 
-                            if (success) {
+                        this.tabs.removeAll();
+                        this.resetGroup(10);
+                        this.megrid.enable();
+
+                        this.megrid.remove();
+                        this.megrid.store.removeAll();
 
 
-                                if (r[0].data['tipo'] == 'NO') {
+                        this.megrid.store.baseParams = {}; // limpio los parametro enviados
+                        this.megrid.store.baseParams.nroliqui = this.Cmp.liquidevolu.getValue();
+                        //this.Cmp.id_factura.modificado=true;
 
-                                    this.mensaje_('TIPO', r[0].data['iddoc'] + ' esta liquidacion no tiene NCD BOA', 'ERROR');
 
-                                } else if (r[0].data['tipo'] == 'FACTURA MANUAL') {
-                                    this.agregarDatosCampo(r[0].data['nro_fac'], r[0].data['razon'], r[0].data['nro_nit'], r[0].data['fecha_fac'], total_factura, r[0].data['nro_aut']);
+                        this.megrid.store.load({
+                            params: {start: 0, limit: 20},
+                            callback: function (r, a, success, e) {
+                                console.log(success)
 
-                                    //todo factura manual
-                                    this.FACMAN = true;
-                                    this.addTabsBtnfacturaManual.show();
 
-                                    alert('es una factura manual');
+                                if (success) {
 
-                                } else if (r[0].data['tipo'] == 'FACTURA') {
 
-                                    var arra = new Array();
-                                    var total_factura = 0;
-                                    for (var i = 0; i < r.length; i++) {
-                                        arra[i] = r[i].data;
-                                        total_factura = parseFloat(total_factura) + parseFloat(r[i].data['importe_original']);
+                                    if (r[0].data['tipo'] == 'NOO') { // 03-NOV-2019  esto era NO PERO por peticion de shirley se cambio ya que estas igual podran tener notas
+
+                                        this.mensaje_('TIPO', r[0].data['iddoc'] + ' esta liquidacion no tiene NCD BOA', 'ERROR');
+
+                                    } else if (r[0].data['tipo'] == 'FACTURA MANUAL') {
+                                        this.agregarDatosCampo(r[0].data['nro_fac'], r[0].data['razon'], r[0].data['nro_nit'], r[0].data['fecha_fac'], total_factura, r[0].data['nro_aut']);
+
+                                        //todo factura manual
+                                        this.FACMAN = true;
+                                        this.addTabsBtnfacturaManual.show();
+
+                                        alert('es una factura manual');
+
+                                    } else if (r[0].data['tipo'] == 'FACTURA') {
+
+                                        var arra = new Array();
+                                        var total_factura = 0;
+                                        for (var i = 0; i < r.length; i++) {
+                                            arra[i] = r[i].data;
+                                            total_factura = parseFloat(total_factura) + parseFloat(r[i].data['importe_original']);
+                                        }
+                                        this.tabsFactura(arra);
+                                        this.agregarDatosCampo(r[0].data['nro_fac'], r[0].data['razon'], r[0].data['nro_nit'], r[0].data['fecha_fac'], total_factura, r[0].data['nro_aut']);
+
+                                    } else {
+                                        var concepto = r[0].data['billcupon'];
+                                        var importe_original = r[0].data['importe_original'];
+                                        var billete = r[0].data['nro_billete'];
+                                        var concepto_original = r[0].data['concepto_original'];
+                                        //aca va la agregacion del los datos originales
+                                        //if(r[])
+                                        this.tabsBoleto(concepto_original, importe_original, billete);
+                                        //termina agregacion de los datos originales
+                                        this.agregarDatosCampo(r[0].data['nro_fac'], r[0].data['razon'], r[0].data['nro_nit'], r[0].data['fecha_fac'], r[0].data['importe_original'], r[0].data['nro_aut']);
                                     }
-                                    this.tabsFactura(arra);
-                                    this.agregarDatosCampo(r[0].data['nro_fac'], r[0].data['razon'], r[0].data['nro_nit'], r[0].data['fecha_fac'], total_factura, r[0].data['nro_aut']);
-
                                 } else {
-                                    var concepto = r[0].data['billcupon'];
-                                    var importe_original = r[0].data['importe_original'];
-                                    var billete = r[0].data['nro_billete'];
-                                    var concepto_original = r[0].data['concepto_original'];
-                                    //aca va la agregacion del los datos originales
-                                    //if(r[])
-                                    this.tabsBoleto(concepto_original, importe_original, billete);
-                                    //termina agregacion de los datos originales
-                                    this.agregarDatosCampo(r[0].data['nro_fac'], r[0].data['razon'], r[0].data['nro_nit'], r[0].data['fecha_fac'], r[0].data['importe_original'], r[0].data['nro_aut']);
+                                    //hay error
                                 }
-                            } else {
-                                //hay error
-                            }
 
-                        }, scope: this
-                    });
+                            }, scope: this
+                        });
+                    } else {
+                        alert('nose puede emitir por la fecha del boleto supera los 18 meses')
+                    }
 
 
                 }, this);
