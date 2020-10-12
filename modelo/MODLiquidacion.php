@@ -79,6 +79,9 @@ class MODLiquidacion extends MODbase{
 
         $this->captura('desc_punto_venta','varchar');
         $this->captura('nro_nota','varchar');
+        $this->captura('id_estado_wf','int4');
+        $this->captura('id_proceso_wf','int4');
+        $this->captura('num_tramite','varchar');
 
 
 
@@ -125,6 +128,7 @@ class MODLiquidacion extends MODbase{
 		$this->setParametro('importe_total','importe_total','numeric');
 		$this->setParametro('id_concepto_ingas','id_concepto_ingas','varchar');
 		$this->setParametro('id_punto_venta','id_punto_venta','int4');
+        $this->setParametro('json','json_new_records','text');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -253,6 +257,7 @@ class MODLiquidacion extends MODbase{
         //Devuelve la respuesta
         return $this->respuesta;
 	}
+
 	function obtenerLiquidacionCorrelativo(){
         //Definicion de variables para ejecucion del procedimiento
         $this->procedimiento='decr.ft_liquidacion_sel';
@@ -272,6 +277,30 @@ class MODLiquidacion extends MODbase{
         //Devuelve la respuesta
         return $this->respuesta;
 	}
+
+    function siguienteEstadoLiquidacion(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='decr.ft_liquidacion_ime';
+        $this->transaccion='DECR_LIQUI_SIGWF';
+        $this->tipo_procedimiento='IME';
+
+        //Define los parametros para la funcion
+        $this->setParametro('id_proceso_wf_act','id_proceso_wf_act','int4');
+        $this->setParametro('id_estado_wf_act','id_estado_wf_act','int4');
+        $this->setParametro('id_funcionario_usu','id_funcionario_usu','int4');
+        $this->setParametro('id_tipo_estado','id_tipo_estado','int4');
+        $this->setParametro('id_funcionario_wf','id_funcionario_wf','int4');
+        $this->setParametro('id_depto_wf','id_depto_wf','int4');
+        $this->setParametro('obs','obs','text');
+        $this->setParametro('json_procesos','json_procesos','text');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
 			
 }
 ?>

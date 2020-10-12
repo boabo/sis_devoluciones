@@ -25,6 +25,24 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 
         this.load({params:{start:0, limit:this.tam_pag}})
 
+        this.addButton('ant_estado',{grupo: [0,1,2,3,4,5,6],argument: {estado: 'anterior'},text:'Anterior',iconCls: 'batras',disabled:true,handler:this.antEstado,tooltip: '<b>Pasar al Anterior Estado</b>'});
+
+        this.addButton('sig_estado',{text:'Siguiente',iconCls: 'badelante',disabled:true,handler:this.sigEstado,tooltip: '<b>Pasar al Siguiente Estado</b>',grupo: [0,1,2,3,4,5,6],});
+
+
+
+        this.addButton('diagrama_gantt',{text:'Gant',iconCls: 'bgantt',disabled:true,handler:diagramGantt,tooltip: '<b>Diagrama Gantt del proceso</b>',grupo: [0,1,2,3,4,5,6],});
+        this.addButton('btnChequeoDocumentosWf',
+            {
+                text: 'Doc. Movimiento',
+                iconCls: 'bchecklist',
+                disabled: true,
+                handler: this.loadCheckDocumentosPlanWf,
+                tooltip: '<b>Documentos de la Solicitud</b><br/>Subir los documetos requeridos en la solicitud seleccionada.',
+                grupo: [0,1,2,3,4,5,6],
+            }
+        );
+
         this.addButton('verLiquidacion', {
             argument: {imprimir: 'verLiquidacion'},
             text: '<i class="fa fa-file-text-o fa-2x"></i> Ver Liquidación',/*iconCls:'' ,*/
@@ -37,6 +55,23 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
             disabled: false,
             handler: this.notaAgencia
         });
+
+        function diagramGantt(){
+            var data=this.sm.getSelected().data.id_proceso_wf;
+            Phx.CP.loadingShow();
+            Ext.Ajax.request({
+                url:'../../sis_workflow/control/ProcesoWf/diagramaGanttTramite',
+                params:{'id_proceso_wf':data},
+                success:this.successExport,
+                failure: this.conexionFailure,
+                timeout:this.timeout,
+                scope:this
+            });
+        }
+
+
+
+
 
 
     },
@@ -225,7 +260,9 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
             filters:{pfiltro:'liqui.nro_liquidacion',type:'string'},
             id_grupo:1,
             grid:true,
-            form:true
+            form:true,
+            bottom_filter : true
+
         },
         {
             config:{
@@ -282,9 +319,10 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
             },
             type: 'ComboBox',
             id_grupo: 0,
-            filters: {pfiltro: 'movtip.nombre',type: 'string'},
+            filters: {pfiltro: 'tb.nro_boleto',type: 'string'},
             grid: true,
-            form: true
+            form: true,
+            bottom_filter : true
         },
 
 
@@ -304,7 +342,8 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
             filters:{pfiltro:'liqui.nombre',type:'string'},
             id_grupo:1,
             grid:true,
-            form:true
+            form:true,
+            bottom_filter : true
         },
 
 
@@ -867,7 +906,15 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 	},
 	bdel:true,
 	bsave:true,
-    tabeast:[
+    bedit:false,
+    south:
+        {
+            url:'../../../sis_devoluciones/vista/descuento_liquidacion/DescuentoLiquidacion.php',
+            title:'Descuentos Liquidacion',
+            height:'50%',
+            cls:'DescuentoLiquidacion'
+        },
+    /*tabeast:[
         {
             url:'../../../sis_devoluciones/vista/descuento_liquidacion/DescuentoLiquidacion.php',
             title:'Descuentos Liquidacion',
@@ -875,7 +922,22 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
             cls:'DescuentoLiquidacion'
         },
 
-    ],
+    ],*/
+    loadCheckDocumentosPlanWf:function() {
+        var rec=this.sm.getSelected();
+        rec.data.nombreVista = this.nombreVista;
+        console.log('RESPUESTA:',rec.data);
+        Phx.CP.loadWindows('../../../sis_workflow/vista/documento_wf/DocumentoWf.php',
+            'Chequear documento del WF',
+            {
+                width:'90%',
+                height:500
+            },
+            rec.data,
+            this.idContenedor,
+            'DocumentoWf'
+        )
+    },
     iniciarEventos : function () {
 
         this.Cmp.tramo_devolucion.disable();
@@ -961,9 +1023,147 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
         }, this);
     },
     onButtonNew:function(){
-        this.accionFormulario = 'NEW';
-        Phx.vista.Liquidacion.superclass.onButtonNew.call(this);//habilita el boton y se abre
+        /*this.accionFormulario = 'NEW';
+        Phx.vista.Liquidacion.superclass.onButtonNew.call(this);//habilita el boton y se abre*/
+
+        //abrir formulario de solicitud
+        var me = this;
+        me.objSolForm = Phx.CP.loadWindows('../../../sis_devoluciones/vista/liquidacion/FormLiquidacion.php',
+            'Formulario de Liquidacion',
+            {
+                modal:true,
+                width:'90%',
+                height:'90%'
+            }, {data:{objPadre: me}
+            },
+            this.idContenedor,
+            'FormLiquidacion',
+            {
+                config:[{
+                    event:'successsave',
+                    delegate: this.onSaveForm,
+
+                }],
+
+                scope:this
+            });
+
+
     },
+    onSaveForm: function(form,  objRes){
+        var me = this;
+
+        form.panel.destroy()
+        me.reload();
+
+    },
+
+    preparaMenu:function(n){
+        var tb = Phx.vista.Liquidacion.superclass.preparaMenu.call(this);
+        var data = this.getSelectedData();
+        var tb = this.tbar;
+
+
+        //Enable/disable WF buttons by status
+        this.getBoton('ant_estado').enable();
+        this.getBoton('sig_estado').enable();
+        if(data.estado=='borrador'){
+            this.getBoton('ant_estado').disable();
+        }
+
+        if(data.estado=='emitido'){
+            this.getBoton('ant_estado').disable();
+            this.getBoton('sig_estado').disable();
+        }
+
+
+        return tb;
+    },
+
+    antEstado:function(){
+        var rec=this.sm.getSelected();
+        Phx.CP.loadWindows('../../../sis_workflow/vista/estado_wf/AntFormEstadoWf.php',
+            'Estado de Wf',
+            {
+                modal:true,
+                width:450,
+                height:250
+            }, {data:rec.data}, this.idContenedor,'AntFormEstadoWf',
+            {
+                config:[{
+                    event:'beforesave',
+                    delegate: this.onAntEstado,
+                }
+                ],
+                scope:this
+            })
+    },
+    onAntEstado:function(wizard,resp){
+        Phx.CP.loadingShow();
+        Ext.Ajax.request({
+            url:'../../sis_kactivos_fijos/control/Movimiento/anteriorEstadoMovimiento',
+            params:{
+                id_proceso_wf:resp.id_proceso_wf,
+                id_estado_wf:resp.id_estado_wf,
+                obs:resp.obs
+            },
+            argument:{wizard:wizard},
+            success:this.successWizard,
+            failure: this.conexionFailure,
+            timeout:this.timeout,
+            scope:this
+        });
+    },
+    sigEstado:function(){
+        var rec=this.sm.getSelected();
+        console.log(rec)
+
+        this.objWizard = Phx.CP.loadWindows('../../../sis_workflow/vista/estado_wf/FormEstadoWf.php',
+            'Estado de Wf',
+            {
+                modal:true,
+                width:700,
+                height:450
+            }, {data:{
+                    id_estado_wf:rec.json.id_estado_wf,
+                    id_proceso_wf:rec.json.id_proceso_wf,
+                    fecha_ini:rec.json.fecha_liqui,
+                }}, this.idContenedor,'FormEstadoWf',
+            {
+                config:[{
+                    event:'beforesave',
+                    delegate: this.onSaveWizard,
+
+                }],
+                scope:this
+            });
+    },
+    onSaveWizard:function(wizard,resp){
+        Phx.CP.loadingShow();
+        Ext.Ajax.request({
+            url:'../../sis_devoluciones/control/Liquidacion/siguienteEstadoLiquidacion',
+            params:{
+                id_proceso_wf_act:  resp.id_proceso_wf_act,
+                id_estado_wf_act:   resp.id_estado_wf_act,
+                id_tipo_estado:     resp.id_tipo_estado,
+                id_funcionario_wf:  resp.id_funcionario_wf,
+                id_depto_wf:        resp.id_depto_wf,
+                obs:                resp.obs,
+                json_procesos:      Ext.util.JSON.encode(resp.procesos)
+            },
+            success:this.successWizard,
+            failure: this.conexionFailure,
+            argument:{wizard:wizard},
+            timeout:this.timeout,
+            scope:this
+        });
+    },
+    successWizard:function(resp){
+        Phx.CP.loadingHide();
+        resp.argument.wizard.panel.destroy()
+        this.reload();
+    },
+
     notaAgencia: function () {
         var rec=this.sm.getSelected();
         Phx.CP.loadWindows('../../../sis_devoluciones/vista/nota_agencia/NotaAgencia.php',
@@ -1188,7 +1388,7 @@ ${descuentos.map(function (descuento) {
             Nro. Cheque: Nombre Cheque: ESCARLET GIIOVANI JIMENEZ MEJIA
         </td>
     </tr>
-${notas.map(function (nota) {
+${notas && notas.map(function (nota) {
             console.log('nota',nota)
             return '<tr>'
                 +'<td>Nro Nota : '+nota.nro_nota+'</td>'

@@ -117,6 +117,7 @@ class ACTLiquidacion extends ACTbase{
         $this->res=$this->objFunc->obtenerLiquidacionCorrelativo($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
+
 	function getTicketInformation() {
         $billete = $this->objParam->getParametro('billete');
         $typeReturn = $this->objParam->getParametro('typeReturn');
@@ -139,6 +140,14 @@ class ACTLiquidacion extends ACTbase{
         $row = mssql_fetch_array($query, MSSQL_ASSOC);*/
 
     }
+
+
+    function siguienteEstadoLiquidacion() {
+        $this->objFunc=$this->create('MODLiquidacion');
+        $this->res=$this->objFunc->siguienteEstadoLiquidacion($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
 			
 }
 

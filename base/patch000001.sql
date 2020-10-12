@@ -451,6 +451,16 @@ alter table decr.tnota_agencia
 alter table decr.tliquidacion
     add id_punto_venta integer;
 
+alter table decr.tliquidacion
+    add id_estado_wf INTEGER;
+
+alter table decr.tliquidacion
+    add id_proceso_wf INTEGER;
+
+
+alter table decr.tliquidacion
+    add num_tramite VARCHAR(200);
+
 
 
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/

@@ -31,8 +31,19 @@ DECLARE
     v_id_concepto_ingas varchar[];
     v_i integer;
     v_tamano integer;
-
-
+    v_num_tramite  		varchar;
+    v_id_proceso_wf 	integer;
+    v_id_estado_wf 		integer;
+    v_codigo_estado 	varchar;
+    v_rec                         RECORD;
+    v_codigo_estado_siguiente     varchar;
+    v_acceso_directo              varchar;
+    v_clase                       varchar;
+    v_parametros_ad               varchar;
+    v_tipo_noti                   varchar;
+    v_titulo                      varchar;
+    v_id_estado_actual            integer;
+    v_conceptos_json            record;
 BEGIN
 
     v_nombre_funcion = 'decr.ft_liquidacion_ime';
@@ -48,6 +59,30 @@ BEGIN
 	if(p_transaccion='DECR_LIQUI_INS')then
 					
         begin
+
+            v_rec = param.f_get_periodo_gestion(to_char(now(), 'YYYY-mm-dd')::DATE);
+            -- inciar el tramite en el sistema de WF
+            SELECT
+                ps_num_tramite ,
+                ps_id_proceso_wf ,
+                ps_id_estado_wf ,
+                ps_codigo_estado
+            INTO
+                v_num_tramite,
+                v_id_proceso_wf,
+                v_id_estado_wf,
+                v_codigo_estado
+
+            FROM wf.f_inicia_tramite(
+                    p_id_usuario,
+                    NULL, --(p_hstore->'_id_usuario_ai')::integer,
+                    NULL, --(p_hstore->'_nombre_usuario_ai')::varchar,
+                    v_rec.po_id_gestion::INTEGER,
+                    'LIQDEVOLU',
+                    NULL::integer,
+                    NULL,
+                    NULL,
+                    v_parametros.nro_liquidacion );
 
 
 
@@ -87,7 +122,10 @@ BEGIN
             importe_neto,
             tasas,
             importe_total,
-            id_punto_venta
+            id_punto_venta,
+        	                              id_estado_wf,
+        	                              id_proceso_wf,
+        	                              num_tramite
           	) values(
 			v_parametros.estacion,
 			v_parametros.nro_liquidacion,
@@ -107,7 +145,8 @@ BEGIN
 			v_parametros.tramo,
 			v_parametros.nombre,
 			v_parametros.moneda_liq,
-			v_parametros.estado,
+			--v_parametros.estado,
+            v_codigo_estado,
 			v_parametros.cheque,
 			p_id_usuario,
 			now(),
@@ -121,14 +160,61 @@ BEGIN
           	         v_parametros.importe_neto,
           	         v_parametros.tasas,
           	         v_parametros.importe_total,
-          	         v_parametros.id_punto_venta
+          	         v_parametros.id_punto_venta,
+
+            v_id_estado_wf,
+            v_id_proceso_wf,
+            v_num_tramite
 
 			
 			
 			)RETURNING id_liquidacion into v_id_liquidacion;
 
 
-            v_id_concepto_ingas = string_to_array(v_parametros.id_concepto_ingas,',');
+
+            FOR v_conceptos_json
+                IN (
+                    SELECT *
+                    FROM json_populate_recordset(NULL::record, v_parametros.json::json)
+                             AS
+                             (
+                              id_concepto_ingas varchar, descripcion varchar, contabilizar varchar, importe varchar
+                                 )
+
+                )
+                LOOP
+
+                    insert into decr.tdescuento_liquidacion(
+                        contabilizar,
+                        importe,
+                        estado_reg,
+                        id_concepto_ingas,
+                        id_liquidacion,
+                        sobre,
+                        fecha_reg,
+                        usuario_ai,
+                        id_usuario_reg,
+                        id_usuario_ai,
+                        fecha_mod,
+                        id_usuario_mod
+                    ) values(
+                                                    v_conceptos_json.contabilizar,
+                                                    v_conceptos_json.importe::numeric, --todo
+                                'activo',
+                                v_conceptos_json.id_concepto_ingas::integer,
+                                v_id_liquidacion,
+                                null,
+                                now(),
+                                v_parametros._nombre_usuario_ai,
+                                p_id_usuario,
+                                v_parametros._id_usuario_ai,
+                                null,
+                                null
+                            );
+
+            END LOOP;
+
+            /*v_id_concepto_ingas = string_to_array(v_parametros.id_concepto_ingas,',');
             v_tamano = coalesce(array_length(v_id_concepto_ingas, 1),0);
             FOR v_i IN 1..v_tamano LOOP
                 --insertamos  registro si no esta presente como activo
@@ -161,7 +247,7 @@ BEGIN
                                 null,
                                 null
                             );
-            END LOOP;
+            END LOOP;*/
 
 			
 			--Definicion de la respuesta
@@ -312,6 +398,74 @@ BEGIN
             v_resp = pxp.f_agrega_clave(v_resp,'json',v_json);
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje',v_json);
             v_resp = pxp.f_agrega_clave(v_resp,'id_liquidacion',v_parametros.id_liquidacion::varchar);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+
+	/*********************************
+ 	#TRANSACCION:  'DECR_LIQUI_SIGWF'
+ 	#DESCRIPCION:	ACTUALIZAR SIGUIENTE ESTADO WORKFLOW
+ 	#AUTOR:		admin
+ 	#FECHA:		17-04-2020 01:54:37
+	***********************************/
+
+	elsif(p_transaccion='DECR_LIQUI_SIGWF')then
+
+		begin
+
+            select
+                id_liquidacion
+            into
+                v_id_liquidacion
+            from decr.tliquidacion mov
+            where id_proceso_wf = v_parametros.id_proceso_wf_act;
+
+            select
+                codigo
+            into
+                v_codigo_estado_siguiente
+            from wf.ttipo_estado tes
+            where tes.id_tipo_estado =  v_parametros.id_tipo_estado;
+
+            if v_codigo_estado_siguiente not in ('emitido') then
+                v_acceso_directo = '../../../sis_devoluciones/vista/liquidacion/Liquidacion.php';
+                v_clase = 'Liquidacion';
+                v_parametros_ad = '{filtro_directo:{campo:"liqui.id_proceso_wf",valor:"'||v_parametros.id_proceso_wf_act::varchar||'"}}';
+                v_tipo_noti = 'notificacion';
+                v_titulo  = 'Notificacion';
+            end if;
+
+            --Obtención id del estaado actual
+            v_id_estado_actual =  wf.f_registra_estado_wf(
+                    v_parametros.id_tipo_estado,
+                    v_parametros.id_funcionario_wf,
+                    v_parametros.id_estado_wf_act,
+                    v_parametros.id_proceso_wf_act,
+                    p_id_usuario,
+                    v_parametros._id_usuario_ai,
+                    v_parametros._nombre_usuario_ai,
+                    null,
+                    '',
+                    v_acceso_directo ,
+                    v_clase,
+                    v_parametros_ad,
+                    v_tipo_noti,
+                    v_titulo
+                );
+
+            --Actualiza el estado actual del movimiento
+            update decr.tliquidacion set
+                                       id_estado_wf = v_id_estado_actual,
+                                       estado = v_codigo_estado_siguiente
+            where id_liquidacion = v_id_liquidacion;
+
+
+
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','estado cambiado');
+            v_resp = pxp.f_agrega_clave(v_resp,'id_liquidacion',v_id_liquidacion::varchar);
 
             --Devuelve la respuesta
             return v_resp;
