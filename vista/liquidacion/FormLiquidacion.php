@@ -897,50 +897,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 form:true
             },
 
-            {
-                config: {
-                    name: 'id_concepto_ingas',
-                    fieldLabel: 'Descuentos',
-                    allowBlank: true,
-                    emptyText: 'Elija una opción...',
-                    store: new Ext.data.JsonStore({
-                        url: '../../sis_parametros/control/ConceptoIngas/listarConceptoIngasMasPartida',
-                        id: 'id_concepto_ingas',
-                        root: 'datos',
-                        sortInfo: {
-                            field: 'desc_ingas',
-                            direction: 'ASC'
-                        },
-                        totalProperty: 'total',
-                        fields: ['id_concepto_ingas', 'desc_ingas'],
-                        remoteSort: true,
-                        baseParams: {par_filtro: 'conig.id_concepto_ingas#conig.desc_ingas'}
-                    }),
-                    valueField: 'id_concepto_ingas',
-                    displayField: 'desc_ingas',
-                    gdisplayField: 'desc_desc_ingas',
-                    hiddenName: 'id_concepto_ingas',
-                    forceSelection: true,
-                    typeAhead: false,
-                    triggerAction: 'all',
-                    lazyRender: true,
-                    mode: 'remote',
-                    pageSize: 15,
-                    queryDelay: 1000,
-                    width: 200,
-                    gwidth: 150,
-                    minChars: 2,
-                    renderer : function(value, p, record) {
-                        return String.format('{0}', record.data['desc_desc_ingas']);
-                    },
-                    enableMultiSelect:true,
-                },
-                type:'AwesomeCombo',
-                id_grupo: 2,
-                filters: {pfiltro: 'conig.desc_ingas',type: 'string'},
-                grid: true,
-                form: true
-            },
 
             {
                 config: {
