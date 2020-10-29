@@ -81,7 +81,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         },
                         remove: function (a, b) {
 
-                            console.log(b.id)
+                            console.log(b.id);
 
 
                             this.megrid.store.filter("nro_fac", b.id);
@@ -99,7 +99,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             this.megrid.store.clearFilter();
 
                             if (this.tabs.activeTab != undefined) {
-                                var nrofac = this.tabs.activeTab.id
+                                var nrofac = this.tabs.activeTab.id;
                                 this.megrid.store.filter("nro_fac", nrofac);
                             }
                             this.total_porcentaje();
@@ -512,7 +512,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     baseParams: {dir: 'ASC', sort: 'nroliqui', limit: '50', start: '0'},
                     failure: function (r) {
 
-                        console.log(r)
+                        console.log(r);
                     }
 
 
@@ -882,7 +882,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 this.frameForm = false;
                 this.paddingForm = '0 0 5 0';
-                this.bodyStyle = 'padding:0px 5px 0',
+                this.bodyStyle = 'padding:0px 5px 0';
                     this.Grupos = [
                         {
 
@@ -1262,15 +1262,15 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 this.Cmp.liquidevolu.on('keyup', function (combo, record) {
 
-                    console.log(this.Cmp.liquidevolu.store)
+                    console.log(this.Cmp.liquidevolu.store);
 
                 }, this);
 
 
                 this.Cmp.liquidevolu.on('select', function (combo, record) {
 
-                    console.log('combo', combo)
-                    console.log('record', record.json.fecha)
+                    console.log('combo', combo);
+                    console.log('record', record.json.fecha);
 
 
                     this.FACMAN = false;
@@ -1292,16 +1292,16 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.megrid.store.load({
                         params: {start: 0, limit: 20},
                         callback: function (r, a, success, e) {
-                            console.log(success)
+                            console.log(success);
 
 
                             if (success) {
-                                console.log('rrrrr',r)
+                                console.log('rrrrr',r);
 
                                 const fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
                                 const fechaFac = moment(r[0].data['fecha_fac'],'DD-MM-YYYY');
                                 if (fechaFac.toDate() >= fechaActualMenos18Meses.toDate()) {
-                                    console.log('se puede emitir')
+                                    console.log('se puede emitir');
 
                                     if (r[0].data['tipo'] == 'NOO') { // 03-NOV-2019  esto era NO PERO por peticion de shirley se cambio ya que estas igual podran tener notas
 
