@@ -118,6 +118,21 @@ class ACTLiquidacion extends ACTbase{
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
+
+    function getTicketInformationRecursive() {
+        $billete = $this->objParam->getParametro('billete');
+        $array = array();
+        array_push($array, array("seleccionado"=>"si","billete" => "123123", "monto"=>123));
+        array_push($array, array("seleccionado"=>"si","billete" => "456123", "monto"=>456));
+        $send = array(
+            "datos" =>  $array,
+            "total" => count($array),
+        );
+
+        echo json_encode($send);
+
+    }
+
 	function getTicketInformation() {
         $billete = $this->objParam->getParametro('billete');
         $typeReturn = $this->objParam->getParametro('typeReturn');

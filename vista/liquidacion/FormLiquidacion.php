@@ -17,6 +17,7 @@ header("content-type: text/javascript; charset=UTF-8");
         autoScroll: false,
         breset: false,
         labelSubmit: '<i class="fa fa-check"></i> Siguiente',
+        storeBoletosRecursivo : false,
 
 
         constructor: function (config) {
@@ -418,7 +419,15 @@ header("content-type: text/javascript; charset=UTF-8");
                                         padding: '0 0 0 10',
                                         bodyStyle: 'padding-left:5px;',
                                         id_grupo: 1,
-                                        items: [],
+                                        items: [{
+                                            xtype:'button',
+
+                                            text:'Datos Boletos',
+                                            handler: this.onDatosBoleto,
+                                            scope:this,
+                                            //makes the button 24px high, there is also 'large' for this config
+                                            scale: 'medium'
+                                        }],
                                     }]
                             },
                             {
@@ -448,6 +457,136 @@ header("content-type: text/javascript; charset=UTF-8");
             }];
 
 
+        },
+        crearStoreBoletosRecursivo : function (billete) {
+            this.storeBoletosRecursivo = new Ext.data.JsonStore({
+                url: '../../sis_devoluciones/control/Liquidacion/getTicketInformationRecursive',
+                id: 'billete',
+                root: 'datos',
+                sortInfo: {
+                    field: 'billete',
+                    direction: 'ASC'
+                },
+                totalProperty: 'total',
+                fields: [
+                    {name: 'seleccionado',      type: 'string'},
+                    {name: 'billete',      type: 'string'},
+                    {name: 'monto',     type: 'numeric'},
+                ]
+            });
+            this.storeBoletosRecursivo.baseParams.billete = billete;
+            this.storeBoletosRecursivo.load({params:{start:0,limit:100}});
+        },
+        onDatosBoleto : function () {
+            if (!this.Cmp.id_boleto.getValue() && !this.Cmp.id_boleto.getValue()) {
+                Ext.Msg.alert('ATENCION', 'Debe seleccionar un boleto');
+            } else {
+
+                 var wid = Ext.id();
+
+                 /*if (!this.storeBoletosRecursivo) {
+                     this.crearStoreBoletosRecursivo();
+                 }*/
+
+                 // create the Grid
+                 var grid = new Ext.grid.EditorGridPanel({
+                     store: this.storeBoletosRecursivo,
+                     stateful: false,
+                     margins: '3 3 3 0',
+                     loadMask: true,
+                     columns: [
+                         {
+                             header     : 'seleccionado',
+                             width    : 125,
+                             dataIndex: 'seleccionado',
+                             editable : true,
+                             editor: new Ext.form.ComboBox({
+                                 name: 'seleccionado',
+                                 fieldLabel: 'seleccionado',
+                                 allowBlank: true,
+                                 emptyText:'seleccionado...',
+                                 triggerAction: 'all',
+                                 lazyRender:true,
+                                 mode: 'local',
+                                 displayField: 'text',
+                                 valueField: 'value',
+                                 store:new Ext.data.SimpleStore({
+                                     data : [['si', 'si'], ['no', 'no'],],
+                                     id : 'value',
+                                     fields : ['value', 'text']
+                                 })
+                             })
+                         },
+                         {
+                             header     : 'Billete',
+                             flex     : 1,
+                             width    : 280,
+                             dataIndex: 'billete'
+                         },
+                         {
+                             header     : 'Monto',
+                             flex     : 1,
+                             width    : 280,
+                             dataIndex: 'monto'
+                         },
+                     ],
+                     region:  'center',
+                 });
+
+                 var win = new Ext.Window({
+                     id: wid,
+                     layout:'fit',
+                     width:820,
+                     height:350,
+                     modal:true,
+                     items: grid,
+                     title: 'Historia Billetes',
+                     buttons: [{
+                         text:'Guardar',
+                         disabled:false,
+                         scope : this,
+                         handler : function () {
+                             this.storeBoletosRecursivo.commitChanges();
+                             var validado = true;
+                             console.log(this.storeBoletosRecursivo.getTotalCount())
+                             let total = 0;
+                             for(var i = 0; i < this.storeBoletosRecursivo.getTotalCount() ;i++) {
+                                 var fp = this.storeBoletosRecursivo.getAt(i);
+                                 if (fp.data.seleccionado == 'si') {
+                                     total = total + fp.data.monto;
+                                     console.log('siiii')
+                                 } else {
+                                     console.log('nooo')
+
+                                 }
+                             }
+                             this.cmpImporte_total.setValue(total);
+                             console.log(total)
+                             win.close();
+
+                             /*if (validado) {
+                                 this.Cmp.id_forma_pago.setValue(0);
+                                 this.Cmp.monto_forma_pago.setValue(0);
+                                 this.Cmp.monto_forma_pago.setDisabled(true);
+                                 this.Cmp.id_forma_pago.setRawValue('DIVIDIDO');
+                                 this.Cmp.id_forma_pago.setDisabled(true);
+                                 this.ocultarComponente(this.Cmp.numero_tarjeta);
+                                 this.ocultarComponente(this.Cmp.codigo_tarjeta);
+                                 this.ocultarComponente(this.Cmp.tipo_tarjeta);
+                                 this.Cmp.numero_tarjeta.allowBlank = false;
+                                 this.Cmp.codigo_tarjeta.allowBlank = false;
+                                 this.Cmp.tipo_tarjeta.allowBlank = false;
+                                 this.Cmp.numero_tarjeta.reset();
+                                 this.Cmp.codigo_tarjeta.reset();
+                                 this.Cmp.tipo_tarjeta.reset();
+                                 win.close();
+                             }*/
+
+                         }
+                     }]
+                 });
+                 win.show();
+            }
         },
 
         loadValoresIniciales: function () {
@@ -1150,6 +1289,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 console.log('llegggaaa')
                 this.cmpTramo_devolucion.store.setBaseParam('billete', d.data.nro_boleto);
 
+
+                this.crearStoreBoletosRecursivo(d.data.nro_boleto);
 
 
                 this.cmpTramo_devolucion.enable();
