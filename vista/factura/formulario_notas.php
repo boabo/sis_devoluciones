@@ -883,223 +883,223 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.frameForm = false;
                 this.paddingForm = '0 0 5 0';
                 this.bodyStyle = 'padding:0px 5px 0';
-                    this.Grupos = [
-                        {
+                this.Grupos = [
+                    {
 
-                            layout: 'form',
-                            autoScroll: true,
-                            xtype: 'panel',
-                            bbar: this.toolBar,
+                        layout: 'form',
+                        autoScroll: true,
+                        xtype: 'panel',
+                        bbar: this.toolBar,
 
+                        width: 850,
+                        title: 'Formulario de FormNotas',
+                        border: false,
+                        frame: true,
+                        padding: '5 0 20 0',
+
+
+                        margins: {top: 0, right: 0, bottom: 0, left: 0},
+
+                        defaults: {
+                            border: false
+
+                        },
+                        items: [{
+                            xtype: 'fieldset',
+                            margins: {top: 0, right: 0, bottom: 0, left: 50},
+                            layout: 'column',
+                            title: '<h1 style="color:111; font-size:12px;">Tipo de Devolución ...</h1>',
                             width: 850,
-                            title: 'Formulario de FormNotas',
-                            border: false,
-                            frame: true,
-                            padding: '5 0 20 0',
 
-
-                            margins: {top: 0, right: 0, bottom: 0, left: 0},
-
-                            defaults: {
-                                border: false
+                            style: {
+                                background: '#c5d6ec'
 
                             },
-                            items: [{
+                            autoHeight: true,
+                            padding: '0 0 0 0',
+
+                            items: [
+                                {
+                                    layout: 'form',
+
+                                    border: false,
+                                    itemId: 'origen_destino',
+                                    items: [],
+                                    padding: '0 10 0 0',
+                                    labelWidth: 50,
+                                    id_grupo: 1
+
+                                }, {
+                                    layout: 'form',
+                                    border: false,
+                                    items: [],
+                                    padding: '0 10 0 0',
+                                    labelWidth: 75,
+                                    id_grupo: 2
+                                },
+                                {
+                                    layout: 'form',
+                                    border: false,
+                                    items: [],
+                                    padding: '0 10 0 0',
+                                    id_grupo: 22
+                                }
+                            ],
+
+                        },
+
+                            {
                                 xtype: 'fieldset',
                                 margins: {top: 0, right: 0, bottom: 0, left: 50},
                                 layout: 'column',
-                                title: '<h1 style="color:111; font-size:12px;">Tipo de Devolución ...</h1>',
-                                width: 850,
-
-                                style: {
-                                    background: '#c5d6ec'
-
-                                },
+                                title: ' <h1 style="color:111; font-size:12px;">Datos ...</h1>',
+                                width: 900,
+                                name: 'datos_factura ',
                                 autoHeight: true,
                                 padding: '0 0 0 0',
-
                                 items: [
                                     {
                                         layout: 'form',
-
                                         border: false,
                                         itemId: 'origen_destino',
                                         items: [],
+                                        labelWidth: 70,
                                         padding: '0 10 0 0',
-                                        labelWidth: 50,
-                                        id_grupo: 1
-
+                                        id_grupo: 6
+                                    }, {
+                                        layout: 'form',
+                                        border: false,
+                                        items: [],
+                                        padding: '0 10 0 0',
+                                        labelWidth: 60,
+                                        id_grupo: 7
                                     }, {
                                         layout: 'form',
                                         border: false,
                                         items: [],
                                         padding: '0 10 0 0',
                                         labelWidth: 75,
-                                        id_grupo: 2
-                                    },
-                                    {
-                                        layout: 'form',
-                                        border: false,
-                                        items: [],
-                                        padding: '0 10 0 0',
-                                        id_grupo: 22
+                                        id_grupo: 8
                                     }
-                                ],
+
+                                ]
 
                             },
 
-                                {
-                                    xtype: 'fieldset',
-                                    margins: {top: 0, right: 0, bottom: 0, left: 50},
-                                    layout: 'column',
-                                    title: ' <h1 style="color:111; font-size:12px;">Datos ...</h1>',
-                                    width: 900,
-                                    name: 'datos_factura ',
-                                    autoHeight: true,
-                                    padding: '0 0 0 0',
-                                    items: [
-                                        {
+
+                            {
+                                xtype: 'panel',
+                                //layout:'fit',
+                                /*padding:'0 0 0 50',*/
+                                margins: {top: 0, right: 0, bottom: 0, left: 0},
+
+                                border: false,
+                                plain: true,
+                                width: '100%',
+                                activeTab: 0,
+                                defaults: {autoHeight: true},
+                                items: [
+                                    this.addTabsBtn,
+                                    this.addTabsBtnfacturaManual,
+                                    this.tabs
+                                ]
+                            },
+
+                            {
+                                xtype: 'tabpanel',
+                                //layout:'fit',
+                                /*padding:'0 0 0 50',*/
+                                margins: {top: 0, right: 0, bottom: 0, left: 0},
+
+                                border: false,
+                                plain: true,
+                                width: '100%',
+                                activeTab: 0,
+                                height: 235,
+                                items: [
+                                    this.megrid
+                                ]
+                            },
+
+                            {
+                                xtype: 'fieldset',
+                                border: false,
+                                split: true,
+                                layout: 'column',
+                                region: 'south',
+                                autoScroll: true,
+                                autoHeight: true,
+                                collapseFirst: false,
+                                collapsible: true,
+                                width: '100%',
+                                //autoHeight: true,
+                                padding: '0 0 0 10',
+                                items: [
+
+                                    {
+                                        bodyStyle: 'padding-right:2px;',
+
+                                        border: false,
+                                        autoHeight: true,
+                                        items: [{
+                                            xtype: 'fieldset',
+                                            frame: true,
                                             layout: 'form',
+                                            title: 'Devolucion',
+                                            width: '33%',
                                             border: false,
-                                            itemId: 'origen_destino',
+                                            //margins: '0 0 0 5',
+                                            padding: '0 0 0 10',
+                                            bodyStyle: 'padding-left:2px;',
+                                            id_grupo: 9,
                                             items: [],
-                                            labelWidth: 70,
-                                            padding: '0 10 0 0',
-                                            id_grupo: 6
-                                        }, {
+                                        }]
+                                    },
+                                    {
+                                        bodyStyle: 'padding-right:5px;',
+
+                                        border: false,
+                                        autoHeight: true,
+                                        items: [{
+                                            xtype: 'fieldset',
+                                            frame: true,
                                             layout: 'form',
+                                            title: 'Porcentaje',
+                                            width: '33%',
                                             border: false,
+                                            //margins: '0 0 0 5',
+                                            padding: '0 0 0 10',
+                                            bodyStyle: 'padding-left:5px;',
+                                            id_grupo: 10,
                                             items: [],
-                                            padding: '0 10 0 0',
-                                            labelWidth: 60,
-                                            id_grupo: 7
-                                        }, {
+                                        }]
+                                    },
+                                    {
+                                        bodyStyle: 'padding-right:5px;',
+
+                                        border: false,
+                                        autoHeight: true,
+                                        items: [{
+                                            xtype: 'fieldset',
+                                            frame: true,
                                             layout: 'form',
+                                            title: '',
+                                            width: '33%',
                                             border: false,
+                                            //margins: '0 0 0 5',
+                                            padding: '0 0 0 10',
+                                            bodyStyle: 'padding-left:5px;',
+                                            id_grupo: 11,
                                             items: [],
-                                            padding: '0 10 0 0',
-                                            labelWidth: 75,
-                                            id_grupo: 8
-                                        }
-
-                                    ]
-
-                                },
+                                        }]
+                                    },
+                                ]
+                            },
 
 
-                                {
-                                    xtype: 'panel',
-                                    //layout:'fit',
-                                    /*padding:'0 0 0 50',*/
-                                    margins: {top: 0, right: 0, bottom: 0, left: 0},
-
-                                    border: false,
-                                    plain: true,
-                                    width: '100%',
-                                    activeTab: 0,
-                                    defaults: {autoHeight: true},
-                                    items: [
-                                        this.addTabsBtn,
-                                        this.addTabsBtnfacturaManual,
-                                        this.tabs
-                                    ]
-                                },
-
-                                {
-                                    xtype: 'tabpanel',
-                                    //layout:'fit',
-                                    /*padding:'0 0 0 50',*/
-                                    margins: {top: 0, right: 0, bottom: 0, left: 0},
-
-                                    border: false,
-                                    plain: true,
-                                    width: '100%',
-                                    activeTab: 0,
-                                    height: 235,
-                                    items: [
-                                        this.megrid
-                                    ]
-                                },
-
-                                {
-                                    xtype: 'fieldset',
-                                    border: false,
-                                    split: true,
-                                    layout: 'column',
-                                    region: 'south',
-                                    autoScroll: true,
-                                    autoHeight: true,
-                                    collapseFirst: false,
-                                    collapsible: true,
-                                    width: '100%',
-                                    //autoHeight: true,
-                                    padding: '0 0 0 10',
-                                    items: [
-
-                                        {
-                                            bodyStyle: 'padding-right:2px;',
-
-                                            border: false,
-                                            autoHeight: true,
-                                            items: [{
-                                                xtype: 'fieldset',
-                                                frame: true,
-                                                layout: 'form',
-                                                title: 'Devolucion',
-                                                width: '33%',
-                                                border: false,
-                                                //margins: '0 0 0 5',
-                                                padding: '0 0 0 10',
-                                                bodyStyle: 'padding-left:2px;',
-                                                id_grupo: 9,
-                                                items: [],
-                                            }]
-                                        },
-                                        {
-                                            bodyStyle: 'padding-right:5px;',
-
-                                            border: false,
-                                            autoHeight: true,
-                                            items: [{
-                                                xtype: 'fieldset',
-                                                frame: true,
-                                                layout: 'form',
-                                                title: 'Porcentaje',
-                                                width: '33%',
-                                                border: false,
-                                                //margins: '0 0 0 5',
-                                                padding: '0 0 0 10',
-                                                bodyStyle: 'padding-left:5px;',
-                                                id_grupo: 10,
-                                                items: [],
-                                            }]
-                                        },
-                                        {
-                                            bodyStyle: 'padding-right:5px;',
-
-                                            border: false,
-                                            autoHeight: true,
-                                            items: [{
-                                                xtype: 'fieldset',
-                                                frame: true,
-                                                layout: 'form',
-                                                title: '',
-                                                width: '33%',
-                                                border: false,
-                                                //margins: '0 0 0 5',
-                                                padding: '0 0 0 10',
-                                                bodyStyle: 'padding-left:5px;',
-                                                id_grupo: 11,
-                                                items: [],
-                                            }]
-                                        },
-                                    ]
-                                },
-
-
-                            ]
-                        }
-                    ];
+                        ]
+                    }
+                ];
 
                 Phx.vista.FormNota.superclass.constructor.call(this, config);
 
@@ -1298,8 +1298,16 @@ header("content-type: text/javascript; charset=UTF-8");
                             if (success) {
                                 console.log('rrrrr',r);
 
-                                const fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
-                                const fechaFac = moment(r[0].data['fecha_fac'],'DD-MM-YYYY');
+                                let fechaActualMenos18Meses
+                                let fechaFac
+                                if(r[0].data['tipo'] == 'FACTURA') {
+                                    fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
+                                    fechaFac = moment(r[0].data['fecha_fac'],'YYYY-MM-DD');
+                                } else {
+                                    fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
+                                    fechaFac = moment(r[0].data['fecha_fac'],'DD-MM-YYYY');
+                                }
+
                                 if (fechaFac.toDate() >= fechaActualMenos18Meses.toDate()) {
                                     console.log('se puede emitir');
 
@@ -2113,8 +2121,16 @@ header("content-type: text/javascript; charset=UTF-8");
 
                     record = this.megrid.store.getAt(i);
                     //necesitamos validar si alguna fecha_fac es mayor a 18 meses desde el dia que se quiere emitir la nota
-                    const fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
-                    const fechaFac = moment(record.data.fecha_fac,'DD-MM-YYYY');
+                    let fechaActualMenos18Meses;
+                    let fechaFac;
+                    if(record.data.tipo === 'FACTURA') {
+                        fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
+                        fechaFac = moment(record.data.fecha_fac,'YYYY-MM-DD');
+                    } else {
+                        fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
+                        fechaFac = moment(record.data.fecha_fac,'DD-MM-YYYY');
+                    }
+
                     console.log('fechaFaccccccc',fechaFac)
                     if (fechaFac.toDate() >= fechaActualMenos18Meses.toDate()) {
 
