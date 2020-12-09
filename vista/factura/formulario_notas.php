@@ -1299,14 +1299,25 @@ header("content-type: text/javascript; charset=UTF-8");
                                 console.log('rrrrr',r);
 
                                 let fechaActualMenos18Meses
-                                let fechaFac
+                                fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
+
+                                const fechaBoletoOFac = r[0].data['fecha_fac'];
+                                const splitFechaBoletoOFac = fechaBoletoOFac.split('-');
+                                const primerKeyFecha = splitFechaBoletoOFac[0];
+                                let formatoFecha = 'DD-MM-YYYY';
+                                if(primerKeyFecha.length == 4) {
+                                    formatoFecha = 'YYYY-MM-DD';
+                                }
+                                const fechaFac = moment(r[0].data['fecha_fac'],formatoFecha);
+
+                                /*let fechaFac
                                 if(r[0].data['tipo'] == 'FACTURA') {
                                     fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
                                     fechaFac = moment(r[0].data['fecha_fac'],'YYYY-MM-DD');
                                 } else {
                                     fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
                                     fechaFac = moment(r[0].data['fecha_fac'],'DD-MM-YYYY');
-                                }
+                                }*/
 
                                 if (fechaFac.toDate() >= fechaActualMenos18Meses.toDate()) {
                                     console.log('se puede emitir');
@@ -2122,14 +2133,25 @@ header("content-type: text/javascript; charset=UTF-8");
                     record = this.megrid.store.getAt(i);
                     //necesitamos validar si alguna fecha_fac es mayor a 18 meses desde el dia que se quiere emitir la nota
                     let fechaActualMenos18Meses;
-                    let fechaFac;
-                    if(record.data.tipo === 'FACTURA') {
-                        fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
-                        fechaFac = moment(record.data.fecha_fac,'YYYY-MM-DD');
-                    } else {
-                        fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
-                        fechaFac = moment(record.data.fecha_fac,'DD-MM-YYYY');
+                    fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
+
+                    const fechaBoletoOFac = record.data.fecha_fac;
+                    const splitFechaBoletoOFac = fechaBoletoOFac.split('-');
+                    const primerKeyFecha = splitFechaBoletoOFac[0];
+                    let formatoFecha = 'DD-MM-YYYY';
+                    if(primerKeyFecha.length == 4) {
+                        formatoFecha = 'YYYY-MM-DD';
                     }
+                    const fechaFac = moment(record.data.fecha_fac,formatoFecha);
+
+                    /*  let fechaFac;
+                      if(record.data.tipo === 'FACTURA') {
+                          fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
+                          fechaFac = moment(record.data.fecha_fac,'YYYY-MM-DD');
+                      } else {
+                          fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
+                          fechaFac = moment(record.data.fecha_fac,'DD-MM-YYYY');
+                      }*/
 
                     console.log('fechaFaccccccc',fechaFac)
                     if (fechaFac.toDate() >= fechaActualMenos18Meses.toDate()) {
@@ -2497,7 +2519,14 @@ header("content-type: text/javascript; charset=UTF-8");
 
                                     //verificamos que la fecha fac no sea mas antiguo quee 18 meses
                                     const fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
-                                    const fechaFac = moment(reg_new.datos[0].FECHA_FAC,'YYYY-MM-DD');
+                                    const fechaBoletoOFac = reg_new.datos[0].FECHA_FAC;
+                                    const splitFechaBoletoOFac = fechaBoletoOFac.split('-');
+                                    const primerKeyFecha = splitFechaBoletoOFac[0];
+                                    let formatoFecha = 'DD-MM-YYYY';
+                                    if(primerKeyFecha.length == 4) {
+                                        formatoFecha = 'YYYY-MM-DD';
+                                    }
+                                    const fechaFac = moment(reg_new.datos[0].FECHA_FAC,formatoFecha);
                                     if (fechaFac.toDate() >= fechaActualMenos18Meses.toDate()) {
 
                                         var Items = Ext.data.Record.create([{
