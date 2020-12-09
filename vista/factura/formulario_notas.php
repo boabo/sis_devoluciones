@@ -2497,7 +2497,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                                     //verificamos que la fecha fac no sea mas antiguo quee 18 meses
                                     const fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
-                                    const fechaFac = moment(reg_new.datos[0].FECHA_FAC,'DD-MM-YYYY');
+                                    const fechaFac = moment(reg_new.datos[0].FECHA_FAC,'YYYY-MM-DD');
                                     if (fechaFac.toDate() >= fechaActualMenos18Meses.toDate()) {
 
                                         var Items = Ext.data.Record.create([{
