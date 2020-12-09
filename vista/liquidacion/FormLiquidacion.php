@@ -47,7 +47,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     allowBlank: false,
                     emptyText: 'Elija una opción...',
                     store: new Ext.data.JsonStore({
-                        url: '../../sis_parametros/control/ConceptoIngas/listarConceptoIngasMasPartida',
+                        url: '../../sis_ventas_facturacion/control/Servicios/listarServicios',
                         id: 'id_concepto_ingas',
                         root: 'datos',
                         sortInfo: {
@@ -55,13 +55,13 @@ header("content-type: text/javascript; charset=UTF-8");
                             direction: 'ASC'
                         },
                         totalProperty: 'total',
-                        fields: ['id_concepto_ingas', 'desc_ingas'],
+                        fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento'],
                         remoteSort: true,
-                        baseParams: {par_filtro: 'conig.id_concepto_ingas#conig.desc_ingas'}
+                        baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'dev', emision:'DEVOLUCIONES'}
                     }),
                     valueField: 'id_concepto_ingas',
                     displayField: 'desc_ingas',
-                    gdisplayField: 'desc_desc_ingas',
+                    gdisplayField: 'desc_ingas',
                     hiddenName: 'id_concepto_ingas',
                     forceSelection: true,
                     typeAhead: false,
@@ -74,7 +74,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 150,
                     minChars: 2,
                     renderer : function(value, p, record) {
-                        return String.format('{0}', record.data['desc_desc_ingas']);
+                        return String.format('{0}', record.data['desc_ingas']);
                     }
                 }),
 
@@ -131,10 +131,10 @@ header("content-type: text/javascript; charset=UTF-8");
             //set descriptins values ...  in combos boxs
 
             //todo borrar esto despues
-            /*var cmb_rec = this.detCmp['id_concepto_ingas'].store.getById(rec.get('id_concepto_ingas'));
+            var cmb_rec = this.detCmp['id_concepto_ingas'].store.getById(rec.get('id_concepto_ingas'));
             if (cmb_rec) {
                 rec.set('desc_concepto_ingas', cmb_rec.get('desc_ingas'));
-            }*/
+            }
 
         },
 
@@ -195,34 +195,22 @@ header("content-type: text/javascript; charset=UTF-8");
                 name: 'id_concepto_ingas',
                 type: 'int'
             }, {
-                name: 'id_centro_costo',
-                type: 'int'
-            }, {
-                name: 'id_orden_trabajo',
-                type: 'int'
-            }, {
-                name: 'precio_unitario',
-                type: 'float'
-            }, {
-                name: 'precio_total',
-                type: 'float'
-            }, {
-                name: 'id_activo_fijo',
-                type: 'int'
-            }
+                name: 'desc_ingas',
+                type: 'string'
+            },
             ]);
 
             this.mestore = new Ext.data.JsonStore({
                 url: '../../sis_adquisiciones/control/SolicitudDet/listarSolicitudDet',
-                id: 'id_solicitud_det',
+                id: 'id_concepto_ingas',
                 root: 'datos',
                 totalProperty: 'total',
                 fields: ['id_solicitud_det', 'id_centro_costo', 'descripcion', 'precio_unitario',
                     'id_solicitud', 'id_orden_trabajo', 'id_concepto_ingas', 'precio_total', 'cantidad_sol',
                     'desc_centro_costo', 'desc_concepto_ingas', 'desc_orden_trabajo', 'id_activo_fijo',
-                    'fecha_ini_act', 'fecha_fin_act', 'lista'
+                    'fecha_ini_act', 'fecha_fin_act', 'lista', 'desc_ingas'
                 ], remoteSort: true,
-                baseParams: {dir: 'ASC', sort: 'id_solicitud_det', limit: '50', start: '0'}
+                baseParams: {dir: 'ASC', sort: 'id_concepto_ingas', limit: '50', start: '0'}
             });
 
             this.editorDetail = new Ext.ux.grid.RowEditor({
@@ -302,6 +290,9 @@ header("content-type: text/javascript; charset=UTF-8");
                         width: 200,
                         sortable: false,
                         renderer: function (value, p, record) {
+                            console.log(`value ${value} p ${p} record ${record}`)
+                            console.log(p)
+                            console.log(record)
                             return String.format('{0}', record.data['desc_concepto_ingas']);
                         },
                         editor: this.detCmp.id_concepto_ingas
@@ -459,6 +450,19 @@ header("content-type: text/javascript; charset=UTF-8");
 
         },
         crearStoreBoletosRecursivo : function (billete) {
+            Phx.CP.loadingShow();
+
+            const tramoDevolucion = this.getComponente('tramo_devolucion');
+            const tramoComponente = this.getComponente('tramo');
+            const importeNeto = this.getComponente('importe_neto');
+            const importeTotalComponente = this.getComponente('importe_total');
+            const tasas = this.getComponente('tasas');
+            const nombre = this.getComponente('nombre');
+            const monedaEmision = this.getComponente('moneda_emision');
+            const puntoVenta = this.getComponente('punto_venta');
+            const estacion = this.getComponente('estacion');
+
+
             this.storeBoletosRecursivo = new Ext.data.JsonStore({
                 url: '../../sis_devoluciones/control/Liquidacion/getTicketInformationRecursive',
                 id: 'billete',
@@ -472,10 +476,31 @@ header("content-type: text/javascript; charset=UTF-8");
                     {name: 'seleccionado',      type: 'string'},
                     {name: 'billete',      type: 'string'},
                     {name: 'monto',     type: 'numeric'},
-                ]
+                ],
             });
             this.storeBoletosRecursivo.baseParams.billete = billete;
-            this.storeBoletosRecursivo.load({params:{start:0,limit:100}});
+            this.storeBoletosRecursivo.load({
+                params: {start: 0, limit: 100},
+                callback: function (e,d) {
+                    let total = 0;
+                    e.forEach((data)=> {
+                        total = total + data.data.monto;
+                    });
+                    console.log(importeTotalComponente)
+                    importeTotalComponente.setValue(total);
+                    console.log('asda',e[0])
+                    tramoComponente.setValue(e[0].json.itinerary);
+
+
+                    importeNeto.setValue(e[0].json.netAmount);
+                    tasas.setValue(parseFloat(total) - parseFloat(e[0].json.netAmount));
+                    nombre.setValue(e[0].json.passengerName);
+                    monedaEmision.setValue(e[0].json.currency);
+                    puntoVenta.setValue(e[0].json.issueOfficeID);
+
+                    Phx.CP.loadingHide();
+                },
+            });
         },
         onDatosBoleto : function () {
             if (!this.Cmp.id_boleto.getValue() && !this.Cmp.id_boleto.getValue()) {
@@ -927,7 +952,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     width: 200,
                     gwidth: 100,
                     maxLength:255,
-                    disabled: true,
+                    //disabled: true,
                 },
                 type:'TextField',
                 filters:{pfiltro:'liqui.importe_neto',type:'string'},
@@ -959,7 +984,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     width: 200,
                     gwidth: 100,
                     maxLength:255,
-                    disabled: true,
+                    //disabled: true,
                 },
                 type:'TextField',
                 filters:{pfiltro:'liqui.importe_total',type:'string'},
@@ -1300,19 +1325,20 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 console.log(rec)
                 console.log(d)
-                Ext.Ajax.request({
+                /*Ext.Ajax.request({
                     url: '../../sis_devoluciones/control/Liquidacion/getTicketInformation',
                     params: {
                         billete: d.data.nro_boleto,
                     },
                     success: (resp) => {
-                        console.log(resp)
                         const data = JSON.parse(resp.responseText);
+                        console.log('getTicketInformation', data)
+
                         const boletoInfoJson = data[0];
                         console.log(boletoInfoJson);
                         this.cmpTramo.setValue(boletoInfoJson.itinerary);
-                        this.cmpImporte_neto.setValue(boletoInfoJson.netAmount);
-                        this.cmpImporte_total.setValue(boletoInfoJson.totalAmount);
+                        //this.cmpImporte_neto.setValue(boletoInfoJson.netAmount);
+                        //this.cmpImporte_total.setValue(boletoInfoJson.totalAmount);
                         this.cmpTasas.setValue(boletoInfoJson.totalAmount - boletoInfoJson.netAmount);
                         this.cmpNombre.setValue(boletoInfoJson.passengerName);
                         this.cmpMoneda_emision.setValue(boletoInfoJson.currency);
@@ -1334,16 +1360,16 @@ header("content-type: text/javascript; charset=UTF-8");
                         //descuento que no figure en la liquidacion
 
                         //issueOfficeID punto de venda
-                        /*const  = data.datos[0];
-                        this.Cmp.nro_liquidacion.setValue(f_obtener_correlativo);*/
-                        /* const data = JSON.parse(resp)
-                         console.log(data)*/
+                        /!*const  = data.datos[0];
+                        this.Cmp.nro_liquidacion.setValue(f_obtener_correlativo);*!/
+                        /!* const data = JSON.parse(resp)
+                         console.log(data)*!/
                     },
                     failure: this.conexionFailure,
                     timeout: this.timeout,
                     scope: this
                 });
-
+                */
                 console.log(rec)
                 console.log(d)
             }, this);

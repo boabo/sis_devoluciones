@@ -1701,7 +1701,8 @@ header("content-type: text/javascript; charset=UTF-8");
                         triggerAction: 'all',
                         lazyRender: true,
                         mode: 'local',
-                        store: ['FACTURA', 'LIQUIDACION', 'BOLETO'],
+                        //store: ['FACTURA', 'LIQUIDACION', 'BOLETO'],
+                        store: ['LIQUIDACION'],
                         width: 200
                     },
                     type: 'ComboBox',
