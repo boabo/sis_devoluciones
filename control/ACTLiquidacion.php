@@ -23,6 +23,9 @@ class ACTLiquidacion extends ACTbase{
         if($this->objParam->getParametro('id_liquidacion') != ''){
             $this->objParam->addFiltro("liqui.id_liquidacion = ".$this->objParam->getParametro('id_liquidacion'));
         }
+        if($this->objParam->getParametro('estado') != ''){
+            $this->objParam->addFiltro("liqui.estado = ''".$this->objParam->getParametro('estado')."'' " );
+        }
 
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
 			$this->objReporte = new Reporte($this->objParam,$this);
@@ -65,7 +68,7 @@ class ACTLiquidacion extends ACTbase{
 		$billete = $this->objParam->getParametro('billete');
         $param_conex = array();
 
-        $conexion = new ConexionSqlServer('172.17.58.22', 'SPConnection', 'Passw0rd', 'DBStage');
+        $conexion = new ConexionSqlServer('172.17.110.6', 'SPConnection', 'Passw0rd', 'DBStage');
         $conn = $conexion->conectarSQL();
 
         //EXECUTE [dbo].[spa_getRoutingTicket] @ticketNumber
@@ -124,7 +127,7 @@ class ACTLiquidacion extends ACTbase{
         $array = array();
 
 
-        $conexion = new ConexionSqlServer('172.17.58.22', 'SPConnection', 'Passw0rd', 'DBStage');
+        $conexion = new ConexionSqlServer('172.17.110.6', 'SPConnection', 'Passw0rd', 'DBStage');
         $conn = $conexion->conectarSQL();
         //$query_string = "exec DBStage.dbo.fn_getTicketInformation @ticketNumber= 9303852215072 "; // boleto miami 9303852215072
         //$query_string = "Select DBStage.dbo.fn_getTicketInformation('9302404396356') "; // boleto miami 9303852215072
@@ -191,7 +194,7 @@ class ACTLiquidacion extends ACTbase{
         $typeReturn = $this->objParam->getParametro('typeReturn');
         if($typeReturn == NULL) {
 
-            /*$conexion = new ConexionSqlServer('172.17.58.22', 'SPConnection', 'Passw0rd', 'DBStage');
+            /*$conexion = new ConexionSqlServer('172.17.110.6', 'SPConnection', 'Passw0rd', 'DBStage');
             $conn = $conexion->conectarSQL();
             //$query_string = "exec DBStage.dbo.fn_getTicketInformation @ticketNumber= 9303852215072 "; // boleto miami 9303852215072
             $query_string = "Select DBStage.dbo.fn_getTicketInformation('9303852215072') "; // boleto miami 9303852215072
@@ -215,7 +218,7 @@ class ACTLiquidacion extends ACTbase{
 
         }
 
-        /*$conexion = new ConexionSqlServer('172.17.58.22', 'SPConnection', 'Passw0rd', 'DBStage');
+        /*$conexion = new ConexionSqlServer('172.17.110.6', 'SPConnection', 'Passw0rd', 'DBStage');
         $conn = $conexion->conectarSQL();
         $query_string = "exec DBStage.dbo.fn_getTicketInformation @ticketNumber= 9303852215072 "; // boleto miami 9303852215072
 
@@ -231,6 +234,18 @@ class ACTLiquidacion extends ACTbase{
     function siguienteEstadoLiquidacion() {
         $this->objFunc=$this->create('MODLiquidacion');
         $this->res=$this->objFunc->siguienteEstadoLiquidacion($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
+    function obtenerJsonPagar() {
+        $this->objFunc=$this->create('MODLiquidacion');
+        $this->res=$this->objFunc->obtenerJsonPagar($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
+    function listarLiquidacionDetalle() {
+        $this->objFunc=$this->create('MODLiquidacion');
+        $this->res=$this->objFunc->listarLiquidacionDetalle($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 

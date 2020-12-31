@@ -56,6 +56,13 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
             handler: this.notaAgencia
         });
 
+        this.addButton('Pagar(Facturacion)', {
+            argument: {imprimir: 'pagarFacturacion'},
+            text: '<i class="fa fa-file-text-o fa-2x"></i> Pagar',/*iconCls:'' ,*/
+            disabled: false,
+            handler: this.pagar
+        });
+
         function diagramGantt(){
             var data=this.sm.getSelected().data.id_proceso_wf;
             Phx.CP.loadingShow();
@@ -87,7 +94,21 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 			type:'Field',
 			form:true 
 		},
-
+        {
+            config:{
+                name: 'estado',
+                fieldLabel: 'estado',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:255
+            },
+            type:'TextField',
+            filters:{pfiltro:'liqui.estado',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
         {
             config: {
                 name: 'id_tipo_doc_liquidacion',
@@ -495,6 +516,36 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
             grid:true,
             form:true
         },
+        {
+            config:{
+                name: 'nro_factura',
+                fieldLabel: 'Nro Factura',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:255
+            },
+            type:'TextField',
+            filters:{pfiltro:'tv.nro_factura',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
+        {
+            config:{
+                name: 'nombre_factura',
+                fieldLabel: 'Nombre Factura',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:255
+            },
+            type:'TextField',
+            filters:{pfiltro:'tv.nombre_factura',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
 
         {
             config: {
@@ -728,21 +779,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
-		{
-			config:{
-				name: 'estado',
-				fieldLabel: 'estado',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:255
-			},
-				type:'TextField',
-				filters:{pfiltro:'liqui.estado',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
+
 
 		{
 			config:{
@@ -898,6 +935,8 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
         'tasas',
         'importe_total',
         'desc_punto_venta',
+        'nro_factura',
+        'nombre_factura',
 
 	],
 	sortInfo:{
@@ -1190,10 +1229,51 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
         });
     },
 
+    pagar : function () {
+        var rec = this.sm.getSelected();
+
+        Ext.Ajax.request({
+            url: '../../sis_devoluciones/control/Liquidacion/obtenerJsonPagar',
+            params: {'id_liquidacion': rec.data['id_liquidacion']},
+            success: this.successObtenerJsonPagar,
+            failure: this.conexionFailure,
+            timeout: this.timeout,
+            scope: this
+        });
+    },
+    successObtenerJsonPagar : function (resp) {
+        console.log(resp)
+        var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+        console.log(objRes.ROOT.datos.mensaje);
+        let json_para_facturar = JSON.parse(objRes.ROOT.datos.mensaje);
+
+
+        const json_para_emitir_factura = json_para_facturar.json_para_emitir_factura;
+
+        console.log(json_para_facturar.json_para_emitir_factura);
+
+        Ext.Ajax.request({
+            url: '../../sis_ventas_facturacion/control/FacturacionExterna/insertarVentaFactura',
+            params: {
+                ...json_para_emitir_factura,
+                json_venta_detalle: JSON.stringify(json_para_emitir_factura.json_venta_detalle)
+            },
+            success: this.successObtenerJsonPagar,
+            failure: this.conexionFailure,
+            timeout: this.timeout,
+            scope: this
+        });
+
+
+    },
+    successPagar: function (resp) {
+      console.log(resp)
+    },
+
     successVistaPrevia: function (resp) {
         var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
         console.log(JSON.parse(objRes.ROOT.datos.mensaje));
-        const {liquidacion, descuentos, sum_descuentos, notas} = JSON.parse(objRes.ROOT.datos.mensaje);
+        const {liquidacion, descuentos, sum_descuentos, notas, liqui_venta_detalle_seleccionados, sum_venta_seleccionados} = JSON.parse(objRes.ROOT.datos.mensaje);
         const htmlPreview = `
 
 <table width="100%" style=" font-size: 12px; letter-spacing: 1px;">
@@ -1210,7 +1290,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
                     </td>
                     <td align="center" width="60%" style="letter-spacing: 3px;">LIQUIDACION POR DEVOLUCION
                         <br>
-                        ****** APROBADO ******
+                        ****** ${liquidacion.estado.toUpperCase()} ******
                     </td>
                     <td width="20%">
                         Nro: ${liquidacion.nro_liquidacion}
@@ -1291,11 +1371,14 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
         <td>
             <table width="100%">
                 <tr>
-                    <td width="80%" colspan="2">BOLETO: ETI 9303090212010 21/12/2018 6.96000 Factura:
+                    <td width="80%" colspan="2">
+                        ${ liquidacion.tipo_documento === 'BOLEMD' ? (`BOLETO: ${liquidacion.nro_boleto} ${liquidacion.fecha_emision}`) : `` }
+                        ${ liquidacion.tipo_documento === 'FACCOM' ? (`FACTURA COMPUTARIZADA: ${liquidacion.nombre_factura} / ${liquidacion.nro_factura} / ${liquidacion.fecha_factura}`) : ``}
                     </td>
                     <td width="10%"></td>
                     <td width="10%"></td>
                 </tr>
+                 ${ liquidacion.tipo_documento === 'BOLEMD' ? (`
                 <tr>
                     <td width="80%" colspan="2">P-VENTA/AGENCIA: 56454545 TROPICAL TOURS LTDA. (SRZ)
                     </td>
@@ -1317,6 +1400,35 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
                     <td width="80%" colspan="2">${liquidacion.tramo_devolucion}</td>
                     <td width="10%"></td>
                     <td width="10%" align="right">0 (necesito agregar un nuevo campo aca?)</td>
+                </tr>`) : ``}
+
+                 ${ liquidacion.tipo_documento === 'FACCOM' ? (`
+                <tr>
+                    <td width="80%" colspan="2">
+                    </td>
+                    <td width="10%"></td>
+                    <td width="10%" align="right"></td>
+                </tr>
+
+                <tr>
+                    <td width="60%">Conceptos a Devolver: </td>
+                    <td width="20%"></td>
+                    <td width="10%" >Monto</td>
+                    <td width="10%" align="right"></td>
+                </tr>
+                    ${liqui_venta_detalle_seleccionados.map((detalleSeleccionado)=> (`
+                        <tr>
+                            <td width="80%" colspan="2" align="left">${detalleSeleccionado.desc_ingas}</td>
+                            <td width="10%" >${detalleSeleccionado.precio}</td>
+                           <td width="10%" align="right"></td>
+                        </tr>`))};
+               `) : ''}
+
+                <tr>
+                    <td width="20%"></td>
+                    <td width="60%" align="right" style="letter-spacing: 3px;">TOTAL CONCEPTOS A DEVOLVER BOB:</td>
+                    <td width="10%"></td>
+                    <td width="10%" align="right">${sum_venta_seleccionados}</td>
                 </tr>
 
             </table>
@@ -1379,13 +1491,13 @@ ${descuentos.map(function (descuento) {
     </tr>
     <tr>
         <td>
-            Nro. Factura: 123123123131231123
+           ---
         </td>
     </tr>
 
     <tr>
         <td>
-            Nro. Cheque: Nombre Cheque: ESCARLET GIIOVANI JIMENEZ MEJIA
+           --
         </td>
     </tr>
 ${notas && notas.map(function (nota) {

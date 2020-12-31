@@ -40,4 +40,4 @@ select param.f_import_tcatalogo ('insert','DECR','CBB','CBB','tliquidacion_estac
 select param.f_import_tcatalogo ('insert','DECR','LPB','LPB','tliquidacion_estacion');
 
 
-/********************************************F-DAT-FFP-DECR-0-07/07/2015********************************************/
+/********************************************F-DAT-FFP-DECR-0-07/07/2020********************************************/

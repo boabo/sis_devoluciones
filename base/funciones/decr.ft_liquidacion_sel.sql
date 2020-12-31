@@ -108,13 +108,16 @@ BEGIN
 			nota.nro_nota,
 			liqui.id_estado_wf,
 			liqui.id_proceso_wf,
-			liqui.num_tramite
+			liqui.num_tramite,
+			tv.nro_factura,
+			tv.nombre_factura
 from decr.tliquidacion liqui
          inner join segu.tusuario usu1 on usu1.id_usuario = liqui.id_usuario_reg
          left join segu.tusuario usu2 on usu2.id_usuario = liqui.id_usuario_mod
 inner join decr.ttipo_doc_liquidacion ttdl on ttdl.id_tipo_doc_liquidacion = liqui.id_tipo_doc_liquidacion
 inner join decr.ttipo_liquidacion ttl on ttl.id_tipo_liquidacion = liqui.id_tipo_liquidacion
-INNER JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
+LEFT JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
+			            LEFT JOIN vef.tventa tv on tv.id_venta = liqui.id_venta
 			            inner join vef.tpunto_venta pv on pv.id_punto_venta = liqui.id_punto_venta
 			            left join decr.tnota nota on nota.id_liquidacion::integer = liqui.id_liquidacion
 				        where  ';
@@ -145,7 +148,8 @@ INNER JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
          left join segu.tusuario usu2 on usu2.id_usuario = liqui.id_usuario_mod
 inner join decr.ttipo_doc_liquidacion ttdl on ttdl.id_tipo_doc_liquidacion = liqui.id_tipo_doc_liquidacion
 inner join decr.ttipo_liquidacion ttl on ttl.id_tipo_liquidacion = liqui.id_tipo_liquidacion
-INNER JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
+LEFT JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
+			            LEFT JOIN vef.tventa tv on tv.id_venta = liqui.id_venta
 			            inner join vef.tpunto_venta pv on pv.id_punto_venta = liqui.id_punto_venta
 			            left join decr.tnota nota on nota.id_liquidacion::integer = liqui.id_liquidacion
 					    where ';

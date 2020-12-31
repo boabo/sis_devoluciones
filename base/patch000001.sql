@@ -461,6 +461,18 @@ alter table decr.tliquidacion
 alter table decr.tliquidacion
     add num_tramite VARCHAR(200);
 
+alter table decr.tliquidacion
+    add id_venta integer;
+
+
+
+CREATE TABLE decr.tliqui_venta_detalle (
+                                             id_liqui_venta_detalle SERIAL,
+                                             id_liquidacion INTEGER,
+                                             id_venta_detalle INTEGER, -- relationship with param.tconcepto_ingas
+                                             CONSTRAINT pk_tliqui_venta_detalle__id_liqui_venta_detalle PRIMARY KEY(id_liqui_venta_detalle)
+) INHERITS (pxp.tbase)
+  WITHOUT OIDS;
 
 
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/

@@ -55,7 +55,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             direction: 'ASC'
                         },
                         totalProperty: 'total',
-                        fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento'],
+                        fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento','contabilizable'],
                         remoteSort: true,
                         baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'dev', emision:'DEVOLUCIONES'}
                     }),
@@ -317,6 +317,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             store: ['si','no'],
                             width: 200,
                             enableKeyEvents: true,
+                            disabled:true,
                         }
                     },
                     {
@@ -419,6 +420,20 @@ header("content-type: text/javascript; charset=UTF-8");
                                             //makes the button 24px high, there is also 'large' for this config
                                             scale: 'medium'
                                         }],
+                                    },
+                                    {
+                                        xtype: 'fieldset',
+                                        /*frame: true,
+                                        border: false,*/
+                                        layout: 'form',
+                                        title: ' DATOS BÁSICOS FACTURA COM',
+                                        //width: '33%',
+
+                                        //margins: '0 0 0 5',
+                                        padding: '0 0 0 10',
+                                        bodyStyle: 'padding-left:5px;',
+                                        id_grupo: 3,
+                                        items: [],
                                     }]
                             },
                             {
@@ -1062,6 +1077,9 @@ header("content-type: text/javascript; charset=UTF-8");
             },
 
 
+
+
+
             {
                 config: {
                     name: 'id_forma_pago',
@@ -1266,11 +1284,223 @@ header("content-type: text/javascript; charset=UTF-8");
                 form:true
             },
 
+            //items para el tipo de faccom
+
+            {
+                config:{
+                    name: 'id_venta',
+                    fieldLabel: 'Documento',
+                    allowBlank: false,
+                    emptyText:'Elija una plantilla...',
+                    store:new Ext.data.JsonStore(
+                        {
+                            url: '../../sis_ventas_facturacion/control/Venta/listarVenta',
+                            id: 'id_venta',
+                            root:'datos',
+                            sortInfo:{
+                                field:'nro_factura',
+                                direction:'ASC'
+                            },
+                            totalProperty:'total',
+                            fields: [
+                                'id_venta',
+                                'id_cliente',
+                                'id_sucursal',
+                                'id_proceso_wf',
+                                'id_estado_wf',
+                                'estado_reg',
+                                'correlativo_venta',
+                                'a_cuenta',
+                                'total_venta',
+                                'fecha_estimada_entrega',
+                                'usuario_ai',
+                                'fecha_reg',
+                                'id_usuario_reg',
+                                'id_usuario_ai',
+                                'id_usuario_mod',
+                                'fecha_mod',
+                                'usr_reg',
+                                'usr_mod',
+                                'estado',
+                                'nombre_factura',
+                                'nombre_sucursal',
+                                'nit',
+                                'id_punto_venta',
+                                'nombre_punto_venta',
+                                'id_forma_pago',
+                                'forma_pago',
+                                'monto_forma_pago',
+                                'numero_tarjeta',
+                                'codigo_tarjeta',
+                                'tipo_tarjeta',
+                                'porcentaje_descuento',
+                                'id_vendedor_medico',
+                                'comision',
+                                'observaciones',
+                                'fecha',
+                                'nro_factura',
+                                'excento',
+                                'cod_control',
+                                'id_moneda',
+                                'total_venta_msuc',
+                                'transporte_fob',
+                                'seguros_fob',
+                                'otros_fob',
+                                'transporte_cif',
+                                'seguros_cif',
+                                'otros_cif',
+                                'tipo_cambio_venta',
+                                'desc_moneda',
+                                'valor_bruto',
+                                'descripcion_bulto',
+                                'contabilizable',
+                                'hora_estimada_entrega',
+                                'forma_pedido',
+                                'id_cliente_destino',
+                                'cliente_destino',
+                            ],
+                            remoteSort: true,
+                            baseParams:{par_filtro:'nro_factura', tipo_factura:'computarizada'}
+                        }),
+                    tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_factura},  NIT: {nit}</p><p>{desc_plantilla} </p><p>Doc: {nro_factura} de Fecha: {fecha}</p><p> {importe_doc} {desc_moneda}  </p></div></tpl>',
+                    valueField: 'id_venta',
+                    hiddenValue: 'id_venta',
+                    displayField: 'nombre_factura',
+                    gdisplayField:'nombre_factura',
+                    listWidth:'280',
+                    forceSelection:true,
+                    typeAhead: false,
+                    triggerAction: 'all',
+                    lazyRender:true,
+                    mode:'remote',
+                    pageSize:20,
+                    queryDelay:500,
+                    gwidth: 250,
+                    minChars:2,
+
+                },
+                type:'ComboBox',
+                id_grupo: 3,
+                grid: false,
+                bottom_filter: true,
+                form: true
+            },
+            {
+                config:{
+                    name: 'id_venta_detalle',
+                    fieldLabel: 'Detalle',
+                    allowBlank: false,
+                    emptyText:'Elija una plantilla...',
+                    store:new Ext.data.JsonStore(
+                        {
+                            url: '../../sis_ventas_facturacion/control/VentaDetalleFacturacion/listarVentaDetalleFacturacion',
+                            id: 'id_venta_detalle',
+                            root:'datos',
+                            sortInfo:{
+                                field:'id_venta_detalle',
+                                direction:'ASC'
+                            },
+                            totalProperty:'total',
+                            fields: [
+                                'id_venta_detalle',
+                                'id_venta',
+                                'id_producto',
+                                'tipo',
+                                'estado_reg',
+                                'cantidad',
+                                'precio_unitario',
+                                'id_usuario_ai',
+                                'usuario_ai',
+                                'fecha_reg',
+                                'id_usuario_reg',
+                                'id_usuario_mod',
+                                'fecha_mod',
+                                'usr_reg',
+                                'usr_mod',
+                                'precio_total',
+                                'nombre_producto',
+                                'porcentaje_descuento',
+                                'precio_total_sin_descuento',
+                                'id_vendedor_medico',
+                                'nombre_vendedor_medico',
+                                'requiere_descripcion',
+                                'descripcion',
+                                'bruto',
+                                'ley',
+                                'kg_fino',
+                                'id_unidad_medida',
+                                'codigo_unidad_medida',
+                                'ruta_foto',
+                                'codigo_unidad_cig',
+                            ],
+                            remoteSort: true,
+                            baseParams:{par_filtro:'mon.codigo'}
+                        }),
+                    tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_producto},  precio Total: {precio_total}</p></div></tpl>',
+                    valueField: 'id_venta_detalle',
+                    hiddenValue: 'id_venta_detalle',
+                    displayField: 'nombre_producto',
+                    gdisplayField:'nombre_producto',
+                    listWidth:'280',
+                    forceSelection:true,
+                    typeAhead: false,
+                    triggerAction: 'all',
+                    lazyRender:true,
+                    mode:'remote',
+                    pageSize:20,
+                    queryDelay:500,
+                    gwidth: 250,
+                    minChars:2,
+                    enableMultiSelect:true,
+
+                },
+                type:'AwesomeCombo',
+                id_grupo: 3,
+                grid: false,
+                form: true
+            },
+            {
+                config:{
+                    name: 'nro_aut',
+                    fieldLabel: 'Nro Autorizacion',
+                    allowBlank: true,
+                    width: 200,
+                    gwidth: 100,
+                    maxLength:255,
+                    //disabled: true,
+                },
+                type:'TextField',
+                filters:{pfiltro:'liqui.importe_total',type:'string'},
+                id_grupo:3,
+                grid:true,
+                form:true
+            },
+            {
+                config:{
+                    name: 'nro_fac',
+                    fieldLabel: 'Nro Factura',
+                    allowBlank: true,
+                    width: 200,
+                    gwidth: 100,
+                    maxLength:255,
+                    //disabled: true,
+                },
+                type:'TextField',
+                filters:{pfiltro:'liqui.importe_total',type:'string'},
+                id_grupo:3,
+                grid:true,
+                form:true
+            },
+
+
         ],
         title: 'Frm solicitud',
 
         iniciarEventos: function () {
+            this.cmpIdTipoDocLiquidacion = this.getComponente('id_tipo_doc_liquidacion');
             this.cmpIdBoleto = this.getComponente('id_boleto');
+            this.cmpIdVenta = this.getComponente('id_venta');
+            this.cmpIdVentaDetalle = this.getComponente('id_venta_detalle');
             this.cmpTramo_devolucion = this.getComponente('tramo_devolucion');
             this.cmpTramo = this.getComponente('tramo');
             this.cmpImporte_neto = this.getComponente('importe_neto');
@@ -1284,6 +1514,53 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
             this.cmpTramo_devolucion.disable();
+
+
+
+            this.cmpIdTipoDocLiquidacion.on('select', function (cmp, rec) {
+
+                console.log(cmp)
+                console.log(rec)
+
+                switch (rec.json.tipo_documento) {
+                    case 'FACCOM':
+                        this.ocultarGrupo(1);
+                        this.mostrarGrupo(3);
+                        break;
+                    case 'BOLEMD':
+                        this.ocultarGrupo(3);
+                        this.mostrarGrupo(1);
+
+                        break;
+                    default:
+                        console.log('default');
+                };
+
+            }, this);
+
+            this.cmpIdVenta.on('select', function (cmp, rec) {
+
+                console.log(cmp)
+                console.log(rec)
+
+                this.cmpIdVentaDetalle.reset();
+                this.cmpIdVentaDetalle.store.baseParams.id_venta = rec.json.id_venta;
+                this.cmpIdVentaDetalle.modificado = true;
+
+
+                this.cmpIdVentaDetalle.store.load({params:{start:0,limit:10},
+                    callback:function(){
+                    console.log('llega')
+
+                    }, scope : this
+                });
+
+
+
+            }, this);
+
+
+
             this.Cmp.estacion.on('select', function (cmp, rec) {
 
                 Ext.Ajax.request({
@@ -1372,6 +1649,16 @@ header("content-type: text/javascript; charset=UTF-8");
                 */
                 console.log(rec)
                 console.log(d)
+            }, this);
+
+
+            this.megrid.initialConfig.columns[1].editor.on('select', function () {
+                const val = this.megrid.initialConfig.columns[1].editor.getValue();
+                const dataJson = this.megrid.initialConfig.columns[1].editor.store.getById(val);
+                console.log(dataJson)
+                console.log(dataJson.json.contabilizable)
+                this.megrid.initialConfig.columns[2].editor.setValue(dataJson.json.contabilizable);
+
             }, this);
         },
 

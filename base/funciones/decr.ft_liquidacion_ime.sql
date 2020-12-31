@@ -44,6 +44,10 @@ DECLARE
     v_titulo                      varchar;
     v_id_estado_actual            integer;
     v_conceptos_json            record;
+    v_detalle            record;
+    v_importe_devolver numeric(10,2);
+    v_sum_venta_seleccionados numeric(10,2);
+    v_tipo_documento varchar;
 BEGIN
 
     v_nombre_funcion = 'decr.ft_liquidacion_ime';
@@ -86,6 +90,12 @@ BEGIN
 
 
 
+            --obtenemos el tipo de liquidacino
+            select tipo_documento
+            INTO v_tipo_documento
+            from decr.ttipo_doc_liquidacion
+            WHERE id_tipo_doc_liquidacion = v_parametros.id_tipo_doc_liquidacion;
+
 
 
             --Sentencia de la insercion
@@ -125,7 +135,9 @@ BEGIN
             id_punto_venta,
         	                              id_estado_wf,
         	                              id_proceso_wf,
-        	                              num_tramite
+        	                              num_tramite,
+        	                              id_venta
+
           	) values(
 			v_parametros.estacion,
 			v_parametros.nro_liquidacion,
@@ -164,11 +176,59 @@ BEGIN
 
             v_id_estado_wf,
             v_id_proceso_wf,
-            v_num_tramite
+            v_num_tramite,
+          	         v_parametros.id_venta
 
 			
 			
 			)RETURNING id_liquidacion into v_id_liquidacion;
+
+
+            FOR v_detalle
+                IN (SELECT unnest(string_to_array(v_parametros.id_venta_detalle::varchar, ',')) as id_venta_detalle
+                )
+            loop
+
+                    insert into decr.tliqui_venta_detalle(
+                        estado_reg,
+                        id_liquidacion,
+                        id_venta_detalle,
+                        id_usuario_reg,
+                        fecha_reg,
+                        id_usuario_ai,
+                        usuario_ai,
+                        id_usuario_mod,
+                        fecha_mod
+                    ) values(
+                                'activo',
+                                v_id_liquidacion,
+                                v_detalle.id_venta_detalle::integer,
+                                p_id_usuario,
+                                now(),
+                                v_parametros._id_usuario_ai,
+                                v_parametros._nombre_usuario_ai,
+                                null,
+                                null
+                            );
+
+            END LOOP;
+
+
+
+            -- si el tipo de liquidacion es FACCOM entonces debemos sacar el importe total de la suma de los conceptos a devolver
+            if(v_tipo_documento = 'FACCOM') THEN
+
+                SELECT sum(tvd.precio)
+                INTO v_sum_venta_seleccionados
+                FROM vef.tventa_detalle tvd
+                         inner JOIN decr.tliqui_venta_detalle lvd on lvd.id_venta_detalle = tvd.id_venta_detalle
+                         inner join param.tconcepto_ingas tci on tci.id_concepto_ingas = tvd.id_producto
+                where lvd.id_liquidacion = v_id_liquidacion;
+                --RAISE EXCEPTION '%','llega' ||v_sum_venta_seleccionados::varchar;
+
+                UPDATE decr.tliquidacion SET importe_total = v_sum_venta_seleccionados where id_liquidacion = v_id_liquidacion ;
+
+            END IF;
 
 
 
@@ -348,50 +408,83 @@ BEGIN
 
             WITH t_liqui AS
                      (
-                         SELECT * FROM decr.tliquidacion tl
+                         SELECT tl.*,
+                                tv.nro_factura,
+                                tv.nombre_factura,
+                                tv.fecha         AS fecha_factura,
+                                tb.nro_boleto,
+                                tb.fecha_emision,
+                                ttdl.tipo_documento,
+                                ttdl.descripcion AS desc_tipo_documento
+                         FROM decr.tliquidacion tl
+                                  INNER JOIN decr.ttipo_doc_liquidacion ttdl
+                                             ON ttdl.id_tipo_doc_liquidacion = tl.id_tipo_doc_liquidacion
+                                  LEFT JOIN obingresos.tboleto tb ON tb.id_boleto = tl.id_boleto
+                                  LEFT JOIN vef.tventa tv ON tv.id_venta = tl.id_venta
                          WHERE tl.id_liquidacion = v_parametros.id_liquidacion
-                     ), t_descuentos AS (
-                SELECT tdl.id_liquidacion,tdl.id_concepto_ingas, tdl.importe, tci.desc_ingas
-                FROM decr.tdescuento_liquidacion tdl
-                INNER JOIN param.tconcepto_ingas tci on tci.id_concepto_ingas = tdl.id_concepto_ingas
-                WHERE tdl.id_liquidacion = v_parametros.id_liquidacion
-            )SELECT TO_JSON(ROW_TO_JSON(jsonData) :: TEXT) #>> '{}' as json
+                     ),
+                 t_descuentos AS (
+                     SELECT tdl.id_liquidacion, tdl.id_concepto_ingas, tdl.importe, tci.desc_ingas
+                     FROM decr.tdescuento_liquidacion tdl
+                              INNER JOIN param.tconcepto_ingas tci ON tci.id_concepto_ingas = tdl.id_concepto_ingas
+                     WHERE tdl.id_liquidacion = v_parametros.id_liquidacion
+                 ),
+                 t_liqui_venta_detalle_seleccionados AS
+                     (
+                         SELECT tci.desc_ingas, tvd.precio, tvd.cantidad
+                         FROM vef.tventa_detalle tvd
+                                  INNER JOIN decr.tliqui_venta_detalle lvd ON lvd.id_venta_detalle = tvd.id_venta_detalle
+                                  INNER JOIN param.tconcepto_ingas tci ON tci.id_concepto_ingas = tvd.id_producto
+                         WHERE lvd.id_liquidacion = v_parametros.id_liquidacion
+                     )
+            SELECT TO_JSON(ROW_TO_JSON(jsonData) :: TEXT) #>> '{}' AS json
             INTO v_json
-            FROM
-                (
-                    SELECT
-                        (
-                            SELECT TO_JSON(liqui)
-                            FROM
-                                (
-                                    SELECT tl.*,
-                                           (
-                                                   tl.importe_total - (SELECT sum(importe)
-                                                                       FROM t_descuentos td
-                                                                       WHERE td.id_liquidacion = tl.id_liquidacion )
-                                               ) as total_liquidacion
-                                    FROM t_liqui tl
-                                ) liqui
-                        ) as liquidacion,
-                        (
-                            SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(descuentos)))
-                            FROM
-                                (
-                                    SELECT * FROM t_descuentos
-                                ) descuentos
-                        ) as descuentos,
-                        (
-                            SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(nota)))
-                            FROM
-                                (
-                                    SELECT * FROM decr.tnota where id_liquidacion::integer = v_parametros.id_liquidacion
-                                ) nota
-                        ) as notas,
-                        (
-                            select sum(importe) from t_descuentos
-                        ) as sum_descuentos
+            FROM (
+                     SELECT (
+                                SELECT TO_JSON(liqui)
+                                FROM (
+                                         SELECT tl.*,
+                                                (
+                                                        tl.importe_total - (SELECT sum(importe)
+                                                                            FROM t_descuentos td
+                                                                            WHERE td.id_liquidacion = tl.id_liquidacion)
+                                                    ) AS total_liquidacion
+                                         FROM t_liqui tl
+                                     ) liqui
+                            ) AS liquidacion,
+                            (
+                                SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(descuentos)))
+                                FROM (
+                                         SELECT *
+                                         FROM t_descuentos
+                                     ) descuentos
+                            ) AS descuentos,
+                            (
+                                SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(nota)))
+                                FROM (
+                                         SELECT *
+                                         FROM decr.tnota
+                                         WHERE id_liquidacion::integer = v_parametros.id_liquidacion
+                                     ) nota
+                            ) AS notas,
+                            (
+                                SELECT sum(importe)
+                                FROM t_descuentos
+                            ) AS sum_descuentos,
 
-                ) jsonData;
+                            (
+                                SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(t_liqui_venta_detalle_seleccionados)))
+                                FROM t_liqui_venta_detalle_seleccionados
+                            ) AS liqui_venta_detalle_seleccionados,
+                            (
+                                SELECT sum(precio)
+                                FROM t_liqui_venta_detalle_seleccionados
+                            ) AS sum_venta_seleccionados
+                 ) jsonData;
+
+
+
+
 
 
             --Definicion de la respuesta
@@ -471,6 +564,77 @@ BEGIN
             return v_resp;
 
 		end;
+
+     /*********************************
+     #TRANSACCION:  'DECR_LIQUI_JSONPAGAR'
+     #DESCRIPCION:	Eliminacion de registros
+     #AUTOR:		admin
+     #FECHA:		17-04-2020 01:54:37
+    ***********************************/
+
+    elsif(p_transaccion='DECR_LIQUI_JSONPAGAR')then
+
+        begin
+            --Sentencia de la eliminacion
+
+
+            WITH t_liqui AS
+                     (
+                         SELECT l.id_liquidacion,
+                                pv.nombre AS punto_venta,
+                                b.nit     AS nit_cliente,
+                                b.razon   AS razon_social,
+                                b.moneda,
+                                l.tipo_de_cambio,
+                                0 as exento,
+                                '' as observaciones
+                         FROM decr.tliquidacion l
+                                  INNER JOIN vef.tpunto_venta pv ON pv.id_punto_venta = l.id_punto_venta
+                                  INNER JOIN obingresos.tboleto b ON b.id_boleto = l.id_boleto
+                         WHERE l.id_liquidacion = v_parametros.id_liquidacion
+                     ),
+                 t_conceptos AS
+                     (
+                         SELECT tl.id_liquidacion, ci.id_concepto_ingas AS id_concepto, ci.desc_ingas, 1 AS cantidad, dl.importe as precio_unitario
+                         FROM decr.tdescuento_liquidacion dl
+                                  INNER JOIN t_liqui tl ON tl.id_liquidacion = dl.id_liquidacion
+                                  INNER JOIN param.tconcepto_ingas ci ON ci.id_concepto_ingas = dl.id_concepto_ingas
+                         WHERE tl.id_liquidacion = v_parametros.id_liquidacion
+                     )SELECT TO_JSON(ROW_TO_JSON(jsonData) :: TEXT) #>> '{}' as json
+            into v_json
+            FROM
+                (
+                    SELECT
+                        (
+                            SELECT TO_JSON(liqui)
+                            FROM
+                                (
+                                    SELECT tl.*,
+                                           (
+                                               SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(concepto)))
+                                               FROM
+                                                   (
+                                                       SELECT * FROM t_conceptos
+                                                   ) concepto
+                                           ) as json_venta_detalle
+                                    FROM t_liqui tl
+                                ) liqui
+                        ) as json_para_emitir_factura
+
+                ) jsonData;
+
+
+
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'json',v_json);
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje',v_json);
+            v_resp = pxp.f_agrega_clave(v_resp,'id_liquidacion',v_parametros.id_liquidacion::varchar);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+        end;
+
 
 	else
      

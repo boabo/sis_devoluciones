@@ -500,7 +500,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 // init mestore
                 this.mestore = new Ext.data.JsonStore({
 
-                    url: '../../sis_devoluciones/control/Liquidacion/listarLiquidacion',
+                    url: '../../sis_devoluciones/control/Liquidacion/listarLiquidacionDetalle',
                     id: 'id_liquidacion',
                     root: 'datos',
                     totalProperty: 'total',
@@ -1329,7 +1329,18 @@ header("content-type: text/javascript; charset=UTF-8");
 
                                 const json = r[0].json;
                                 console.log('json', json)
-                                this.agregarDatosCampo(json.desc_nro_boleto, json.razon, json.nro_nit, json.fecha_fac, json.total, 1);
+
+                                switch(json.desc_tipo_documento) {
+                                    case 'BOLEMD':
+                                        this.agregarDatosCampo(json.desc_nro_boleto, json.razon, json.nro_nit, json.fecha_fac, json.total, 1);
+                                        break;
+                                    case 'FACCOM':
+                                        this.agregarDatosCampo(json.desc_nro_boleto, json.razon, json.nro_nit, json.fecha_fac, json.total, 1);
+                                        break;
+                                    default:
+                                    console.log('no hay logica para este tipo de documento para la liquidacion');
+                                }
+                                case
 
 
                                 /*if (r[0].data['tipo'] == 'NO') {
@@ -1727,7 +1738,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             fields: ['id_liquidacion', 'nro_liquidacion', 'estacion'],
                             // turn on remote sorting
                             remoteSort: true,
-                            baseParams: {par_filtro: 'nro_liquidacion'}
+                            baseParams: {par_filtro: 'nro_liquidacion', estado: 'emitido'}
                         }),
                         valueField: 'id_liquidacion',
                         displayField: 'nro_liquidacion',
