@@ -1399,7 +1399,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
                 <tr>
                     <td width="80%" colspan="2">${liquidacion.tramo_devolucion}</td>
                     <td width="10%"></td>
-                    <td width="10%" align="right">0 (necesito agregar un nuevo campo aca?)</td>
+                    <td width="10%" align="right"></td>
                 </tr>`) : ``}
 
                  ${ liquidacion.tipo_documento === 'FACCOM' ? (`
@@ -1422,7 +1422,6 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
                             <td width="10%" >${detalleSeleccionado.precio}</td>
                            <td width="10%" align="right"></td>
                         </tr>`))};
-               `) : ''}
 
                 <tr>
                     <td width="20%"></td>
@@ -1430,6 +1429,9 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
                     <td width="10%"></td>
                     <td width="10%" align="right">${sum_venta_seleccionados}</td>
                 </tr>
+               `) : ''}
+
+
 
             </table>
         </td>

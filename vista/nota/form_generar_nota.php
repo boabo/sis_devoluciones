@@ -453,7 +453,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 //cantidad,detalle,peso,totalo
                 this.Items = Ext.data.Record.create([{
                     name: 'cantidad',
-                    type: 'int'
+                    type: 'int',
                 }, {
                     name: 'Concepto',
                     type: 'string'
@@ -501,10 +501,11 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.mestore = new Ext.data.JsonStore({
 
                     url: '../../sis_devoluciones/control/Liquidacion/listarLiquidacionDetalle',
-                    id: 'id_liquidacion',
+                    id: 'id_detalle',
                     root: 'datos',
                     totalProperty: 'total',
                     fields: [
+                        'cantidad',
                         'id_liquidacion',
                         'estacion',
                         'nro_liquidacion',
@@ -612,6 +613,8 @@ header("content-type: text/javascript; charset=UTF-8");
                                 importe_devolver: 0,
                                 exento: 0
                             });
+                            e.set('cantidad', 1);
+
                             this.editor.stopEditing();
                             this.mestore.insert(0, e);
                             this.megrid.getView().refresh();
@@ -1313,6 +1316,8 @@ header("content-type: text/javascript; charset=UTF-8");
 
                     this.megrid.store.baseParams = {}; // limpio los parametro enviados
                     this.megrid.store.baseParams.id_liquidacion = this.Cmp.liquidevolu.getValue();
+                    this.megrid.store.baseParams.tipo = record.json.desc_tipo_documento;
+                    console.log('record', record.json.desc_tipo_documento)
                     //this.Cmp.id_factura.modificado=true;
 
 
@@ -1339,8 +1344,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                         break;
                                     default:
                                     console.log('no hay logica para este tipo de documento para la liquidacion');
-                                }
-                                case
+                                };
 
 
                                 /*if (r[0].data['tipo'] == 'NO') {
@@ -1738,7 +1742,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             fields: ['id_liquidacion', 'nro_liquidacion', 'estacion'],
                             // turn on remote sorting
                             remoteSort: true,
-                            baseParams: {par_filtro: 'nro_liquidacion', estado: 'emitido'}
+                            baseParams: {par_filtro: 'liqui.nro_liquidacion', estado: 'emitido'}
                         }),
                         valueField: 'id_liquidacion',
                         displayField: 'nro_liquidacion',
@@ -2867,6 +2871,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         razon: razon,
                         total_devuelto: a.data.importe_original
                     });
+                    e.set('cantidad', 1);
                     this.mestore.add(e);
                     this.megrid.getView().refresh();
 

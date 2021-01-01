@@ -110,7 +110,9 @@ BEGIN
 			liqui.id_proceso_wf,
 			liqui.num_tramite,
 			tv.nro_factura,
-			tv.nombre_factura
+			tv.nombre_factura,
+			tb.id_boleto as id,
+			1::integer as cantidad
 from decr.tliquidacion liqui
          inner join segu.tusuario usu1 on usu1.id_usuario = liqui.id_usuario_reg
          left join segu.tusuario usu2 on usu2.id_usuario = liqui.id_usuario_mod
@@ -152,6 +154,146 @@ LEFT JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
 			            LEFT JOIN vef.tventa tv on tv.id_venta = liqui.id_venta
 			            inner join vef.tpunto_venta pv on pv.id_punto_venta = liqui.id_punto_venta
 			            left join decr.tnota nota on nota.id_liquidacion::integer = liqui.id_liquidacion
+					    where ';
+
+			--Definicion de la respuesta
+			v_consulta:=v_consulta||v_parametros.filtro;
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+
+	/*********************************
+ 	#TRANSACCION:  'DECR_LIQUIDET_SEL'
+ 	#DESCRIPCION:	Consulta de datos
+ 	#AUTOR:		Favio Figueroa
+ 	#FECHA:		17-04-2020 01:54:37
+	***********************************/
+
+    elsif(p_transaccion='DECR_LIQUIDET_SEL')then
+
+    	begin
+
+    	    --obtener descuentos si existe un filtro de id_liquidacion
+    	    IF pxp.f_existe_parametro(p_tabla, 'id_liquidacion') THEN
+                SELECT sum(tci.precio) as sum_descuentos
+                INTO v_sum_descuentos
+    	        FROM decr.tdescuento_liquidacion tdl
+                inner JOIN param.tconcepto_ingas tci on tci.id_concepto_ingas = tdl.id_concepto_ingas
+    	        WHERE tdl.id_liquidacion = v_parametros.id_liquidacion;
+
+            END IF;
+
+    		--Sentencia de la consulta
+			v_consulta:='SELECT
+    tl.id_liquidacion,
+    tl.estacion,
+    tl.nro_liquidacion,
+    tl.estado_reg,
+    tl.tipo_de_cambio,
+    tl.descripcion,
+    tl.nombre_cheque,
+    tl.fecha_liqui,
+    tl.tramo_devolucion,
+    tl.util,
+    tl.fecha_pago,
+    tl.id_tipo_doc_liquidacion,
+    tl.pv_agt,
+    tl.noiata,
+    tl.id_tipo_liquidacion,
+    tl.id_forma_pago,
+    tl.id_boleto,
+    tl.tramo,
+    tl.nombre,
+    tl.moneda_liq,
+    tl.estado,
+    tl.cheque,
+    tl.id_usuario_reg,
+    tl.fecha_reg,
+    tl.usuario_ai,
+    tl.id_usuario_ai,
+    tl.id_usuario_mod,
+    tl.fecha_mod,
+    usu1.cuenta as usr_reg,
+    usu2.cuenta as usr_mod,
+    ttdl.tipo_documento as desc_tipo_documento,
+    ttl.tipo_liquidacion as desc_tipo_liquidacion,
+    tv.nro_factura::varchar as desc_nro_boleto,
+    tv.nit::varchar as nro_nit,
+    tv.nombre_factura AS razon,
+    tv.fecha::date as fecha_fac,
+    tv.total_venta::numeric as total,
+    td.nroaut as nro_aut,
+    tv.nro_factura as nro_fac,
+    tci.desc_ingas::varchar as concepto,
+    ''FACTURA''::VARCHAR AS tipo,
+    tvd.precio::numeric AS precio_unitario,
+    tvd.precio::numeric AS importe_original,
+    tl.punto_venta,
+    tl.moneda_emision,
+    tl.importe_neto,
+    tl.tasas,
+    tl.importe_total,
+    '||v_sum_descuentos||' as sum_descuentos,
+    tl.importe_total as importe_devolver, -- solo funciona para generar nota
+    tl.id_punto_venta,
+    pv.nombre as desc_punto_venta,
+    1::varchar as nro_nota,
+    tl.id_estado_wf,
+    tl.id_proceso_wf,
+    tl.num_tramite,
+    tv.nro_factura,
+    tv.nombre_factura,
+    tvd.id_venta_detalle as id,
+    1::integer as cantidad
+FROM vef.tventa_detalle tvd
+
+         inner join segu.tusuario usu1 on usu1.id_usuario = tvd.id_usuario_reg
+         left join segu.tusuario usu2 on usu2.id_usuario = tvd.id_usuario_mod
+         inner JOIN decr.tliqui_venta_detalle lvd on lvd.id_venta_detalle = tvd.id_venta_detalle
+         inner join param.tconcepto_ingas tci on tci.id_concepto_ingas = tvd.id_producto
+         INNER JOIN decr.tliquidacion tl on tl.id_liquidacion = lvd.id_liquidacion
+         inner join decr.ttipo_doc_liquidacion ttdl on ttdl.id_tipo_doc_liquidacion = tl.id_tipo_doc_liquidacion
+         inner join decr.ttipo_liquidacion ttl on ttl.id_tipo_liquidacion = tl.id_tipo_liquidacion
+         INNER JOIN vef.tventa tv on tv.id_venta = tl.id_venta
+         inner join vef.tpunto_venta pv on pv.id_punto_venta = tl.id_punto_venta
+inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
+				        where  ';
+
+			--Definicion de la respuesta
+			v_consulta:=v_consulta||v_parametros.filtro;
+			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+
+	/*********************************
+ 	#TRANSACCION:  'DECR_LIQUIDET_CONT'
+ 	#DESCRIPCION:	Conteo de registros
+ 	#AUTOR:		Favio Figueroa
+ 	#FECHA:		17-04-2020 01:54:37
+	***********************************/
+
+	elsif(p_transaccion='DECR_LIQUIDET_CONT')then
+
+		begin
+			--Sentencia de la consulta de conteo de registros
+			v_consulta:='select count(tvd.id_venta_detalle)
+         FROM vef.tventa_detalle tvd
+
+         inner join segu.tusuario usu1 on usu1.id_usuario = tvd.id_usuario_reg
+         left join segu.tusuario usu2 on usu2.id_usuario = tvd.id_usuario_mod
+         inner JOIN decr.tliqui_venta_detalle lvd on lvd.id_venta_detalle = tvd.id_venta_detalle
+         inner join param.tconcepto_ingas tci on tci.id_concepto_ingas = tvd.id_producto
+         INNER JOIN decr.tliquidacion tl on tl.id_liquidacion = lvd.id_liquidacion
+         inner join decr.ttipo_doc_liquidacion ttdl on ttdl.id_tipo_doc_liquidacion = tl.id_tipo_doc_liquidacion
+         inner join decr.ttipo_liquidacion ttl on ttl.id_tipo_liquidacion = tl.id_tipo_liquidacion
+         INNER JOIN vef.tventa tv on tv.id_venta = tl.id_venta
+         inner join vef.tpunto_venta pv on pv.id_punto_venta = tl.id_punto_venta
+inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
 					    where ';
 
 			--Definicion de la respuesta
@@ -258,6 +400,61 @@ LEFT JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
 						from obingresos.tboleto bol
 				        where  ';
 
+
+            --Definicion de la respuesta
+            v_consulta:=v_consulta||v_parametros.filtro;
+
+            --Devuelve la respuesta
+            return v_consulta;
+
+        end;
+	/*********************************
+ 	#TRANSACCION:  'DECR_FACORI_SEL'
+ 	#DESCRIPCION:	Consulta de datos
+ 	#AUTOR:		Favio Figueroa
+ 	#FECHA:		17-04-2020 01:54:37
+	***********************************/
+
+	elsif(p_transaccion='DECR_FACORI_SEL')then
+
+    	begin
+            --RAISE EXCEPTION '%','llega';
+
+            --Sentencia de la consulta
+            v_consulta:='
+            select tci.desc_ingas::varchar as concepto
+
+            from vef.tventa tv
+            inner join vef.tventa_detalle tvd on tvd.id_venta = tv.id_venta
+            inner join param.tconcepto_ingas tci on tci.id_concepto_ingas = tvd.id_producto
+            inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
+            where ';
+            --where tv.nro_factura = 6347 and td.nroaut = 402401000007295::varchar
+            v_consulta:=v_consulta||v_parametros.filtro;
+
+            --Devuelve la respuesta
+            return v_consulta;
+
+		end;
+
+
+    /*********************************
+     #TRANSACCION:  'DECR_FACORI_CONT'
+     #DESCRIPCION:	Conteo de registros
+     #AUTOR:		Favio Figueroa
+     #FECHA:		17-04-2020 01:54:37
+    ***********************************/
+
+    elsif(p_transaccion='DECR_FACORI_CONT')then
+
+        begin
+            --Sentencia de la consulta de conteo de registros
+            v_consulta:='select count(tvd.id_venta_detalle)
+						from vef.tventa tv
+            inner join vef.tventa_detalle tvd on tvd.id_venta = tv.id_venta
+            inner join param.tconcepto_ingas tci on tci.id_concepto_ingas = tvd.id_producto
+            inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
+            where ';
 
             --Definicion de la respuesta
             v_consulta:=v_consulta||v_parametros.filtro;

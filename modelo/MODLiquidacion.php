@@ -84,6 +84,8 @@ class MODLiquidacion extends MODbase{
         $this->captura('num_tramite','varchar');
         $this->captura('nro_factura','int4');
         $this->captura('nombre_factura','varchar');
+        $this->captura('id','int4');
+        $this->captura('cantidad','int4');
 
 
 
@@ -94,7 +96,89 @@ class MODLiquidacion extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
+    function listarLiquidacionDetalle(){
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='decr.ft_liquidacion_sel';
+        $this->transaccion='DECR_LIQUIDET_SEL';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+
+        //Definicion de la lista del resultado del query
+        $this->captura('id_liquidacion','int4');
+        $this->captura('estacion','varchar');
+        $this->captura('nro_liquidacion','varchar');
+        $this->captura('estado_reg','varchar');
+        $this->captura('tipo_de_cambio','numeric');
+        $this->captura('descripcion','varchar');
+        $this->captura('nombre_cheque','varchar');
+        $this->captura('fecha_liqui','date');
+        $this->captura('tramo_devolucion','varchar');
+        $this->captura('util','varchar');
+        $this->captura('fecha_pago','date');
+        $this->captura('id_tipo_doc_liquidacion','int4');
+        $this->captura('pv_agt','varchar');
+        $this->captura('noiata','varchar');
+        $this->captura('id_tipo_liquidacion','int4');
+        $this->captura('id_forma_pago','int4');
+        $this->captura('id_boleto','int4');
+        $this->captura('tramo','varchar');
+        $this->captura('nombre','varchar');
+        $this->captura('moneda_liq','varchar');
+        $this->captura('estado','varchar');
+        $this->captura('cheque','varchar');
+        $this->captura('id_usuario_reg','int4');
+        $this->captura('fecha_reg','timestamp');
+        $this->captura('usuario_ai','varchar');
+        $this->captura('id_usuario_ai','int4');
+        $this->captura('id_usuario_mod','int4');
+        $this->captura('fecha_mod','timestamp');
+        $this->captura('usr_reg','varchar');
+        $this->captura('usr_mod','varchar');
+        $this->captura('desc_tipo_documento','varchar');
+        $this->captura('desc_tipo_liquidacion','varchar');
+        $this->captura('desc_nro_boleto','varchar');
+        $this->captura('nro_nit','varchar');
+        $this->captura('razon','varchar');
+        $this->captura('fecha_fac','date');
+        $this->captura('total','numeric');
+        $this->captura('nro_aut','varchar');
+        $this->captura('nro_fac','integer');
+        $this->captura('concepto','varchar');
+        $this->captura('tipo','varchar');
+        $this->captura('precio_unitario','numeric');
+        $this->captura('importe_original','numeric');
+
+        $this->captura('punto_venta','varchar');
+        $this->captura('moneda_emision','varchar');
+        $this->captura('importe_neto','numeric');
+        $this->captura('tasas','numeric');
+        $this->captura('importe_total','numeric');
+        $this->captura('sum_descuentos','numeric');
+        $this->captura('importe_devolver','numeric');
+        $this->captura('id_punto_venta','int4');
+
+        $this->captura('desc_punto_venta','varchar');
+        $this->captura('nro_nota','varchar');
+        $this->captura('id_estado_wf','int4');
+        $this->captura('id_proceso_wf','int4');
+        $this->captura('num_tramite','varchar');
+        $this->captura('nro_factura','int4');
+        $this->captura('nombre_factura','varchar');
+        $this->captura('id','int4');
+
+        $this->captura('cantidad','int4');
+
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
+
+
 	function insertarLiquidacion(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='decr.ft_liquidacion_ime';
@@ -322,82 +406,30 @@ class MODLiquidacion extends MODbase{
         return $this->respuesta;
     }
 
-    function listarLiquidacionDetalle(){
+
+    function listarVentaDetalleOriginal(){
         $this->procedimiento='decr.ft_liquidacion_sel';
-        $this->transaccion='DECR_LIQUIDET_SEL';
+        $this->transaccion='DECR_FACORI_SEL';
         $this->tipo_procedimiento='SEL';//tipo de transaccion
 
-        //Definicion de la lista del resultado del query
-        $this->captura('id_liquidacion','int4');
-        $this->captura('estacion','varchar');
-        $this->captura('nro_liquidacion','varchar');
-        $this->captura('estado_reg','varchar');
-        $this->captura('tipo_de_cambio','numeric');
-        $this->captura('descripcion','varchar');
-        $this->captura('nombre_cheque','varchar');
-        $this->captura('fecha_liqui','date');
-        $this->captura('tramo_devolucion','varchar');
-        $this->captura('util','varchar');
-        $this->captura('fecha_pago','date');
-        $this->captura('id_tipo_doc_liquidacion','int4');
-        $this->captura('pv_agt','varchar');
-        $this->captura('noiata','varchar');
-        $this->captura('id_tipo_liquidacion','int4');
-        $this->captura('id_forma_pago','int4');
-        $this->captura('id_boleto','int4');
-        $this->captura('tramo','varchar');
-        $this->captura('nombre','varchar');
-        $this->captura('moneda_liq','varchar');
-        $this->captura('estado','varchar');
-        $this->captura('cheque','varchar');
-        $this->captura('id_usuario_reg','int4');
-        $this->captura('fecha_reg','timestamp');
-        $this->captura('usuario_ai','varchar');
-        $this->captura('id_usuario_ai','int4');
-        $this->captura('id_usuario_mod','int4');
-        $this->captura('fecha_mod','timestamp');
-        $this->captura('usr_reg','varchar');
-        $this->captura('usr_mod','varchar');
-        $this->captura('desc_tipo_documento','varchar');
-        $this->captura('desc_tipo_liquidacion','varchar');
-        $this->captura('desc_nro_boleto','varchar');
-        $this->captura('nro_nit','varchar');
-        $this->captura('razon','varchar');
-        $this->captura('fecha_fac','date');
-        $this->captura('total','numeric');
-        $this->captura('nro_aut','int4');
-        $this->captura('nro_fac','varchar');
+        //Define los parametros para la funcion
+
         $this->captura('concepto','varchar');
-        $this->captura('tipo','varchar');
-        $this->captura('precio_unitario','numeric');
-        $this->captura('importe_original','numeric');
-
-        $this->captura('punto_venta','varchar');
-        $this->captura('moneda_emision','varchar');
-        $this->captura('importe_neto','numeric');
-        $this->captura('tasas','numeric');
-        $this->captura('importe_total','numeric');
-        $this->captura('sum_descuentos','numeric');
-        $this->captura('importe_devolver','numeric');
-        $this->captura('id_punto_venta','int4');
-
-        $this->captura('desc_punto_venta','varchar');
-        $this->captura('nro_nota','varchar');
-        $this->captura('id_estado_wf','int4');
-        $this->captura('id_proceso_wf','int4');
-        $this->captura('num_tramite','varchar');
-        $this->captura('nro_factura','int4');
-        $this->captura('nombre_factura','varchar');
-
 
 
         //Ejecuta la instruccion
         $this->armarConsulta();
+
+        //echo($this->consulta);exit;
         $this->ejecutarConsulta();
 
         //Devuelve la respuesta
         return $this->respuesta;
     }
+
+
+
+
 			
 }
 ?>

@@ -1436,7 +1436,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             remoteSort: true,
                             baseParams:{par_filtro:'mon.codigo'}
                         }),
-                    tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_producto},  precio Total: {precio_total}</p></div></tpl>',
+                   // tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_producto},  precio Total: {precio_total}</p></div></tpl>',
                     valueField: 'id_venta_detalle',
                     hiddenValue: 'id_venta_detalle',
                     displayField: 'nombre_producto',
@@ -1459,7 +1459,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 grid: false,
                 form: true
             },
-            {
+           /* {
                 config:{
                     name: 'nro_aut',
                     fieldLabel: 'Nro Autorizacion',
@@ -1490,7 +1490,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 id_grupo:3,
                 grid:true,
                 form:true
-            },
+            },*/
 
 
         ],

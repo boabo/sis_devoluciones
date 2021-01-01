@@ -1066,6 +1066,23 @@ class MODNota extends MODbase
         return $this->respuesta;
     }
 
+    function verNota(){
+
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento = 'decr.ft_nota_ime';
+        $this->transaccion = 'FAC_GENNOTA_JSON';
+        $this->tipo_procedimiento = 'IME';
+
+        $this->setParametro('notas','notas','varchar');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
 
 
 }

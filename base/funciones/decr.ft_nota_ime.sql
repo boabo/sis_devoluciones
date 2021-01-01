@@ -41,6 +41,7 @@ DECLARE
 
     v_total_para_devolver numeric;
     v_credfis numeric;
+    v_json	varchar;
 
 BEGIN
 
@@ -233,7 +234,7 @@ BEGIN
                                                                                               cantidad varchar
                                          ))
             LOOP
-                IF (v_registros_json.tipo = 'BOLETO') THEN
+                IF (v_registros_json.tipo = 'BOLETO' or v_registros_json.tipo = 'FACTURA') THEN
 
                     --obtenemos la dosificacion para generar la nota
                     SELECT d.*
@@ -245,6 +246,7 @@ BEGIN
                       AND d.fecha_limite >= now()::date
                       AND d.tipo = 'N'
                       AND d.tipo_generacion = 'computarizada'
+                      AND d.nombre_sistema = 'SISTEMAFACTURACIONNCD'
                       --d.id_activida_economica @> v_id_actividad_economica todo preguntar sobre esto
                         FOR UPDATE;
 
@@ -253,15 +255,22 @@ BEGIN
                     END IF;
 
                     v_nro_nota = v_record_dosificacion.nro_siguiente;
+                    --RAISE EXCEPTION '%', v_record_dosificacion.id_dosificacion;
 
                     --validar que el nro de factura no supere el maximo nro de nota de la dosificaiocn
-                    IF (exists(SELECT 1
+                   /* IF ( exists(SELECT 1
                                FROM decr.tnota nota
                                WHERE nota.nro_nota = v_nro_nota::varchar
                                  AND nota.id_dosificacion = v_record_dosificacion.id_dosificacion::integer)) THEN
-                        RAISE EXCEPTION 'El numero de Nota ya existe para esta dosificacion. Por favor comuniquese con el administrador del sistema';
+                        RAISE EXCEPTION 'El numero de Nota ya existe para esta dosificacion. Por favor comuniquese con el administrador del sistema, ....';
                     END IF;
-
+*/
+                   /* IF EXISTS (SELECT 1 FROM decr.tnota nota
+                               WHERE nota.nro_nota = v_nro_nota::varchar) THEN
+                        -- do something
+                        RAISE EXCEPTION 'El numero de Nota ya existe para esta dosificacion. Por favor comuniquese con el administrador del sistema, ....';
+                    END IF;
+*/
 
 
                     -- el numero nit es el primero row del detalle del servicio de devolucion tomar en cuenta eso
@@ -394,7 +403,151 @@ BEGIN
             return v_resp;
 
 		end;
-         
+
+
+    /*********************************
+     #TRANSACCION:  'FAC_GENNOTA_JSON'
+     #DESCRIPCION:	Generar nota json
+     #AUTOR:		favio figueroa
+     #FECHA:		18-11-2020 19:30:03
+    ***********************************/
+
+    elsif(p_transaccion='FAC_GENNOTA_JSON')then
+
+        begin
+
+            WITH
+                t_ids AS (
+                    SELECT TRIM(unnest(string_to_array(v_parametros.notas, ','))) AS id_nota
+                ),
+                t_nota AS (
+                    SELECT tn.id_nota,
+                           tn.credfis,
+                           ts.nombre,
+                           td.glosa_empresa,
+                           td.glosa_impuestos,
+                           td.fecha_limite,
+                           tae.nombre      AS actividad_economica,
+                           tae.descripcion AS desc_actividad_economica,
+                           ts.nombre       AS desc_sucursal,
+                           ts.direccion,
+                           ts.telefono,
+                           tn.nro_nota,
+                           tn.nroaut,
+                           tn.estado,
+                           tn.fecha,
+                           tn.nit,
+                           tn.razon,
+                           tn.nrofac       AS factura,
+                           tn.nroaut_anterior,
+                           tn.fecha_fac,
+                           tn.codigo_control,
+                           tl.nro_liquidacion,
+                           tu.cuenta,
+                           tn.fecha_reg,
+                           tl.id_venta,
+                           tl.id_boleto
+                           --necesitamos saber el nombre de la empresa su razon direccion telefonos y alcaldia
+                    FROM decr.tnota tn
+                             INNER JOIN t_ids ti on ti.id_nota::integer = tn.id_nota::integer
+                             INNER JOIN decr.tliquidacion tl
+                                        ON tl.id_liquidacion::integer = tn.id_liquidacion::integer AND tn.id_liquidacion::integer != 1
+                             INNER JOIN vef.tdosificacion td ON td.id_dosificacion = tn.id_dosificacion
+                             INNER JOIN vef.tsucursal ts ON ts.id_sucursal = td.id_sucursal
+                             INNER JOIN vef.tactividad_economica tae ON tae.id_actividad_economica = ANY (td.id_activida_economica)
+                             INNER JOIN segu.tusuario tu ON tu.id_usuario = tn.id_usuario_reg
+
+                ),
+                t_por_boleto AS (
+                    SELECT tb.nro_boleto, tb.total, tb.liquido, 1 AS cantidad
+                    FROM t_nota tn
+                             INNER JOIN obingresos.tboleto tb ON tb.id_boleto = tn.id_boleto
+                ),
+                t_por_factura_com AS (
+                    SELECT tci.desc_ingas::varchar AS concepto,
+                           tci.desc_ingas::varchar AS concepto_original,
+                           tvd.precio              AS precio_unitario,
+                           tvd.precio              AS importe_original,
+                           1                       AS cantidad
+
+                    FROM vef.tventa tv
+                             INNER JOIN t_nota tn ON tn.id_venta = tv.id_venta
+                             INNER JOIN vef.tventa_detalle tvd ON tvd.id_venta = tv.id_venta
+                             INNER JOIN param.tconcepto_ingas tci ON tci.id_concepto_ingas = tvd.id_producto
+                             INNER JOIN vef.tdosificacion td ON td.id_dosificacion = tv.id_dosificacion
+                ),
+                t_nota_detalle AS (
+                    SELECT tnd.*
+                    FROM decr.tnota_detalle tnd
+                             INNER JOIN t_nota tn ON tn.id_nota = tnd.id_nota
+                ),
+                t_sum_nota_detalle AS (
+                    SELECT sum(tnd.exento)                      AS exento_total,
+                           sum(tnd.importe)                     AS importe_total,
+                           (sum(tnd.importe) - sum(tnd.exento)) AS total_devolver,
+                           id_nota
+                    FROM t_nota_detalle tnd
+                    GROUP BY tnd.id_nota
+                )
+            SELECT TO_JSON(ROW_TO_JSON(jsonData) :: TEXT) #>> '{}' AS json
+            INTO v_json
+            FROM (
+                     SELECT (
+                                SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(nota_sel)))
+                                FROM (
+                                         SELECT tn.*,
+                                                (
+                                                    SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(por_boleto)))
+                                                    FROM (
+                                                             SELECT *
+                                                             FROM t_por_boleto
+                                                             WHERE id_boleto = tn.id_boleto
+                                                         ) por_boleto
+                                                ) AS por_boleto,
+
+                                                (
+                                                    SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(por_factura_com)))
+                                                    FROM (
+                                                             SELECT *
+                                                             FROM t_por_factura_com
+                                                             WHERE id_venta = tn.id_venta
+                                                         ) por_factura_com
+                                                ) AS por_factura_com,
+                                                (
+                                                    SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(nota_detalle)))
+                                                    FROM (
+                                                             SELECT *
+                                                             FROM t_nota_detalle
+                                                             WHERE id_nota = tn.id_nota
+                                                         ) nota_detalle
+                                                ) AS nota_detalle,
+
+                                                (
+                                                    SELECT TO_JSON(sum_nota_detalle)
+                                                    FROM (
+                                                             SELECT *
+                                                             FROM t_sum_nota_detalle
+                                                             WHERE id_nota = tn.id_nota
+                                                         ) sum_nota_detalle
+                                                ) AS sum_nota_detalle
+
+
+                                         FROM t_nota tn
+                                     ) nota_sel
+                            ) AS notas
+                 ) jsonData;
+
+
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'json',v_json);
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje',v_json);
+            v_resp = pxp.f_agrega_clave(v_resp,'id_nota',v_parametros.notas::varchar);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+        end;
+
 	else
      
     	raise exception 'Transaccion inexistente: %',p_transaccion;

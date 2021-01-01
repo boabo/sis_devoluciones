@@ -244,9 +244,42 @@ class ACTLiquidacion extends ACTbase{
     }
 
     function listarLiquidacionDetalle() {
-        $this->objFunc=$this->create('MODLiquidacion');
-        $this->res=$this->objFunc->listarLiquidacionDetalle($this->objParam);
-        $this->res->imprimirRespuesta($this->res->generarJson());
+
+
+        $this->objParam->defecto('ordenacion','id_liquidacion');
+
+        $this->objParam->defecto('dir_ordenacion','asc');
+
+
+
+
+        if($this->objParam->getParametro('tipo') == 'FACCOM'){
+
+            if($this->objParam->getParametro('id_liquidacion') != ''){
+                $this->objParam->addFiltro("tl.id_liquidacion = ".$this->objParam->getParametro('id_liquidacion'));
+            }
+            if($this->objParam->getParametro('estado') != ''){
+                $this->objParam->addFiltro("tl.estado = ''".$this->objParam->getParametro('estado')."'' " );
+            }
+
+            $this->objFunc=$this->create('MODLiquidacion');
+            $this->res=$this->objFunc->listarLiquidacionDetalle($this->objParam);
+            $this->res->imprimirRespuesta($this->res->generarJson());
+        } else {
+
+            if($this->objParam->getParametro('id_liquidacion') != ''){
+                $this->objParam->addFiltro("liqui.id_liquidacion = ".$this->objParam->getParametro('id_liquidacion'));
+            }
+            if($this->objParam->getParametro('estado') != ''){
+                $this->objParam->addFiltro("liqui.estado = ''".$this->objParam->getParametro('estado')."'' " );
+            }
+
+            $this->objFunc=$this->create('MODLiquidacion');
+            $this->res=$this->objFunc->listarLiquidacion($this->objParam);
+            $this->res->imprimirRespuesta($this->res->generarJson());
+        }
+
+
     }
 
 			
