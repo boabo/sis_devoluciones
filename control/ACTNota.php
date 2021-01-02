@@ -570,6 +570,10 @@ window.onload=function(){self.print();}
 
     function verNota()
     {
+
+        setlocale(LC_ALL, "es_ES@euro", "es_ES", "esp");
+
+
         $this->objFunc = $this->create('MODNota');
         $this->res = $this->objFunc->verNota($this->objParam);
 
@@ -586,25 +590,34 @@ window.onload=function(){self.print();}
         $html = "";
 
         $i = 0;
+        $V = new EnLetras();
 
         foreach ($notas as $clave => $nota) {
-            /*echo $nota->id_nota;
+
+            $cadena_qr = '|154422029|BOLIVIANA DE AVIACION|123|123|02/10/2014|' . $nota->total_devuelto . '|' . $nota->codigo_control . '| ' . $nota->nit . ' | ' . trim($nota->razon) . '|';
+
+
+            $barcodeobj = new TCPDF2DBarcode($cadena_qr, 'QRCODE,H');
+
+
+
+            //echo $nota->id_nota;
             if($nota->por_boleto != null) {
                 $originales = $nota->por_boleto;
             } elseif ($nota->por_factura_com != null) {
                 $originales = $nota->por_factura_com;
             }
+            /*
+                        //dibujamos el detalle original
+                        foreach ($originales as $original) {
+                            var_dump($original);
+                        }
 
-            //dibujamos el detalle original
-            foreach ($originales as $original) {
-                var_dump($original);
-            }
 
-
-            //dibujamos el detalle de la nota
-            foreach ($nota->nota_detalle as $nota_detalle) {
-                var_dump($nota_detalle);
-            }*/
+                        //dibujamos el detalle de la nota
+                        foreach ($nota->nota_detalle as $nota_detalle) {
+                            var_dump($nota_detalle);
+                        }*/
 
 
             $html .= '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
@@ -659,6 +672,183 @@ window.onload=function(){self.print();}
 						</tr>';
 
 
+            if ($nota->estado == 9) {
+                $html .= '<tr><td colspan="2" align="center" style="text-align: center; font-size: 30pt;">
+ N/C ANULADA<hr/>
+</td></tr>';
+            }
+
+            $html .= '<tr><td colspan="2">
+ 						 Fecha: ' . strftime("%d/%m/%Y", strtotime($nota->fecha)) . '<br/>
+					    NIT/CI: ' . $nota->nit . '<br/>
+					     Senor(es): ' . trim($nota->razon) . '<hr/>
+					</td></tr>';
+
+            $html .= '<tr><td colspan="2"  width="390px;" align="center" style="text-align: center;">DATOS DE LA TRANSACCION ORIGINAL<hr/></td></tr>';
+
+
+            $html .= '<tr><td colspan="2">
+ 						FACTURA: ' . $nota->factura . ' <br/>
+					    AUTORIZACION : ' . $nota->nroaut_anterior. '<br>
+					    FECHA DE EMISION: ' . $nota->fecha_fac . '
+					</td></tr>';
+
+            $html .= '</thead>
+					</table>';
+
+
+            $html .= '
+					<table  style="width: 385px;">
+
+					<thead>
+
+						<tr><th>Cant<hr/></th><th style="width:60px;">Concepto<hr/></th><th align="center">PU<hr/></th><th align="right">SubTotal<hr/></th></tr>
+
+					</thead>
+					<tbody>';
+            $total_original = 0;
+
+            foreach ($originales as $original) {
+
+                $precio_unitario = ($original->precio_unitario != null) ? $original->precio_unitario : $original->importe_original;
+                $cantidad = ($original->cantidad != null) ? $original->cantidad : 1;
+
+                $html .= '<tr>
+							<td style="width: 11px;">' . $cantidad . '</td>
+							<td style="width:60px;">' . str_replace("/", " / ", $original->concepto) . '</td>
+							<td align="center">' . number_format($precio_unitario, 2, '.', ',') . '</td>
+							<td align="right">' . number_format($original->importe_original, 2, '.', ',') . '</td>
+							</tr>';
+                $total_original = $total_original + $original->importe_original;
+
+            }
+
+
+            $html .= '<tr><td colspan="4"><hr/></td></tr>';
+            $html .= '</tbody>
+					    <tfoot>
+					    <tr><td colspan="2" align="left">Total Bs. <hr/></td><td colspan="2" align="right"> ' . number_format($total_original, 2, '.', ',') . '<hr/></td></tr>
+					    </tfoot>
+					</table>
+
+					<p style="text-align: center; width: 385px;">
+					    DETALLE DE LA DEVOLUCION O RESCISION DEL SERVICIO
+					</p>
+					<hr  />
+					<br />
+					<br />
+					<table style="width: 385px;">
+					    <thead>
+
+					    <tr><th>Cant<hr/></th><th style="width:60px;">Concepto<hr/></th><th align="center"> PU<hr/></th><th align="right">SubTotal<hr/></th></tr>
+					    </thead>
+					    <tbody>';
+
+
+            $exento_total = 0;
+            $importe_total = 0;
+
+            foreach ($nota->nota_detalle as $nota_detalle) {
+
+                $exento_total = $exento_total + $nota_detalle->exento;
+                $importe_total = $importe_total + $nota_detalle->importe;
+
+                $html .= '<tr>
+							<td style="width: 11px;">' . $nota_detalle->cantidad . '</td>
+							<td style="width:60px;">' . str_replace("/", " / ", $nota_detalle->concepto) . '</td>
+							<td align="center">' . number_format($nota_detalle->precio_unitario, 2, '.', ',') . '</td>
+							<td align="right" >' . number_format($nota_detalle->importe, 2, '.', ',') . '</td>
+							</tr>';
+            }
+            $total_devolver = $importe_total - $exento_total;
+
+
+            $html .= '<tr><td colspan="4"><hr/></td></tr>
+
+							<tr ><td colspan="3" align="left">Total Bs. <hr/></td><td  align="right" colspan="1">' . number_format($importe_total, 2, '.', ',') . '<hr/></td></tr>
+
+							<tr><td colspan="3" align="left">MENOS: Importes Exentos :<hr/></td><td colspan="1" align="right"> ' . number_format($exento_total, 2, '.', ',') . '<hr/></td></tr>
+ 							<tr><td colspan="3" align="left">Importe Total Devuelto: <hr/></td><td colspan="1" align="right">' . number_format($total_devolver, 2, '.', ',') . '<hr/></td></tr>
+							</head>
+						</tbody></table><br/>';
+
+
+
+            $html .= '<table style="width: 300px;">
+					<tbody>
+					<tr><td style="text-align: left;">Son: ' . $V->ValorEnLetras(number_format($total_devolver, 2, '.', ''), "") . '<br/>
+					    Monto efectivo del Crédito o Débito <br/>
+					    (13% del Importe total Devuelto)  
+					  
+					</td></tr>
+					</tbody>
+					</table>
+
+					<table style="width:380px;">
+					<tbody>
+					<tr>
+					<td style="text-align: right;">
+					' . number_format($nota->credfis, 2, '.', ',') . '
+					</td>
+					</tr>
+					</tbody>
+					</table>
+
+
+					<hr  />
+					<br />
+					<br />
+					<table style="width: 350px;"><tbody><tr><td align="left" style="text-align:left;">
+					 Codigo de Control: ' . $nota->codigo_control . ' <br/>
+					    Fecha Limite de Emision: ' . $nota->fecha_limite . ' <br/>
+					    OBS: ' . $nota->nro_liquidacion . ' 
+					</td></tr>
+
+
+
+					<tr>
+					<td style="text-align:center;">
+					<!--<div align="center">
+								    ' . $barcodeobj->getBarcodeHTML(3, 3, 'black') . '
+								    </div>-->
+					</td>
+					</tr>
+
+
+
+					</tbody>
+					</table>
+
+					<div style="width:270px; text-align: center;">
+					   " ' . $nota->glosa_impuestos . '"
+					</div>
+					<div style="width:270px; text-align: center;">
+					' . $nota->glosa_empresa . '
+					</div>
+
+<p>Usuario: ' . $nota->cuenta . ' Id:' . $nota->id_nota . '  Hora: ' . strftime("%H:%M", strtotime($nota->fecha_reg)) . ' </p>
+
+					<hr />
+					<br />
+					<br />
+
+
+					<p>¡ ' . $nota->glosa_empresa . ' !
+					    <br/> www.boa.bo</p>';
+
+
+            if ($this->objParam->getParametro('vista_previa') == '' || $this->objParam->getParametro('vista_previa') == null) {
+
+                $html .= '
+				<script type="text/javascript">
+window.onload=function(){self.print();}
+</script> 
+				';
+            } else {
+                $html .= '</center>';
+            }
+
+            
             $html .= '</body>
 					</html>';
 

@@ -515,23 +515,27 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
 
-                console.log(objRes);
+                console.log('objRes',objRes);
 
 
                 objetoDatos = (objRes.ROOT == undefined)?objRes.datos:objRes.ROOT.datos;
                 var i = 0;
 
                 objetoDatos.forEach(function (item) {
+                    console.log(item)
 
                     var texto = item;
                     ifrm = document.createElement("IFRAME");
                     ifrm.name = 'mifr' + i;
                     ifrm.id = 'mifr' + i;
                     document.body.appendChild(ifrm);
+                    console.log(ifrm)
+
                     var doc = window.frames['mifr' + i].document;
                     doc.open();
                     doc.write(texto);
                     doc.close();
+                    console.log(doc)
                     i++;
 
                 });
