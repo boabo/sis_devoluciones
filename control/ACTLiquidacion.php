@@ -27,6 +27,10 @@ class ACTLiquidacion extends ACTbase{
             $this->objParam->addFiltro("liqui.estado = ''".$this->objParam->getParametro('estado')."'' " );
         }
 
+        if($this->objParam->getParametro('generar_nota') == 'si'){
+            $this->objParam->addFiltro("nota.id_liquidacion is null " );
+        }
+
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
 			$this->objReporte = new Reporte($this->objParam,$this);
 			$this->res = $this->objReporte->generarReporteListado('MODLiquidacion','listarLiquidacion');

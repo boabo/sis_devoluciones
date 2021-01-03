@@ -252,6 +252,74 @@ BEGIN
 
 		end;
 
+	/*********************************
+ 	#TRANSACCION:  'NOTA_BOLDEV_SEL'
+ 	#DESCRIPCION:	Consulta de datos agregar un boleto directo a una nota sin que  eeste relacionado a una liquidacion
+ 	#AUTOR:		favio figueroa
+ 	#FECHA:		11-02-2020 11:30:03
+	***********************************/
+
+	elsif(p_transaccion='NOTA_BOLDEV_SEL')then
+
+    	begin
+
+    	    -- VERIFICAMOS QUE NO SE ENCUENTRE ESTE BOLETO EN ALGUNA NOTA
+            IF EXISTS (
+                    SELECT 1 FROM decr.tnota tn where tn.billete = v_parametros.billete) THEN
+                RAISE EXCEPTION 'este billete ya tiene una nota generada';
+                -- do something
+            END IF;
+
+    		--Sentencia de la consulta
+			v_consulta:='select tb.nro_boleto as billete,
+    	           tb.fecha_emision as fecha,
+    	           tb.pasajero,
+    	           tb.moneda,
+    	           tb.total as importe,
+    	           tb.estado,
+    	           tb.nro_boleto as nrofac,
+    	           1::integer as nroaut,
+    	           tb.nit::varchar,
+    	           tb.nit::varchar as nro_nit,
+    	           tb.razon,
+    	           tb.total as monto,
+    	           0::integer as exento,
+    	           tb.fecha_emision as fecha_fac,
+    	           ''BOLETO''::varchar AS tipo,
+    	           tb.nro_boleto as concepto_original,
+    	           tb.nro_boleto as concepto
+
+    	    FROM obingresos.tboleto tb
+    	    where tb.nro_boleto::varchar = '''||v_parametros.billete||'''  limit 1';
+
+
+
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+
+	/*********************************
+ 	#TRANSACCION:  'NOTA_BOLDEV_CONT'
+ 	#DESCRIPCION:	Consulta de datos agregar un boleto directo a una nota sin que  eeste relacionado a una liquidacion
+ 	#AUTOR:		favio figueroa
+ 	#FECHA:		18-11-2020 19:30:03
+	***********************************/
+
+	elsif(p_transaccion='NOTA_BOLDEV_CONT')then
+
+		begin
+			--Sentencia de la consulta de conteo de registros
+			v_consulta:='select count(tb.id_boleto)
+                          FROM obingresos.tboleto tb
+    	    where tb.nro_boleto = '''||v_parametros.billete||''' limit 1 ';
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+
 	else
 					     
 		raise exception 'Transaccion inexistente';

@@ -1083,6 +1083,45 @@ class MODNota extends MODbase
         return $this->respuesta;
     }
 
+    function listarBoletoParaUsarEnNota(){
+
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento = 'decr.ft_nota_sel';
+        $this->transaccion = 'NOTA_BOLDEV_SEL';
+        $this->tipo_procedimiento = 'SEL';
+        //tipo de transaccion
+
+        $this->setParametro('billete','billete','varchar');
+
+
+        //Definicion de la lista del resultado del query
+        $this->captura('billete', 'varchar');
+        $this->captura('fecha', 'date');
+        $this->captura('pasajero', 'varchar');
+        $this->captura('moneda', 'varchar');
+        $this->captura('importe', 'numeric');
+        $this->captura('estado', 'varchar');
+        $this->captura('nrofac', 'varchar');
+        $this->captura('nroaut', 'int4');
+        $this->captura('nit', 'varchar');
+        $this->captura('nro_nit', 'varchar');
+        $this->captura('razon', 'varchar');
+        $this->captura('monto', 'numeric');
+        $this->captura('exento', 'int4');
+        $this->captura('fecha_fac', 'date');
+        $this->captura('tipo', 'varchar');
+        $this->captura('concepto_original', 'varchar');
+        $this->captura('concepto', 'varchar');
+
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
 
 
 }

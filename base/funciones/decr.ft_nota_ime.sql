@@ -258,7 +258,14 @@ BEGIN
                         END IF;
 
                         v_nro_nota = v_record_dosificacion.nro_siguiente;
-                        --RAISE EXCEPTION '%', v_record_dosificacion.id_dosificacion;
+                        --RAISE EXCEPTION '% %', v_record_dosificacion.id_dosificacion, v_nro_nota::varchar;
+
+
+                        IF EXISTS (
+                                select 1 from decr.tnota WHERE  nro_nota = v_nro_nota::varchar and id_dosificacion = v_record_dosificacion.id_dosificacion) THEN
+                            RAISE EXCEPTION 'El numero de Nota ya existe para esta dosificacion. Por favor comuniquese con el administrador del sistema, ....';
+                            -- do something
+                        END IF;
 
                         --validar que el nro de factura no supere el maximo nro de nota de la dosificaiocn
                         /* IF ( exists(SELECT 1

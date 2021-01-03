@@ -861,6 +861,13 @@ window.onload=function(){self.print();}
         $this->res->imprimirRespuesta($this->res->generarJson());
 
     }
+
+
+    function listarBoletoParaUsarEnNota () {
+        $this->objFunc = $this->create('MODNota');
+        $this->res = $this->objFunc->listarBoletoParaUsarEnNota($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
 }
 
 ?>

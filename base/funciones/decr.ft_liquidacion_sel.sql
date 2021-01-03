@@ -236,7 +236,8 @@ LEFT JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
     tl.tasas,
     tl.importe_total,
     '||v_sum_descuentos||' as sum_descuentos,
-    tl.importe_total as importe_devolver, -- solo funciona para generar nota
+    --tl.importe_total as importe_devolver, -- solo funciona para generar nota y solo deberia funcinar para boleto
+    tvd.precio::numeric as importe_devolver,
     tl.id_punto_venta,
     pv.nombre as desc_punto_venta,
     1::varchar as nro_nota,

@@ -44,4 +44,13 @@ select pxp.f_insert_tgui ('Generar Nota PXP2', 'Generar Nota PXP2', 'GN2', 'si',
 
 
 
+
+INSERT INTO decr.ttipo_doc_liquidacion (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg, id_usuario_ai, usuario_ai, id_tipo_doc_liquidacion, tipo_documento, descripcion) VALUES (1, null, now(), null, 'activo', null, 'NULL', NULL, 'BOLEMD', 'Boleto Emitido');
+INSERT INTO decr.ttipo_doc_liquidacion (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg, id_usuario_ai, usuario_ai, id_tipo_doc_liquidacion, tipo_documento, descripcion) VALUES (1, null, now(), null, 'activo', null, 'NULL', NULL, 'FACCOM', 'Factura Computarizada');
+
+
+
+
+
+
 /********************************************F-DAT-FFP-DECR-0-07/07/2020********************************************/

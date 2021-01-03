@@ -1742,7 +1742,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             fields: ['id_liquidacion', 'nro_liquidacion', 'estacion'],
                             // turn on remote sorting
                             remoteSort: true,
-                            baseParams: {par_filtro: 'liqui.nro_liquidacion', estado: 'emitido'}
+                            baseParams: {par_filtro: 'liqui.nro_liquidacion', estado: 'emitido', generar_nota:'si'}
                         }),
                         valueField: 'id_liquidacion',
                         displayField: 'nro_liquidacion',
@@ -2425,7 +2425,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 Ext.Ajax.request({
 
 
-                    url: '../../sis_devoluciones/control/Liquidevolu/listarBoletosExistente',
+                    //url: '../../sis_devoluciones/control/Liquidevolu/listarBoletosExistente',
+                    url: '../../sis_devoluciones/control/Nota/listarBoletoParaUsarEnNota',
                     params: {
                         'billete': billete,
                         'datos_no_permitidos': Ext.encode(arra),
@@ -2512,24 +2513,24 @@ header("content-type: text/javascript; charset=UTF-8");
                                         cantidad: 1,
                                         tipo: 'BOLETO',
 
-                                        concepto: reg_new.datos[0].CONCEPTO_ORIGINAL,
-                                        precio_unitario: reg_new.datos[0].MONTO,
-                                        importe_original: reg_new.datos[0].MONTO,
-                                        importe_devolver: reg_new.datos[0].MONTO,
-                                        exento: reg_new.datos[0].EXENTO,
+                                        concepto: reg_new.datos[0].concepto_original,
+                                        precio_unitario: reg_new.datos[0].monto,
+                                        importe_original: reg_new.datos[0].monto,
+                                        importe_devolver: reg_new.datos[0].monto,
+                                        exento: reg_new.datos[0].exento,
                                         total_devuelto: total_de,
-                                        nro_billete: reg_new.datos[0].BILLETE,
-                                        nro_nit: reg_new.datos[0].NIT,
-                                        razon: reg_new.datos[0].RAZON,
-                                        fecha_fac: reg_new.datos[0].FECHA_FAC,
-                                        nro_fac: reg_new.datos[0].BILLETE,
+                                        nro_billete: reg_new.datos[0].billete,
+                                        nro_nit: reg_new.datos[0].nit,
+                                        razon: reg_new.datos[0].razon,
+                                        fecha_fac: reg_new.datos[0].fecha_fac,
+                                        nro_fac: reg_new.datos[0].billete,
                                         nro_aut: 1
 
                                     });
 
 
-                                    this.tabsBoleto(reg_new.datos[0].CONCEPTO_ORIGINAL, reg_new.datos[0].MONTO, reg_new.datos[0].BILLETE);
-                                    this.agregarDatosCampo(reg_new.datos[0].BILLETE, reg_new.datos[0].RAZON, reg_new.datos[0].NIT, reg_new.datos[0].FECHA_FAC, reg_new.datos[0].MONTO, reg_new.datos[0].NROAUT);
+                                    this.tabsBoleto(reg_new.datos[0].concepto_original, reg_new.datos[0].monto, reg_new.datos[0].billete);
+                                    this.agregarDatosCampo(reg_new.datos[0].billete, reg_new.datos[0].razon, reg_new.datos[0].nit, reg_new.datos[0].fecha_fac, reg_new.datos[0].monto, reg_new.datos[0].nroaut);
 
                                     var se = this.megrid.getSelectionModel().getSelections();
 
