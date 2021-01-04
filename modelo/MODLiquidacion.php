@@ -89,6 +89,7 @@ class MODLiquidacion extends MODbase{
         $this->captura('id_venta','int4');
         $this->captura('desc_forma_pago','varchar');
         $this->captura('id_venta_detalle','varchar');
+        $this->captura('exento','numeric');
 
 
 
@@ -219,6 +220,7 @@ class MODLiquidacion extends MODbase{
 		$this->setParametro('id_punto_venta','id_punto_venta','int4');
 		$this->setParametro('id_venta','id_venta','int4');
 		$this->setParametro('id_venta_detalle','id_venta_detalle','varchar');
+		$this->setParametro('exento','exento','numeric');
         $this->setParametro('json','json_new_records','text');
 
 		//Ejecuta la instruccion
@@ -235,6 +237,8 @@ class MODLiquidacion extends MODbase{
 		$this->transaccion='DECR_LIQUI_MOD';
 		$this->tipo_procedimiento='IME';
 
+
+        //Define los parametros para la funcion
         $this->setParametro('id_liquidacion','id_liquidacion','int4');
         $this->setParametro('estacion','estacion','varchar');
         $this->setParametro('nro_liquidacion','nro_liquidacion','varchar');
@@ -265,8 +269,9 @@ class MODLiquidacion extends MODbase{
         $this->setParametro('id_concepto_ingas','id_concepto_ingas','varchar');
         $this->setParametro('id_punto_venta','id_punto_venta','int4');
         $this->setParametro('id_venta','id_venta','int4');
-        $this->setParametro('id_venta_detalle','id_venta_detalle','varchar');
+        $this->setParametro('exento','exento','numeric');
 
+        $this->setParametro('id_venta_detalle','id_venta_detalle','varchar');
 
 
         //Ejecuta la instruccion

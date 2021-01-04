@@ -130,7 +130,8 @@ v_consulta := v_consulta || 'GROUP BY tv.id_venta ) ';
 			1::integer as cantidad,
 			liqui.id_venta,
 			tfp.nombre as desc_forma_pago,
-			       tvd.id_venta_detalle
+			       tvd.id_venta_detalle,
+			       liqui.exento
 
 from decr.tliquidacion liqui
          inner join segu.tusuario usu1 on usu1.id_usuario = liqui.id_usuario_reg

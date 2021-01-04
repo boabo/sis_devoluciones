@@ -547,7 +547,8 @@ header("content-type: text/javascript; charset=UTF-8");
                         'tipo',
                         'precio_unitario',
                         'importe_original',
-                        'importe_devolver'
+                        'importe_devolver',
+                        'exento'
                     ],
                     remoteSort: true,
                     baseParams: {dir: 'ASC', sort: 'id_liquidacion', limit: '50', start: '0'},

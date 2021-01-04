@@ -434,6 +434,22 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
         },
         {
             config:{
+                name: 'exento',
+                fieldLabel: 'Exento',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:255,
+                disabled: false,
+            },
+            type:'TextField',
+            filters:{pfiltro:'liqui.exento',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
+        {
+            config:{
                 name: 'importe_total',
                 fieldLabel: 'Importe Total',
                 allowBlank: true,
@@ -941,6 +957,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
         'id_venta',
         'desc_forma_pago',
         'id_venta_detalle',
+        'exento',
 
 	],
 	sortInfo:{
@@ -1031,6 +1048,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
                     this.Cmp.importe_neto.setValue(boletoInfoJson.netAmount);
                     this.Cmp.importe_total.setValue(boletoInfoJson.totalAmount);
                     this.Cmp.tasas.setValue(boletoInfoJson.totalAmount - boletoInfoJson.netAmount);
+                    this.Cmp.exento.setValue(boletoInfoJson.exento);
                     this.Cmp.nombre.setValue(boletoInfoJson.passengerName);
                     this.Cmp.moneda_emision.setValue(boletoInfoJson.currency);
                     this.Cmp.punto_venta.setValue(boletoInfoJson.issueOfficeID);
@@ -1125,7 +1143,14 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 
     },
     onButtonEdit: function () {
-        this.abrirFormulario('edit', this.sm.getSelected())
+        const dataSelected = this.sm.getSelected();
+        const estado = dataSelected.json.estado;
+        console.log('dataSelected',dataSelected)
+        if(estado == 'borrador') {
+            this.abrirFormulario('edit', this.sm.getSelected())
+        } else {
+            alert('No se puede editar una liquidacion con estado ' + estado)
+        }
     },
     onSaveForm: function(form,  objRes){
         var me = this;

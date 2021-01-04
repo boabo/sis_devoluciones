@@ -459,7 +459,8 @@ BEGIN
                            tu.cuenta,
                            tn.fecha_reg,
                            tl.id_venta,
-                           tl.id_boleto
+                           tl.id_boleto,
+                           tl.id_liquidacion
                            --necesitamos saber el nombre de la empresa su razon direccion telefonos y alcaldia
                     FROM decr.tnota tn
                              INNER JOIN t_ids ti on ti.id_nota::integer = tn.id_nota::integer
@@ -477,9 +478,11 @@ BEGIN
                            tb.total as precio_unitario,
                            tb.total as importe_original,
                            tb.liquido,
-                           1 AS cantidad
+                           1 AS cantidad,
+                           tl.tramo
                     FROM t_nota tn
                              INNER JOIN obingresos.tboleto tb ON tb.id_boleto = tn.id_boleto
+                    INNER JOIN decr.tliquidacion tl on tl.id_liquidacion = tn.id_liquidacion
                 ),
                 t_por_factura_com AS (
                     SELECT tci.desc_ingas::varchar AS concepto,

@@ -475,6 +475,10 @@ CREATE TABLE decr.tliqui_venta_detalle (
   WITHOUT OIDS;
 
 
+
+alter table decr.tliquidacion
+    add exento numeric;
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
 

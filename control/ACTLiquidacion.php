@@ -153,6 +153,12 @@ class ACTLiquidacion extends ACTbase{
         $totalAmount = $data->totalAmount;
         $ticketNumber = $data->ticketNumber;
 
+        $exento = 0;
+        foreach ($data->taxes as $tax) {
+            if($tax->taxCode != 'BO' && $tax->taxCode != 'QM') {
+                $exento = $exento + $tax->taxAmount;
+            }
+        }
 
         array_push($array, array('seleccionado' => 'si',
             'billete' => $ticketNumber,
@@ -161,13 +167,20 @@ class ACTLiquidacion extends ACTbase{
             'passengerName' => $data->passengerName,
             'currency' => $data->currency,
             'issueOfficeID' => $data->issueOfficeID,
-            'netAmount' => $data->netAmount
+            'netAmount' => $data->netAmount,
+            'exento' => $exento
         ));
 
         $OriginalTicket = $data->OriginalTicket;
         //var_dump($OriginalTicket);
         while ($OriginalTicket != '') {
 
+            $exento_hijo = 0;
+            foreach ($OriginalTicket->taxes as $tax) {
+                if($OriginalTicket->taxCode != 'BO' && $tax->taxCode != 'QM') {
+                    $exento_hijo = $exento_hijo + $tax->taxAmount;
+                }
+            }
             array_push($array, array('seleccionado' => 'si',
                 'billete' => $OriginalTicket->ticketNumber,
                 'monto' => $OriginalTicket->totalAmount,
@@ -175,7 +188,8 @@ class ACTLiquidacion extends ACTbase{
                 'passengerName' => $data->passengerName,
                 'currency' => $data->currency,
                 'issueOfficeID' => $data->issueOfficeID,
-                'netAmount' => $data->netAmount
+                'netAmount' => $data->netAmount,
+                'exento' => $exento_hijo
             ));
 
             $OriginalTicket = $OriginalTicket->OriginalTicket;

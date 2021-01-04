@@ -246,7 +246,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 fields: ['id_solicitud_det', 'id_centro_costo', 'descripcion', 'precio_unitario',
                     'id_solicitud', 'id_orden_trabajo', 'id_concepto_ingas', 'precio_total', 'cantidad_sol',
                     'desc_centro_costo', 'desc_concepto_ingas', 'desc_orden_trabajo', 'id_activo_fijo',
-                    'fecha_ini_act', 'fecha_fin_act', 'lista', 'desc_ingas'
+                    'fecha_ini_act', 'fecha_fin_act', 'lista', 'desc_ingas', 'exento', 'excento'
                 ], remoteSort: true,
                 baseParams: {dir: 'ASC', sort: 'id_concepto_ingas', limit: '50', start: '0'}
             });
@@ -617,6 +617,7 @@ header("content-type: text/javascript; charset=UTF-8");
             const importeNeto = this.getComponente('importe_neto');
             const importeTotalComponente = this.getComponente('importe_total');
             const tasas = this.getComponente('tasas');
+            const exento = this.getComponente('exento');
             const nombre = this.getComponente('nombre');
             const monedaEmision = this.getComponente('moneda_emision');
             const puntoVenta = this.getComponente('punto_venta');
@@ -654,6 +655,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                     importeNeto.setValue(e[0].json.netAmount);
                     tasas.setValue(parseFloat(total) - parseFloat(e[0].json.netAmount));
+                    exento.setValue(parseFloat(e[0].json.exento));
                     nombre.setValue(e[0].json.passengerName);
                     monedaEmision.setValue(e[0].json.currency);
                     puntoVenta.setValue(e[0].json.issueOfficeID);
@@ -1132,6 +1134,22 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 type:'TextField',
                 filters:{pfiltro:'liqui.tasas',type:'string'},
+                id_grupo:1,
+                grid:true,
+                form:true
+            },
+            {
+                config:{
+                    name: 'exento',
+                    fieldLabel: 'Exento',
+                    allowBlank: true,
+                    width: 200,
+                    gwidth: 100,
+                    maxLength:255,
+                    disabled: false,
+                },
+                type:'TextField',
+                filters:{pfiltro:'liqui.exento',type:'string'},
                 id_grupo:1,
                 grid:true,
                 form:true
@@ -1652,6 +1670,7 @@ header("content-type: text/javascript; charset=UTF-8");
             this.cmpImporte_neto = this.getComponente('importe_neto');
             this.cmpImporte_total = this.getComponente('importe_total');
             this.cmpTasas = this.getComponente('tasas');
+            this.cmpExento = this.getComponente('exento');
             this.cmpNombre = this.getComponente('nombre');
             this.cmpMoneda_emision = this.getComponente('moneda_emision');
             this.cmpPunto_venta = this.getComponente('punto_venta');
@@ -1837,6 +1856,14 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.loadForm(this.data.datosOriginales);
             }
             console.log(this.data.datosOriginales)
+
+            //necesitamos bloquear algunos componentes
+            this.Cmp.id_tipo_doc_liquidacion.setDisabled(true);
+            this.Cmp.id_tipo_liquidacion.setDisabled(true);
+            this.Cmp.id_punto_venta.setDisabled(true);
+            this.Cmp.estacion.setDisabled(true);
+            this.Cmp.fecha_liqui.setDisabled(true);
+
 
 
             switch (this.data.datosOriginales.json.desc_tipo_documento) {

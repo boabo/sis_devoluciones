@@ -712,10 +712,11 @@ window.onload=function(){self.print();}
 
                 $precio_unitario = ($original->precio_unitario != null) ? $original->precio_unitario : $original->importe_original;
                 $cantidad = ($original->cantidad != null) ? $original->cantidad : 1;
+                $concepto = $original->concepto ."/".$original->tramo;
 
                 $html .= '<tr>
 							<td style="width: 11px;">' . $cantidad . '</td>
-							<td style="width:60px;">' . str_replace("/", " / ", $original->concepto) . '</td>
+							<td style="width:60px;">' . str_replace("-", "/", $concepto) . '</td>
 							<td align="center">' . number_format($precio_unitario, 2, '.', ',') . '</td>
 							<td align="right">' . number_format($original->importe_original, 2, '.', ',') . '</td>
 							</tr>';

@@ -48,6 +48,7 @@ DECLARE
     v_importe_devolver numeric(10,2);
     v_sum_venta_seleccionados numeric(10,2);
     v_tipo_documento varchar;
+    v_id_venta integer;
 BEGIN
 
     v_nombre_funcion = 'decr.ft_liquidacion_ime';
@@ -136,7 +137,8 @@ BEGIN
         	                              id_estado_wf,
         	                              id_proceso_wf,
         	                              num_tramite,
-        	                              id_venta
+        	                              id_venta,
+        	                              exento
 
           	) values(
 			v_parametros.estacion,
@@ -177,7 +179,8 @@ BEGIN
             v_id_estado_wf,
             v_id_proceso_wf,
             v_num_tramite,
-          	         v_parametros.id_venta
+          	         v_parametros.id_venta,
+          	         v_parametros.exento
 
 			
 			
@@ -329,40 +332,106 @@ BEGIN
 	elsif(p_transaccion='DECR_LIQUI_MOD')then
 
 		begin
-			--Sentencia de la modificacion
-			update decr.tliquidacion set
-			estacion = v_parametros.estacion,
-			nro_liquidacion = v_parametros.nro_liquidacion,
-			tipo_de_cambio = v_parametros.tipo_de_cambio,
-			descripcion = v_parametros.descripcion,
-			nombre_cheque = v_parametros.nombre_cheque,
-			fecha_liqui = v_parametros.fecha_liqui,
-			tramo_devolucion = v_parametros.tramo_devolucion,
-			util = v_parametros.util,
-			fecha_pago = v_parametros.fecha_pago,
-			id_tipo_doc_liquidacion = v_parametros.id_tipo_doc_liquidacion,
-			pv_agt = v_parametros.pv_agt,
-			noiata = v_parametros.noiata,
-			id_tipo_liquidacion = v_parametros.id_tipo_liquidacion,
-			id_forma_pago = v_parametros.id_forma_pago,
-			tramo = v_parametros.tramo,
-			nombre = v_parametros.nombre,
-			moneda_liq = v_parametros.moneda_liq,
-			estado = v_parametros.estado,
-			cheque = v_parametros.cheque,
-			id_usuario_mod = p_id_usuario,
-			fecha_mod = now(),
-			id_usuario_ai = v_parametros._id_usuario_ai,
-			usuario_ai = v_parametros._nombre_usuario_ai,
-			id_boleto = v_parametros.id_boleto,
-			punto_venta = v_parametros.punto_venta,
-			moneda_emision = v_parametros.moneda_emision,
-			importe_neto = v_parametros.importe_neto,
-			tasas = v_parametros.tasas,
-			importe_total = v_parametros.importe_total
-			where id_liquidacion=v_parametros.id_liquidacion;
-               
-			--Definicion de la respuesta
+
+        select tdl.tipo_documento
+        INTO v_tipo_documento
+        from decr.ttipo_doc_liquidacion tdl
+        where tdl.id_tipo_doc_liquidacion = v_parametros.id_tipo_doc_liquidacion;
+
+
+
+        IF(v_tipo_documento = 'FACCOM') THEN
+
+            SELECT id_venta
+            INTO v_id_venta
+            from decr.tliquidacion
+            where id_liquidacion = v_parametros.id_liquidacion;
+
+            DELETE from decr.tliqui_venta_detalle where id_liquidacion = v_parametros.id_liquidacion;
+
+
+        END IF;
+
+
+
+
+		    update decr.tliquidacion SET
+         estacion  = v_parametros.estacion,
+         nro_liquidacion = v_parametros.nro_liquidacion,
+         tipo_de_cambio = v_parametros.tipo_de_cambio,
+         descripcion = v_parametros.descripcion,
+         nombre_cheque = v_parametros.nombre_cheque,
+         fecha_liqui = v_parametros.fecha_liqui,
+         tramo_devolucion = v_parametros.tramo_devolucion,
+         util = v_parametros.util,
+         noiata = v_parametros.noiata,
+         id_forma_pago = v_parametros.id_forma_pago,
+         tramo = v_parametros.tramo,
+         nombre = v_parametros.nombre,
+         moneda_liq = v_parametros.moneda_liq,
+         cheque = v_parametros.cheque,
+         id_usuario_mod = p_id_usuario,
+         fecha_mod = now(),
+         id_boleto = v_parametros.id_boleto,
+         punto_venta = v_parametros.punto_venta,
+         moneda_emision = v_parametros.moneda_emision,
+         importe_neto = v_parametros.importe_neto,
+         tasas = v_parametros.tasas,
+         importe_total = v_parametros.importe_total,
+         id_venta = v_parametros.id_venta,
+		                                 exento = v_parametros.exento
+            where id_liquidacion=v_parametros.id_liquidacion;
+
+
+
+
+
+        if(v_tipo_documento = 'FACCOM') THEN
+
+            FOR v_detalle
+                IN (SELECT unnest(string_to_array(v_parametros.id_venta_detalle::varchar, ',')) as id_venta_detalle
+                )
+                loop
+
+                    insert into decr.tliqui_venta_detalle(
+                        estado_reg,
+                        id_liquidacion,
+                        id_venta_detalle,
+                        id_usuario_reg,
+                        fecha_reg,
+                        id_usuario_ai,
+                        usuario_ai,
+                        id_usuario_mod,
+                        fecha_mod
+                    ) values(
+                                'activo',
+                                v_id_liquidacion,
+                                v_detalle.id_venta_detalle::integer,
+                                p_id_usuario,
+                                now(),
+                                v_parametros._id_usuario_ai,
+                                v_parametros._nombre_usuario_ai,
+                                null,
+                                null
+                            );
+
+                END LOOP;
+
+            SELECT sum(tvd.precio)
+            INTO v_sum_venta_seleccionados
+            FROM vef.tventa_detalle tvd
+                     inner JOIN decr.tliqui_venta_detalle lvd on lvd.id_venta_detalle = tvd.id_venta_detalle
+                     inner join param.tconcepto_ingas tci on tci.id_concepto_ingas = tvd.id_producto
+            where lvd.id_liquidacion = v_id_liquidacion;
+            --RAISE EXCEPTION '%','llega' ||v_sum_venta_seleccionados::varchar;
+
+            UPDATE decr.tliquidacion SET importe_total = v_sum_venta_seleccionados where id_liquidacion = v_id_liquidacion ;
+
+
+        END IF;
+
+
+            --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Liquidacion modificado(a)'); 
             v_resp = pxp.f_agrega_clave(v_resp,'id_liquidacion',v_parametros.id_liquidacion::varchar);
                
