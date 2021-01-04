@@ -81,7 +81,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         },
                         remove: function (a, b) {
 
-                            console.log(b.id)
+                            console.log(b.id);
 
 
                             this.megrid.store.filter("nro_fac", b.id);
@@ -99,7 +99,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             this.megrid.store.clearFilter();
 
                             if (this.tabs.activeTab != undefined) {
-                                var nrofac = this.tabs.activeTab.id
+                                var nrofac = this.tabs.activeTab.id;
                                 this.megrid.store.filter("nro_fac", nrofac);
                             }
                             this.total_porcentaje();
@@ -512,7 +512,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     baseParams: {dir: 'ASC', sort: 'nroliqui', limit: '50', start: '0'},
                     failure: function (r) {
 
-                        console.log(r)
+                        console.log(r);
                     }
 
 
@@ -882,224 +882,224 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 this.frameForm = false;
                 this.paddingForm = '0 0 5 0';
-                this.bodyStyle = 'padding:0px 5px 0',
-                    this.Grupos = [
-                        {
+                this.bodyStyle = 'padding:0px 5px 0';
+                this.Grupos = [
+                    {
 
-                            layout: 'form',
-                            autoScroll: true,
-                            xtype: 'panel',
-                            bbar: this.toolBar,
+                        layout: 'form',
+                        autoScroll: true,
+                        xtype: 'panel',
+                        bbar: this.toolBar,
 
+                        width: 850,
+                        title: 'Formulario de FormNotas',
+                        border: false,
+                        frame: true,
+                        padding: '5 0 20 0',
+
+
+                        margins: {top: 0, right: 0, bottom: 0, left: 0},
+
+                        defaults: {
+                            border: false
+
+                        },
+                        items: [{
+                            xtype: 'fieldset',
+                            margins: {top: 0, right: 0, bottom: 0, left: 50},
+                            layout: 'column',
+                            title: '<h1 style="color:111; font-size:12px;">Tipo de Devolución ...</h1>',
                             width: 850,
-                            title: 'Formulario de FormNotas',
-                            border: false,
-                            frame: true,
-                            padding: '5 0 20 0',
 
-
-                            margins: {top: 0, right: 0, bottom: 0, left: 0},
-
-                            defaults: {
-                                border: false
+                            style: {
+                                background: '#c5d6ec'
 
                             },
-                            items: [{
+                            autoHeight: true,
+                            padding: '0 0 0 0',
+
+                            items: [
+                                {
+                                    layout: 'form',
+
+                                    border: false,
+                                    itemId: 'origen_destino',
+                                    items: [],
+                                    padding: '0 10 0 0',
+                                    labelWidth: 50,
+                                    id_grupo: 1
+
+                                }, {
+                                    layout: 'form',
+                                    border: false,
+                                    items: [],
+                                    padding: '0 10 0 0',
+                                    labelWidth: 75,
+                                    id_grupo: 2
+                                },
+                                {
+                                    layout: 'form',
+                                    border: false,
+                                    items: [],
+                                    padding: '0 10 0 0',
+                                    id_grupo: 22
+                                }
+                            ],
+
+                        },
+
+                            {
                                 xtype: 'fieldset',
                                 margins: {top: 0, right: 0, bottom: 0, left: 50},
                                 layout: 'column',
-                                title: '<h1 style="color:111; font-size:12px;">Tipo de Devolución ...</h1>',
-                                width: 850,
-
-                                style: {
-                                    background: '#c5d6ec'
-
-                                },
+                                title: ' <h1 style="color:111; font-size:12px;">Datos ...</h1>',
+                                width: 900,
+                                name: 'datos_factura ',
                                 autoHeight: true,
                                 padding: '0 0 0 0',
-
                                 items: [
                                     {
                                         layout: 'form',
-
                                         border: false,
                                         itemId: 'origen_destino',
                                         items: [],
+                                        labelWidth: 70,
                                         padding: '0 10 0 0',
-                                        labelWidth: 50,
-                                        id_grupo: 1
-
+                                        id_grupo: 6
+                                    }, {
+                                        layout: 'form',
+                                        border: false,
+                                        items: [],
+                                        padding: '0 10 0 0',
+                                        labelWidth: 60,
+                                        id_grupo: 7
                                     }, {
                                         layout: 'form',
                                         border: false,
                                         items: [],
                                         padding: '0 10 0 0',
                                         labelWidth: 75,
-                                        id_grupo: 2
-                                    },
-                                    {
-                                        layout: 'form',
-                                        border: false,
-                                        items: [],
-                                        padding: '0 10 0 0',
-                                        id_grupo: 22
+                                        id_grupo: 8
                                     }
-                                ],
+
+                                ]
 
                             },
 
-                                {
-                                    xtype: 'fieldset',
-                                    margins: {top: 0, right: 0, bottom: 0, left: 50},
-                                    layout: 'column',
-                                    title: ' <h1 style="color:111; font-size:12px;">Datos ...</h1>',
-                                    width: 900,
-                                    name: 'datos_factura ',
-                                    autoHeight: true,
-                                    padding: '0 0 0 0',
-                                    items: [
-                                        {
+
+                            {
+                                xtype: 'panel',
+                                //layout:'fit',
+                                /*padding:'0 0 0 50',*/
+                                margins: {top: 0, right: 0, bottom: 0, left: 0},
+
+                                border: false,
+                                plain: true,
+                                width: '100%',
+                                activeTab: 0,
+                                defaults: {autoHeight: true},
+                                items: [
+                                    this.addTabsBtn,
+                                    this.addTabsBtnfacturaManual,
+                                    this.tabs
+                                ]
+                            },
+
+                            {
+                                xtype: 'tabpanel',
+                                //layout:'fit',
+                                /*padding:'0 0 0 50',*/
+                                margins: {top: 0, right: 0, bottom: 0, left: 0},
+
+                                border: false,
+                                plain: true,
+                                width: '100%',
+                                activeTab: 0,
+                                height: 235,
+                                items: [
+                                    this.megrid
+                                ]
+                            },
+
+                            {
+                                xtype: 'fieldset',
+                                border: false,
+                                split: true,
+                                layout: 'column',
+                                region: 'south',
+                                autoScroll: true,
+                                autoHeight: true,
+                                collapseFirst: false,
+                                collapsible: true,
+                                width: '100%',
+                                //autoHeight: true,
+                                padding: '0 0 0 10',
+                                items: [
+
+                                    {
+                                        bodyStyle: 'padding-right:2px;',
+
+                                        border: false,
+                                        autoHeight: true,
+                                        items: [{
+                                            xtype: 'fieldset',
+                                            frame: true,
                                             layout: 'form',
+                                            title: 'Devolucion',
+                                            width: '33%',
                                             border: false,
-                                            itemId: 'origen_destino',
+                                            //margins: '0 0 0 5',
+                                            padding: '0 0 0 10',
+                                            bodyStyle: 'padding-left:2px;',
+                                            id_grupo: 9,
                                             items: [],
-                                            labelWidth: 70,
-                                            padding: '0 10 0 0',
-                                            id_grupo: 6
-                                        }, {
+                                        }]
+                                    },
+                                    {
+                                        bodyStyle: 'padding-right:5px;',
+
+                                        border: false,
+                                        autoHeight: true,
+                                        items: [{
+                                            xtype: 'fieldset',
+                                            frame: true,
                                             layout: 'form',
+                                            title: 'Porcentaje',
+                                            width: '33%',
                                             border: false,
+                                            //margins: '0 0 0 5',
+                                            padding: '0 0 0 10',
+                                            bodyStyle: 'padding-left:5px;',
+                                            id_grupo: 10,
                                             items: [],
-                                            padding: '0 10 0 0',
-                                            labelWidth: 60,
-                                            id_grupo: 7
-                                        }, {
+                                        }]
+                                    },
+                                    {
+                                        bodyStyle: 'padding-right:5px;',
+
+                                        border: false,
+                                        autoHeight: true,
+                                        items: [{
+                                            xtype: 'fieldset',
+                                            frame: true,
                                             layout: 'form',
+                                            title: '',
+                                            width: '33%',
                                             border: false,
+                                            //margins: '0 0 0 5',
+                                            padding: '0 0 0 10',
+                                            bodyStyle: 'padding-left:5px;',
+                                            id_grupo: 11,
                                             items: [],
-                                            padding: '0 10 0 0',
-                                            labelWidth: 75,
-                                            id_grupo: 8
-                                        }
-
-                                    ]
-
-                                },
+                                        }]
+                                    },
+                                ]
+                            },
 
 
-                                {
-                                    xtype: 'panel',
-                                    //layout:'fit',
-                                    /*padding:'0 0 0 50',*/
-                                    margins: {top: 0, right: 0, bottom: 0, left: 0},
-
-                                    border: false,
-                                    plain: true,
-                                    width: '100%',
-                                    activeTab: 0,
-                                    defaults: {autoHeight: true},
-                                    items: [
-                                        this.addTabsBtn,
-                                        this.addTabsBtnfacturaManual,
-                                        this.tabs
-                                    ]
-                                },
-
-                                {
-                                    xtype: 'tabpanel',
-                                    //layout:'fit',
-                                    /*padding:'0 0 0 50',*/
-                                    margins: {top: 0, right: 0, bottom: 0, left: 0},
-
-                                    border: false,
-                                    plain: true,
-                                    width: '100%',
-                                    activeTab: 0,
-                                    height: 235,
-                                    items: [
-                                        this.megrid
-                                    ]
-                                },
-
-                                {
-                                    xtype: 'fieldset',
-                                    border: false,
-                                    split: true,
-                                    layout: 'column',
-                                    region: 'south',
-                                    autoScroll: true,
-                                    autoHeight: true,
-                                    collapseFirst: false,
-                                    collapsible: true,
-                                    width: '100%',
-                                    //autoHeight: true,
-                                    padding: '0 0 0 10',
-                                    items: [
-
-                                        {
-                                            bodyStyle: 'padding-right:2px;',
-
-                                            border: false,
-                                            autoHeight: true,
-                                            items: [{
-                                                xtype: 'fieldset',
-                                                frame: true,
-                                                layout: 'form',
-                                                title: 'Devolucion',
-                                                width: '33%',
-                                                border: false,
-                                                //margins: '0 0 0 5',
-                                                padding: '0 0 0 10',
-                                                bodyStyle: 'padding-left:2px;',
-                                                id_grupo: 9,
-                                                items: [],
-                                            }]
-                                        },
-                                        {
-                                            bodyStyle: 'padding-right:5px;',
-
-                                            border: false,
-                                            autoHeight: true,
-                                            items: [{
-                                                xtype: 'fieldset',
-                                                frame: true,
-                                                layout: 'form',
-                                                title: 'Porcentaje',
-                                                width: '33%',
-                                                border: false,
-                                                //margins: '0 0 0 5',
-                                                padding: '0 0 0 10',
-                                                bodyStyle: 'padding-left:5px;',
-                                                id_grupo: 10,
-                                                items: [],
-                                            }]
-                                        },
-                                        {
-                                            bodyStyle: 'padding-right:5px;',
-
-                                            border: false,
-                                            autoHeight: true,
-                                            items: [{
-                                                xtype: 'fieldset',
-                                                frame: true,
-                                                layout: 'form',
-                                                title: '',
-                                                width: '33%',
-                                                border: false,
-                                                //margins: '0 0 0 5',
-                                                padding: '0 0 0 10',
-                                                bodyStyle: 'padding-left:5px;',
-                                                id_grupo: 11,
-                                                items: [],
-                                            }]
-                                        },
-                                    ]
-                                },
-
-
-                            ]
-                        }
-                    ];
+                        ]
+                    }
+                ];
 
                 Phx.vista.FormNota.superclass.constructor.call(this, config);
 
@@ -1262,48 +1262,65 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 this.Cmp.liquidevolu.on('keyup', function (combo, record) {
 
-                    console.log(this.Cmp.liquidevolu.store)
+                    console.log(this.Cmp.liquidevolu.store);
 
                 }, this);
 
 
                 this.Cmp.liquidevolu.on('select', function (combo, record) {
 
-                    console.log('combo', combo)
-                    console.log('record', record.json.fecha)
-
-                    const fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
-                    const fechaBoleto = moment(record.json.fecha);
-                    console.log('fechaBoleto', fechaBoleto.toDate())
-                    console.log('fechaActual', fechaActualMenos18Meses.toDate())
-                    if (fechaBoleto.toDate() >= fechaActualMenos18Meses.toDate()) {
-                        console.log('se puede emitir')
+                    console.log('combo', combo);
+                    console.log('record', record.json.fecha);
 
 
-                        this.FACMAN = false;
+                    this.FACMAN = false;
 
 
-                        this.tabs.removeAll();
-                        this.resetGroup(10);
-                        this.megrid.enable();
+                    this.tabs.removeAll();
+                    this.resetGroup(10);
+                    this.megrid.enable();
 
-                        this.megrid.remove();
-                        this.megrid.store.removeAll();
-
-
-                        this.megrid.store.baseParams = {}; // limpio los parametro enviados
-                        this.megrid.store.baseParams.nroliqui = this.Cmp.liquidevolu.getValue();
-                        //this.Cmp.id_factura.modificado=true;
+                    this.megrid.remove();
+                    this.megrid.store.removeAll();
 
 
-                        this.megrid.store.load({
-                            params: {start: 0, limit: 20},
-                            callback: function (r, a, success, e) {
-                                console.log(success)
+                    this.megrid.store.baseParams = {}; // limpio los parametro enviados
+                    this.megrid.store.baseParams.nroliqui = this.Cmp.liquidevolu.getValue();
+                    //this.Cmp.id_factura.modificado=true;
 
 
-                                if (success) {
+                    this.megrid.store.load({
+                        params: {start: 0, limit: 20},
+                        callback: function (r, a, success, e) {
+                            console.log(success);
 
+
+                            if (success) {
+                                console.log('rrrrr',r);
+
+                                let fechaActualMenos18Meses
+                                fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
+
+                                const fechaBoletoOFac = r[0].data['fecha_fac'];
+                                const splitFechaBoletoOFac = fechaBoletoOFac.split('-');
+                                const primerKeyFecha = splitFechaBoletoOFac[0];
+                                let formatoFecha = 'DD-MM-YYYY';
+                                if(primerKeyFecha.length == 4) {
+                                    formatoFecha = 'YYYY-MM-DD';
+                                }
+                                const fechaFac = moment(r[0].data['fecha_fac'],formatoFecha);
+
+                                /*let fechaFac
+                                if(r[0].data['tipo'] == 'FACTURA') {
+                                    fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
+                                    fechaFac = moment(r[0].data['fecha_fac'],'YYYY-MM-DD');
+                                } else {
+                                    fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
+                                    fechaFac = moment(r[0].data['fecha_fac'],'DD-MM-YYYY');
+                                }*/
+
+                                if (fechaFac.toDate() >= fechaActualMenos18Meses.toDate()) {
+                                    console.log('se puede emitir');
 
                                     if (r[0].data['tipo'] == 'NOO') { // 03-NOV-2019  esto era NO PERO por peticion de shirley se cambio ya que estas igual podran tener notas
 
@@ -1339,16 +1356,55 @@ header("content-type: text/javascript; charset=UTF-8");
                                         this.tabsBoleto(concepto_original, importe_original, billete);
                                         //termina agregacion de los datos originales
                                         this.agregarDatosCampo(r[0].data['nro_fac'], r[0].data['razon'], r[0].data['nro_nit'], r[0].data['fecha_fac'], r[0].data['importe_original'], r[0].data['nro_aut']);
+                                    }if (r[0].data['tipo'] == 'NOO') { // 03-NOV-2019  esto era NO PERO por peticion de shirley se cambio ya que estas igual podran tener notas
+
+                                        this.mensaje_('TIPO', r[0].data['iddoc'] + ' esta liquidacion no tiene NCD BOA', 'ERROR');
+
+                                    } else if (r[0].data['tipo'] == 'FACTURA MANUAL') {
+                                        this.agregarDatosCampo(r[0].data['nro_fac'], r[0].data['razon'], r[0].data['nro_nit'], r[0].data['fecha_fac'], total_factura, r[0].data['nro_aut']);
+
+                                        //todo factura manual
+                                        this.FACMAN = true;
+                                        this.addTabsBtnfacturaManual.show();
+
+                                        alert('es una factura manual');
+
+                                    } else if (r[0].data['tipo'] == 'FACTURA') {
+
+                                        var arra = new Array();
+                                        var total_factura = 0;
+                                        for (var i = 0; i < r.length; i++) {
+                                            arra[i] = r[i].data;
+                                            total_factura = parseFloat(total_factura) + parseFloat(r[i].data['importe_original']);
+                                        }
+                                        this.tabsFactura(arra);
+                                        this.agregarDatosCampo(r[0].data['nro_fac'], r[0].data['razon'], r[0].data['nro_nit'], r[0].data['fecha_fac'], total_factura, r[0].data['nro_aut']);
+
+                                    } else {
+                                        var concepto = r[0].data['billcupon'];
+                                        var importe_original = r[0].data['importe_original'];
+                                        var billete = r[0].data['nro_billete'];
+                                        var concepto_original = r[0].data['concepto_original'];
+                                        //aca va la agregacion del los datos originales
+                                        //if(r[])
+                                        this.tabsBoleto(concepto_original, importe_original, billete);
+                                        //termina agregacion de los datos originales
+                                        this.agregarDatosCampo(r[0].data['nro_fac'], r[0].data['razon'], r[0].data['nro_nit'], r[0].data['fecha_fac'], r[0].data['importe_original'], r[0].data['nro_aut']);
                                     }
+
                                 } else {
-                                    //hay error
+                                    alert('nose puede emitir por la fecha del boleto supera los 18 meses')
                                 }
 
-                            }, scope: this
-                        });
-                    } else {
-                        alert('nose puede emitir por la fecha del boleto supera los 18 meses')
-                    }
+
+
+                            } else {
+                                //hay error
+                            }
+
+                        }, scope: this
+                    });
+
 
 
                 }, this);
@@ -2071,9 +2127,40 @@ header("content-type: text/javascript; charset=UTF-8");
                 }, this);
 
 
+                let error18Meses = false;
                 for (var i = 0; i < cantidad_registros; i++) {
 
                     record = this.megrid.store.getAt(i);
+                    //necesitamos validar si alguna fecha_fac es mayor a 18 meses desde el dia que se quiere emitir la nota
+                    let fechaActualMenos18Meses;
+                    fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
+
+                    const fechaBoletoOFac = record.data.fecha_fac;
+                    const splitFechaBoletoOFac = fechaBoletoOFac.split('-');
+                    const primerKeyFecha = splitFechaBoletoOFac[0];
+                    let formatoFecha = 'DD-MM-YYYY';
+                    if(primerKeyFecha.length == 4) {
+                        formatoFecha = 'YYYY-MM-DD';
+                    }
+                    const fechaFac = moment(record.data.fecha_fac,formatoFecha);
+
+                    /*  let fechaFac;
+                      if(record.data.tipo === 'FACTURA') {
+                          fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
+                          fechaFac = moment(record.data.fecha_fac,'YYYY-MM-DD');
+                      } else {
+                          fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
+                          fechaFac = moment(record.data.fecha_fac,'DD-MM-YYYY');
+                      }*/
+
+                    console.log('fechaFaccccccc',fechaFac)
+                    if (fechaFac.toDate() >= fechaActualMenos18Meses.toDate()) {
+
+                        console.log('fecha fac esta dentro de lso 18 meses')
+                    } else {
+                        error18Meses = true;
+                        break;
+                    }
 
                     arra[i] = new Object();
                     arra[i].nroliqui = this.Cmp.liquidevolu.getValue();
@@ -2098,18 +2185,23 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.tabs.removeAll();
                 //console.log(arra);
 
-
-                if (this.FACMAN == true) {
-                    this.argumentExtraSubmit = {
-                        'newRecords': Ext.encode(arra),
-                        'conceptos_originales_facman': Ext.encode(arra_facman)
-                    };
-
+                if(error18Meses) {
+                    //hay error en la validacion de 18 meses
+                    alert('hay error en la validacion de 18 meses');
                 } else {
-                    this.argumentExtraSubmit = {'newRecords': Ext.encode(arra)};
+                    if (this.FACMAN == true) {
+                        this.argumentExtraSubmit = {
+                            'newRecords': Ext.encode(arra),
+                            'conceptos_originales_facman': Ext.encode(arra_facman)
+                        };
 
+                    } else {
+                        this.argumentExtraSubmit = {'newRecords': Ext.encode(arra)};
+
+                    }
+                    Phx.vista.FormNota.superclass.onSubmit.call(this, this.o);
                 }
-                Phx.vista.FormNota.superclass.onSubmit.call(this, this.o);
+
 
                 //para limpiar despues de guardar
             },
@@ -2425,92 +2517,112 @@ header("content-type: text/javascript; charset=UTF-8");
 
                                 if (reg_new.datos != "DUPLICADO") {
 
-                                    var Items = Ext.data.Record.create([{
-                                        name: 'cantidad',
-                                        type: 'int'
-                                    }, {
-                                        name: 'tipo',
-                                        type: 'string'
-                                    },
-                                        {
-                                            name: 'Concepto',
+                                    //verificamos que la fecha fac no sea mas antiguo quee 18 meses
+                                    const fechaActualMenos18Meses = moment(new Date()).subtract(18, 'months');
+                                    const fechaBoletoOFac = reg_new.datos[0].FECHA_FAC;
+                                    const splitFechaBoletoOFac = fechaBoletoOFac.split('-');
+                                    const primerKeyFecha = splitFechaBoletoOFac[0];
+                                    let formatoFecha = 'DD-MM-YYYY';
+                                    if(primerKeyFecha.length == 4) {
+                                        formatoFecha = 'YYYY-MM-DD';
+                                    }
+                                    const fechaFac = moment(reg_new.datos[0].FECHA_FAC,formatoFecha);
+                                    if (fechaFac.toDate() >= fechaActualMenos18Meses.toDate()) {
+
+                                        var Items = Ext.data.Record.create([{
+                                            name: 'cantidad',
+                                            type: 'int'
+                                        }, {
+                                            name: 'tipo',
                                             type: 'string'
-                                        }, {
-                                            name: 'p/Unit',
-                                            type: 'float'
-                                        }, {
-                                            name: 'Importe Original',
-                                            type: 'float'
-                                        }, {
-                                            name: 'Importe a Devolver',
-                                            type: 'float'
-                                        }, {
-                                            name: 'Exento',
-                                            type: 'float'
-                                        }, {
-                                            name: 'Total Devuelto',
-                                            type: 'float'
-                                        }, {
-                                            name: 'nro_billete',
-                                            type: 'string'
-                                        }, {
-                                            name: 'nro_nit',
-                                            type: 'string'
-                                        }, {
-                                            name: 'razon',
-                                            type: 'string'
-                                        }, {
-                                            name: 'fecha_fac',
-                                            type: 'string'
-                                        }, {
-                                            name: 'nro_fac',
-                                            type: 'string'
-                                        }, {
-                                            name: 'nro_aut',
-                                            type: 'string'
-                                        }
-                                    ]);
+                                        },
+                                            {
+                                                name: 'Concepto',
+                                                type: 'string'
+                                            }, {
+                                                name: 'p/Unit',
+                                                type: 'float'
+                                            }, {
+                                                name: 'Importe Original',
+                                                type: 'float'
+                                            }, {
+                                                name: 'Importe a Devolver',
+                                                type: 'float'
+                                            }, {
+                                                name: 'Exento',
+                                                type: 'float'
+                                            }, {
+                                                name: 'Total Devuelto',
+                                                type: 'float'
+                                            }, {
+                                                name: 'nro_billete',
+                                                type: 'string'
+                                            }, {
+                                                name: 'nro_nit',
+                                                type: 'string'
+                                            }, {
+                                                name: 'razon',
+                                                type: 'string'
+                                            }, {
+                                                name: 'fecha_fac',
+                                                type: 'string'
+                                            }, {
+                                                name: 'nro_fac',
+                                                type: 'string'
+                                            }, {
+                                                name: 'nro_aut',
+                                                type: 'string'
+                                            }
+                                        ]);
 
-                                    var es = new Items();
-
-
-                                    var total_de = reg_new.datos[0].MONTO - reg_new.datos[0].EXENTO;
-
-                                    es = new Items({
-                                        cantidad: 1,
-                                        tipo: 'BOLETO',
-
-                                        concepto: reg_new.datos[0].CONCEPTO_ORIGINAL,
-                                        precio_unitario: reg_new.datos[0].MONTO,
-                                        importe_original: reg_new.datos[0].MONTO,
-                                        importe_devolver: reg_new.datos[0].MONTO,
-                                        exento: reg_new.datos[0].EXENTO,
-                                        total_devuelto: total_de,
-                                        nro_billete: reg_new.datos[0].BILLETE,
-                                        nro_nit: reg_new.datos[0].NIT,
-                                        razon: reg_new.datos[0].RAZON,
-                                        fecha_fac: reg_new.datos[0].FECHA_FAC,
-                                        nro_fac: reg_new.datos[0].BILLETE,
-                                        nro_aut: 1
-
-                                    });
+                                        var es = new Items();
 
 
-                                    this.tabsBoleto(reg_new.datos[0].CONCEPTO_ORIGINAL, reg_new.datos[0].MONTO, reg_new.datos[0].BILLETE);
-                                    this.agregarDatosCampo(reg_new.datos[0].BILLETE, reg_new.datos[0].RAZON, reg_new.datos[0].NIT, reg_new.datos[0].FECHA_FAC, reg_new.datos[0].MONTO, reg_new.datos[0].NROAUT);
+                                        var total_de = reg_new.datos[0].MONTO - reg_new.datos[0].EXENTO;
 
-                                    var se = this.megrid.getSelectionModel().getSelections();
+                                        es = new Items({
+                                            cantidad: 1,
+                                            tipo: 'BOLETO',
 
-                                    this.mestore.insert(0, es);
-                                    this.megrid.getView().refresh();
+                                            concepto: reg_new.datos[0].CONCEPTO_ORIGINAL,
+                                            precio_unitario: reg_new.datos[0].MONTO,
+                                            importe_original: reg_new.datos[0].MONTO,
+                                            importe_devolver: reg_new.datos[0].MONTO,
+                                            exento: reg_new.datos[0].EXENTO,
+                                            total_devuelto: total_de,
+                                            nro_billete: reg_new.datos[0].BILLETE,
+                                            nro_nit: reg_new.datos[0].NIT,
+                                            razon: reg_new.datos[0].RAZON,
+                                            fecha_fac: reg_new.datos[0].FECHA_FAC,
+                                            nro_fac: reg_new.datos[0].BILLETE,
+                                            nro_aut: 1
+
+                                        });
 
 
-                                    this.total_porcentaje();
-                                    /*for(var i = 0, r; r = se[i]; i++){
+                                        this.tabsBoleto(reg_new.datos[0].CONCEPTO_ORIGINAL, reg_new.datos[0].MONTO, reg_new.datos[0].BILLETE);
+                                        this.agregarDatosCampo(reg_new.datos[0].BILLETE, reg_new.datos[0].RAZON, reg_new.datos[0].NIT, reg_new.datos[0].FECHA_FAC, reg_new.datos[0].MONTO, reg_new.datos[0].NROAUT);
+
+                                        var se = this.megrid.getSelectionModel().getSelections();
+
+                                        this.mestore.insert(0, es);
+                                        this.megrid.getView().refresh();
 
 
-                                     this.mestore.remove(r);
-                                     }*/
+                                        this.total_porcentaje();
+                                        /*for(var i = 0, r; r = se[i]; i++){
+
+
+                                         this.mestore.remove(r);
+                                         }*/
+
+                                    } else {
+                                        alert('no puedes agregar este boleto por que tiene una antiguedad mayor a 18 meses');
+                                    }
+
+
+
+
 
                                 } else {
 
