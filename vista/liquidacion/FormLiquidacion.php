@@ -26,17 +26,49 @@ header("content-type: text/javascript; charset=UTF-8");
             this.addEvents('beforesave');
             this.addEvents('successsave');
 
-            this.buildComponentesDetalle();
-            this.buildDetailGrid();
+            Ext.apply(this, config);
+            this.constructorEtapa2(config);
+
+
+
+
+            //this.onNew();
+
+            //Ext.apply(this, config);
+
+
+
+
+        },
+
+        constructorEtapa2: function (config) {
+
+
+            if (this.data.tipo_form == 'new') {
+                this.buildComponentesDetalle();
+                this.buildDetailGrid();
+            }
+
             this.buildGrupos();
+
 
             Phx.vista.FormLiquidacion.superclass.constructor.call(this, config);
             this.init();
             this.iniciarEventos();
-            this.iniciarEventosDetalle();
-            this.onNew();
+            this.data.tipo_form == 'new' && this.iniciarEventosDetalle();
+
+            console.log(this.data)
+            if (this.data.tipo_form == 'new') {
+                this.onNew();
+                this.ocultarGrupo(1);
+                this.ocultarGrupo(3);
+            }
+            else {
+                this.onEdit();
+            }
 
         },
+
         buildComponentesDetalle: function () {
 
             this.detCmp = {
@@ -104,10 +136,16 @@ header("content-type: text/javascript; charset=UTF-8");
         },
         iniciarEventosDetalle: function () {
 
+            this.megrid.initialConfig.columns[1].editor.on('select', function () {
+                const val = this.megrid.initialConfig.columns[1].editor.getValue();
+                const dataJson = this.megrid.initialConfig.columns[1].editor.store.getById(val);
+                console.log(dataJson)
+                console.log(dataJson.json.contabilizable)
+                this.megrid.initialConfig.columns[2].editor.setValue(dataJson.json.contabilizable);
 
-            /*this.ocultarComponente(this.detCmp.id_activo_fijo);
+            }, this);
 
-*/
+
 
         },
 
@@ -352,115 +390,222 @@ header("content-type: text/javascript; charset=UTF-8");
         },
 
         buildGrupos: function () {
-            this.Grupos = [{
-                layout: 'border',
-                border: true,
-                frame: true,
-                //labelAlign: 'top',
-                items: [
-                    {
-                        xtype: 'fieldset',
-                        border: false,
-                        split: true,
-                        layout: 'column',
-                        region: 'north',
-                        autoScroll: true,
-                        autoHeight: true,
-                        collapseFirst: false,
-                        collapsible: true,
-                        width: '100%',
-                        padding: '0 0 0 10',
-                        items: [
-                            {
-                                bodyStyle: 'padding-right:5px;',
+            console.log('this.data.tipo_form',this.data.tipo_form)
+            if(this.data.tipo_form == 'new') {
+                this.Grupos = [{
+                    layout: 'border',
+                    border: true,
+                    frame: true,
+                    //labelAlign: 'top',
+                    items: [
+                        {
+                            xtype: 'fieldset',
+                            border: false,
+                            split: true,
+                            layout: 'column',
+                            region: 'north',
+                            autoScroll: true,
+                            autoHeight: true,
+                            collapseFirst: false,
+                            collapsible: true,
+                            width: '100%',
+                            padding: '0 0 0 10',
+                            items: [
+                                {
+                                    bodyStyle: 'padding-right:5px;',
 
-                                border: false,
-                                autoHeight: true,
-                                columnWidth: .32,
-                                items: [{
+                                    border: false,
+                                    autoHeight: true,
+                                    columnWidth: .32,
+                                    items: [{
+                                        xtype: 'fieldset',
+                                        //frame: true,
+                                        layout: 'form',
+                                        title: ' TIPO ',
+                                        //width: '33%',
+
+                                        //border: false,
+                                        //margins: '0 0 0 5',
+                                        padding: '0 0 0 10',
+                                        bodyStyle: 'padding-left:5px;',
+                                        id_grupo: 0,
+                                        items: [],
+                                    }]
+                                },
+                                {
+                                    bodyStyle: 'padding-right:5px;',
+
+                                    autoHeight: true,
+                                    border: false,
+                                    columnWidth: .32,
+                                    items: [
+                                        {
+                                            xtype: 'fieldset',
+                                            /*frame: true,
+                                            border: false,*/
+                                            layout: 'form',
+                                            title: ' DATOS BÁSICOS ',
+                                            //width: '33%',
+
+                                            //margins: '0 0 0 5',
+                                            padding: '0 0 0 10',
+                                            bodyStyle: 'padding-left:5px;',
+                                            id_grupo: 1,
+                                            items: [{
+                                                xtype:'button',
+
+                                                text:'Datos Boletos',
+                                                handler: this.onDatosBoleto,
+                                                scope:this,
+                                                //makes the button 24px high, there is also 'large' for this config
+                                                scale: 'medium'
+                                            }],
+                                        },
+                                        {
+                                            xtype: 'fieldset',
+                                            /*frame: true,
+                                            border: false,*/
+                                            layout: 'form',
+                                            title: ' DATOS BÁSICOS FACTURA COM',
+                                            //width: '33%',
+
+                                            //margins: '0 0 0 5',
+                                            padding: '0 0 0 10',
+                                            bodyStyle: 'padding-left:5px;',
+                                            id_grupo: 3,
+                                            items: [],
+                                        }]
+                                },
+                                {
+                                    bodyStyle: 'padding-right:2px;',
+
+                                    border: true,
+                                    autoHeight: true,
+                                    columnWidth: .32,
+                                    items: [{
+                                        xtype: 'fieldset',
+                                        //frame: true,
+                                        layout: 'form',
+                                        title: 'TIEMPO',
+                                        //width: '33%',
+                                        //border: false,
+                                        //margins: '0 0 0 5',
+                                        padding: '0 0 0 10',
+                                        bodyStyle: 'padding-left:2px;',
+                                        id_grupo: 2,
+                                        items: [],
+                                    }]
+                                }
+                            ]
+                        },
+                        this.megrid
+                    ]
+                }];
+            } else {
+
+                this.Grupos = [{
+                    xtype: 'fieldset',
+                    border: false,
+                    split: true,
+                    layout: 'column',
+                    autoScroll: true,
+                    autoHeight: true,
+                    collapseFirst: false,
+                    collapsible: true,
+                    collapseMode: 'mini',
+                    width: '100%',
+                    padding: '0 0 0 10',
+                    items: [
+                        {
+                            bodyStyle: 'padding-right:5px;',
+
+                            border: false,
+                            autoHeight: true,
+                            columnWidth: .32,
+                            items: [{
+                                xtype: 'fieldset',
+                                //frame: true,
+                                layout: 'form',
+                                title: ' TIPO ',
+                                //width: '33%',
+
+                                //border: false,
+                                //margins: '0 0 0 5',
+                                padding: '0 0 0 10',
+                                bodyStyle: 'padding-left:5px;',
+                                id_grupo: 0,
+                                items: [],
+                            }]
+                        },
+                        {
+                            bodyStyle: 'padding-right:5px;',
+
+                            autoHeight: true,
+                            border: false,
+                            columnWidth: .32,
+                            items: [
+                                {
                                     xtype: 'fieldset',
-                                    //frame: true,
+                                    /*frame: true,
+                                    border: false,*/
                                     layout: 'form',
-                                    title: ' TIPO ',
+                                    title: ' DATOS BÁSICOS ',
                                     //width: '33%',
 
-                                    //border: false,
                                     //margins: '0 0 0 5',
                                     padding: '0 0 0 10',
                                     bodyStyle: 'padding-left:5px;',
-                                    id_grupo: 0,
-                                    items: [],
-                                }]
-                            },
-                            {
-                                bodyStyle: 'padding-right:5px;',
+                                    id_grupo: 1,
+                                    items: [{
+                                        xtype:'button',
 
-                                autoHeight: true,
-                                border: false,
-                                columnWidth: .32,
-                                items: [
-                                    {
-                                        xtype: 'fieldset',
-                                        /*frame: true,
-                                        border: false,*/
-                                        layout: 'form',
-                                        title: ' DATOS BÁSICOS ',
-                                        //width: '33%',
-
-                                        //margins: '0 0 0 5',
-                                        padding: '0 0 0 10',
-                                        bodyStyle: 'padding-left:5px;',
-                                        id_grupo: 1,
-                                        items: [{
-                                            xtype:'button',
-
-                                            text:'Datos Boletos',
-                                            handler: this.onDatosBoleto,
-                                            scope:this,
-                                            //makes the button 24px high, there is also 'large' for this config
-                                            scale: 'medium'
-                                        }],
-                                    },
-                                    {
-                                        xtype: 'fieldset',
-                                        /*frame: true,
-                                        border: false,*/
-                                        layout: 'form',
-                                        title: ' DATOS BÁSICOS FACTURA COM',
-                                        //width: '33%',
-
-                                        //margins: '0 0 0 5',
-                                        padding: '0 0 0 10',
-                                        bodyStyle: 'padding-left:5px;',
-                                        id_grupo: 3,
-                                        items: [],
-                                    }]
-                            },
-                            {
-                                bodyStyle: 'padding-right:2px;',
-
-                                border: true,
-                                autoHeight: true,
-                                columnWidth: .32,
-                                items: [{
+                                        text:'Datos Boletos',
+                                        handler: this.onDatosBoleto,
+                                        scope:this,
+                                        //makes the button 24px high, there is also 'large' for this config
+                                        scale: 'medium'
+                                    }],
+                                },
+                                {
                                     xtype: 'fieldset',
-                                    //frame: true,
+                                    /*frame: true,
+                                    border: false,*/
                                     layout: 'form',
-                                    title: 'TIEMPO',
+                                    title: ' DATOS BÁSICOS FACTURA COM',
                                     //width: '33%',
-                                    //border: false,
+
                                     //margins: '0 0 0 5',
                                     padding: '0 0 0 10',
-                                    bodyStyle: 'padding-left:2px;',
-                                    id_grupo: 2,
+                                    bodyStyle: 'padding-left:5px;',
+                                    id_grupo: 3,
                                     items: [],
                                 }]
-                            }
-                        ]
-                    },
-                    this.megrid
-                ]
-            }];
+                        },
+                        {
+                            bodyStyle: 'padding-right:2px;',
+
+                            border: true,
+                            autoHeight: true,
+                            columnWidth: .32,
+                            items: [{
+                                xtype: 'fieldset',
+                                //frame: true,
+                                layout: 'form',
+                                title: 'TIEMPO',
+                                //width: '33%',
+                                //border: false,
+                                //margins: '0 0 0 5',
+                                padding: '0 0 0 10',
+                                bodyStyle: 'padding-left:2px;',
+                                id_grupo: 2,
+                                items: [],
+                            }]
+                        }
+                    ]
+                }];
+
+            }
+
 
 
         },
@@ -1114,7 +1259,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     gwidth: 150,
                     minChars: 2,
                     renderer : function(value, p, record) {
-                        return String.format('{0}', record.data['desc_']);
+                        return String.format('{0}', record.data['desc_forma_pago']);
                     }
                 },
                 type: 'ComboBox',
@@ -1496,6 +1641,7 @@ header("content-type: text/javascript; charset=UTF-8");
         ],
         title: 'Frm solicitud',
 
+
         iniciarEventos: function () {
             this.cmpIdTipoDocLiquidacion = this.getComponente('id_tipo_doc_liquidacion');
             this.cmpIdBoleto = this.getComponente('id_boleto');
@@ -1652,15 +1798,9 @@ header("content-type: text/javascript; charset=UTF-8");
             }, this);
 
 
-            this.megrid.initialConfig.columns[1].editor.on('select', function () {
-                const val = this.megrid.initialConfig.columns[1].editor.getValue();
-                const dataJson = this.megrid.initialConfig.columns[1].editor.store.getById(val);
-                console.log(dataJson)
-                console.log(dataJson.json.contabilizable)
-                this.megrid.initialConfig.columns[2].editor.setValue(dataJson.json.contabilizable);
 
-            }, this);
         },
+
 
         obtenerGestion: function (x) {
 
@@ -1690,7 +1830,52 @@ header("content-type: text/javascript; charset=UTF-8");
             }
         },
         onEdit: function () {
-            this.cmpFechaSoli.disable();
+            console.log('this',this)
+            //id_tipo_doc_liquidacion
+
+            if (this.data.datosOriginales) {
+                this.loadForm(this.data.datosOriginales);
+            }
+            console.log(this.data.datosOriginales)
+
+
+            switch (this.data.datosOriginales.json.desc_tipo_documento) {
+                case 'FACCOM':
+                    this.ocultarGrupo(1);
+                    this.mostrarGrupo(3);
+                    break;
+                case 'BOLEMD':
+                    this.ocultarGrupo(3);
+                    this.mostrarGrupo(1);
+
+                    break;
+                default:
+                    console.log('default');
+            };
+
+            this.cmpIdVentaDetalle = this.getComponente('id_venta_detalle');
+
+            this.cmpIdVentaDetalle.reset();
+            this.cmpIdVentaDetalle.store.baseParams.id_venta = this.data.datosOriginales.json.id_venta;
+            this.cmpIdVentaDetalle.modificado = true;
+
+
+            this.cmpIdVentaDetalle.store.load({params:{start:0,limit:10},
+                callback:function(){
+                    this.cmpIdVentaDetalle.setValue(this.data.datosOriginales.json.id_venta_detalle);
+
+                }, scope : this
+            });
+
+
+
+
+
+            /* this.Cmp.id_tipo_doc_liquidacion.disable()
+             this.Cmp.id_tipo_doc_liquidacion.setValue(this.data.datosOriginales.id_tipo_doc_liquidacion);
+
+             console.log('this.Cmp.id_tipo_doc_liquidacion',this.Cmp.id_tipo_doc_liquidacion)*/
+            /*this.cmpFechaSoli.disable();
             this.cmpIdDepto.disable();
             this.Cmp.id_categoria_compra.disable();
 
@@ -1709,7 +1894,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.mostrarComponente(this.Cmp.fecha_inicio);
                 this.Cmp.dias_plazo_entrega.allowBlank = true;
             }
-            this.mostrarComponente(this.Cmp.dias_plazo_entrega);
+            this.mostrarComponente(this.Cmp.dias_plazo_entrega);*/
         },
 
         onNew: function () {
@@ -1724,32 +1909,41 @@ header("content-type: text/javascript; charset=UTF-8");
         },
 
         onSubmit: function (o) {
-            //  validar formularios
-            var arra = [], i, me = this;
-            for (i = 0; i < me.megrid.store.getCount(); i++) {
-                record = me.megrid.store.getAt(i);
-                arra[i] = record.data;
 
-            }
+            if(this.data.tipo_form == 'new') {
+
+                //  validar formularios
+                var arra = [], i, me = this;
+                for (i = 0; i < me.megrid.store.getCount(); i++) {
+                    record = me.megrid.store.getAt(i);
+                    arra[i] = record.data;
+
+                }
 
 
-            me.argumentExtraSubmit = {
-                'json_new_records': JSON.stringify(arra, function replacer(key, value) {
-                    /*if (typeof value === 'string') {
-                     return String(value).replace(/&/g, "%26")
-                     }*/
-                    return value;
-                })
-            };
+                me.argumentExtraSubmit = {
+                    'json_new_records': JSON.stringify(arra, function replacer(key, value) {
+                        /*if (typeof value === 'string') {
+                         return String(value).replace(/&/g, "%26")
+                         }*/
+                        return value;
+                    })
+                };
 
-            if (i > 0 && !this.editorDetail.isVisible()) {
+                if (i > 0 && !this.editorDetail.isVisible()) {
 
+                    Phx.vista.FormLiquidacion.superclass.onSubmit.call(this, o, undefined, true);
+
+                }
+                else {
+                    alert('no tiene ningun concepto  para comprar')
+                }
+
+            } else {
+                this.argumentExtraSubmit = {'tipo_form': 'edit'};
                 Phx.vista.FormLiquidacion.superclass.onSubmit.call(this, o, undefined, true);
+            }
 
-            }
-            else {
-                alert('no tiene ningun concepto  para comprar')
-            }
         },
 
         successSave: function (resp) {

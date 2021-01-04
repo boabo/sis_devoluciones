@@ -51,8 +51,23 @@ BEGIN
 
             END IF;
 
+    	    v_consulta := '
+            WITH t_venta_detalle AS
+                     (
+                         SELECT string_agg(tvd.id_venta_detalle::text, '','')::varchar as id_venta_detalle, tv.id_venta
+                         from vef.tventa_detalle tvd
+                                  inner join vef.tventa tv on tv.id_venta = tvd.id_venta
+                                  INNER JOIN decr.tliquidacion tl on tl.id_venta = tv.id_venta
+                         ';
+            IF pxp.f_existe_parametro(p_tabla, 'id_liquidacion') THEN
+                v_consulta := v_consulta || 'where liqui.id_id_liquidacion= '||v_parametros.id_liquidacion||' GROUP BY tv.id_venta ) ';
+
+            ELSE
+v_consulta := v_consulta || 'GROUP BY tv.id_venta ) ';
+
+            END IF;
     		--Sentencia de la consulta
-			v_consulta:='select
+			v_consulta:= v_consulta || 'select
 						liqui.id_liquidacion,
 						liqui.estacion,
 						liqui.nro_liquidacion,
@@ -112,14 +127,20 @@ BEGIN
 			tv.nro_factura,
 			tv.nombre_factura,
 			tb.id_boleto as id,
-			1::integer as cantidad
+			1::integer as cantidad,
+			liqui.id_venta,
+			tfp.nombre as desc_forma_pago,
+			       tvd.id_venta_detalle
+
 from decr.tliquidacion liqui
          inner join segu.tusuario usu1 on usu1.id_usuario = liqui.id_usuario_reg
          left join segu.tusuario usu2 on usu2.id_usuario = liqui.id_usuario_mod
 inner join decr.ttipo_doc_liquidacion ttdl on ttdl.id_tipo_doc_liquidacion = liqui.id_tipo_doc_liquidacion
 inner join decr.ttipo_liquidacion ttl on ttl.id_tipo_liquidacion = liqui.id_tipo_liquidacion
+         inner join obingresos.tforma_pago tfp on tfp.id_forma_pago = liqui.id_forma_pago
 LEFT JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
 			            LEFT JOIN vef.tventa tv on tv.id_venta = liqui.id_venta
+			                     LEFT JOIN  t_venta_detalle tvd on tvd.id_venta = tv.id_venta
 			            inner join vef.tpunto_venta pv on pv.id_punto_venta = liqui.id_punto_venta
 			            left join decr.tnota nota on nota.id_liquidacion::integer = liqui.id_liquidacion
 				        where  ';
@@ -150,6 +171,7 @@ LEFT JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
          left join segu.tusuario usu2 on usu2.id_usuario = liqui.id_usuario_mod
 inner join decr.ttipo_doc_liquidacion ttdl on ttdl.id_tipo_doc_liquidacion = liqui.id_tipo_doc_liquidacion
 inner join decr.ttipo_liquidacion ttl on ttl.id_tipo_liquidacion = liqui.id_tipo_liquidacion
+         inner join obingresos.tforma_pago tfp on tfp.id_forma_pago = liqui.id_forma_pago
 LEFT JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
 			            LEFT JOIN vef.tventa tv on tv.id_venta = liqui.id_venta
 			            inner join vef.tpunto_venta pv on pv.id_punto_venta = liqui.id_punto_venta

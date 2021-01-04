@@ -86,6 +86,9 @@ class MODLiquidacion extends MODbase{
         $this->captura('nombre_factura','varchar');
         $this->captura('id','int4');
         $this->captura('cantidad','int4');
+        $this->captura('id_venta','int4');
+        $this->captura('desc_forma_pago','varchar');
+        $this->captura('id_venta_detalle','varchar');
 
 
 
@@ -231,37 +234,38 @@ class MODLiquidacion extends MODbase{
 		$this->procedimiento='decr.ft_liquidacion_ime';
 		$this->transaccion='DECR_LIQUI_MOD';
 		$this->tipo_procedimiento='IME';
-				
-		//Define los parametros para la funcion
-		$this->setParametro('id_liquidacion','id_liquidacion','int4');
-		$this->setParametro('estacion','estacion','varchar');
-		$this->setParametro('nro_liquidacion','nro_liquidacion','varchar');
-		$this->setParametro('estado_reg','estado_reg','varchar');
-		$this->setParametro('tipo_de_cambio','tipo_de_cambio','numeric');
-		$this->setParametro('descripcion','descripcion','varchar');
-		$this->setParametro('nombre_cheque','nombre_cheque','varchar');
-		$this->setParametro('fecha_liqui','fecha_liqui','date');
-		$this->setParametro('tramo_devolucion','tramo_devolucion','varchar');
-		$this->setParametro('util','util','varchar');
-		$this->setParametro('fecha_pago','fecha_pago','date');
-		$this->setParametro('id_tipo_doc_liquidacion','id_tipo_doc_liquidacion','int4');
-		$this->setParametro('pv_agt','pv_agt','varchar');
-		$this->setParametro('noiata','noiata','varchar');
-		$this->setParametro('id_tipo_liquidacion','id_tipo_liquidacion','int4');
-		$this->setParametro('id_forma_pago','id_forma_pago','int4');
-		$this->setParametro('tramo','tramo','varchar');
-		$this->setParametro('nombre','nombre','varchar');
-		$this->setParametro('moneda_liq','moneda_liq','varchar');
-		$this->setParametro('estado','estado','varchar');
-		$this->setParametro('cheque','cheque','varchar');
+
+        $this->setParametro('id_liquidacion','id_liquidacion','int4');
+        $this->setParametro('estacion','estacion','varchar');
+        $this->setParametro('nro_liquidacion','nro_liquidacion','varchar');
+        $this->setParametro('estado_reg','estado_reg','varchar');
+        $this->setParametro('tipo_de_cambio','tipo_de_cambio','numeric');
+        $this->setParametro('descripcion','descripcion','varchar');
+        $this->setParametro('nombre_cheque','nombre_cheque','varchar');
+        $this->setParametro('fecha_liqui','fecha_liqui','date');
+        $this->setParametro('tramo_devolucion','tramo_devolucion','varchar');
+        $this->setParametro('util','util','varchar');
+        $this->setParametro('fecha_pago','fecha_pago','date');
+        $this->setParametro('id_tipo_doc_liquidacion','id_tipo_doc_liquidacion','int4');
+        $this->setParametro('pv_agt','pv_agt','varchar');
+        $this->setParametro('noiata','noiata','varchar');
+        $this->setParametro('id_tipo_liquidacion','id_tipo_liquidacion','int4');
+        $this->setParametro('id_forma_pago','id_forma_pago','int4');
+        $this->setParametro('tramo','tramo','varchar');
+        $this->setParametro('nombre','nombre','varchar');
+        $this->setParametro('moneda_liq','moneda_liq','varchar');
+        $this->setParametro('estado','estado','varchar');
+        $this->setParametro('cheque','cheque','varchar');
         $this->setParametro('id_boleto','id_boleto','int4');
-
-
         $this->setParametro('punto_venta','punto_venta','varchar');
         $this->setParametro('moneda_emision','moneda_emision','varchar');
         $this->setParametro('importe_neto','importe_neto','numeric');
         $this->setParametro('tasas','tasas','numeric');
         $this->setParametro('importe_total','importe_total','numeric');
+        $this->setParametro('id_concepto_ingas','id_concepto_ingas','varchar');
+        $this->setParametro('id_punto_venta','id_punto_venta','int4');
+        $this->setParametro('id_venta','id_venta','int4');
+        $this->setParametro('id_venta_detalle','id_venta_detalle','varchar');
 
 
 

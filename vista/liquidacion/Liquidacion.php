@@ -937,6 +937,10 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
         'desc_punto_venta',
         'nro_factura',
         'nombre_factura',
+        'id_boleto',
+        'id_venta',
+        'desc_forma_pago',
+        'id_venta_detalle',
 
 	],
 	sortInfo:{
@@ -945,7 +949,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 	},
 	bdel:true,
 	bsave:true,
-    bedit:false,
+    bedit:true,
     south:
         {
             url:'../../../sis_devoluciones/vista/descuento_liquidacion/DescuentoLiquidacion.php',
@@ -1061,6 +1065,37 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
             console.log(d)
         }, this);
     },
+
+    abrirFormulario: function (tipo, record) {
+
+        var me = this;
+        console.log('me',me)
+        console.log('record',record)
+        me.objSolForm = Phx.CP.loadWindows('../../../sis_devoluciones/vista/liquidacion/FormLiquidacion.php',
+            'Formulario de Liquidacion Edit',
+            {
+                modal: true,
+                width: '90%',
+                height: (me.regitrarDetalle == 'si') ? '100%' : '60%',
+            }, {
+                data: {
+                    objPadre: me,
+                    datosOriginales: record,
+                    tipo_form: 'edit'
+                },
+                regitrarDetalle: me.regitrarDetalle
+            },
+            this.idContenedor,
+            'FormLiquidacion',
+            {
+                config: [{
+                    event: 'successsave',
+                    delegate: this.onSaveForm,
+                }],
+                scope: this
+            });
+    },
+    
     onButtonNew:function(){
         /*this.accionFormulario = 'NEW';
         Phx.vista.Liquidacion.superclass.onButtonNew.call(this);//habilita el boton y se abre*/
@@ -1073,7 +1108,7 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
                 modal:true,
                 width:'90%',
                 height:'90%'
-            }, {data:{objPadre: me}
+            }, {data:{objPadre: me,                     tipo_form: 'new'}
             },
             this.idContenedor,
             'FormLiquidacion',
@@ -1088,6 +1123,9 @@ Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
             });
 
 
+    },
+    onButtonEdit: function () {
+        this.abrirFormulario('edit', this.sm.getSelected())
     },
     onSaveForm: function(form,  objRes){
         var me = this;
