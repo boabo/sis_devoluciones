@@ -1,23 +1,23 @@
 <?php
 /**
-*@package pXP
-*@file gen-ACTLiquidacion.php
-*@author  (admin)
-*@date 17-04-2020 01:54:37
-*@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
- HISTORIAL DE MODIFICACIONES:
+ *@package pXP
+ *@file gen-ACTLiquidacion.php
+ *@author  (admin)
+ *@date 17-04-2020 01:54:37
+ *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
+HISTORIAL DE MODIFICACIONES:
 #ISSUE				FECHA				AUTOR				DESCRIPCION
- #0				17-04-2020 01:54:37								CREACION
+#0				17-04-2020 01:54:37								CREACION
 
-*/
+ */
 include_once(dirname(__FILE__).'/../../lib/lib_modelo/ConexionSqlServer.php');
 
-class ACTLiquidacion extends ACTbase{    
-			
-	function listarLiquidacion(){
-		$this->objParam->defecto('ordenacion','id_liquidacion');
+class ACTLiquidacion extends ACTbase{
 
-		$this->objParam->defecto('dir_ordenacion','asc');
+    function listarLiquidacion(){
+        $this->objParam->defecto('ordenacion','id_liquidacion');
+
+        $this->objParam->defecto('dir_ordenacion','asc');
 
 
         if($this->objParam->getParametro('id_liquidacion') != ''){
@@ -31,45 +31,45 @@ class ACTLiquidacion extends ACTbase{
             $this->objParam->addFiltro("nota.id_liquidacion is null " );
         }
 
-		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
-			$this->objReporte = new Reporte($this->objParam,$this);
-			$this->res = $this->objReporte->generarReporteListado('MODLiquidacion','listarLiquidacion');
-		} else{
-			$this->objFunc=$this->create('MODLiquidacion');
-			
-			$this->res=$this->objFunc->listarLiquidacion($this->objParam);
-		}
-		$this->res->imprimirRespuesta($this->res->generarJson());
-	}
-				
-	function insertarLiquidacion(){
-		$this->objFunc=$this->create('MODLiquidacion');	
-		if($this->objParam->insertar('id_liquidacion')){
-			$this->res=$this->objFunc->insertarLiquidacion($this->objParam);			
-		} else{			
-			$this->res=$this->objFunc->modificarLiquidacion($this->objParam);
-		}
-		$this->res->imprimirRespuesta($this->res->generarJson());
-	}
-						
-	function eliminarLiquidacion(){
-			$this->objFunc=$this->create('MODLiquidacion');	
-		$this->res=$this->objFunc->eliminarLiquidacion($this->objParam);
-		$this->res->imprimirRespuesta($this->res->generarJson());
-	}
-	function listarBoleto(){
-			$this->objFunc=$this->create('MODLiquidacion');
-		$this->res=$this->objFunc->listarBoleto($this->objParam);
-		$this->res->imprimirRespuesta($this->res->generarJson());
-	}
-	function obtenerTramos(){
-			$this->objFunc=$this->create('MODLiquidacion');
-		$this->res=$this->objFunc->obtenerTramos($this->objParam);
-		$this->res->imprimirRespuesta($this->res->generarJson());
-	}
-	function obtenerTramosSql(){
+        if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+            $this->objReporte = new Reporte($this->objParam,$this);
+            $this->res = $this->objReporte->generarReporteListado('MODLiquidacion','listarLiquidacion');
+        } else{
+            $this->objFunc=$this->create('MODLiquidacion');
 
-		$billete = $this->objParam->getParametro('billete');
+            $this->res=$this->objFunc->listarLiquidacion($this->objParam);
+        }
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
+    function insertarLiquidacion(){
+        $this->objFunc=$this->create('MODLiquidacion');
+        if($this->objParam->insertar('id_liquidacion')){
+            $this->res=$this->objFunc->insertarLiquidacion($this->objParam);
+        } else{
+            $this->res=$this->objFunc->modificarLiquidacion($this->objParam);
+        }
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
+    function eliminarLiquidacion(){
+        $this->objFunc=$this->create('MODLiquidacion');
+        $this->res=$this->objFunc->eliminarLiquidacion($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+    function listarBoleto(){
+        $this->objFunc=$this->create('MODLiquidacion');
+        $this->res=$this->objFunc->listarBoleto($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+    function obtenerTramos(){
+        $this->objFunc=$this->create('MODLiquidacion');
+        $this->res=$this->objFunc->obtenerTramos($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+    function obtenerTramosSql(){
+
+        $billete = $this->objParam->getParametro('billete');
         $param_conex = array();
 
         $conexion = new ConexionSqlServer('172.17.110.6', 'SPConnection', 'Passw0rd', 'DBStage');
@@ -112,14 +112,14 @@ class ACTLiquidacion extends ACTbase{
             mssql_free_result($query);
             $conexion->closeSQL();
         }
-	}
+    }
 
-	function verLiquidacion() {
+    function verLiquidacion() {
         $this->objFunc=$this->create('MODLiquidacion');
         $this->res=$this->objFunc->verLiquidacion($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
-	function obtenerLiquidacionCorrelativo() {
+    function obtenerLiquidacionCorrelativo() {
         $this->objFunc=$this->create('MODLiquidacion');
         $this->res=$this->objFunc->obtenerLiquidacionCorrelativo($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
@@ -145,56 +145,65 @@ class ACTLiquidacion extends ACTbase{
 
         $query = @mssql_query($query_string, $conn);
         $row = mssql_fetch_array($query, MSSQL_ASSOC);
-        $data_json_string = $row['computed'];
-        //var_dump($data_json_string);
-        $data_json = json_decode($data_json_string);
-        $data = $data_json[0];
-        $netAmount = $data ->netAmount;
-        $totalAmount = $data->totalAmount;
-        $ticketNumber = $data->ticketNumber;
 
+        $data_json_string = $row['computed'];
+        $data_json = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data_json_string), true);
+
+        /*var_dump($data_json);
+        exit;*/
+        //var_dump($data_json_string);
+        //$data_json = json_decode($data_json_string);
+        $data = $data_json[0];
+
+        $netAmount = $data["netAmount"];
+        $totalAmount = $data["totalAmount"];
+        $ticketNumber = $data["ticketNumber"];
+        $taxes = $data["taxes"];
+        /*var_dump($data["taxes"]);
+        exit;*/
         $exento = 0;
-        foreach ($data->taxes as $tax) {
-            if($tax->taxCode != 'BO' && $tax->taxCode != 'QM') {
-                $exento = $exento + $tax->taxAmount;
+
+        foreach ($taxes as $tax) {
+            if($tax["taxCode"] != 'BO' && $tax["taxCode"] != 'QM') {
+                $exento = $exento + $tax["taxAmount"];
             }
         }
 
         array_push($array, array('seleccionado' => 'si',
             'billete' => $ticketNumber,
             'monto' => $totalAmount,
-            'itinerary' => $data->itinerary,
-            'passengerName' => $data->passengerName,
-            'currency' => $data->currency,
-            'issueOfficeID' => $data->issueOfficeID,
-            'issueAgencyCode' => $data->issueAgencyCode, // este es el noiata
-            'netAmount' => $data->netAmount,
+            'itinerary' => $data["itinerary"],
+            'passengerName' => $data["passengerName"],
+            'currency' => $data["currency"],
+            'issueOfficeID' => $data["issueOfficeID"],
+            'issueAgencyCode' => $data["issueAgencyCode"], // este es el noiata
+            'netAmount' => $data["netAmount"],
             'exento' => $exento
         ));
 
-        $OriginalTicket = $data->OriginalTicket;
+        $OriginalTicket = $data["OriginalTicket"];
         //var_dump($OriginalTicket);
         while ($OriginalTicket != '') {
 
             $exento_hijo = 0;
-            foreach ($OriginalTicket->taxes as $tax) {
-                if($OriginalTicket->taxCode != 'BO' && $tax->taxCode != 'QM') {
-                    $exento_hijo = $exento_hijo + $tax->taxAmount;
+            foreach ($OriginalTicket["taxes"] as $tax) {
+                if($OriginalTicket["taxCode"] != 'BO' && $tax["taxCode"] != 'QM') {
+                    $exento_hijo = $exento_hijo + $tax["taxAmount"];
                 }
             }
             array_push($array, array('seleccionado' => 'si',
-                'billete' => $OriginalTicket->ticketNumber,
-                'monto' => $OriginalTicket->totalAmount,
-                'itinerary' => $OriginalTicket->itinerary,
-                'passengerName' => $data->passengerName,
-                'currency' => $data->currency,
-                'issueOfficeID' => $data->issueOfficeID,
-                'issueAgencyCode' => $data->issueAgencyCode,
-                'netAmount' => $data->netAmount,
+                'billete' => $OriginalTicket["ticketNumber"],
+                'monto' => $OriginalTicket["totalAmount"],
+                'itinerary' => $OriginalTicket["itinerary"],
+                'passengerName' => $data["passengerName"],
+                'currency' => $data["currency"],
+                'issueOfficeID' => $data["issueOfficeID"],
+                'issueAgencyCode' => $data["issueAgencyCode"],
+                'netAmount' => $data["netAmount"],
                 'exento' => $exento_hijo
             ));
 
-            $OriginalTicket = $OriginalTicket->OriginalTicket;
+            $OriginalTicket = $OriginalTicket["OriginalTicket"];
         }
 
 
@@ -209,7 +218,7 @@ class ACTLiquidacion extends ACTbase{
 
     }
 
-	function getTicketInformation() {
+    function getTicketInformation() {
         $billete = $this->objParam->getParametro('billete');
         $typeReturn = $this->objParam->getParametro('typeReturn');
         if($typeReturn == NULL) {
@@ -302,7 +311,7 @@ class ACTLiquidacion extends ACTbase{
 
     }
 
-			
+
 }
 
 ?>
