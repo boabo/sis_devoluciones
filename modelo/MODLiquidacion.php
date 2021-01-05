@@ -221,6 +221,7 @@ class MODLiquidacion extends MODbase{
 		$this->setParametro('id_venta','id_venta','int4');
 		$this->setParametro('id_venta_detalle','id_venta_detalle','varchar');
 		$this->setParametro('exento','exento','numeric');
+		$this->setParametro('importe_tramo_utilizado','importe_tramo_utilizado','numeric');
         $this->setParametro('json','json_new_records','text');
 
 		//Ejecuta la instruccion
@@ -270,6 +271,7 @@ class MODLiquidacion extends MODbase{
         $this->setParametro('id_punto_venta','id_punto_venta','int4');
         $this->setParametro('id_venta','id_venta','int4');
         $this->setParametro('exento','exento','numeric');
+        $this->setParametro('importe_tramo_utilizado','importe_tramo_utilizado','numeric');
 
         $this->setParametro('id_venta_detalle','id_venta_detalle','varchar');
 
@@ -304,6 +306,8 @@ class MODLiquidacion extends MODbase{
         $this->procedimiento='decr.ft_liquidacion_sel';
         $this->transaccion='DECR_BOL_SEL';
         $this->tipo_procedimiento='SEL';//tipo de transaccion
+
+        		$this->setParametro('nro_boleto','nro_boleto','varchar');
 
         //Definicion de la lista del resultado del query
         $this->captura('id_boleto','int4');

@@ -110,14 +110,14 @@ header("content-type: text/javascript; charset=UTF-8");
                     }
                 }),
 
-                'descripcion': new Ext.form.TextArea({
+                /*'descripcion': new Ext.form.TextArea({
                     name: 'descripcion',
                     msgTarget: 'title',
                     fieldLabel: 'Descripcion',
                     allowBlank: false,
                     anchor: '80%',
                     maxLength: 5000
-                }),
+                }),*/
                 'importe': new Ext.form.NumberField({
                     name: 'importe',
                     msgTarget: 'title',
@@ -358,7 +358,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             disabled:true,
                         }
                     },
-                    {
+                    /*{
 
                         header: 'Descripción',
                         dataIndex: 'descripcion',
@@ -366,7 +366,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         align: 'center',
                         width: 200,
                         editor: this.detCmp.descripcion
-                    },
+                    },*/
 
 
                     {
@@ -1007,6 +1007,42 @@ header("content-type: text/javascript; charset=UTF-8");
                 form:true
             },
             {
+                config:{
+                    name: 'nro_boleto',
+                    fieldLabel: 'Nro Boleto',
+                    allowBlank: false,
+                    width:200,
+                    gwidth: 100,
+                    maxLength:255,
+                },
+                type:'TextField',
+                filters:{pfiltro:'liqui.nro_liquidacion',type:'string'},
+                id_grupo:1,
+                grid:true,
+                form:true,
+                bottom_filter : true
+
+            },
+            {
+                config:{
+                    name: 'id_boleto',
+                    fieldLabel: 'Id Boleto',
+                    allowBlank: false,
+                    width:200,
+                    gwidth: 100,
+                    maxLength:255,
+                    disabled: true,
+
+                },
+                type:'TextField',
+                filters:{pfiltro:'liqui.nro_liquidacion',type:'string'},
+                id_grupo:1,
+                grid:true,
+                form:true,
+                bottom_filter : true
+
+            },
+            /*{
                 config: {
                     name: 'id_boleto',
                     fieldLabel: 'Boleto',
@@ -1049,7 +1085,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 grid: true,
                 form: true,
                 bottom_filter : true
-            },
+            },*/
 
 
 
@@ -1240,7 +1276,22 @@ header("content-type: text/javascript; charset=UTF-8");
             },
 
 
-
+            {
+                config:{
+                    name: 'importe_tramo_utilizado',
+                    fieldLabel: 'Importe Tramo Utilizado',
+                    allowBlank: true,
+                    width: 200,
+                    gwidth: 100,
+                    maxLength:255,
+                    //disabled: true,
+                },
+                type:'TextField',
+                filters:{pfiltro:'liqui.importe_tramo_utilizado',type:'string'},
+                id_grupo:1,
+                grid:true,
+                form:true
+            },
 
 
             {
@@ -1662,6 +1713,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
         iniciarEventos: function () {
             this.cmpIdTipoDocLiquidacion = this.getComponente('id_tipo_doc_liquidacion');
+            this.cmpNroBoleto = this.getComponente('nro_boleto');
             this.cmpIdBoleto = this.getComponente('id_boleto');
             this.cmpIdVenta = this.getComponente('id_venta');
             this.cmpIdVentaDetalle = this.getComponente('id_venta_detalle');
@@ -1680,7 +1732,49 @@ header("content-type: text/javascript; charset=UTF-8");
 
             this.cmpTramo_devolucion.disable();
 
+            this.cmpNroBoleto.on('blur', function () {
 
+
+                const nro_boleto = this.cmpNroBoleto.getValue();
+                console.log(this.cmpNroBoleto.getValue());
+                Phx.CP.loadingShow();
+
+                Ext.Ajax.request({
+                    url: '../../sis_devoluciones/control/Liquidacion/listarBoleto',
+                    params: {
+                        'nro_boleto': this.cmpNroBoleto.getValue(),
+                    },
+                    success: function (resp) {
+
+                        console.log(resp)
+
+                        Phx.CP.loadingHide();
+
+                        var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+                        this.cmpIdBoleto.setValue(reg.datos[0].id_boleto);
+                        if(reg.datos.length > 0) {
+                            this.cmpTramo_devolucion.store.setBaseParam('billete', nro_boleto);
+
+
+                            this.crearStoreBoletosRecursivo(nro_boleto);
+
+
+                            this.cmpTramo_devolucion.enable();
+                            this.cmpTramo_devolucion.reset();
+                            this.cmpTramo_devolucion.store.baseParams.billete = nro_boleto;
+                            this.cmpTramo_devolucion.modificado = true;
+                        }
+                        console.log('reg',reg)
+                    },
+                    failure: this.conexionFailure,
+                    timeout: this.timeout,
+                    scope: this
+                })
+
+
+
+
+            }, this);
 
             this.cmpIdTipoDocLiquidacion.on('select', function (cmp, rec) {
 
@@ -1751,7 +1845,7 @@ header("content-type: text/javascript; charset=UTF-8");
             }, this);*/
 
 
-            this.cmpIdBoleto.on('select', function (rec, d) {
+         /*   this.cmpIdBoleto.on('select', function (rec, d) {
 
                 console.log('llegggaaa')
                 this.cmpTramo_devolucion.store.setBaseParam('billete', d.data.nro_boleto);
@@ -1767,7 +1861,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 console.log(rec)
                 console.log(d)
-                /*Ext.Ajax.request({
+                /!*Ext.Ajax.request({
                     url: '../../sis_devoluciones/control/Liquidacion/getTicketInformation',
                     params: {
                         billete: d.data.nro_boleto,
@@ -1811,11 +1905,11 @@ header("content-type: text/javascript; charset=UTF-8");
                     timeout: this.timeout,
                     scope: this
                 });
-                */
+                *!/
                 console.log(rec)
                 console.log(d)
             }, this);
-
+*/
 
 
         },
@@ -1957,14 +2051,17 @@ header("content-type: text/javascript; charset=UTF-8");
                     })
                 };
 
-                if (i > 0 && !this.editorDetail.isVisible()) {
+                /*if (i > 0 && !this.editorDetail.isVisible()) {
 
                     Phx.vista.FormLiquidacion.superclass.onSubmit.call(this, o, undefined, true);
 
                 }
                 else {
                     alert('no tiene ningun concepto  para comprar')
-                }
+                }*/
+
+                Phx.vista.FormLiquidacion.superclass.onSubmit.call(this, o, undefined, true);
+                
 
             } else {
                 this.argumentExtraSubmit = {'tipo_form': 'edit'};

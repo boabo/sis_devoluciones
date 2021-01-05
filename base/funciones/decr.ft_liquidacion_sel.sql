@@ -396,11 +396,11 @@ inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
             v_consulta:='select
 						bol.id_boleto, bol.nro_boleto
 						from obingresos.tboleto bol
-				        where  ';
+				        where  nro_boleto = '''||v_parametros.nro_boleto||''' ';
 
             --Definicion de la respuesta
-            v_consulta:=v_consulta||v_parametros.filtro;
-            v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+            --v_consulta:=v_consulta||v_parametros.filtro;
+            --v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
             --Devuelve la respuesta
             return v_consulta;
@@ -422,11 +422,11 @@ inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
             v_consulta:='select
 						count(bol.id_boleto)
 						from obingresos.tboleto bol
-				        where  ';
+				        where  nro_boleto = '''||v_parametros.nro_boleto||''' ';
 
 
             --Definicion de la respuesta
-            v_consulta:=v_consulta||v_parametros.filtro;
+            --v_consulta:=v_consulta||v_parametros.filtro;
 
             --Devuelve la respuesta
             return v_consulta;

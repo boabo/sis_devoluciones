@@ -479,7 +479,11 @@ CREATE TABLE decr.tliqui_venta_detalle (
 alter table decr.tliquidacion
     add exento numeric;
 
+alter table decr.tliquidacion
+    add importe_tramo_utilizado numeric default 0;
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
+
 
 
 

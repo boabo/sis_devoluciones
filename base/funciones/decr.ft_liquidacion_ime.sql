@@ -138,7 +138,8 @@ BEGIN
         	                              id_proceso_wf,
         	                              num_tramite,
         	                              id_venta,
-        	                              exento
+        	                              exento,
+        	                              importe_tramo_utilizado
 
           	) values(
 			v_parametros.estacion,
@@ -180,7 +181,8 @@ BEGIN
             v_id_proceso_wf,
             v_num_tramite,
           	         v_parametros.id_venta,
-          	         v_parametros.exento
+          	         v_parametros.exento,
+          	         v_parametros.importe_tramo_utilizado
 
 			
 			
@@ -379,7 +381,8 @@ BEGIN
          tasas = v_parametros.tasas,
          importe_total = v_parametros.importe_total,
          id_venta = v_parametros.id_venta,
-		                                 exento = v_parametros.exento
+		                                 exento = v_parametros.exento,
+         importe_tramo_utilizado = v_parametros.importe_tramo_utilizado
             where id_liquidacion=v_parametros.id_liquidacion;
 
 
@@ -478,6 +481,7 @@ BEGIN
             WITH t_liqui AS
                      (
                          SELECT tl.*,
+                                (tl.importe_total - tl.importe_tramo_utilizado) as importe_devolver_liquidacion,
                                 tv.nro_factura,
                                 tv.nombre_factura,
                                 tv.fecha         AS fecha_factura,
@@ -514,7 +518,7 @@ BEGIN
                                 FROM (
                                          SELECT tl.*,
                                                 (
-                                                        tl.importe_total - (SELECT sum(importe)
+                                                        tl.importe_devolver_liquidacion - (SELECT sum(importe)
                                                                             FROM t_descuentos td
                                                                             WHERE td.id_liquidacion = tl.id_liquidacion)
                                                     ) AS total_liquidacion
