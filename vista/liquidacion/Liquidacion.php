@@ -1293,6 +1293,8 @@ header("content-type: text/javascript; charset=UTF-8");
             },
 
             pagar : function () {
+                Phx.CP.loadingShow();
+
                 var rec = this.sm.getSelected();
 
                 Ext.Ajax.request({
@@ -1321,7 +1323,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         ...json_para_emitir_factura,
                         json_venta_detalle: JSON.stringify(json_para_emitir_factura.json_venta_detalle)
                     },
-                    success: this.successObtenerJsonPagar,
+                    success: this.successPagar,
                     failure: this.conexionFailure,
                     timeout: this.timeout,
                     scope: this
@@ -1331,6 +1333,7 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             successPagar: function (resp) {
                 console.log(resp)
+                Phx.CP.loadingHide();
             },
 
             successVistaPrevia: function (resp) {
@@ -1338,7 +1341,14 @@ header("content-type: text/javascript; charset=UTF-8");
                 console.log(JSON.parse(objRes.ROOT.datos.mensaje));
                 const {liquidacion, descuentos, sum_descuentos, notas, liqui_venta_detalle_seleccionados, sum_venta_seleccionados} = JSON.parse(objRes.ROOT.datos.mensaje);
                 const htmlPreview = `
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;">
+  <link rel="stylesheet" href="../../../sis_devoluciones/control/print.css" type="text/css" media="print" charset="utf-8">
 
+</head>
+<body  style="line-height: 18px; font-size: 14pt;">
 <table width="100%" style=" font-size: 12px; letter-spacing: 1px;">
     <tr>
         <td>
@@ -1576,6 +1586,8 @@ ${notas && notas.map(function (nota) {
 
 
 </table>
+</body>
+</html>
         `;
 
                 var myWindow = window.open("", "_blank");

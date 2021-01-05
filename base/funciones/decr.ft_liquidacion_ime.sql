@@ -658,7 +658,7 @@ BEGIN
                                 b.nit     AS nit_cliente,
                                 b.razon   AS razon_social,
                                 b.moneda,
-                                l.tipo_de_cambio,
+                                l.tipo_de_cambio as tipo_cambio,
                                 0 as exento,
                                 '' as observaciones
                          FROM decr.tliquidacion l

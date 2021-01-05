@@ -622,6 +622,8 @@ header("content-type: text/javascript; charset=UTF-8");
             const monedaEmision = this.getComponente('moneda_emision');
             const puntoVenta = this.getComponente('punto_venta');
             const estacion = this.getComponente('estacion');
+            const pvAgt = this.getComponente('pv_agt');
+            const noiata = this.getComponente('noiata');
 
 
             this.storeBoletosRecursivo = new Ext.data.JsonStore({
@@ -659,6 +661,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     nombre.setValue(e[0].json.passengerName);
                     monedaEmision.setValue(e[0].json.currency);
                     puntoVenta.setValue(e[0].json.issueOfficeID);
+                    pvAgt.setValue(e[0].json.issueOfficeID);
+                    noiata.setValue(e[0].json.issueAgencyCode);
 
                     Phx.CP.loadingHide();
                 },
@@ -777,6 +781,8 @@ header("content-type: text/javascript; charset=UTF-8");
         },
 
         loadValoresIniciales: function () {
+            console.log('this.Cmp.fecha_liqui',this.Cmp.fecha_liqui)
+            this.Cmp.fecha_liqui.setValue(new Date())
 
             Phx.vista.FormLiquidacion.superclass.loadValoresIniciales.call(this);
 
@@ -998,7 +1004,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     width:200,
                     gwidth: 100,
                     format: 'd/m/Y',
-                    renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
+                    renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''},
+                    disabled: true,
+                    //defaultValue: new Date(),
                 },
                 type:'DateField',
                 filters:{pfiltro:'liqui.fecha_liqui',type:'date'},
@@ -1293,6 +1301,39 @@ header("content-type: text/javascript; charset=UTF-8");
                 form:true
             },
 
+            {
+                config:{
+                    name: 'pv_agt',
+                    fieldLabel: 'pv agt',
+                    allowBlank: true,
+                    anchor: '80%',
+                    gwidth: 100,
+                    maxLength:255
+                },
+                type:'TextField',
+                filters:{pfiltro:'liqui.pv_agt',type:'string'},
+                id_grupo:1,
+                grid:true,
+                form:true
+            },
+            {
+                config:{
+                    name: 'noiata',
+                    fieldLabel: 'noiata',
+                    allowBlank: true,
+                    anchor: '80%',
+                    gwidth: 100,
+                    maxLength:255
+                },
+                type:'TextField',
+                filters:{pfiltro:'liqui.noiata',type:'string'},
+                id_grupo:1,
+                grid:true,
+                form:true
+            },
+
+
+
 
             {
                 config: {
@@ -1432,36 +1473,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 form:false
             },
 
-            {
-                config:{
-                    name: 'pv_agt',
-                    fieldLabel: 'pv agt',
-                    allowBlank: true,
-                    anchor: '80%',
-                    gwidth: 100,
-                    maxLength:255
-                },
-                type:'TextField',
-                filters:{pfiltro:'liqui.pv_agt',type:'string'},
-                id_grupo:2,
-                grid:true,
-                form:true
-            },
-            {
-                config:{
-                    name: 'noiata',
-                    fieldLabel: 'noiata',
-                    allowBlank: true,
-                    anchor: '80%',
-                    gwidth: 100,
-                    maxLength:255
-                },
-                type:'TextField',
-                filters:{pfiltro:'liqui.noiata',type:'string'},
-                id_grupo:2,
-                grid:true,
-                form:true
-            },
 
 
 
@@ -1728,6 +1739,7 @@ header("content-type: text/javascript; charset=UTF-8");
             this.cmpPunto_venta = this.getComponente('punto_venta');
             this.cmpEstacion = this.getComponente('estacion');
             this.cmp_nro_liquidacion = this.getComponente('nro_liquidacion');
+            this.cmpFechaLiqui = this.getComponente('fecha_liqui');
 
 
             this.cmpTramo_devolucion.disable();

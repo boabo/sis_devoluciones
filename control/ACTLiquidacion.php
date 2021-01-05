@@ -167,6 +167,7 @@ class ACTLiquidacion extends ACTbase{
             'passengerName' => $data->passengerName,
             'currency' => $data->currency,
             'issueOfficeID' => $data->issueOfficeID,
+            'issueAgencyCode' => $data->issueAgencyCode, // este es el noiata
             'netAmount' => $data->netAmount,
             'exento' => $exento
         ));
@@ -188,6 +189,7 @@ class ACTLiquidacion extends ACTbase{
                 'passengerName' => $data->passengerName,
                 'currency' => $data->currency,
                 'issueOfficeID' => $data->issueOfficeID,
+                'issueAgencyCode' => $data->issueAgencyCode,
                 'netAmount' => $data->netAmount,
                 'exento' => $exento_hijo
             ));
