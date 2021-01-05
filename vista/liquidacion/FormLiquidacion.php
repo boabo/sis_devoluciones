@@ -1585,7 +1585,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                 'cliente_destino',
                             ],
                             remoteSort: true,
-                            baseParams:{par_filtro:'nro_factura', tipo_factura:'computarizada'}
+                            baseParams:{par_filtro:'nro_factura', tipo_factura:'computarizada',tipo_usuario:'cajero'}
                         }),
                     tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_factura},  NIT: {nit}</p><p>{desc_plantilla} </p><p>Doc: {nro_factura} de Fecha: {fecha}</p><p> {importe_doc} {desc_moneda}  </p></div></tpl>',
                     valueField: 'id_venta',
