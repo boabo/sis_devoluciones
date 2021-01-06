@@ -49,6 +49,7 @@ DECLARE
     v_sum_venta_seleccionados numeric(10,2);
     v_tipo_documento varchar;
     v_id_venta integer;
+    v_importe_tramo_utilizado numeric(10,2);
 BEGIN
 
     v_nombre_funcion = 'decr.ft_liquidacion_ime';
@@ -64,6 +65,7 @@ BEGIN
 	if(p_transaccion='DECR_LIQUI_INS')then
 					
         begin
+
 
             v_rec = param.f_get_periodo_gestion(to_char(now(), 'YYYY-mm-dd')::DATE);
             -- inciar el tramite en el sistema de WF
@@ -97,6 +99,14 @@ BEGIN
             from decr.ttipo_doc_liquidacion
             WHERE id_tipo_doc_liquidacion = v_parametros.id_tipo_doc_liquidacion;
 
+
+            if(pxp.f_existe_parametro(p_tabla, 'importe_tramo_utilizado')) then
+
+                if v_parametros.importe_tramo_utilizado is NULL then
+
+                    v_importe_tramo_utilizado:= 0;
+                END IF;
+            END IF;
 
 
             --Sentencia de la insercion
@@ -243,7 +253,7 @@ BEGIN
                     FROM json_populate_recordset(NULL::record, v_parametros.json::json)
                              AS
                              (
-                              id_concepto_ingas varchar, descripcion varchar, contabilizar varchar, importe varchar
+                              id_concepto_ingas varchar,  tipo varchar,contabilizar varchar,  importe varchar
                                  )
 
                 )
@@ -261,7 +271,8 @@ BEGIN
                         id_usuario_reg,
                         id_usuario_ai,
                         fecha_mod,
-                        id_usuario_mod
+                        id_usuario_mod,
+                        tipo
                     ) values(
                                                     v_conceptos_json.contabilizar,
                                                     v_conceptos_json.importe::numeric, --todo
@@ -274,7 +285,8 @@ BEGIN
                                 p_id_usuario,
                                 v_parametros._id_usuario_ai,
                                 null,
-                                null
+                                null,
+                                                    v_conceptos_json.tipo
                             );
 
             END LOOP;
@@ -465,6 +477,38 @@ BEGIN
             return v_resp;
 
 		end;
+	/*********************************
+ 	#TRANSACCION:  'DECR_LIQUI_MON'
+ 	#DESCRIPCION:	obtener datos de las monedas y cambios oficiales de bolivianos a las distintas monedas que se tiene para le fecha de ahora
+ 	#AUTOR:		favio.figueroa
+ 	#FECHA:		17-04-2020 01:54:37
+	***********************************/
+
+	elsif(p_transaccion='DECR_LIQUI_MON')then
+
+		begin
+
+            SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(cambios_oficiales)))
+            INTO v_json
+            FROM (
+                     select tmp.origen, tmp.id_moneda_pais, tmp.id_moneda, tm.codigo, tm.codigo_internacional,
+                            tcp.compra,tcp.venta,tcp.oficial
+                     from conta.tmoneda_pais tmp
+                              inner join param.tlugar tl on tl.id_lugar = tmp.id_lugar
+                              inner join param.tmoneda tm on tm.id_moneda = tmp.id_moneda
+                              INNER JOIN conta.ttipo_cambio_pais tcp on tcp.id_moneda_pais = tmp.id_moneda_pais
+                     where tl.codigo = 'BO' and tcp.fecha::date = now()::date
+                     order by tm.id_moneda asc
+                 ) cambios_oficiales;
+
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'json',v_json);
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje',v_json);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
          
 	/*********************************
  	#TRANSACCION:  'DECR_LIQUI_VERJSON'
@@ -488,8 +532,10 @@ BEGIN
                                 tb.nro_boleto,
                                 tb.fecha_emision,
                                 ttdl.tipo_documento,
-                                ttdl.descripcion AS desc_tipo_documento
+                                ttdl.descripcion AS desc_tipo_documento,
+                                tu.cuenta as registrado_por
                          FROM decr.tliquidacion tl
+                                  INNER JOIN segu.tusuario tu on tu.id_usuario = tl.id_usuario_reg
                                   INNER JOIN decr.ttipo_doc_liquidacion ttdl
                                              ON ttdl.id_tipo_doc_liquidacion = tl.id_tipo_doc_liquidacion
                                   LEFT JOIN obingresos.tboleto tb ON tb.id_boleto = tl.id_boleto
@@ -497,7 +543,7 @@ BEGIN
                          WHERE tl.id_liquidacion = v_parametros.id_liquidacion
                      ),
                  t_descuentos AS (
-                     SELECT tdl.id_liquidacion, tdl.id_concepto_ingas, tdl.importe, tci.desc_ingas
+                     SELECT tci.codigo, tdl.id_liquidacion, tdl.id_concepto_ingas, tdl.importe, tci.desc_ingas, tdl.tipo
                      FROM decr.tdescuento_liquidacion tdl
                               INNER JOIN param.tconcepto_ingas tci ON tci.id_concepto_ingas = tdl.id_concepto_ingas
                      WHERE tdl.id_liquidacion = v_parametros.id_liquidacion
@@ -529,15 +575,22 @@ BEGIN
                                 SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(descuentos)))
                                 FROM (
                                          SELECT *
-                                         FROM t_descuentos
+                                         FROM t_descuentos where tipo = 'DESCUENTO'
                                      ) descuentos
                             ) AS descuentos,
+                            (
+                                SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(descuentos)))
+                                FROM (
+                                         SELECT *
+                                         FROM t_descuentos where tipo = 'IMPUESTO NO REEMBOLSABLE'
+                                     ) descuentos
+                            ) AS descuentos_impuestos_no_reembolsable,
                             (
                                 SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(nota)))
                                 FROM (
                                          SELECT *
                                          FROM decr.tnota
-                                         WHERE id_liquidacion::integer = v_parametros.id_liquidacion
+                                         WHERE id_liquidacion::integer =47
                                      ) nota
                             ) AS notas,
                             (

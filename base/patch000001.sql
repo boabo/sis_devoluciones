@@ -482,6 +482,30 @@ alter table decr.tliquidacion
 alter table decr.tliquidacion
     add importe_tramo_utilizado numeric default 0;
 
+
+
+alter table decr.tdescuento_liquidacion
+    add tipo varchar(255);
+
+
+
+CREATE TABLE decr.tliqui_forma_pago (
+                                           id_liqui_forma_pago SERIAL,
+                                           id_liquidacion INTEGER,
+                                           id_forma_pago INTEGER, -- relationship with param.tconcepto_ingas
+                                           pais varchar(255),
+                                           ciudad varchar(255),
+                                           fac_reporte varchar(255),
+                                           cod_est varchar(255),
+                                           lote varchar(255),
+                                           comprobante varchar(255),
+                                           fecha_tarjeta date,
+                                           nro_tarjeta varchar(255),
+                                           importe numeric(10,2),
+                                           CONSTRAINT pk_tliqui_forma_pago__id_liqui_forma_pago PRIMARY KEY(id_liqui_forma_pago)
+) INHERITS (pxp.tbase)
+  WITHOUT OIDS;
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
 

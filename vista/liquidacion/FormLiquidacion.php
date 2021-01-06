@@ -27,7 +27,7 @@ header("content-type: text/javascript; charset=UTF-8");
             this.addEvents('successsave');
 
             Ext.apply(this, config);
-            this.constructorEtapa2(config);
+            this.obtenerDatosIniciales(config);
 
 
 
@@ -40,6 +40,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
         },
+
 
         constructorEtapa2: function (config) {
 
@@ -66,6 +67,47 @@ header("content-type: text/javascript; charset=UTF-8");
             else {
                 this.onEdit();
             }
+
+        },
+
+        obtenerDatosIniciales: function (config) {
+
+            var me = this;
+            //Verifica que la fecha y la moneda hayan sido elegidos
+            Phx.CP.loadingShow();
+            Ext.Ajax.request({
+                url: '../../sis_devoluciones/control/Liquidacion/obtenerCambioOficiales',
+                params: {
+                    codigo: 'conta_partidas'
+                },
+                success: function (resp) {
+                    Phx.CP.loadingHide();
+                    var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+                    console.log('reg datos iniciales',reg)
+
+                    if (reg.ROOT.error) {
+                        Ext.Msg.alert('Error', 'Error a recuperar la variable global')
+                    } else {
+                        const mensaje = reg.ROOT.datos.mensaje;
+                        if(mensaje == "") {
+                            alert('no se puede obtener ninguna moneda oficial para el dia de hoy')
+                        } else {
+                            const data = JSON.parse(mensaje);
+                            console.log('data',data)
+                            me.cambiosOficiales = data.reduce((valorAnterior, valorActual) => ({...valorAnterior, [valorActual.codigo_internacional] : valorActual}), {});
+
+
+                        }
+                        me.constructorEtapa2(config);
+
+
+                    }
+                },
+                failure: this.conexionFailure,
+                timeout: this.timeout,
+                scope: this
+            });
+
 
         },
 
@@ -110,19 +152,27 @@ header("content-type: text/javascript; charset=UTF-8");
                     }
                 }),
 
-                /*'descripcion': new Ext.form.TextArea({
-                    name: 'descripcion',
-                    msgTarget: 'title',
-                    fieldLabel: 'Descripcion',
+                'tipo': new Ext.form.ComboBox({
+                    name: 'tipo',
+                    fieldLabel: 'Tipo',
+                    qtip: 'El tipo de descuento para aplicar a la liquidacion',
+                    allowBlank: true,
+                    anchor: '85%',
+                    gwidth: 120,
+                    typeAhead: true,
+                    triggerAction: 'all',
+                    lazyRender: true,
+                    mode: 'local',
+                    store: ['DESCUENTO', 'IMPUESTO NO REEMBOLSABLE'],
                     allowBlank: false,
-                    anchor: '80%',
-                    maxLength: 5000
-                }),*/
+
+
+                }),
                 'importe': new Ext.form.NumberField({
                     name: 'importe',
                     msgTarget: 'title',
                     fieldLabel: 'Importe ',
-                    allowBlank: true,
+                    allowBlank: false,
                     allowDecimals: false,
                     minValue: 1,
                     maxLength: 10
@@ -290,7 +340,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                             var e = new Items({
                                 id_concepto_ingas: undefined,
-                                descripcion: '',
+                                tipo: 'DESCUENTO'
                             });
                             this.editorDetail.stopEditing();
                             this.mestore.insert(0, e);
@@ -358,15 +408,17 @@ header("content-type: text/javascript; charset=UTF-8");
                             disabled:true,
                         }
                     },
-                    /*{
 
-                        header: 'Descripción',
-                        dataIndex: 'descripcion',
+
+                    {
+
+                        header: 'Tipo',
+                        dataIndex: 'tipo',
 
                         align: 'center',
                         width: 200,
-                        editor: this.detCmp.descripcion
-                    },*/
+                        editor: this.detCmp.tipo
+                    },
 
 
                     {
@@ -783,6 +835,9 @@ header("content-type: text/javascript; charset=UTF-8");
         loadValoresIniciales: function () {
             console.log('this.Cmp.fecha_liqui',this.Cmp.fecha_liqui)
             this.Cmp.fecha_liqui.setValue(new Date())
+            this.Cmp.moneda_liq.setValue('BOB');
+            this.Cmp.tipo_de_cambio.setValue(this.cambiosOficiales.USD.oficial);
+            console.log('asdasdasdad12321',this.cambiosOficiales)
 
             Phx.vista.FormLiquidacion.superclass.loadValoresIniciales.call(this);
 
@@ -1401,7 +1456,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     allowBlank: true,
                     width: 200,
                     gwidth: 100,
-                    maxLength:655362
+                    maxLength:655362,
+                    disabled: true,
                 },
                 type:'NumberField',
                 filters:{pfiltro:'liqui.tipo_de_cambio',type:'numeric'},
@@ -1474,9 +1530,6 @@ header("content-type: text/javascript; charset=UTF-8");
             },
 
 
-
-
-
             {
                 config:{
                     name: 'moneda_liq',
@@ -1484,7 +1537,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     allowBlank: true,
                     anchor: '80%',
                     gwidth: 100,
-                    maxLength:3
+                    maxLength:3,
+                    disabled: true,
                 },
                 type:'TextField',
                 filters:{pfiltro:'liqui.moneda_liq',type:'string'},

@@ -441,8 +441,25 @@ class MODLiquidacion extends MODbase{
     }
 
 
+    function obtenerCambioOficiales(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='decr.ft_liquidacion_ime';
+        $this->transaccion='DECR_LIQUI_MON';
+        $this->tipo_procedimiento='IME';
 
 
-			
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
+
+
+
+
+
 }
 ?>

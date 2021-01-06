@@ -149,72 +149,87 @@ class ACTLiquidacion extends ACTbase{
         $data_json_string = $row['computed'];
         $data_json = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data_json_string), true);
 
-        /*var_dump($data_json);
+        if($data_json != null) {
+            /*var_dump($data_json);
         exit;*/
-        //var_dump($data_json_string);
-        //$data_json = json_decode($data_json_string);
-        $data = $data_json[0];
+            //var_dump($data_json_string);
+            //$data_json = json_decode($data_json_string);
+            $data = $data_json[0];
 
-        $netAmount = $data["netAmount"];
-        $totalAmount = $data["totalAmount"];
-        $ticketNumber = $data["ticketNumber"];
-        $taxes = $data["taxes"];
-        /*var_dump($data["taxes"]);
-        exit;*/
-        $exento = 0;
+            $netAmount = $data["netAmount"];
+            $totalAmount = $data["totalAmount"];
+            $ticketNumber = $data["ticketNumber"];
+            $taxes = $data["taxes"];
+            /*var_dump($data["taxes"]);
+            exit;*/
+            $exento = 0;
 
-        foreach ($taxes as $tax) {
-            if($tax["taxCode"] != 'BO' && $tax["taxCode"] != 'QM') {
-                $exento = $exento + $tax["taxAmount"];
-            }
-        }
-
-        array_push($array, array('seleccionado' => 'si',
-            'billete' => $ticketNumber,
-            'monto' => $totalAmount,
-            'itinerary' => $data["itinerary"],
-            'passengerName' => $data["passengerName"],
-            'currency' => $data["currency"],
-            'issueOfficeID' => $data["issueOfficeID"],
-            'issueAgencyCode' => $data["issueAgencyCode"], // este es el noiata
-            'netAmount' => $data["netAmount"],
-            'exento' => $exento
-        ));
-
-        $OriginalTicket = $data["OriginalTicket"];
-        //var_dump($OriginalTicket);
-        while ($OriginalTicket != '') {
-
-            $exento_hijo = 0;
-            foreach ($OriginalTicket["taxes"] as $tax) {
-                if($OriginalTicket["taxCode"] != 'BO' && $tax["taxCode"] != 'QM') {
-                    $exento_hijo = $exento_hijo + $tax["taxAmount"];
+            //var_dump($taxes);
+            foreach ($taxes as $tax) {
+                //var_dump($tax["taxCode"]);
+                //var_dump($tax->taxCode);
+                //var_dump($tax["taxCode"]);
+                //exit;
+                if(trim($tax["taxCode"]) !== 'BO' && trim($tax["taxCode"]) !== 'QM') {
+                    $exento = $exento + $tax["taxAmount"];
                 }
             }
+
             array_push($array, array('seleccionado' => 'si',
-                'billete' => $OriginalTicket["ticketNumber"],
-                'monto' => $OriginalTicket["totalAmount"],
-                'itinerary' => $OriginalTicket["itinerary"],
+                'billete' => $ticketNumber,
+                'monto' => $totalAmount,
+                'itinerary' => $data["itinerary"],
                 'passengerName' => $data["passengerName"],
                 'currency' => $data["currency"],
                 'issueOfficeID' => $data["issueOfficeID"],
-                'issueAgencyCode' => $data["issueAgencyCode"],
+                'issueAgencyCode' => $data["issueAgencyCode"], // este es el noiata
                 'netAmount' => $data["netAmount"],
-                'exento' => $exento_hijo
+                'exento' => $exento
             ));
 
-            $OriginalTicket = $OriginalTicket["OriginalTicket"];
+            $OriginalTicket = $data["OriginalTicket"];
+            //var_dump($OriginalTicket);
+            while ($OriginalTicket != '') {
+
+                $exento_hijo = 0;
+                foreach ($OriginalTicket["taxes"] as $tax) {
+                    if($OriginalTicket["taxCode"] != 'BO' && $tax["taxCode"] != 'QM') {
+                        $exento_hijo = $exento_hijo + $tax["taxAmount"];
+                    }
+                }
+                array_push($array, array('seleccionado' => 'si',
+                    'billete' => $OriginalTicket["ticketNumber"],
+                    'monto' => $OriginalTicket["totalAmount"],
+                    'itinerary' => $OriginalTicket["itinerary"],
+                    'passengerName' => $data["passengerName"],
+                    'currency' => $data["currency"],
+                    'issueOfficeID' => $data["issueOfficeID"],
+                    'issueAgencyCode' => $data["issueAgencyCode"],
+                    'netAmount' => $data["netAmount"],
+                    'exento' => $exento_hijo
+                ));
+
+                $OriginalTicket = $OriginalTicket["OriginalTicket"];
+            }
+
+
+
+            $send = array(
+                "datos" =>  $array,
+                "ticket_information" =>  $data,
+                "total" => count($array),
+            );
+
+            echo json_encode($send);
+        } else {
+            $send = array(
+                "error" => true,
+                "mensaje" =>  "error en el servicio de orlando al querer decodificar el json",
+            );
+            echo json_encode($send);
+
         }
 
-
-
-        $send = array(
-            "datos" =>  $array,
-            "ticket_information" =>  $data,
-            "total" => count($array),
-        );
-
-        echo json_encode($send);
 
     }
 
@@ -309,6 +324,13 @@ class ACTLiquidacion extends ACTbase{
         }
 
 
+    }
+
+
+    function obtenerCambioOficiales() {
+        $this->objFunc=$this->create('MODLiquidacion');
+        $this->res=$this->objFunc->obtenerCambioOficiales($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
 
