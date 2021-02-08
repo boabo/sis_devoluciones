@@ -506,6 +506,35 @@ CREATE TABLE decr.tliqui_forma_pago (
 ) INHERITS (pxp.tbase)
   WITHOUT OIDS;
 
+
+
+alter table decr.tliquidacion
+    add id_proceso_wf_factura integer;
+
+alter table decr.tliquidacion
+    add id_medio_pago INTEGER;
+
+alter table decr.tliquidacion
+    add id_moneda INTEGER;
+
+
+
+alter table decr.tliqui_forma_pago
+    add id_medio_pago integer;
+
+ALTER TABLE decr.tliqui_forma_pago
+    DROP COLUMN id_forma_pago;
+
+
+alter table decr.tliqui_forma_pago alter column fecha_tarjeta type varchar(255) using fecha_tarjeta::varchar(255);
+
+
+alter table decr.tliquidacion
+    add id_deposito integer;
+
+alter table decr.tliquidacion
+    add id_liquidacion_fk integer;
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
 

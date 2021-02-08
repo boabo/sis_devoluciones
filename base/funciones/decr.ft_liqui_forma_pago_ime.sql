@@ -46,7 +46,7 @@ BEGIN
         	insert into decr.tliqui_forma_pago(
 			estado_reg,
 			id_liquidacion,
-			id_forma_pago,
+            id_medio_pago,
 			pais,
 			ciudad,
 			fac_reporte,
@@ -65,7 +65,7 @@ BEGIN
           	) values(
 			'activo',
 			v_parametros.id_liquidacion,
-			v_parametros.id_forma_pago,
+			v_parametros.id_medio_pago,
 			v_parametros.pais,
 			v_parametros.ciudad,
 			v_parametros.fac_reporte,
@@ -108,7 +108,7 @@ BEGIN
 			--Sentencia de la modificacion
 			update decr.tliqui_forma_pago set
 			id_liquidacion = v_parametros.id_liquidacion,
-			id_forma_pago = v_parametros.id_forma_pago,
+            id_medio_pago = v_parametros.id_medio_pago,
 			pais = v_parametros.pais,
 			ciudad = v_parametros.ciudad,
 			fac_reporte = v_parametros.fac_reporte,

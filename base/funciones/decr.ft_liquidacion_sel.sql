@@ -83,7 +83,6 @@ v_consulta := v_consulta || 'GROUP BY tv.id_venta ) ';
 						liqui.pv_agt,
 						liqui.noiata,
 						liqui.id_tipo_liquidacion,
-						liqui.id_forma_pago,
 						liqui.id_boleto,
 						liqui.tramo,
 						liqui.nombre,
@@ -129,16 +128,18 @@ v_consulta := v_consulta || 'GROUP BY tv.id_venta ) ';
 			tb.id_boleto as id,
 			1::integer as cantidad,
 			liqui.id_venta,
-			tfp.nombre as desc_forma_pago,
+			tmpp.name as desc_forma_pago,
 			       tvd.id_venta_detalle,
-			       liqui.exento
+			       liqui.exento,
+			       liqui.id_medio_pago,
+			       liqui.id_moneda
 
 from decr.tliquidacion liqui
          inner join segu.tusuario usu1 on usu1.id_usuario = liqui.id_usuario_reg
          left join segu.tusuario usu2 on usu2.id_usuario = liqui.id_usuario_mod
 inner join decr.ttipo_doc_liquidacion ttdl on ttdl.id_tipo_doc_liquidacion = liqui.id_tipo_doc_liquidacion
 inner join decr.ttipo_liquidacion ttl on ttl.id_tipo_liquidacion = liqui.id_tipo_liquidacion
-         inner join obingresos.tforma_pago tfp on tfp.id_forma_pago = liqui.id_forma_pago
+                  inner join obingresos.tmedio_pago_pw tmpp on tmpp.id_medio_pago_pw = liqui.id_medio_pago
 LEFT JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
 			            LEFT JOIN vef.tventa tv on tv.id_venta = liqui.id_venta
 			                     LEFT JOIN  t_venta_detalle tvd on tvd.id_venta = tv.id_venta
@@ -172,7 +173,7 @@ LEFT JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
          left join segu.tusuario usu2 on usu2.id_usuario = liqui.id_usuario_mod
 inner join decr.ttipo_doc_liquidacion ttdl on ttdl.id_tipo_doc_liquidacion = liqui.id_tipo_doc_liquidacion
 inner join decr.ttipo_liquidacion ttl on ttl.id_tipo_liquidacion = liqui.id_tipo_liquidacion
-         inner join obingresos.tforma_pago tfp on tfp.id_forma_pago = liqui.id_forma_pago
+                  inner join obingresos.tmedio_pago_pw tmpp on tmpp.id_medio_pago_pw = liqui.id_medio_pago
 LEFT JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
 			            LEFT JOIN vef.tventa tv on tv.id_venta = liqui.id_venta
 			            inner join vef.tpunto_venta pv on pv.id_punto_venta = liqui.id_punto_venta
@@ -225,7 +226,6 @@ LEFT JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
     tl.pv_agt,
     tl.noiata,
     tl.id_tipo_liquidacion,
-    tl.id_forma_pago,
     tl.id_boleto,
     tl.tramo,
     tl.nombre,
@@ -478,6 +478,59 @@ inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
             inner join vef.tventa_detalle tvd on tvd.id_venta = tv.id_venta
             inner join param.tconcepto_ingas tci on tci.id_concepto_ingas = tvd.id_producto
             inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
+            where ';
+
+            --Definicion de la respuesta
+            v_consulta:=v_consulta||v_parametros.filtro;
+
+            --Devuelve la respuesta
+            return v_consulta;
+
+        end;
+	/*********************************
+ 	#TRANSACCION:  'DECR_DEPOS_SEL'
+ 	#DESCRIPCION:	Consulta de datos
+ 	#AUTOR:		Favio Figueroa
+ 	#FECHA:		17-04-2020 01:54:37
+	***********************************/
+
+	elsif(p_transaccion='DECR_DEPOS_SEL')then
+
+    	begin
+            --RAISE EXCEPTION '%','llega';
+
+            --Sentencia de la consulta
+            v_consulta:='
+            SELECT td.id_deposito,
+                    td.nro_deposito,
+                    td.monto_deposito,
+                    td.fecha,
+                    td.saldo,
+monto_total from obingresos.tdeposito td
+            where ';
+            v_consulta:=v_consulta||v_parametros.filtro;
+            v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
+
+            --Devuelve la respuesta
+            return v_consulta;
+
+		end;
+
+
+    /*********************************
+     #TRANSACCION:  'DECR_DEPOS_CONT'
+     #DESCRIPCION:	Conteo de registros
+     #AUTOR:		Favio Figueroa
+     #FECHA:		17-04-2020 01:54:37
+    ***********************************/
+
+    elsif(p_transaccion='DECR_DEPOS_CONT')then
+
+        begin
+            --Sentencia de la consulta de conteo de registros
+            v_consulta:='select count(td.id_deposito)
+						from obingresos.tdeposito td
             where ';
 
             --Definicion de la respuesta

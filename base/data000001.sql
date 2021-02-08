@@ -43,10 +43,16 @@ select param.f_import_tcatalogo ('insert','DECR','LPB','LPB','tliquidacion_estac
 select pxp.f_insert_tgui ('Generar Nota PXP2', 'Generar Nota PXP2', 'GN2', 'si', 1, 'sis_devoluciones/vista/nota/form_generar_nota.php', 2, '', 'FormNota', 'DECR');
 
 
+INSERT INTO decr.ttipo_doc_liquidacion (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg, id_usuario_ai, usuario_ai, tipo_documento, descripcion) VALUES (1, null, now(), null, 'activo', null, 'NULL', 'DEPOSITO', 'Por Deposito');
 
 
-INSERT INTO decr.ttipo_doc_liquidacion (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg, id_usuario_ai, usuario_ai, id_tipo_doc_liquidacion, tipo_documento, descripcion) VALUES (1, null, now(), null, 'activo', null, 'NULL', NULL, 'BOLEMD', 'Boleto Emitido');
-INSERT INTO decr.ttipo_doc_liquidacion (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg, id_usuario_ai, usuario_ai, id_tipo_doc_liquidacion, tipo_documento, descripcion) VALUES (1, null, now(), null, 'activo', null, 'NULL', NULL, 'FACCOM', 'Factura Computarizada');
+INSERT INTO decr.ttipo_doc_liquidacion (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg, id_usuario_ai, usuario_ai, tipo_documento, descripcion) VALUES (1, null, now(), null, 'activo', null, 'NULL', 'BOLEMD', 'Boleto Emitido');
+INSERT INTO decr.ttipo_doc_liquidacion (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg, id_usuario_ai, usuario_ai, tipo_documento, descripcion) VALUES (1, null, now(), null, 'activo', null, 'NULL', 'FACCOM', 'Factura Computarizada');
+INSERT INTO decr.ttipo_doc_liquidacion (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg, id_usuario_ai, usuario_ai, tipo_documento, descripcion) VALUES (1, null, now(), null, 'activo', null, 'NULL', 'FAC-ANTIGUAS', 'Factura Antiguas');
+INSERT INTO decr.ttipo_doc_liquidacion (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg, id_usuario_ai, usuario_ai, tipo_documento, descripcion) VALUES (1, null, now(), null, 'activo', null, 'NULL', 'PORLIQUI', 'Liquidacion por Liquidacion');
+INSERT INTO decr.ttipo_doc_liquidacion (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg, id_usuario_ai, usuario_ai, tipo_documento, descripcion) VALUES (1, null, now(), null, 'activo', null, 'NULL', 'RO', 'Recibos');
+INSERT INTO decr.ttipo_doc_liquidacion (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg, id_usuario_ai, usuario_ai, tipo_documento, descripcion) VALUES (1, null, now(), null, 'activo', null, 'NULL', 'RO-ANTIGUAS', 'Recibos Antiguos');
+INSERT INTO decr.ttipo_doc_liquidacion (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg, id_usuario_ai, usuario_ai, tipo_documento, descripcion) VALUES (1, null, now(), null, 'activo', null, 'NULL', 'DEPOSITO', 'Por Deposito');
 
 
 

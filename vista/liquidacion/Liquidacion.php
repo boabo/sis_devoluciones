@@ -16,10 +16,51 @@ header("content-type: text/javascript; charset=UTF-8");
 <script>
     Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 
+        tipoTabLiqui: 'BOLEMD',
+        vista_transferencia:'mandar',
+        gruposBarraTareas: [
+            {
+                name: 'BOLEMD',
+                title: '<H1 align="center"><i class="fa fa-thumbs-o-down"></i> Boleto</h1>',
+                grupo: 0,
+                height: 0
+            },
+            {
+                name: 'FACCOM',
+                title: '<H1 align="center"><i class="fa fa-thumbs-o-down"></i> Factura Com</h1>',
+                grupo: 0,
+                height: 0
+            },
+            {
+                name: 'PORLIQUI',
+                title: '<H1 align="center"><i class="fa fa-eye"></i> LIQUI X LIQUI</h1>',
+                grupo: 1,
+                height: 0
+            },
+            {
+                name: 'DESCUENTO',
+                title: '<H1 align="center"><i class="fa fa-eye"></i> Descuento</h1>',
+                grupo: 1,
+                height: 0
+            }
+
+        ],
+
+
+        beditGroups: [0, 1, 2],
+        bactGroups: [0, 1, 2],
+        btestGroups: [0],
+        bexcelGroups: [0, 1, 2],
+
+
+
             constructor:function(config){
                 this.maestro=config.maestro;
                 //llama al constructor de la clase padre
                 Phx.vista.Liquidacion.superclass.constructor.call(this,config);
+
+
+
                 this.init();
                 this.iniciarEventos();
 
@@ -82,6 +123,22 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
             },
+
+        getParametrosFiltro: function () {
+            this.store.baseParams.tipo_tab_liqui = this.tipoTabLiqui;
+        },
+
+        actualizarSegunTab: function (name, indice) {
+            console.log(name);
+
+            this.tipoTabLiqui = name;
+            this.getParametrosFiltro();
+            this.load({params:{start:0, limit:this.tam_pag}});
+            //Phx.vista.Liquidacion.superclass.onButtonAct.call(this);
+
+
+        },
+
 
             Atributos:[
                 {
@@ -610,6 +667,50 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 {
                     config: {
+                        name: 'id_medio_pago',
+                        fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Medio de pago</span>',
+                        allowBlank: false,
+                        width:150,
+                        id: 'testeoColor',
+                        emptyText: 'Medio de pago...',
+                        store: new Ext.data.JsonStore({
+                            url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
+                            id: 'id_medio_pago',
+                            root: 'datos',
+                            sortInfo: {
+                                field: 'name',
+                                direction: 'ASC'
+                            },
+                            totalProperty: 'total',
+                            fields: ['id_medio_pago_pw', 'name', 'fop_code'],
+                            remoteSort: true,
+                            baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'FACTCOMP'}
+                        }),
+                        valueField: 'id_medio_pago_pw',
+                        displayField: 'name',
+                        gdisplayField: 'name',
+                        hiddenName: 'id_medio_pago_pw',
+                        tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Medio de Pago: <font color="Blue">{name}</font></b></p><b><p>Codigo: <font color="red">{fop_code}</font></b></p></div></tpl>',
+                        forceSelection: true,
+                        typeAhead: false,
+                        triggerAction: 'all',
+                        lazyRender: true,
+                        mode: 'remote',
+                        pageSize: 15,
+                        queryDelay: 1000,
+                        // gwidth: 150,
+                        listWidth:250,
+                        resizable:true,
+                        minChars: 2,
+                        disabled:false
+                    },
+                    type: 'ComboBox',
+                    id_grupo: 0,
+                    grid: true,
+                    form: true
+                },
+                {
+                    config: {
                         name: 'id_forma_pago',
                         fieldLabel: 'Forma Pago',
                         allowBlank: true,
@@ -928,6 +1029,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {name:'noiata', type: 'string'},
                 {name:'id_tipo_liquidacion', type: 'numeric'},
                 {name:'id_forma_pago', type: 'numeric'},
+                {name:'id_medio_pago', type: 'numeric'},
                 {name:'tramo', type: 'string'},
                 {name:'nombre', type: 'string'},
                 {name:'moneda_liq', type: 'string'},
@@ -1338,9 +1440,31 @@ header("content-type: text/javascript; charset=UTF-8");
 
             },
             successPagar: function (resp) {
-                console.log(resp)
+                console.log(resp.responseText)
+                var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+
+                console.log('objRes', objRes.ROOT.datos.id_proceso_wf)
+
+                Ext.Ajax.request({
+                    url: '../../sis_ventas_facturacion/control/ImprimirFacturaNotasDebCre/imprimirFacturaNotasDebCre',
+                    params: {
+                        id_proceso_wf :objRes.ROOT.datos.id_proceso_wf,
+                    },
+                    success: this.successExportHtmlFactura,
+                    failure: this.conexionFailure,
+                    timeout: this.timeout,
+                    scope: this
+                });
+
                 Phx.CP.loadingHide();
             },
+        successExportHtmlFactura: function (resp) {
+            var objRes = resp.responseText;
+            var wnd = window.open("about:blank", "", "_blank");
+            wnd.document.write(objRes);
+
+        },
+
 
             successVistaPrevia: function (resp) {
                 var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));

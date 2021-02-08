@@ -184,7 +184,8 @@ class ACTLiquidacion extends ACTbase{
                 'issueOfficeID' => $data["issueOfficeID"],
                 'issueAgencyCode' => $data["issueAgencyCode"], // este es el noiata
                 'netAmount' => $data["netAmount"],
-                'exento' => $exento
+                'exento' => $exento,
+                'payment' => $data["payment"]
             ));
 
             $OriginalTicket = $data["OriginalTicket"];
@@ -206,7 +207,8 @@ class ACTLiquidacion extends ACTbase{
                     'issueOfficeID' => $data["issueOfficeID"],
                     'issueAgencyCode' => $data["issueAgencyCode"],
                     'netAmount' => $data["netAmount"],
-                    'exento' => $exento_hijo
+                    'exento' => $exento_hijo,
+                    'payment' => $OriginalTicket["payment"]
                 ));
 
                 $OriginalTicket = $OriginalTicket["OriginalTicket"];
@@ -330,6 +332,12 @@ class ACTLiquidacion extends ACTbase{
     function obtenerCambioOficiales() {
         $this->objFunc=$this->create('MODLiquidacion');
         $this->res=$this->objFunc->obtenerCambioOficiales($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
+    function listarDeposito() {
+        $this->objFunc=$this->create('MODLiquidacion');
+        $this->res=$this->objFunc->listarDeposito($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 

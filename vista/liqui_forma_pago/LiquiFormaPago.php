@@ -59,27 +59,30 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
 
         {
             config: {
-                name: 'id_forma_pago',
-                fieldLabel: 'Forma Pago',
-                allowBlank: true,
-                emptyText: 'Elija una opción...',
+                name: 'id_medio_pago',
+                fieldLabel: 'Medio de Pago',
+                allowBlank: false,
+                width:150,
+                id: 'testeoColor',
+                emptyText: 'Medio de pago...',
                 store: new Ext.data.JsonStore({
-                    url: '../../sis_obingresos/control/FormaPago/listarFormaPago',
-                    id: 'id_forma_pago',
+                    url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
+                    id: 'id_medio_pago',
                     root: 'datos',
                     sortInfo: {
-                        field: 'nombre',
+                        field: 'name',
                         direction: 'ASC'
                     },
                     totalProperty: 'total',
-                    fields: ['id_forma_pago', 'nombre', 'codigo', 'forma_pago'],
+                    fields: ['id_medio_pago_pw', 'name', 'fop_code'],
                     remoteSort: true,
-                    baseParams: {par_filtro: 'fop.nombre#fop.codigo'}
+                    baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'dev', regional: 'BOL'}
                 }),
-                valueField: 'id_forma_pago',
-                displayField: 'nombre',
-                gdisplayField: 'desc_forma_pago',
-                hiddenName: 'id_forma_pago',
+                valueField: 'id_medio_pago_pw',
+                displayField: 'name',
+                gdisplayField: 'desc_medio_pago',
+                hiddenName: 'id_medio_pago_pw',
+                tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Medio de Pago: <font color="Blue">{name}</font></b></p><b><p>Codigo: <font color="red">{fop_code}</font></b></p></div></tpl>',
                 forceSelection: true,
                 typeAhead: false,
                 triggerAction: 'all',
@@ -87,16 +90,14 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
                 mode: 'remote',
                 pageSize: 15,
                 queryDelay: 1000,
-                anchor: '100%',
-                gwidth: 150,
+                // gwidth: 150,
+                listWidth:250,
+                resizable:true,
                 minChars: 2,
-                renderer : function(value, p, record) {
-                    return String.format('{0}', record.data['desc_forma_pago']);
-                }
+                disabled:false
             },
             type: 'ComboBox',
-            id_grupo: 0,
-            filters: {pfiltro: 'movtip.nombre',type: 'string'},
+            id_grupo: 2,
             grid: true,
             form: true
         },
@@ -340,6 +341,7 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
 		{name:'estado_reg', type: 'string'},
 		{name:'id_liquidacion', type: 'numeric'},
 		{name:'id_forma_pago', type: 'numeric'},
+		{name:'id_medio_pago', type: 'numeric'},
 		{name:'pais', type: 'string'},
 		{name:'ciudad', type: 'string'},
 		{name:'fac_reporte', type: 'string'},
@@ -357,7 +359,7 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
-		{name:'desc_forma_pago', type: 'string'},
+		{name:'desc_medio_pago', type: 'string'},
 
 	],
 	sortInfo:{

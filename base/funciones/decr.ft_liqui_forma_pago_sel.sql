@@ -43,7 +43,7 @@ BEGIN
                             tlp.id_liqui_forma_pago,
                             tlp.estado_reg,
                             tlp.id_liquidacion,
-                            tlp.id_forma_pago,
+                            tlp.id_medio_pago,
                             tlp.pais,
                             tlp.ciudad,
                             tlp.fac_reporte,
@@ -61,11 +61,11 @@ BEGIN
                             tlp.fecha_mod,
                             usu1.cuenta as usr_reg,
                             usu2.cuenta as usr_mod,
-                            tfp.nombre as desc_forma_pago
+                            tmpp.name as desc_medio_pago
 						from decr.tliqui_forma_pago tlp
 						inner join segu.tusuario usu1 on usu1.id_usuario = tlp.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = tlp.id_usuario_mod
-						inner join obingresos.tforma_pago tfp on tfp.id_forma_pago = tlp.id_forma_pago
+						inner join obingresos.tmedio_pago_pw tmpp on tmpp.id_medio_pago_pw = tlp.id_medio_pago
 				        where  ';
 			
 			--Definicion de la respuesta
@@ -86,12 +86,14 @@ BEGIN
 
 	elsif(p_transaccion='DECR_TLP_CONT')then
 
+
 		begin
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='select count(id_liqui_forma_pago)
 					    from decr.tliqui_forma_pago tlp
 					    inner join segu.tusuario usu1 on usu1.id_usuario = tlp.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = tlp.id_usuario_mod
+						inner join obingresos.tmedio_pago_pw tmpp on tmpp.id_medio_pago_pw = tlp.id_medio_pago
 					    where ';
 			
 			--Definicion de la respuesta		    

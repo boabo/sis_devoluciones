@@ -20,6 +20,8 @@ header("content-type: text/javascript; charset=UTF-8");
         storeBoletosRecursivo : false,
 
 
+       
+
         constructor: function (config) {
 
             //declaracion de eventos
@@ -676,6 +678,9 @@ header("content-type: text/javascript; charset=UTF-8");
             const estacion = this.getComponente('estacion');
             const pvAgt = this.getComponente('pv_agt');
             const noiata = this.getComponente('noiata');
+            const payment = this.getComponente('payment');
+
+            console.log('billete123123', billete)
 
 
             this.storeBoletosRecursivo = new Ext.data.JsonStore({
@@ -715,6 +720,25 @@ header("content-type: text/javascript; charset=UTF-8");
                     puntoVenta.setValue(e[0].json.issueOfficeID);
                     pvAgt.setValue(e[0].json.issueOfficeID);
                     noiata.setValue(e[0].json.issueAgencyCode);
+                    const paymentData = e[0].json.payment;
+                    const dataPaymentForInsert = paymentData.reduce((valorAnterior, valorActual) => {
+
+                        const data = [...valorAnterior,
+                            {
+                                code : valorActual.paymentCode,
+                                description: valorActual.paymentDescription,
+                                amount: valorActual.paymentAmount,
+                                method_code: valorActual.paymentMethodCode,
+                                reference: valorActual.reference,
+                            }
+                        ]
+                        return data;
+                    }, []);
+                    console.log('dataPaymentForInsert',dataPaymentForInsert)
+
+                    payment.setValue(JSON.stringify(dataPaymentForInsert, function replacer(key, value) {
+                        return value;
+                    }));
 
                     Phx.CP.loadingHide();
                 },
@@ -1105,29 +1129,36 @@ header("content-type: text/javascript; charset=UTF-8");
                 bottom_filter : true
 
             },
-            /*{
+            {
                 config: {
-                    name: 'id_boleto',
-                    fieldLabel: 'Boleto',
+                    name: 'id_deposito',
+                    fieldLabel: 'Deposito',
                     allowBlank: true,
                     emptyText: 'Elija una opción...',
                     store: new Ext.data.JsonStore({
-                        url: '../../sis_devoluciones/control/Liquidacion/listarBoleto',
-                        id: 'id_boleto',
+                        url: '../../sis_devoluciones/control/Liquidacion/listarDeposito',
+                        id: 'id_deposito',
                         root: 'datos',
                         sortInfo: {
-                            field: 'id_boleto',
+                            field: 'id_deposito',
                             direction: 'desc'
                         },
                         totalProperty: 'total',
-                        fields: ['id_boleto', 'nro_boleto'],
+                        fields: [
+                            'id_deposito',
+                                'nro_deposito',
+                                'monto_deposito',
+                                'fecha',
+                                'saldo',
+                                'monto_total'
+                        ],
                         remoteSort: true,
-                        baseParams: {par_filtro: 'bol.nro_boleto'}
+                        baseParams: {par_filtro: 'td.nro_deposito'}
                     }),
-                    valueField: 'id_boleto',
-                    displayField: 'nro_boleto',
-                    gdisplayField: 'desc_nro_boleto',
-                    hiddenName: 'id_boleto',
+                    valueField: 'id_deposito',
+                    displayField: 'nro_deposito',
+                    gdisplayField: 'desc_nro_deposito',
+                    hiddenName: 'id_deposito',
                     forceSelection: true,
                     typeAhead: false,
                     triggerAction: 'all',
@@ -1139,17 +1170,32 @@ header("content-type: text/javascript; charset=UTF-8");
                     width: 200,
                     minChars: 2,
                     renderer : function(value, p, record) {
-                        return String.format('{0}', record.data['desc_nro_boleto']);
+                        return String.format('{0}', record.data['desc_nro_deposito']);
                     }
                 },
                 type: 'ComboBox',
-                id_grupo: 1,
+                id_grupo: 3,
                 filters: {pfiltro: 'tb.nro_boleto',type: 'string'},
                 grid: true,
                 form: true,
                 bottom_filter : true
-            },*/
-
+            },
+            {
+                config:{
+                    name: 'importe_total_deposito',
+                    fieldLabel: 'Importe Total Deposito',
+                    allowBlank: true,
+                    width: 200,
+                    gwidth: 100,
+                    maxLength:255,
+                    //disabled: true,
+                },
+                type:'TextField',
+                filters:{pfiltro:'liqui.importe_total',type:'string'},
+                id_grupo:3,
+                grid:true,
+                form:true
+            },
 
 
 
@@ -1249,6 +1295,22 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 type:'TextField',
                 filters:{pfiltro:'liqui.exento',type:'string'},
+                id_grupo:1,
+                grid:true,
+                form:true
+            },
+            {
+                config:{
+                    name: 'payment',
+                    fieldLabel: 'payment',
+                    allowBlank: true,
+                    width: 200,
+                    gwidth: 100,
+                    maxLength:10000,
+                    disabled: true,
+                },
+                type:'TextField',
+                filters:{pfiltro:'liqui.payment',type:'string'},
                 id_grupo:1,
                 grid:true,
                 form:true
@@ -1388,31 +1450,38 @@ header("content-type: text/javascript; charset=UTF-8");
             },
 
 
-
-
             {
                 config: {
-                    name: 'id_forma_pago',
-                    fieldLabel: 'Forma Pago',
-                    allowBlank: true,
-                    emptyText: 'Elija una opción...',
+                    name: 'id_moneda',
+                    fieldLabel: 'Moneda',
+                    allowBlank: false,
+                    width:150,
+                    listWidth:250,
+                    resizable:true,
+                    style: {
+                        background: '#EFFFD6',
+                        color: 'red',
+                        fontWeight:'bold'
+                    },
+                    emptyText: 'Moneda a pagar...',
                     store: new Ext.data.JsonStore({
-                        url: '../../sis_obingresos/control/FormaPago/listarFormaPago',
-                        id: 'id_forma_pago',
+                        url: '../../sis_parametros/control/Moneda/listarMoneda',
+                        id: 'id_moneda',
                         root: 'datos',
                         sortInfo: {
-                            field: 'nombre',
+                            field: 'moneda',
                             direction: 'ASC'
                         },
                         totalProperty: 'total',
-                        fields: ['id_forma_pago', 'nombre', 'codigo', 'forma_pago'],
+                        fields: ['id_moneda', 'codigo', 'moneda', 'codigo_internacional'],
                         remoteSort: true,
-                        baseParams: {par_filtro: 'fop.nombre#fop.codigo'}
+                        baseParams: {par_filtro: 'moneda.codigo#moneda.codigo_internacional', filtrar: 'si'}
                     }),
-                    valueField: 'id_forma_pago',
-                    displayField: 'nombre',
-                    gdisplayField: 'desc_forma_pago',
-                    hiddenName: 'id_forma_pago',
+                    valueField: 'id_moneda',
+                    gdisplayField : 'codigo_internacional',
+                    displayField: 'codigo_internacional',
+                    hiddenName: 'id_moneda',
+                    tpl:'<tpl for="."><div class="x-combo-list-item"><p style="color:green;"><b style="color:black;">Moneda:</b> <b>{moneda}</b></p><p style="color:red;"><b style="color:black;">Código:</b> <b>{codigo_internacional}</b></p></div></tpl>',
                     forceSelection: true,
                     typeAhead: false,
                     triggerAction: 'all',
@@ -1420,19 +1489,60 @@ header("content-type: text/javascript; charset=UTF-8");
                     mode: 'remote',
                     pageSize: 15,
                     queryDelay: 1000,
-                    width: 200,
-                    gwidth: 150,
-                    minChars: 2,
-                    renderer : function(value, p, record) {
-                        return String.format('{0}', record.data['desc_forma_pago']);
-                    }
+                    //disabled:true,
+                    minChars: 2
                 },
                 type: 'ComboBox',
                 id_grupo: 2,
-                filters: {pfiltro: 'movtip.nombre',type: 'string'},
+                form: true
+            },
+
+            {
+                config: {
+                    name: 'id_medio_pago',
+                    fieldLabel: 'Medio de Pago',
+                    allowBlank: false,
+                    width:150,
+                    id: 'testeoColor',
+                    emptyText: 'Medio de pago...',
+                    store: new Ext.data.JsonStore({
+                        url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
+                        id: 'id_medio_pago',
+                        root: 'datos',
+                        sortInfo: {
+                            field: 'name',
+                            direction: 'ASC'
+                        },
+                        totalProperty: 'total',
+                        fields: ['id_medio_pago_pw', 'name', 'fop_code'],
+                        remoteSort: true,
+                        baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'dev', regional: 'BOL'}
+                    }),
+                    valueField: 'id_medio_pago_pw',
+                    displayField: 'name',
+                    gdisplayField: 'name',
+                    hiddenName: 'id_medio_pago_pw',
+                    tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Medio de Pago: <font color="Blue">{name}</font></b></p><b><p>Codigo: <font color="red">{fop_code}</font></b></p></div></tpl>',
+                    forceSelection: true,
+                    typeAhead: false,
+                    triggerAction: 'all',
+                    lazyRender: true,
+                    mode: 'remote',
+                    pageSize: 15,
+                    queryDelay: 1000,
+                    // gwidth: 150,
+                    listWidth:250,
+                    resizable:true,
+                    minChars: 2,
+                    disabled:false
+                },
+                type: 'ComboBox',
+                id_grupo: 2,
                 grid: true,
                 form: true
             },
+
+         
 
             {
                 config:{
@@ -1775,6 +1885,17 @@ header("content-type: text/javascript; charset=UTF-8");
         ],
         title: 'Frm solicitud',
 
+        liquidacionPorDeposito: function () {
+
+
+            this.ocultarGrupo(1);
+            this.mostrarGrupo(3);
+            //debemos ocultar los campos de factura que tambien se encuentran en el grupo 3
+            this.ocultarComponente(this.Cmp.id_venta);
+            this.ocultarComponente(this.Cmp.id_venta_detalle);
+
+
+        },
 
         iniciarEventos: function () {
             this.cmpIdTipoDocLiquidacion = this.getComponente('id_tipo_doc_liquidacion');
@@ -1847,14 +1968,35 @@ header("content-type: text/javascript; charset=UTF-8");
                 console.log(cmp)
                 console.log(rec)
 
+                //grupo 2 es boleto
+                //grupo 3 es factura computarizada nuevas
+                //grupo 4 es deposito
                 switch (rec.json.tipo_documento) {
                     case 'FACCOM':
                         this.ocultarGrupo(1);
                         this.mostrarGrupo(3);
+                        this.cmpIdVenta.reset();
+                        this.cmpIdVenta.store.baseParams.tipo_factura = 'computarizada';
+                        this.cmpIdVenta.modificado = true;
+                        break;
+                    case 'RO': // ES LO MISMO QUE FACTURA SOLO QUE AGREGARA AL DOCUMENTO UNA BANDERA
+                        this.ocultarGrupo(1);
+                        this.mostrarGrupo(3);
+                        this.cmpIdVenta.reset();
+                        this.cmpIdVenta.store.baseParams.tipo_factura = 'recibo';
+                        this.cmpIdVenta.modificado = true;
+
+                        break;
+                    case 'DEPOSITO':
+                        this.liquidacionPorDeposito();
+                        this.mostrarComponente(this.getComponente('importe_total'));
+
+
                         break;
                     case 'BOLEMD':
                         this.ocultarGrupo(3);
                         this.mostrarGrupo(1);
+
 
                         break;
                     default:

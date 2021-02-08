@@ -39,7 +39,6 @@ class MODLiquidacion extends MODbase{
 		$this->captura('pv_agt','varchar');
 		$this->captura('noiata','varchar');
 		$this->captura('id_tipo_liquidacion','int4');
-		$this->captura('id_forma_pago','int4');
 		$this->captura('id_boleto','int4');
 		$this->captura('tramo','varchar');
 		$this->captura('nombre','varchar');
@@ -90,6 +89,8 @@ class MODLiquidacion extends MODbase{
         $this->captura('desc_forma_pago','varchar');
         $this->captura('id_venta_detalle','varchar');
         $this->captura('exento','numeric');
+        $this->captura('id_medio_pago','int4');
+        $this->captura('id_moneda','int4');
 
 
 
@@ -223,8 +224,14 @@ class MODLiquidacion extends MODbase{
 		$this->setParametro('exento','exento','numeric');
 		$this->setParametro('importe_tramo_utilizado','importe_tramo_utilizado','numeric');
         $this->setParametro('json','json_new_records','text');
+        $this->setParametro('id_medio_pago','id_medio_pago','int4');
+        $this->setParametro('id_moneda','id_moneda','int4');
+        $this->setParametro('payment','payment','text'); // this is a json
+        $this->setParametro('id_deposito','id_deposito','int4');
+        $this->setParametro('importe_total_deposito','importe_total_deposito','numeric');
 
-		//Ejecuta la instruccion
+
+        //Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
 
@@ -275,6 +282,8 @@ class MODLiquidacion extends MODbase{
 
         $this->setParametro('id_venta_detalle','id_venta_detalle','varchar');
 
+        $this->setParametro('id_medio_pago','id_medio_pago','int4');
+        $this->setParametro('id_moneda','id_moneda','int4');
 
         //Ejecuta la instruccion
 		$this->armarConsulta();
@@ -457,6 +466,30 @@ class MODLiquidacion extends MODbase{
     }
 
 
+    function listarDeposito(){
+        $this->procedimiento='decr.ft_liquidacion_sel';
+        $this->transaccion='DECR_DEPOS_SEL';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+
+        //Define los parametros para la funcion
+
+        $this->captura('id_deposito','int4');
+        $this->captura('nro_deposito','varchar');
+        $this->captura('monto_deposito','numeric');
+        $this->captura('fecha','date');
+        $this->captura('saldo','numeric');
+        $this->captura('monto_total','numeric');
+
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+
+        //echo($this->consulta);exit;
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
 
 
 

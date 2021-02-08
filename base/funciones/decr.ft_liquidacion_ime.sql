@@ -44,11 +44,13 @@ DECLARE
     v_titulo                      varchar;
     v_id_estado_actual            integer;
     v_conceptos_json            record;
+    v_payments_json            record;
     v_detalle            record;
     v_importe_devolver numeric(10,2);
     v_sum_venta_seleccionados numeric(10,2);
     v_tipo_documento varchar;
     v_id_venta integer;
+    v_id_medio_pago_pw integer;
     v_importe_tramo_utilizado numeric(10,2);
 BEGIN
 
@@ -109,6 +111,9 @@ BEGIN
             END IF;
 
 
+            --verificamos si existe payments data
+
+
             --Sentencia de la insercion
         	insert into decr.tliquidacion(
 			estacion,
@@ -125,7 +130,7 @@ BEGIN
 			pv_agt,
 			noiata,
 			id_tipo_liquidacion,
-			id_forma_pago,
+			--id_forma_pago, se cambio por medio de pago
 			tramo,
 			nombre,
 			moneda_liq,
@@ -149,7 +154,10 @@ BEGIN
         	                              num_tramite,
         	                              id_venta,
         	                              exento,
-        	                              importe_tramo_utilizado
+        	                              importe_tramo_utilizado,
+        	                              id_medio_pago,
+        	                              id_moneda,
+        	                              id_deposito
 
           	) values(
 			v_parametros.estacion,
@@ -166,7 +174,7 @@ BEGIN
 			v_parametros.pv_agt,
 			v_parametros.noiata,
 			v_parametros.id_tipo_liquidacion,
-			v_parametros.id_forma_pago,
+			--v_parametros.id_forma_pago,
 			v_parametros.tramo,
 			v_parametros.nombre,
 			v_parametros.moneda_liq,
@@ -184,7 +192,7 @@ BEGIN
           	         v_parametros.moneda_emision,
           	         v_parametros.importe_neto,
           	         v_parametros.tasas,
-          	         v_parametros.importe_total,
+          	         CASE WHEN v_tipo_documento = 'DEPOSITO' THEN v_parametros.importe_total_deposito ELSE v_parametros.importe_total END,
           	         v_parametros.id_punto_venta,
 
             v_id_estado_wf,
@@ -192,7 +200,10 @@ BEGIN
             v_num_tramite,
           	         v_parametros.id_venta,
           	         v_parametros.exento,
-          	         v_parametros.importe_tramo_utilizado
+          	         v_parametros.importe_tramo_utilizado,
+          	         v_parametros.id_medio_pago,
+          	         v_parametros.id_moneda,
+          	         v_parametros.id_deposito
 
 			
 			
@@ -290,6 +301,75 @@ BEGIN
                             );
 
             END LOOP;
+            --RAISE EXCEPTION '%', v_parametros.payment;
+
+            IF v_tipo_documento = 'BOLEMD' THEN
+                FOR v_payments_json
+                    IN (
+                        SELECT *
+                        FROM json_populate_recordset(NULL::record, v_parametros.payment::json)
+                                 AS
+                                 (
+                                  code varchar, description varchar, amount varchar, method_code varchar, reference varchar
+                                     )
+
+                    )
+                    LOOP
+
+                        if v_payments_json.description = 'CREDIT CARD' THEN
+
+                            SELECT id_medio_pago_pw into v_id_medio_pago_pw FROM obingresos.tmedio_pago_pw
+                            WHERE mop_code = v_payments_json.method_code;
+                            insert into decr.tliqui_forma_pago(
+                                estado_reg,
+                                id_liquidacion,
+                                id_medio_pago,
+                                pais,
+                                ciudad,
+                                fac_reporte,
+                                cod_est,
+                                lote,
+                                comprobante,
+                                fecha_tarjeta,
+                                nro_tarjeta,
+                                importe,
+                                id_usuario_reg,
+                                fecha_reg,
+                                id_usuario_ai,
+                                usuario_ai,
+                                id_usuario_mod,
+                                fecha_mod
+                            ) values(
+                                        'activo',
+                                        v_id_liquidacion,
+                                        v_id_medio_pago_pw,
+                                        v_parametros.punto_venta,
+                                        v_parametros.punto_venta,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        RIGHT(v_payments_json.reference, 4),
+                                        LEFT(v_payments_json.reference,-6),
+                                        v_payments_json.amount::numeric,
+                                        p_id_usuario,
+                                        now(),
+                                        v_parametros._id_usuario_ai,
+                                        v_parametros._nombre_usuario_ai,
+                                        null,
+                                        null
+
+
+
+                                    );
+
+                            /*ELSE
+                            RAISE EXCEPTION '%','NO ES CREDIT CARD';*/
+                        END IF;
+
+                    END LOOP;
+            END IF;
+
 
             /*v_id_concepto_ingas = string_to_array(v_parametros.id_concepto_ingas,',');
             v_tamano = coalesce(array_length(v_id_concepto_ingas, 1),0);
@@ -379,7 +459,7 @@ BEGIN
          tramo_devolucion = v_parametros.tramo_devolucion,
          util = v_parametros.util,
          noiata = v_parametros.noiata,
-         id_forma_pago = v_parametros.id_forma_pago,
+         --id_forma_pago = v_parametros.id_forma_pago,
          tramo = v_parametros.tramo,
          nombre = v_parametros.nombre,
          moneda_liq = v_parametros.moneda_liq,
@@ -394,7 +474,9 @@ BEGIN
          importe_total = v_parametros.importe_total,
          id_venta = v_parametros.id_venta,
 		                                 exento = v_parametros.exento,
-         importe_tramo_utilizado = v_parametros.importe_tramo_utilizado
+         importe_tramo_utilizado = v_parametros.importe_tramo_utilizado,
+         id_medio_pago = v_parametros.id_medio_pago,
+         id_moneda = v_parametros.id_moneda
             where id_liquidacion=v_parametros.id_liquidacion;
 
 
