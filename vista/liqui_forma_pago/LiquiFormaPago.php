@@ -16,11 +16,60 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
 		this.maestro=config.maestro;
     	//llama al constructor de la clase padre
 		Phx.vista.LiquiFormaPago.superclass.constructor.call(this,config);
+		this.iniciarEventos();
 		this.init();
 		//this.load({params:{start:0, limit:this.tam_pag}})
 	},
-			
-	Atributos:[
+    iniciarEventos: function () {
+
+
+
+        this.Cmp.id_medio_pago.on('select', function (rec, d) {
+
+
+            switch (d.json.nombre_fp) {
+                case 'CREDIT CARD':
+                    for (var i = 0; i < this.Atributos.length; i++) {
+                        console.log(this.Componentes[i])
+
+                        if (this.Componentes[i]) {
+                            this.mostrarComponente(this.Componentes[i]);
+                        }
+                    }
+                    break;
+                case 'CHEQUE':
+                    for (var i = 0; i < this.Atributos.length; i++) {
+                        if (this.Componentes[i] && this.Componentes[i].name == 'comprobante') {
+                            this.mostrarComponente(this.Componentes[i]);
+                        }else {
+                            this.ocultarComponente(this.Componentes[i]);
+                        }
+                    }
+                    break;
+                default:
+                    console.log('default');
+            };
+
+        }, this);
+    },
+    onButtonNew:function() {
+        var me = this;
+        console.log('onButtonNew',this.Componentes)
+
+
+        Phx.vista.LiquiFormaPago.superclass.onButtonNew.call(this);
+
+        for (var i = 0; i < this.Atributos.length; i++) {
+            if (this.Componentes[i] && this.Componentes[i].name == 'comprobante') {
+                this.mostrarComponente(this.Componentes[i]);
+            }else {
+                this.ocultarComponente(this.Componentes[i]);
+            }
+        }
+    },
+
+
+        Atributos:[
 		{
 			//configuracion del componente
 			config:{

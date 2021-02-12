@@ -666,94 +666,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
 
                 {
-                    config: {
-                        name: 'id_medio_pago',
-                        fieldLabel: '<img src="../../../lib/imagenes/facturacion/TarjetaCredito.svg" style="width:20px; vertical-align: middle;"><span style="vertical-align: middle;"> Medio de pago</span>',
-                        allowBlank: false,
-                        width:150,
-                        id: 'testeoColor',
-                        emptyText: 'Medio de pago...',
-                        store: new Ext.data.JsonStore({
-                            url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
-                            id: 'id_medio_pago',
-                            root: 'datos',
-                            sortInfo: {
-                                field: 'name',
-                                direction: 'ASC'
-                            },
-                            totalProperty: 'total',
-                            fields: ['id_medio_pago_pw', 'name', 'fop_code'],
-                            remoteSort: true,
-                            baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'FACTCOMP'}
-                        }),
-                        valueField: 'id_medio_pago_pw',
-                        displayField: 'name',
-                        gdisplayField: 'name',
-                        hiddenName: 'id_medio_pago_pw',
-                        tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Medio de Pago: <font color="Blue">{name}</font></b></p><b><p>Codigo: <font color="red">{fop_code}</font></b></p></div></tpl>',
-                        forceSelection: true,
-                        typeAhead: false,
-                        triggerAction: 'all',
-                        lazyRender: true,
-                        mode: 'remote',
-                        pageSize: 15,
-                        queryDelay: 1000,
-                        // gwidth: 150,
-                        listWidth:250,
-                        resizable:true,
-                        minChars: 2,
-                        disabled:false
-                    },
-                    type: 'ComboBox',
-                    id_grupo: 0,
-                    grid: true,
-                    form: true
-                },
-                {
-                    config: {
-                        name: 'id_forma_pago',
-                        fieldLabel: 'Forma Pago',
-                        allowBlank: true,
-                        emptyText: 'Elija una opción...',
-                        store: new Ext.data.JsonStore({
-                            url: '../../sis_obingresos/control/FormaPago/listarFormaPago',
-                            id: 'id_forma_pago',
-                            root: 'datos',
-                            sortInfo: {
-                                field: 'nombre',
-                                direction: 'ASC'
-                            },
-                            totalProperty: 'total',
-                            fields: ['id_forma_pago', 'nombre', 'codigo', 'forma_pago'],
-                            remoteSort: true,
-                            baseParams: {par_filtro: 'fop.nombre#fop.codigo'}
-                        }),
-                        valueField: 'id_forma_pago',
-                        displayField: 'nombre',
-                        gdisplayField: 'desc_forma_pago',
-                        hiddenName: 'id_forma_pago',
-                        forceSelection: true,
-                        typeAhead: false,
-                        triggerAction: 'all',
-                        lazyRender: true,
-                        mode: 'remote',
-                        pageSize: 15,
-                        queryDelay: 1000,
-                        anchor: '100%',
-                        gwidth: 150,
-                        minChars: 2,
-                        renderer : function(value, p, record) {
-                            return String.format('{0}', record.data['desc_']);
-                        }
-                    },
-                    type: 'ComboBox',
-                    id_grupo: 0,
-                    filters: {pfiltro: 'movtip.nombre',type: 'string'},
-                    grid: true,
-                    form: true
-                },
-
-                {
                     config:{
                         name: 'estado_reg',
                         fieldLabel: 'Estado Reg.',
@@ -1028,8 +940,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {name:'pv_agt', type: 'string'},
                 {name:'noiata', type: 'string'},
                 {name:'id_tipo_liquidacion', type: 'numeric'},
-                {name:'id_forma_pago', type: 'numeric'},
-                {name:'id_medio_pago', type: 'numeric'},
+              
                 {name:'tramo', type: 'string'},
                 {name:'nombre', type: 'string'},
                 {name:'moneda_liq', type: 'string'},

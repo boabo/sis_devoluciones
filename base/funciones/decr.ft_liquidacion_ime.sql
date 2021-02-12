@@ -46,6 +46,7 @@ DECLARE
     v_conceptos_json            record;
     v_payments_json            record;
     v_detalle            record;
+    v_detalle_descuento_liquidacion            record;
     v_importe_devolver numeric(10,2);
     v_sum_venta_seleccionados numeric(10,2);
     v_tipo_documento varchar;
@@ -155,7 +156,6 @@ BEGIN
         	                              id_venta,
         	                              exento,
         	                              importe_tramo_utilizado,
-        	                              id_medio_pago,
         	                              id_moneda,
         	                              id_deposito
 
@@ -201,7 +201,6 @@ BEGIN
           	         v_parametros.id_venta,
           	         v_parametros.exento,
           	         v_parametros.importe_tramo_utilizado,
-          	         v_parametros.id_medio_pago,
           	         v_parametros.id_moneda,
           	         v_parametros.id_deposito
 
@@ -253,6 +252,37 @@ BEGIN
                 --RAISE EXCEPTION '%','llega' ||v_sum_venta_seleccionados::varchar;
 
                 UPDATE decr.tliquidacion SET importe_total = v_sum_venta_seleccionados where id_liquidacion = v_id_liquidacion ;
+
+            ELSEIF (v_tipo_documento = 'PORLIQUI') THEN
+                FOR v_detalle_descuento_liquidacion
+                    IN (SELECT unnest(string_to_array(v_parametros.id_descuento_liquidacion::varchar, ',')) as id_descuento_liquidacion
+                    )
+                    loop
+
+                        insert into decr.tliqui_decuento_detalle(
+                            estado_reg,
+                            id_liquidacion,
+                            id_descuento_liquidacion,
+                            id_usuario_reg,
+                            fecha_reg,
+                            id_usuario_ai,
+                            usuario_ai,
+                            id_usuario_mod,
+                            fecha_mod
+                        ) values(
+                                    'activo',
+                                    v_id_liquidacion,
+                                    v_detalle_descuento_liquidacion.id_descuento_liquidacion::integer,
+                                    p_id_usuario,
+                                    now(),
+                                    v_parametros._id_usuario_ai,
+                                    v_parametros._nombre_usuario_ai,
+                                    null,
+                                    null
+                                );
+
+                    END LOOP;
+
 
             END IF;
 

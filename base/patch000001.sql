@@ -535,6 +535,18 @@ alter table decr.tliquidacion
 alter table decr.tliquidacion
     add id_liquidacion_fk integer;
 
+
+
+--esta tabla es para relacionar el descuento con una liquidacion para liquidaciones por liquidaciones
+CREATE TABLE decr.tliqui_decuento_detalle (
+                                           id_liqui_descuento_detalle SERIAL,
+                                           id_liquidacion INTEGER,
+                                           id_descuento_liquidacion INTEGER,
+                                           CONSTRAINT pk_tliqui_decuento_detalle__id_liqui_descuento_detalle PRIMARY KEY(id_liqui_descuento_detalle)
+) INHERITS (pxp.tbase)
+  WITHOUT OIDS;
+
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
 

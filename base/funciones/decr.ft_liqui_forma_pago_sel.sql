@@ -61,7 +61,7 @@ BEGIN
                             tlp.fecha_mod,
                             usu1.cuenta as usr_reg,
                             usu2.cuenta as usr_mod,
-                            tmpp.name as desc_medio_pago
+                            tmpp.name::varchar as desc_medio_pago
 						from decr.tliqui_forma_pago tlp
 						inner join segu.tusuario usu1 on usu1.id_usuario = tlp.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = tlp.id_usuario_mod

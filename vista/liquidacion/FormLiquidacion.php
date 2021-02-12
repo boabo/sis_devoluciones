@@ -1196,6 +1196,110 @@ header("content-type: text/javascript; charset=UTF-8");
                 grid:true,
                 form:true
             },
+            {
+                config: {
+                    name: 'id_liquidacion_fk',
+                    fieldLabel: 'Liquidacion',
+                    allowBlank: true,
+                    emptyText: 'Elija una opción...',
+                    store: new Ext.data.JsonStore({
+                        url: '../../sis_devoluciones/control/Liquidacion/listarLiquidacion',
+                        id: 'id_liquidacion',
+                        root: 'datos',
+                        sortInfo: {
+                            field: 'nro_liquidacion',
+                            direction: 'ASC'
+                        },
+                        totalProperty: 'total',
+                            fields: ['id_liquidacion', 'nro_liquidacion', 'estacion'],
+                            // turn on remote sorting
+                        remoteSort: true,
+                            baseParams: {par_filtro: 'liqui.nro_liquidacion',/* estado: 'pagado',*/ generar_nota:'si'}
+                    }),
+                    valueField: 'id_liquidacion',
+                    displayField: 'nro_liquidacion',
+                        tpl: '<tpl for="."><div class="x-combo-list-item"><p><b>Nro Liqui:</b>{nro_liquidacion}</p><p><b><i class="fa fa-university"></i>Estacion:</b>{estacion}</p> </div></tpl>',
+                        hiddenName: 'nro_liquidacion',
+                    forceSelection: true,
+                    typeAhead: false,
+                    triggerAction: 'all',
+                    lazyRender: true,
+                    mode: 'remote',
+                    pageSize: 15,
+                    queryDelay: 1000,
+                    gwidth: 150,
+                    width: 200,
+                    minChars: 2,
+                    renderer : function(value, p, record) {
+                        return String.format('{0}', record.data['nro_liquidacion']);
+                    }
+                },
+                type: 'ComboBox',
+                id_grupo: 3,
+                filters: {pfiltro: 'tb.nro_boleto',type: 'string'},
+                grid: true,
+                form: true,
+                bottom_filter : true
+            },
+            {
+                config:{
+                    name: 'id_descuento_liquidacion',
+                    fieldLabel: 'Detalle Descuentos',
+                    allowBlank: false,
+                    emptyText:'Elija una plantilla...',
+                    store:new Ext.data.JsonStore(
+                        {
+                            url: '../../sis_devoluciones/control/DescuentoLiquidacion/listarDescuentoLiquidacion',
+                            id: 'id_descuento_liquidacion',
+                            root:'datos',
+                            sortInfo:{
+                                field:'id_descuento_liquidacion',
+                                direction:'ASC'
+                            },
+                            totalProperty:'total',
+                            fields: [
+                                'id_descuento_liquidacion',
+                                'contabilizar',
+                                'importe',
+                                'estado_reg',
+                                'id_concepto_ingas',
+                                'id_liquidacion',
+                                'sobre',
+                                'fecha_reg',
+                                'usuario_ai',
+                                'id_usuario_reg',
+                                'id_usuario_ai',
+                                'fecha_mod',
+                                'id_usuario_mod',
+                                'usr_reg',
+                                'usr_mod',
+                                'desc_desc_ingas'
+                            ],
+                            remoteSort: true,
+                            baseParams:{par_filtro:'tci.desc_ingas'}
+                        }),
+                    valueField: 'id_descuento_liquidacion',
+                    hiddenValue: 'id_descuento_liquidacion',
+                    displayField: 'desc_desc_ingas',
+                    gdisplayField:'desc_desc_ingas',
+                    listWidth:'280',
+                    forceSelection:true,
+                    typeAhead: false,
+                    triggerAction: 'all',
+                    lazyRender:true,
+                    mode:'remote',
+                    pageSize:20,
+                    queryDelay:500,
+                    gwidth: 250,
+                    minChars:2,
+                    enableMultiSelect:true,
+
+                },
+                type:'AwesomeCombo',
+                id_grupo: 3,
+                grid: false,
+                form: true
+            },
 
 
 
@@ -1497,50 +1601,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 form: true
             },
 
-            {
-                config: {
-                    name: 'id_medio_pago',
-                    fieldLabel: 'Medio de Pago',
-                    allowBlank: false,
-                    width:150,
-                    id: 'testeoColor',
-                    emptyText: 'Medio de pago...',
-                    store: new Ext.data.JsonStore({
-                        url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
-                        id: 'id_medio_pago',
-                        root: 'datos',
-                        sortInfo: {
-                            field: 'name',
-                            direction: 'ASC'
-                        },
-                        totalProperty: 'total',
-                        fields: ['id_medio_pago_pw', 'name', 'fop_code'],
-                        remoteSort: true,
-                        baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'dev', regional: 'BOL'}
-                    }),
-                    valueField: 'id_medio_pago_pw',
-                    displayField: 'name',
-                    gdisplayField: 'name',
-                    hiddenName: 'id_medio_pago_pw',
-                    tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Medio de Pago: <font color="Blue">{name}</font></b></p><b><p>Codigo: <font color="red">{fop_code}</font></b></p></div></tpl>',
-                    forceSelection: true,
-                    typeAhead: false,
-                    triggerAction: 'all',
-                    lazyRender: true,
-                    mode: 'remote',
-                    pageSize: 15,
-                    queryDelay: 1000,
-                    // gwidth: 150,
-                    listWidth:250,
-                    resizable:true,
-                    minChars: 2,
-                    disabled:false
-                },
-                type: 'ComboBox',
-                id_grupo: 2,
-                grid: true,
-                form: true
-            },
 
          
 
@@ -1893,10 +1953,62 @@ header("content-type: text/javascript; charset=UTF-8");
             //debemos ocultar los campos de factura que tambien se encuentran en el grupo 3
             this.ocultarComponente(this.Cmp.id_venta);
             this.ocultarComponente(this.Cmp.id_venta_detalle);
+            this.ocultarComponente(this.Cmp.id_liquidacion_fk);
+            this.ocultarComponente(this.Cmp.id_descuento_liquidacion);
+            this.Cmp.id_venta.reset();
+            this.Cmp.id_venta.store.baseParams.tipo_factura = 'recibo';
+            this.Cmp.id_venta.modificado = true;
 
+        },
+        liquidacionPorFactura: function () {
+
+
+            this.ocultarGrupo(1);
+            this.mostrarGrupo(3);
+            //debemos ocultar los campos de factura que tambien se encuentran en el grupo 3
+            this.ocultarComponente(this.Cmp.id_deposito);
+            this.ocultarComponente(this.Cmp.importe_total_deposito);
+            this.ocultarComponente(this.Cmp.id_liquidacion_fk);
+            this.ocultarComponente(this.Cmp.id_descuento_liquidacion);
+
+            this.Cmp.id_venta.reset();
+            this.Cmp.id_venta.store.baseParams.tipo_factura = 'computarizada';
+            this.Cmp.id_venta.modificado = true;
+        },
+        liquidacionPorLiquidacion: function () {
+
+            this.ocultarGrupo(1);
+            this.mostrarGrupo(3);
+            //debemos ocultar los campos de factura que tambien se encuentran en el grupo 3
+            this.ocultarComponente(this.Cmp.id_deposito);
+            this.ocultarComponente(this.Cmp.importe_total_deposito);
+            this.ocultarComponente(this.Cmp.id_venta);
+            this.ocultarComponente(this.Cmp.id_venta_detalle);
 
         },
 
+        inciarEventosParaTipoLiquidacion: function () {
+            this.Cmp.id_liquidacion_fk.on('select', function (cmp, rec) {
+
+                console.log(cmp)
+                console.log(rec)
+
+                this.Cmp.id_descuento_liquidacion.reset();
+                this.Cmp.id_descuento_liquidacion.store.baseParams.id_liquidacion = rec.json.id_liquidacion;
+                this.Cmp.id_descuento_liquidacion.modificado = true;
+
+
+                /*this.Cmp.id_descuento_liquidacion.store.load({params:{start:0,limit:10},
+                    callback:function(){
+                        console.log('llega')
+
+                    }, scope : this
+                });*/
+
+
+
+            }, this);
+        },
         iniciarEventos: function () {
             this.cmpIdTipoDocLiquidacion = this.getComponente('id_tipo_doc_liquidacion');
             this.cmpNroBoleto = this.getComponente('nro_boleto');
@@ -1918,6 +2030,8 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
             this.cmpTramo_devolucion.disable();
+
+            this.inciarEventosParaTipoLiquidacion();
 
             this.cmpNroBoleto.on('blur', function () {
 
@@ -1973,11 +2087,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 //grupo 4 es deposito
                 switch (rec.json.tipo_documento) {
                     case 'FACCOM':
-                        this.ocultarGrupo(1);
-                        this.mostrarGrupo(3);
-                        this.cmpIdVenta.reset();
-                        this.cmpIdVenta.store.baseParams.tipo_factura = 'computarizada';
-                        this.cmpIdVenta.modificado = true;
+                        this.liquidacionPorFactura();
+
                         break;
                     case 'RO': // ES LO MISMO QUE FACTURA SOLO QUE AGREGARA AL DOCUMENTO UNA BANDERA
                         this.ocultarGrupo(1);
@@ -1989,7 +2100,12 @@ header("content-type: text/javascript; charset=UTF-8");
                         break;
                     case 'DEPOSITO':
                         this.liquidacionPorDeposito();
-                        this.mostrarComponente(this.getComponente('importe_total'));
+
+
+                        break;
+                    case 'PORLIQUI':
+                        this.liquidacionPorLiquidacion();
+
 
 
                         break;

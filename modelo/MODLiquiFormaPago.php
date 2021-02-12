@@ -30,7 +30,7 @@ class MODLiquiFormaPago extends MODbase{
 		$this->captura('cod_est','varchar');
 		$this->captura('lote','varchar');
 		$this->captura('comprobante','varchar');
-		$this->captura('fecha_tarjeta','date');
+		$this->captura('fecha_tarjeta','varchar');
 		$this->captura('nro_tarjeta','varchar');
 		$this->captura('importe','numeric');
 		$this->captura('id_usuario_reg','int4');

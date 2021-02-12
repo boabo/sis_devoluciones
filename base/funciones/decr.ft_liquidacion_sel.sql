@@ -142,7 +142,7 @@ inner join decr.ttipo_liquidacion ttl on ttl.id_tipo_liquidacion = liqui.id_tipo
                   inner join obingresos.tmedio_pago_pw tmpp on tmpp.id_medio_pago_pw = liqui.id_medio_pago
 LEFT JOIN obingresos.tboleto tb on tb.id_boleto = liqui.id_boleto
 			            LEFT JOIN vef.tventa tv on tv.id_venta = liqui.id_venta
-			                     LEFT JOIN  t_venta_detalle tvd on tvd.id_venta = tv.id_venta
+                         LEFT JOIN  t_venta_detalle tvd on tvd.id_venta = tv.id_venta
 			            inner join vef.tpunto_venta pv on pv.id_punto_venta = liqui.id_punto_venta
 			            left join decr.tnota nota on nota.id_liquidacion::integer = liqui.id_liquidacion
 				        where  ';

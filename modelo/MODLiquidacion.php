@@ -92,6 +92,8 @@ class MODLiquidacion extends MODbase{
         $this->captura('id_medio_pago','int4');
         $this->captura('id_moneda','int4');
 
+        $this->setParametro('tipo_tab_liqui','tipo_tab_liqui','varchar');
+
 
 
 		//Ejecuta la instruccion
@@ -229,6 +231,8 @@ class MODLiquidacion extends MODbase{
         $this->setParametro('payment','payment','text'); // this is a json
         $this->setParametro('id_deposito','id_deposito','int4');
         $this->setParametro('importe_total_deposito','importe_total_deposito','numeric');
+        $this->setParametro('id_descuento_liquidacion','id_descuento_liquidacion','varchar');
+        $this->setParametro('id_liquidacion_fk','id_liquidacion_fk','int4');
 
 
         //Ejecuta la instruccion
