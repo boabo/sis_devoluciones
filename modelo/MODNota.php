@@ -838,7 +838,7 @@ class MODNota extends MODbase
             $this->informix->beginTransaction();
 
             $sql = "UPDATE decr.tnota SET estado = 9, total_devuelto = 0
-					,monto_total = 0, excento = 0, credfis = 0 WHERE id_nota ='$nota'";
+					,monto_total = 0, excento = 0, credfis = 0, id_usuario_mod = " . $_SESSION['ss_id_usuario'] . ", fecha_mod = now()   WHERE id_nota ='$nota'";
 
             $sql_conceptos = "update decr.tnota_detalle set importe = 0, exento =0,total_devuelto=0
 								where id_nota ='$nota' ";
