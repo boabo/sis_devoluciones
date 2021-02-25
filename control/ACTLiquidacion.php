@@ -42,6 +42,31 @@ class ACTLiquidacion extends ACTbase{
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
+
+    function listarLiquidacionJson(){
+        $this->objFunc=$this->create('MODLiquidacion');
+        $this->res=$this->objFunc->listarLiquidacionJson($this->objParam);
+
+
+        if ($this->res->getTipo() != 'EXITO') {
+
+            $this->res->imprimirRespuesta($this->res->generarJson());
+            exit;
+        }
+
+        $data = $this->res->getDatos();
+
+        $dataJson = json_decode($data["mensaje"]);
+        $send = array(
+            "total" => $dataJson->count,
+            "datos"=> $dataJson->datos != null ? $dataJson->datos : []
+        );
+        $send = json_encode($send, true);
+        echo $send;
+
+
+    }
+
     function insertarLiquidacion(){
         $this->objFunc=$this->create('MODLiquidacion');
         if($this->objParam->insertar('id_liquidacion')){

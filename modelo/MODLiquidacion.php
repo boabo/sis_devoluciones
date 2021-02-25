@@ -104,6 +104,26 @@ class MODLiquidacion extends MODbase{
 		return $this->respuesta;
 	}
 
+    function listarLiquidacionJson(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='decr.ft_liquidacion_json';
+        $this->transaccion='DECR_LIQUI_JSON_SEL';
+        $this->tipo_procedimiento='IME';
+
+        $this->setParametro('tipo_tab_liqui','tipo_tab_liqui','varchar');
+        $this->setParametro('id_liquidacion','id_liquidacion','int4');
+        $this->setParametro('nro_liquidacion','nro_liquidacion','varchar');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
+
+
     function listarLiquidacionDetalle(){
         //Definicion de variables para ejecucion del procedimientp
         $this->procedimiento='decr.ft_liquidacion_sel';

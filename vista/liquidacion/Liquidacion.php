@@ -38,8 +38,14 @@ header("content-type: text/javascript; charset=UTF-8");
                 height: 0
             },
             {
-                name: 'DESCUENTO',
-                title: '<H1 align="center"><i class="fa fa-eye"></i> Descuento</h1>',
+                name: 'DEPOSITO',
+                title: '<H1 align="center"><i class="fa fa-eye"></i> Deposito</h1>',
+                grupo: 1,
+                height: 0
+            },
+            {
+                name: 'RO',
+                title: '<H1 align="center"><i class="fa fa-eye"></i> RO</h1>',
                 grupo: 1,
                 height: 0
             }
@@ -922,7 +928,7 @@ header("content-type: text/javascript; charset=UTF-8");
             title:'Liquidacion',
             ActSave:'../../sis_devoluciones/control/Liquidacion/insertarLiquidacion',
             ActDel:'../../sis_devoluciones/control/Liquidacion/eliminarLiquidacion',
-            ActList:'../../sis_devoluciones/control/Liquidacion/listarLiquidacion',
+            ActList:'../../sis_devoluciones/control/Liquidacion/listarLiquidacionJson',
             id_store:'id_liquidacion',
             fields: [
                 {name:'id_liquidacion', type: 'numeric'},

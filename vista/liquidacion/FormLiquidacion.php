@@ -1975,6 +1975,19 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.id_venta.store.baseParams.tipo_factura = 'computarizada';
             this.Cmp.id_venta.modificado = true;
         },
+        liquidacionPorRecibo: function () {
+            this.ocultarGrupo(1);
+            this.mostrarGrupo(3);
+            //debemos ocultar los campos de factura que tambien se encuentran en el grupo 3
+            this.ocultarComponente(this.Cmp.id_deposito);
+            this.ocultarComponente(this.Cmp.importe_total_deposito);
+            this.ocultarComponente(this.Cmp.id_liquidacion_fk);
+            this.ocultarComponente(this.Cmp.id_descuento_liquidacion);
+
+            this.Cmp.id_venta.reset();
+            this.Cmp.id_venta.store.baseParams.tipo_factura = 'recibo';
+            this.Cmp.id_venta.modificado = true;
+        },
         liquidacionPorLiquidacion: function () {
 
             this.ocultarGrupo(1);
@@ -2091,11 +2104,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                         break;
                     case 'RO': // ES LO MISMO QUE FACTURA SOLO QUE AGREGARA AL DOCUMENTO UNA BANDERA
-                        this.ocultarGrupo(1);
-                        this.mostrarGrupo(3);
-                        this.cmpIdVenta.reset();
-                        this.cmpIdVenta.store.baseParams.tipo_factura = 'recibo';
-                        this.cmpIdVenta.modificado = true;
+                        this.liquidacionPorRecibo();
 
                         break;
                     case 'DEPOSITO':

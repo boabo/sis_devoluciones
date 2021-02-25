@@ -157,7 +157,8 @@ BEGIN
         	                              exento,
         	                              importe_tramo_utilizado,
         	                              id_moneda,
-        	                              id_deposito
+        	                              id_deposito,
+        	                              id_liquidacion_fk
 
           	) values(
 			v_parametros.estacion,
@@ -202,7 +203,8 @@ BEGIN
           	         v_parametros.exento,
           	         v_parametros.importe_tramo_utilizado,
           	         v_parametros.id_moneda,
-          	         v_parametros.id_deposito
+          	         v_parametros.id_deposito,
+          	         v_parametros.id_liquidacion_fk
 
 			
 			
