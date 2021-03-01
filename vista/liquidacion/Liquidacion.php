@@ -21,37 +21,37 @@ header("content-type: text/javascript; charset=UTF-8");
         gruposBarraTareas: [
             {
                 name: 'BOLEMD',
-                title: '<H1 align="center"><i class="fa fa-thumbs-o-down"></i> Boleto</h1>',
+                title: '<H1 align="center"><i class="fa fa-file"></i> Boleto</h1>',
                 grupo: 0,
                 height: 0
             },
             {
                 name: 'FACCOM',
-                title: '<H1 align="center"><i class="fa fa-thumbs-o-down"></i> Factura Com</h1>',
+                title: '<H1 align="center"><i class="fa fa-file"></i> Factura Com</h1>',
                 grupo: 0,
                 height: 0
             },
             {
                 name: 'FAC-ANTIGUAS',
-                title: '<H1 align="center"><i class="fa fa-thumbs-o-down"></i> Facturas Antigua</h1>',
+                title: '<H1 align="center"><i class="fa fa-file"></i> Facturas Antigua</h1>',
                 grupo: 0,
                 height: 0
             },
             {
                 name: 'PORLIQUI',
-                title: '<H1 align="center"><i class="fa fa-eye"></i> LIQUI X LIQUI</h1>',
+                title: '<H1 align="center"><i class="fa fa-file"></i> LIQUI X LIQUI</h1>',
                 grupo: 0,
                 height: 0
             },
             {
                 name: 'DEPOSITO',
-                title: '<H1 align="center"><i class="fa fa-eye"></i> Deposito</h1>',
+                title: '<H1 align="center"><i class="fa fa-file"></i> Deposito</h1>',
                 grupo: 0,
                 height: 0
             },
             {
                 name: 'RO',
-                title: '<H1 align="center"><i class="fa fa-eye"></i> RO</h1>',
+                title: '<H1 align="center"><i class="fa fa-file"></i> RO</h1>',
                 grupo: 0,
                 height: 0
             }
@@ -184,6 +184,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             <span style="display: block;"><b>Punto de Venta:</b>${json.desc_punto_venta}</span>
                             <span style="display: block;"><b>Tipo Liqui Doc:</b>${json.desc_tipo_documento}</span>
                             <span style="display: block;"><b>Estacion:</b>${json.estacion}</span>
+                            <span style="display: block;"><b>${json.nro_nota ? `<i class="fa fa-file"></i>Nro Nota:${json.nro_nota}`: 'No tiene Nota'} - ${json.id_proceso_wf_factura ? `<i class="fa fa-file"></i>Nro Nota:${json.id_proceso_wf_factura}`: 'No tiene Factura'} </span>
 
 
                             </div>`;

@@ -193,7 +193,8 @@ BEGIN
                                liqui_tabla.sum_total_descuentos,
                                liqui_tabla.descuentos,
                                liqui_tabla.sum_descuentos,
-                               liqui_tabla.liqui_forma_pago
+                               liqui_tabla.liqui_forma_pago,
+                               'otro campo' as otr_campo
                         FROM decr.tliquidacion tl
                                  INNER JOIN (SELECT * FROM json_populate_recordset(NULL::decr.json_type_liquidacion, v_liqui_json::json)
                         ) liqui_tabla ON liqui_tabla.id_liquidacion = tl.id_liquidacion
@@ -377,6 +378,7 @@ BEGIN
                         FROM t_liqui tl
                                  INNER JOIN t_factucom tfc on tfc.id_factucom = tl.id_factucom
                                  LEFT JOIN sum_descuentos sd ON sd.id_liquidacion = tl.id_liquidacion
+                        order by tl.id_liquidacion desc
                     )
                 SELECT TO_JSON(ROW_TO_JSON(jsonData) :: TEXT) #>> '{}' as json
                 into v_json

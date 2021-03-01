@@ -53,6 +53,7 @@ INSERT INTO decr.ttipo_doc_liquidacion (id_usuario_reg, id_usuario_mod, fecha_re
 INSERT INTO decr.ttipo_doc_liquidacion (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg, id_usuario_ai, usuario_ai, tipo_documento, descripcion) VALUES (1, null, now(), null, 'activo', null, 'NULL', 'RO', 'Recibos');
 INSERT INTO decr.ttipo_doc_liquidacion (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg, id_usuario_ai, usuario_ai, tipo_documento, descripcion) VALUES (1, null, now(), null, 'activo', null, 'NULL', 'RO-ANTIGUAS', 'Recibos Antiguos');
 INSERT INTO decr.ttipo_doc_liquidacion (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg, id_usuario_ai, usuario_ai, tipo_documento, descripcion) VALUES (1, null, now(), null, 'activo', null, 'NULL', 'DEPOSITO', 'Por Deposito');
+INSERT INTO decr.ttipo_doc_liquidacion (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg, id_usuario_ai, usuario_ai, tipo_documento, descripcion) VALUES (1, null, now(), null, 'activo', null, 'NULL', 'BOLETO-NO-EXISTENTES', 'Boleto no existentes');
 
 
 
