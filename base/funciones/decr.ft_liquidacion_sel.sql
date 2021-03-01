@@ -540,6 +540,49 @@ monto_total from obingresos.tdeposito td
             return v_consulta;
 
         end;
+
+    /*********************************
+     #TRANSACCION:  'DECR_FACTUCOM_SEL'
+     #DESCRIPCION:	Conteo de registros
+     #AUTOR:		Favio Figueroa
+     #FECHA:		28-02-2021 01:54:37
+    ***********************************/
+
+    elsif(p_transaccion='DECR_FACTUCOM_SEL')then
+
+        begin
+            --Sentencia de la consulta de conteo de registros
+            v_consulta:='WITH t_factucom AS (
+                            SELECT * FROM dblink(''dbname=dbendesis host=192.168.100.30 user=ende_pxp password=ende_pxp'',
+                                                 ''SELECT id_factucom,nroaut,nrofac,monto,razon_cliente,fecha FROM informix.tif_factucom where nroaut = '||v_parametros.nro_aut||' and nrofac = '||v_parametros.nro_fac||' ''
+                                              ) AS d (id_factucom integer, nroaut numeric, nrofac numeric, monto numeric, razon_cliente varchar, fecha date)
+                        )select * from t_factucom';
+
+            --Devuelve la respuesta
+            return v_consulta;
+
+        end;
+	/*********************************
+     #TRANSACCION:  'DECR_FACTUCOMCON_SEL'
+     #DESCRIPCION:	Conteo de registros
+     #AUTOR:		Favio Figueroa
+     #FECHA:		28-02-2021 01:54:37
+    ***********************************/
+
+    elsif(p_transaccion='DECR_FACTUCOMCON_SEL')then
+
+        begin
+            --Sentencia de la consulta de conteo de registros
+            v_consulta:='WITH t_factucomcon AS (
+                            SELECT * FROM dblink(''dbname=dbendesis host=192.168.100.30 user=ende_pxp password=ende_pxp'',
+                                                 ''SELECT id_factucomcon,id_factucom,cantidad,preciounit,importe,concepto FROM informix.tif_factucomcon where id_factucom = '||v_parametros.id_factucom||' ''
+                                              ) AS d (id_factucomcon integer, id_factucom integer, cantidad numeric, preciounit numeric, importe numeric, concepto varchar)
+                        )select * from t_factucomcon';
+
+            --Devuelve la respuesta
+            return v_consulta;
+
+        end;
 	else
 
 		raise exception 'Transaccion inexistente';

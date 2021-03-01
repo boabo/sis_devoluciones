@@ -113,6 +113,8 @@ class MODLiquidacion extends MODbase{
         $this->setParametro('tipo_tab_liqui','tipo_tab_liqui','varchar');
         $this->setParametro('id_liquidacion','id_liquidacion','int4');
         $this->setParametro('nro_liquidacion','nro_liquidacion','varchar');
+        $this->setParametro('bottom_filtro_value','bottom_filtro_value','varchar');
+        $this->setParametro('query','query','varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
@@ -253,6 +255,8 @@ class MODLiquidacion extends MODbase{
         $this->setParametro('importe_total_deposito','importe_total_deposito','numeric');
         $this->setParametro('id_descuento_liquidacion','id_descuento_liquidacion','varchar');
         $this->setParametro('id_liquidacion_fk','id_liquidacion_fk','int4');
+        $this->setParametro('id_factucom','id_factucom','int4');
+        $this->setParametro('id_factucomcon','id_factucomcon','varchar');
 
 
         //Ejecuta la instruccion
@@ -503,6 +507,65 @@ class MODLiquidacion extends MODbase{
         $this->captura('fecha','date');
         $this->captura('saldo','numeric');
         $this->captura('monto_total','numeric');
+
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+
+        //echo($this->consulta);exit;
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
+    function listarFactuCom(){
+        $this->procedimiento='decr.ft_liquidacion_sel';
+        $this->transaccion='DECR_FACTUCOM_SEL';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+        $this->count = false;
+
+        //Define los parametros para la funcion
+
+        $this->captura('id_factucom','int4');
+        $this->captura('nroaut','numeric');
+        $this->captura('nrofac','numeric');
+        $this->captura('monto','numeric');
+        $this->captura('razon_cliente','varchar');
+        $this->captura('fecha','date');
+
+
+        $this->setParametro('nro_aut','nro_aut','numeric');
+        $this->setParametro('nro_fac','nro_fac','numeric');
+
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+
+        //echo($this->consulta);exit;
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
+    function listarFactucomcon(){
+        $this->procedimiento='decr.ft_liquidacion_sel';
+        $this->transaccion='DECR_FACTUCOMCON_SEL';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+        $this->count = false;
+
+        //Define los parametros para la funcion
+
+        $this->captura('id_factucomcon','int4');
+        $this->captura('id_factucom','int4');
+        $this->captura('cantidad','numeric');
+        $this->captura('preciounit','numeric');
+        $this->captura('importe','numeric');
+        $this->captura('concepto','varchar');
+
+
+        $this->setParametro('id_factucom','id_factucom','integer');
 
 
         //Ejecuta la instruccion

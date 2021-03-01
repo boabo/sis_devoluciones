@@ -547,6 +547,30 @@ CREATE TABLE decr.tliqui_decuento_detalle (
   WITHOUT OIDS;
 
 
+drop type decr.json_type_liquidacion;
+create type decr.json_type_liquidacion as (
+                                         id_liquidacion integer,
+                                         usr_reg varchar,
+                                         usr_mod varchar,
+                                         desc_tipo_documento varchar,
+                                         desc_tipo_liquidacion varchar,
+                                         desc_punto_venta varchar,
+                                         nro_nota varchar,
+                                         sum_total_descuentos numeric,
+                                         descuentos json,
+                                         sum_descuentos json,
+                                         liqui_forma_pago json
+                                     );
+
+
+alter table decr.tliquidacion
+    add id_factucom integer;
+
+
+alter table decr.tliqui_venta_detalle
+    add tipo varchar(255);
+
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
 

@@ -32,21 +32,27 @@ header("content-type: text/javascript; charset=UTF-8");
                 height: 0
             },
             {
+                name: 'FAC-ANTIGUAS',
+                title: '<H1 align="center"><i class="fa fa-thumbs-o-down"></i> Facturas Antigua</h1>',
+                grupo: 0,
+                height: 0
+            },
+            {
                 name: 'PORLIQUI',
                 title: '<H1 align="center"><i class="fa fa-eye"></i> LIQUI X LIQUI</h1>',
-                grupo: 1,
+                grupo: 0,
                 height: 0
             },
             {
                 name: 'DEPOSITO',
                 title: '<H1 align="center"><i class="fa fa-eye"></i> Deposito</h1>',
-                grupo: 1,
+                grupo: 0,
                 height: 0
             },
             {
                 name: 'RO',
                 title: '<H1 align="center"><i class="fa fa-eye"></i> RO</h1>',
-                grupo: 1,
+                grupo: 0,
                 height: 0
             }
 
@@ -55,7 +61,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
         beditGroups: [0, 1, 2],
         bactGroups: [0, 1, 2],
-        btestGroups: [0],
+        btestGroups: [0,1, 2],
         bexcelGroups: [0, 1, 2],
 
 
@@ -156,6 +162,133 @@ header("content-type: text/javascript; charset=UTF-8");
                     },
                     type:'Field',
                     form:true
+                },
+                {
+                    config:{
+                        name: 'datos_basicos_liquidacion',
+                        fieldLabel: 'Datos Basicos',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 300,
+                        maxLength:255,
+                        renderer: function (value, p, record, rowIndex, colIndex){
+
+                           console.log(value)
+                           console.log(p)
+                           console.log(record)
+                            const { json } = record;
+
+                            return  `<div style="vertical-align:middle;">
+                            <span style="display: block;"><b>Estado:</b>${json.estado}</span>
+                            <span style="display: block;"><b>Nro Liquidacion:</b>${json.nro_liquidacion}</span>
+                            <span style="display: block;"><b>Punto de Venta:</b>${json.desc_punto_venta}</span>
+                            <span style="display: block;"><b>Tipo Liqui Doc:</b>${json.desc_tipo_documento}</span>
+                            <span style="display: block;"><b>Estacion:</b>${json.estacion}</span>
+
+
+                            </div>`;
+
+                        }
+                    },
+                    type:'TextField',
+                    filters:{pfiltro:'liqui.estado',type:'string'},
+                    id_grupo:1,
+                    grid:true,
+                    form:false
+                },
+                {
+                    config:{
+                        name: 'datos_por_tipo_liquidacion',
+                        fieldLabel: 'Datos Por Tipo Doc',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 300,
+                        maxLength:255,
+                        renderer: function (value, p, record, rowIndex, colIndex){
+
+                           console.log(value)
+                           console.log(p)
+                           console.log(record)
+                            const { json } = record;
+                           const liquiDet = (_desc_liqui_det) => {
+                               const res = _desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
+                                   return `${valorAnterior} <br> cant:${valorActual.cantidad }/${valorActual.desc_ingas }/${valorActual.precio || valorActual.importe }`;
+                               },'');
+                               return res;
+                           }
+                            return  `<div style="vertical-align:middle;">
+                            <span style="display: block;"><b>Desc Liqui:</b>${json._desc_liqui}</span>
+                            <span style="display: block;"><b>Desc Det:</b>${typeof json._desc_liqui_det === 'object' ? liquiDet(json._desc_liqui_det) : json._desc_liqui_det }</span>
+                            <span style="display: block;"><b>A Nombre:</b>${json.nombre || json.nombre_factura }</span>
+                            <span style="display: block;"><b>Importe Original:</b>${json.importe_original}</span>
+                            <span style="display: block;"><b>Importe Total:</b>${json.importe_total}</span>
+
+                            </div>`;
+
+
+
+
+
+                        }
+                    },
+                    type:'TextField',
+                    filters:{pfiltro:'liqui.estado',type:'string'},
+                    id_grupo:1,
+                    grid:true,
+                    form:false
+                },
+                {
+                    config:{
+                        name: 'datos_descuentos',
+                        fieldLabel: 'Descuentos y a Devolver',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 300,
+                        maxLength:255,
+                        renderer: function (value, p, record, rowIndex, colIndex){
+
+                           console.log(value);
+                           console.log(p);
+                           console.log(record);
+                            const { json } = record;
+
+
+                          /* const descuentos = (descuentos) => {
+                               console.log('descuentosss',descuentos)
+                               if(descuentos && typeof descuentos == 'object') {
+                                   const output = descuentos.map((i) => {
+                                       return `<tr><td>${i.tipo}</td><td>${i.desc_ingas}</td><td>${i.importe}</td></tr>`;
+                                   });
+                                   return output;
+                               } else {
+                                   return '';
+                               }
+
+                           }*/
+                           let descuentosTemplate = '';
+                            json.descuentos && typeof json.descuentos == 'object' && json.descuentos.forEach((i) => {
+                               descuentosTemplate += `<tr><td>${i.tipo}</td><td>${i.desc_ingas}</td><td>${i.importe}</td></tr>`;
+                           })
+
+
+                            return `<div style="vertical-align:middle;"><table style="font-size: 11px;"><tr><th><b>Tipo</b></th><th><b>Desc.</b></th><th><b>Importe.</b></th></tr>${descuentosTemplate}
+                            <tr><td colspan="2"><b>Total Descuetos:</b></td><td>${json.sum_total_descuentos}</td></tr>
+                            <tr><td colspan="2"><b>Importe Original:</b></td><td>${json.importe_total}</td></tr>
+                            <tr><td colspan="2"><b>Importe a Devolver:</b></td><td><b style="color: green">${json.importe_devolver ? json.importe_devolver :0}</b></td></tr>
+                            </table>
+                            </div>`;
+
+
+
+
+
+                        }
+                    },
+                    type:'TextField',
+                    filters:{pfiltro:'liqui.estado',type:'string'},
+                    id_grupo:1,
+                    grid:true,
+                    form:false
                 },
                 {
                     config:{

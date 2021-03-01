@@ -1203,7 +1203,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     allowBlank: true,
                     emptyText: 'Elija una opción...',
                     store: new Ext.data.JsonStore({
-                        url: '../../sis_devoluciones/control/Liquidacion/listarLiquidacion',
+                        url: '../../sis_devoluciones/control/Liquidacion/listarLiquidacionJson',
                         id: 'id_liquidacion',
                         root: 'datos',
                         sortInfo: {
@@ -1214,7 +1214,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             fields: ['id_liquidacion', 'nro_liquidacion', 'estacion'],
                             // turn on remote sorting
                         remoteSort: true,
-                            baseParams: {par_filtro: 'liqui.nro_liquidacion',/* estado: 'pagado',*/ generar_nota:'si'}
+                            baseParams: {par_filtro: 'liqui.nro_liquidacion',/* estado: 'pagado',*/ }
                     }),
                     valueField: 'id_liquidacion',
                     displayField: 'nro_liquidacion',
@@ -1908,7 +1908,9 @@ header("content-type: text/javascript; charset=UTF-8");
                 grid: false,
                 form: true
             },
-           /* {
+
+
+            {
                 config:{
                     name: 'nro_aut',
                     fieldLabel: 'Nro Autorizacion',
@@ -1921,7 +1923,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 type:'TextField',
                 filters:{pfiltro:'liqui.importe_total',type:'string'},
                 id_grupo:3,
-                grid:true,
+                grid:false,
                 form:true
             },
             {
@@ -1937,9 +1939,76 @@ header("content-type: text/javascript; charset=UTF-8");
                 type:'TextField',
                 filters:{pfiltro:'liqui.importe_total',type:'string'},
                 id_grupo:3,
-                grid:true,
+                grid:false,
                 form:true
-            },*/
+            },
+            {
+                config:{
+                    name: 'id_factucom',
+                    fieldLabel: 'id_factucom',
+                    allowBlank: true,
+                    width: 200,
+                    gwidth: 100,
+                    maxLength:255,
+                    disabled: true,
+                },
+                type:'TextField',
+                filters:{pfiltro:'liqui.importe_total',type:'string'},
+                id_grupo:3,
+                grid:false,
+                form:true
+            },
+
+            {
+                config:{
+                    name: 'id_factucomcon',
+                    fieldLabel: 'Detalle',
+                    allowBlank: false,
+                    emptyText:'Elija una plantilla...',
+                    store:new Ext.data.JsonStore(
+                        {
+                            url: '../../sis_devoluciones/control/Liquidacion/listarFactucomcon',
+                            id: 'id_factucomcon',
+                            root:'datos',
+                            sortInfo:{
+                                field:'id_factucomcon',
+                                direction:'ASC'
+                            },
+                            totalProperty:'total',
+                            fields: [
+                                'id_factucomcon',
+                                'id_factucom',
+                                'cantidad',
+                                'importe',
+                                'preciounit',
+                                'concepto',
+                            ],
+                            remoteSort: true,
+                            baseParams:{par_filtro:'mon.codigo'}
+                        }),
+                    // tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_producto},  precio Total: {precio_total}</p></div></tpl>',
+                    valueField: 'id_factucomcon',
+                    hiddenValue: 'id_factucomcon',
+                    displayField: 'concepto',
+                    gdisplayField:'concepto',
+                    listWidth:'280',
+                    forceSelection:true,
+                    typeAhead: false,
+                    triggerAction: 'all',
+                    lazyRender:true,
+                    mode:'remote',
+                    pageSize:20,
+                    queryDelay:500,
+                    gwidth: 250,
+                    minChars:2,
+                    enableMultiSelect:true,
+
+                },
+                type:'AwesomeCombo',
+                id_grupo: 3,
+                grid: false,
+                form: true
+            },
 
 
         ],
@@ -1955,6 +2024,13 @@ header("content-type: text/javascript; charset=UTF-8");
             this.ocultarComponente(this.Cmp.id_venta_detalle);
             this.ocultarComponente(this.Cmp.id_liquidacion_fk);
             this.ocultarComponente(this.Cmp.id_descuento_liquidacion);
+
+            //ocultar los campos para factura antigua
+            this.ocultarComponente(this.Cmp.nro_aut);
+            this.ocultarComponente(this.Cmp.nro_fac);
+            this.ocultarComponente(this.Cmp.id_factucom);
+            this.ocultarComponente(this.Cmp.id_factucomcon);
+
             this.Cmp.id_venta.reset();
             this.Cmp.id_venta.store.baseParams.tipo_factura = 'recibo';
             this.Cmp.id_venta.modificado = true;
@@ -1971,6 +2047,12 @@ header("content-type: text/javascript; charset=UTF-8");
             this.ocultarComponente(this.Cmp.id_liquidacion_fk);
             this.ocultarComponente(this.Cmp.id_descuento_liquidacion);
 
+            //ocultar los campos para factura antigua
+            this.ocultarComponente(this.Cmp.nro_aut);
+            this.ocultarComponente(this.Cmp.nro_fac);
+            this.ocultarComponente(this.Cmp.id_factucom);
+            this.ocultarComponente(this.Cmp.id_factucomcon);
+
             this.Cmp.id_venta.reset();
             this.Cmp.id_venta.store.baseParams.tipo_factura = 'computarizada';
             this.Cmp.id_venta.modificado = true;
@@ -1983,6 +2065,12 @@ header("content-type: text/javascript; charset=UTF-8");
             this.ocultarComponente(this.Cmp.importe_total_deposito);
             this.ocultarComponente(this.Cmp.id_liquidacion_fk);
             this.ocultarComponente(this.Cmp.id_descuento_liquidacion);
+
+            //ocultar los campos para factura antigua
+            this.ocultarComponente(this.Cmp.nro_aut);
+            this.ocultarComponente(this.Cmp.nro_fac);
+            this.ocultarComponente(this.Cmp.id_factucom);
+            this.ocultarComponente(this.Cmp.id_factucomcon);
 
             this.Cmp.id_venta.reset();
             this.Cmp.id_venta.store.baseParams.tipo_factura = 'recibo';
@@ -1997,6 +2085,74 @@ header("content-type: text/javascript; charset=UTF-8");
             this.ocultarComponente(this.Cmp.importe_total_deposito);
             this.ocultarComponente(this.Cmp.id_venta);
             this.ocultarComponente(this.Cmp.id_venta_detalle);
+
+            //ocultar los campos para factura antigua
+            this.ocultarComponente(this.Cmp.nro_aut);
+            this.ocultarComponente(this.Cmp.nro_fac);
+            this.ocultarComponente(this.Cmp.id_factucom);
+            this.ocultarComponente(this.Cmp.id_factucomcon);
+
+
+        },
+        liquidacionPorFacturaAntigua: function () {
+
+            this.ocultarGrupo(1);
+            this.mostrarGrupo(3);
+            //debemos ocultar los campos de factura que tambien se encuentran en el grupo 3
+            this.ocultarComponente(this.Cmp.id_deposito);
+            this.ocultarComponente(this.Cmp.importe_total_deposito);
+            this.ocultarComponente(this.Cmp.id_venta);
+            this.ocultarComponente(this.Cmp.id_venta_detalle);
+            this.ocultarComponente(this.Cmp.id_liquidacion_fk);
+            this.ocultarComponente(this.Cmp.id_descuento_liquidacion);
+
+
+
+        },
+
+        obtenerDatosFactucom: function ({nroAut, nroFac}) {
+
+            if(nroAut !== '' && nroFac !== '') {
+                Ext.Ajax.request({
+                    url: '../../sis_devoluciones/control/Liquidacion/listarFactucom',
+                    params: {
+                        'nro_aut': nroAut,
+                        'nro_fac': nroFac,
+                    },
+                    success: function (resp) {
+
+                        console.log(resp)
+
+                        Phx.CP.loadingHide();
+
+                        var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+                        console.log('reg',reg)
+                        //this.cmpIdBoleto.setValue(reg.datos[0].id_boleto);
+                        if(reg.datos.length > 0) {
+
+                            this.Cmp.id_factucom.setValue(reg.datos[0].id_factucom);
+                            this.Cmp.id_factucomcon.setDisabled(false);
+
+                            this.Cmp.id_factucomcon.reset();
+                            this.Cmp.id_factucomcon.store.baseParams.id_factucom = reg.datos[0].id_factucom;
+                            this.Cmp.id_factucomcon.modificado = true;
+
+
+                        } else {
+                            this.Cmp.id_factucom.setValue('');
+
+                            this.Cmp.id_factucomcon.setDisabled(true);
+                            this.Cmp.id_factucomcon.reset();
+                            this.Cmp.id_factucomcon.store.baseParams.id_factucom = '';
+                            this.Cmp.id_factucomcon.modificado = true;
+                        }
+                        console.log('reg',reg)
+                    },
+                    failure: this.conexionFailure,
+                    timeout: this.timeout,
+                    scope: this
+                })
+            }
 
         },
 
@@ -2124,6 +2280,10 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
                         break;
+                    case 'FAC-ANTIGUAS':
+                        this.liquidacionPorFacturaAntigua();
+
+                        break;
                     default:
                         console.log('default');
                 };
@@ -2169,6 +2329,17 @@ header("content-type: text/javascript; charset=UTF-8");
                 });
             }, this);
 
+            this.Cmp.nro_aut.on('blur', function () {
+                const nroFac = this.Cmp.nro_fac.getValue();
+                const nroAut = this.Cmp.nro_aut.getValue();
+
+                this.obtenerDatosFactucom({nroAut: nroAut, nroFac: nroFac});
+            }, this);
+            this.Cmp.nro_fac.on('blur', function () {
+                const nroFac = this.Cmp.nro_fac.getValue();
+                const nroAut = this.Cmp.nro_aut.getValue();
+                this.obtenerDatosFactucom({nroAut: nroAut, nroFac: nroFac});
+            }, this);
 
           /*  this.cmpEstacion.on('select', function (rec, d) {
 

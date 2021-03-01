@@ -158,7 +158,8 @@ BEGIN
         	                              importe_tramo_utilizado,
         	                              id_moneda,
         	                              id_deposito,
-        	                              id_liquidacion_fk
+        	                              id_liquidacion_fk,
+        	                              id_factucom
 
           	) values(
 			v_parametros.estacion,
@@ -204,46 +205,51 @@ BEGIN
           	         v_parametros.importe_tramo_utilizado,
           	         v_parametros.id_moneda,
           	         v_parametros.id_deposito,
-          	         v_parametros.id_liquidacion_fk
+          	         v_parametros.id_liquidacion_fk,
+          	         v_parametros.id_factucom
 
 			
 			
 			)RETURNING id_liquidacion into v_id_liquidacion;
 
 
-            FOR v_detalle
-                IN (SELECT unnest(string_to_array(v_parametros.id_venta_detalle::varchar, ',')) as id_venta_detalle
-                )
-            loop
-
-                    insert into decr.tliqui_venta_detalle(
-                        estado_reg,
-                        id_liquidacion,
-                        id_venta_detalle,
-                        id_usuario_reg,
-                        fecha_reg,
-                        id_usuario_ai,
-                        usuario_ai,
-                        id_usuario_mod,
-                        fecha_mod
-                    ) values(
-                                'activo',
-                                v_id_liquidacion,
-                                v_detalle.id_venta_detalle::integer,
-                                p_id_usuario,
-                                now(),
-                                v_parametros._id_usuario_ai,
-                                v_parametros._nombre_usuario_ai,
-                                null,
-                                null
-                            );
-
-            END LOOP;
 
 
 
             -- si el tipo de liquidacion es FACCOM entonces debemos sacar el importe total de la suma de los conceptos a devolver
             if(v_tipo_documento = 'FACCOM') THEN
+
+                FOR v_detalle
+                    IN (SELECT unnest(string_to_array(v_parametros.id_venta_detalle::varchar, ',')) as id_venta_detalle
+                    )
+                    loop
+
+                        insert into decr.tliqui_venta_detalle(
+                            estado_reg,
+                            id_liquidacion,
+                            id_venta_detalle,
+                            id_usuario_reg,
+                            fecha_reg,
+                            id_usuario_ai,
+                            usuario_ai,
+                            id_usuario_mod,
+                            fecha_mod,
+                                                              tipo
+                        ) values(
+                                    'activo',
+                                    v_id_liquidacion,
+                                    v_detalle.id_venta_detalle::integer,
+                                    p_id_usuario,
+                                    now(),
+                                    v_parametros._id_usuario_ai,
+                                    v_parametros._nombre_usuario_ai,
+                                    null,
+                                    null,
+                                 'FACCOM'
+                                );
+
+                    END LOOP;
+
 
                 SELECT sum(tvd.precio)
                 INTO v_sum_venta_seleccionados
@@ -254,6 +260,56 @@ BEGIN
                 --RAISE EXCEPTION '%','llega' ||v_sum_venta_seleccionados::varchar;
 
                 UPDATE decr.tliquidacion SET importe_total = v_sum_venta_seleccionados where id_liquidacion = v_id_liquidacion ;
+
+            ELSEIF (v_tipo_documento = 'FAC-ANTIGUAS') THEN
+
+
+                FOR v_detalle
+                    IN (SELECT unnest(string_to_array(v_parametros.id_factucomcon, ',')) as id_venta_detalle
+                    )
+                    loop
+                        insert into decr.tliqui_venta_detalle(
+                            estado_reg,
+                            id_liquidacion,
+                            id_venta_detalle,
+                            id_usuario_reg,
+                            fecha_reg,
+                            id_usuario_ai,
+                            usuario_ai,
+                            id_usuario_mod,
+                            fecha_mod,
+                                                              tipo
+                        ) values(
+                                    'activo',
+                                    v_id_liquidacion,
+                                    v_detalle.id_venta_detalle::integer,
+                                    p_id_usuario,
+                                    now(),
+                                    v_parametros._id_usuario_ai,
+                                    v_parametros._nombre_usuario_ai,
+                                    null,
+                                    null,
+                                 'FAC-ANTIGUAS'
+                                );
+
+                    END LOOP;
+
+
+                WITH t_factucomcon AS (
+                    SELECT * FROM dblink('dbname=dbendesis host=192.168.100.30 user=ende_pxp password=ende_pxp',
+                                         'SELECT id_factucomcon,id_factucom,cantidad,preciounit,importe,concepto FROM informix.tif_factucomcon where id_factucom = '||v_parametros.id_factucom||' '
+                                      ) AS d (id_factucomcon integer, id_factucom integer, cantidad numeric, preciounit numeric, importe numeric, concepto varchar)
+                ) SELECT sum(tfcc.importe)
+                INTO v_sum_venta_seleccionados
+                from decr.tliqui_venta_detalle tlvd
+                                   inner join t_factucomcon tfcc on tfcc.id_factucomcon = tlvd.id_venta_detalle
+                where tlvd.id_liquidacion = v_id_liquidacion;
+
+
+                UPDATE decr.tliquidacion SET importe_total = v_sum_venta_seleccionados where id_liquidacion = v_id_liquidacion ;
+
+
+
 
             ELSEIF (v_tipo_documento = 'PORLIQUI') THEN
                 FOR v_detalle_descuento_liquidacion
