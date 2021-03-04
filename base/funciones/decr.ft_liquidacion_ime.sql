@@ -53,6 +53,7 @@ DECLARE
     v_id_venta integer;
     v_id_medio_pago_pw integer;
     v_importe_tramo_utilizado numeric(10,2);
+    v_fecha_emision date;
 BEGIN
 
     v_nombre_funcion = 'decr.ft_liquidacion_ime';
@@ -122,7 +123,6 @@ BEGIN
 			estado_reg,
 			tipo_de_cambio,
 			descripcion,
-			nombre_cheque,
 			fecha_liqui,
 			tramo_devolucion,
 			util,
@@ -136,7 +136,6 @@ BEGIN
 			nombre,
 			moneda_liq,
 			estado,
-			cheque,
 			id_usuario_reg,
 			fecha_reg,
 			usuario_ai,
@@ -167,7 +166,6 @@ BEGIN
 			'activo',
 			v_parametros.tipo_de_cambio,
 			v_parametros.descripcion,
-			v_parametros.nombre_cheque,
 			v_parametros.fecha_liqui,
 			v_parametros.tramo_devolucion,
 			v_parametros.util,
@@ -182,7 +180,6 @@ BEGIN
 			v_parametros.moneda_liq,
 			--v_parametros.estado,
             v_codigo_estado,
-			v_parametros.cheque,
 			p_id_usuario,
 			now(),
 			v_parametros._nombre_usuario_ai,
@@ -203,7 +200,7 @@ BEGIN
           	         v_parametros.id_venta,
           	         v_parametros.exento,
           	         v_parametros.importe_tramo_utilizado,
-          	         v_parametros.id_moneda,
+          	         null,--v_parametros.id_moneda,
           	         v_parametros.id_deposito,
           	         v_parametros.id_liquidacion_fk,
           	         v_parametros.id_factucom
@@ -658,17 +655,26 @@ BEGIN
 
 		begin
 
+		    IF (pxp.f_existe_parametro(p_tabla,'fecha_emision')) then
+                v_fecha_emision:= v_parametros.fecha_emision::date;
+		        else
+                    v_fecha_emision:= now();
+            END IF;
+
+            WITH t_cambio AS (
+                SELECT tm.codigo_internacional || '->' || tl.codigo as from_to, tl.codigo, tm.codigo_internacional, tcp.oficial, tcp.fecha
+                FROM conta.tmoneda_pais tmp
+                         INNER JOIN param.tlugar tl ON tl.id_lugar = tmp.id_lugar
+                         INNER JOIN param.tmoneda tm ON tm.id_moneda = tmp.id_moneda
+                         INNER JOIN conta.ttipo_cambio_pais tcp ON tcp.id_moneda_pais = tmp.id_moneda_pais
+                WHERE tcp.fecha::date = v_fecha_emision::date
+            )
             SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(cambios_oficiales)))
             INTO v_json
             FROM (
-                     select tmp.origen, tmp.id_moneda_pais, tmp.id_moneda, tm.codigo, tm.codigo_internacional,
-                            tcp.compra,tcp.venta,tcp.oficial
-                     from conta.tmoneda_pais tmp
-                              inner join param.tlugar tl on tl.id_lugar = tmp.id_lugar
-                              inner join param.tmoneda tm on tm.id_moneda = tmp.id_moneda
-                              INNER JOIN conta.ttipo_cambio_pais tcp on tcp.id_moneda_pais = tmp.id_moneda_pais
-                     where tl.codigo = 'BO' and tcp.fecha::date = now()::date
-                     order by tm.id_moneda asc
+                     SELECT *
+                     FROM t_cambio
+                     ORDER BY codigo DESC
                  ) cambios_oficiales;
 
             --Definicion de la respuesta
@@ -880,7 +886,8 @@ BEGIN
                                 pv.nombre AS punto_venta,
                                 b.nit     AS nit_cliente,
                                 b.razon   AS razon_social,
-                                b.moneda,
+                                b.moneda AS moneda_boleto,
+                                'BOB' AS moneda, --todas liquidaciones son emitidas en bolivianos si el boleto esta en dolar ya se hizo la conversion en la interfaz
                                 l.tipo_de_cambio as tipo_cambio,
                                 0 as exento,
                                 '' as observaciones

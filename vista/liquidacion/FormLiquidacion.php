@@ -18,6 +18,7 @@ header("content-type: text/javascript; charset=UTF-8");
         breset: false,
         labelSubmit: '<i class="fa fa-check"></i> Siguiente',
         storeBoletosRecursivo : false,
+        storeDatosIniciales: {},
 
 
        
@@ -72,6 +73,42 @@ header("content-type: text/javascript; charset=UTF-8");
 
         },
 
+        obtenerTipoDeCambioConFecha: function (fecha_emision) {
+            Ext.Ajax.request({
+                url: '../../sis_devoluciones/control/Liquidacion/obtenerCambioOficiales',
+                params: {
+                    codigo: 'conta_partidas', fecha_emision:fecha_emision,
+                },
+                success: function (resp) {
+                    Phx.CP.loadingHide();
+                    var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+
+                    if (reg.ROOT.error) {
+                        Ext.Msg.alert('Error', 'Error a recuperar la variable global')
+                    } else {
+                        const mensaje = reg.ROOT.datos.mensaje;
+                        if (mensaje == "") {
+                            alert('no se puede obtener ninguna moneda oficial para el dia de hoy')
+
+                        } else {
+                            const data = JSON.parse(mensaje);
+                            this.from_to = data.reduce((valorAnterior, valorActual) => ({...valorAnterior, [valorActual.from_to] : valorActual}), {});
+                            this.storeDatosIniciales = {
+                                ...this.storeDatosIniciales,
+                                monedas: data,
+                                cambiosOficiales: this.cambiosOficiales,
+                                from_to: this.from_to
+
+                            };
+                        }
+                    }
+
+                },
+                failure: this.conexionFailure,
+                timeout: this.timeout,
+                scope: this
+            });
+        },
         obtenerDatosIniciales: function (config) {
 
             var me = this;
@@ -96,8 +133,17 @@ header("content-type: text/javascript; charset=UTF-8");
                         } else {
                             const data = JSON.parse(mensaje);
                             console.log('data',data)
-                            me.cambiosOficiales = data.reduce((valorAnterior, valorActual) => ({...valorAnterior, [valorActual.codigo_internacional] : valorActual}), {});
 
+                            me.cambiosOficiales = data.reduce((valorAnterior, valorActual) => ({...valorAnterior, [valorActual.codigo_internacional] : valorActual}), {});
+                            me.from_to = data.reduce((valorAnterior, valorActual) => ({...valorAnterior, [valorActual.from_to] : valorActual}), {});
+                            this.storeDatosIniciales = {
+                                ...this.storeDatosIniciales,
+                                monedas: data,
+                                cambiosOficiales: me.cambiosOficiales,
+                                from_to: me.from_to
+
+                            };
+                            console.log('this.storeDatosIniciales',this.storeDatosIniciales)
 
                         }
                         me.constructorEtapa2(config);
@@ -540,7 +586,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                         xtype: 'fieldset',
                                         //frame: true,
                                         layout: 'form',
-                                        title: 'TIEMPO',
+                                        title: 'OTROS',
                                         //width: '33%',
                                         //border: false,
                                         //margins: '0 0 0 5',
@@ -645,7 +691,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                 xtype: 'fieldset',
                                 //frame: true,
                                 layout: 'form',
-                                title: 'TIEMPO',
+                                title: 'OTROS',
                                 //width: '33%',
                                 //border: false,
                                 //margins: '0 0 0 5',
@@ -666,6 +712,7 @@ header("content-type: text/javascript; charset=UTF-8");
         crearStoreBoletosRecursivo : function (billete) {
             Phx.CP.loadingShow();
 
+            const that = this;
             const tramoDevolucion = this.getComponente('tramo_devolucion');
             const tramoComponente = this.getComponente('tramo');
             const importeNeto = this.getComponente('importe_neto');
@@ -703,18 +750,26 @@ header("content-type: text/javascript; charset=UTF-8");
                 params: {start: 0, limit: 100},
                 callback: function (e,d) {
                     let total = 0;
+                    console.log('e',e)
                     e.forEach((data)=> {
+                        console.log(data)
                         total = total + data.data.monto;
                     });
-                    console.log(importeTotalComponente)
+
+                    const { currency } = e[0].json;
+
+                    total = that.convertirImportePorMoneda(total, currency)
                     importeTotalComponente.setValue(total);
-                    console.log('asda',e[0])
+                    const netAmount = that.convertirImportePorMoneda(e[0].json.netAmount, currency);
+                    const tasasConvertido = total - netAmount;
                     tramoComponente.setValue(e[0].json.itinerary);
 
 
-                    importeNeto.setValue(e[0].json.netAmount);
-                    tasas.setValue(parseFloat(total) - parseFloat(e[0].json.netAmount));
-                    exento.setValue(parseFloat(e[0].json.exento));
+                    //importeNeto.setValue(e[0].json.netAmount);
+                    importeNeto.setValue(netAmount);
+
+                    tasas.setValue(tasasConvertido);
+                    exento.setValue(that.convertirImportePorMoneda(parseFloat(e[0].json.exento), currency));
                     nombre.setValue(e[0].json.passengerName);
                     monedaEmision.setValue(e[0].json.currency);
                     puntoVenta.setValue(e[0].json.issueOfficeID);
@@ -1598,7 +1653,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 type: 'ComboBox',
                 id_grupo: 2,
-                form: true
+                form: false
             },
 
 
@@ -1646,21 +1701,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 type:'TextField',
                 filters:{pfiltro:'liqui.descripcion',type:'string'},
-                id_grupo:2,
-                grid:true,
-                form:true
-            },
-            {
-                config:{
-                    name: 'nombre_cheque',
-                    fieldLabel: 'Nombre cheque',
-                    allowBlank: true,
-                    width: 200,
-                    gwidth: 100,
-                    maxLength:255
-                },
-                type:'TextField',
-                filters:{pfiltro:'liqui.nombre_cheque',type:'string'},
                 id_grupo:2,
                 grid:true,
                 form:true
@@ -1717,21 +1757,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 form:true
             },
 
-            {
-                config:{
-                    name: 'cheque',
-                    fieldLabel: 'cheque',
-                    allowBlank: true,
-                    anchor: '80%',
-                    gwidth: 100,
-                    maxLength:255
-                },
-                type:'TextField',
-                filters:{pfiltro:'liqui.cheque',type:'string'},
-                id_grupo:2,
-                grid:true,
-                form:true
-            },
 
             //items para el tipo de faccom
 
@@ -2014,6 +2039,30 @@ header("content-type: text/javascript; charset=UTF-8");
         ],
         title: 'Frm solicitud',
 
+        convertirImportePorMoneda: function (importe, moneda) {
+            console.log('moneda', moneda)
+            console.log('importe', importe)
+            let conver;
+            switch (moneda) {
+                case 'BOB':
+                    return importe * 1;
+                    break;
+                case 'USD':
+                    console.log('this.storeDatosIniciales.from_to[USD->BO].oficial',this.storeDatosIniciales.from_to['USD->BO'].oficial)
+                    conver = importe * this.storeDatosIniciales.from_to['USD->BO'].oficial;
+                    return conver;
+
+                    break;
+                case 'EUR':
+                    conver = importe * this.storeDatosIniciales.from_to['USD->ES'].oficial;
+                    conver = conver * this.storeDatosIniciales.from_to['USD->BO'].oficial;
+                    return conver;
+
+                    break;
+                default:
+                    alert('necesitamos configurar la triangulacion adecuada para esta moneda');
+            };
+        },
         liquidacionPorDeposito: function () {
 
 
@@ -2223,6 +2272,10 @@ header("content-type: text/javascript; charset=UTF-8");
                         var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
                         this.cmpIdBoleto.setValue(reg.datos[0].id_boleto);
                         if(reg.datos.length > 0) {
+                            
+                            //obtenemos datos de tipo de cambio para la fecha de emision del boleto
+                            this.obtenerTipoDeCambioConFecha(reg.datos[0].fecha_emision);
+                            
                             this.cmpTramo_devolucion.store.setBaseParam('billete', nro_boleto);
 
 

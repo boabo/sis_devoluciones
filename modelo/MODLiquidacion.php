@@ -349,6 +349,7 @@ class MODLiquidacion extends MODbase{
         //Definicion de la lista del resultado del query
         $this->captura('id_boleto','int4');
         $this->captura('nro_boleto','varchar');
+        $this->captura('fecha_emision','date');
 
 
         //Ejecuta la instruccion
@@ -483,6 +484,8 @@ class MODLiquidacion extends MODbase{
         $this->procedimiento='decr.ft_liquidacion_ime';
         $this->transaccion='DECR_LIQUI_MON';
         $this->tipo_procedimiento='IME';
+
+        $this->setParametro('fecha_emision','fecha_emision','date');
 
 
         //Ejecuta la instruccion

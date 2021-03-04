@@ -73,10 +73,16 @@ BEGIN
             END IF;
 
             if(pxp.f_existe_parametro(p_tabla, 'id_liquidacion' )) then
-                if(v_parametros.id_liquidacion != '') then
-                    v_id_liquidacion := v_parametros.id_liquidacion;
-                END IF;
+
+
+                v_id_liquidacion := v_parametros.id_liquidacion;
+                select ttdl.tipo_documento
+                into v_tipo_tab_liqui
+                from decr.ttipo_doc_liquidacion ttdl
+                inner join decr.tliquidacion tl on tl.id_tipo_doc_liquidacion = ttdl.id_tipo_doc_liquidacion
+                where tl.id_liquidacion = v_id_liquidacion;
             END IF;
+
 
 
             select count(tl.id_liquidacion)
@@ -139,10 +145,11 @@ BEGIN
                               inner join t_liqui tl on tl.id_liquidacion = tdl.id_liquidacion
                  ),
                  t_liqui_forma_pago AS (
-                     SELECT tlfp.id_liquidacion, tlfp.id_medio_pago, tmpw.name
+                     SELECT tlfp.*, tmpw.name as desc_medio_pago_pw, tfpp.name as desc_forma_pago_pw
                      FROM decr.tliqui_forma_pago tlfp
                      inner join t_liqui tl on tl.id_liquidacion = tlfp.id_liquidacion
                      inner join obingresos.tmedio_pago_pw tmpw on tmpw.id_medio_pago_pw = tlfp.id_medio_pago
+                     inner join obingresos.tforma_pago_pw tfpp on tfpp.id_forma_pago_pw = tmpw.forma_pago_id
                  )
             SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(liqui)))
             INTO v_liqui_json
@@ -201,7 +208,8 @@ BEGIN
                     ), t_liqui_boleto as
                     (
                         SELECT tl.*,
-                               tl.importe_total - tl.sum_total_descuentos as importe_devolver,
+                               tl.importe_total - tl.importe_tramo_utilizado as importe_devolver_sin_descuentos,
+                               tl.importe_total - tl.importe_tramo_utilizado - tl.sum_total_descuentos as importe_devolver,
                                tb.nro_boleto as desc_nro_boleto,
                                tb.nit::varchar as nro_nit,
                                tb.razon,
@@ -217,7 +225,15 @@ BEGIN
                                1::integer as cantidad,
                                --data para boleto tienen
                                tb.nro_boleto as _desc_liqui,
-                               tl.tramo_devolucion as _desc_liqui_det
+                               tl.tramo_devolucion as _desc_liqui_det,
+                               (
+                                   SELECT TO_JSON(boleto) -- solo json por que devolvera un objeto
+                                   FROM (
+                                            SELECT *
+                                            FROM obingresos.tboleto tb2 where tb2.id_boleto = tl.id_boleto
+                                        ) boleto
+                               ) AS data_boleto
+
                         FROM t_liqui tl
                                  INNER JOIN obingresos.tboleto tb on tb.id_boleto = tl.id_boleto
                     )

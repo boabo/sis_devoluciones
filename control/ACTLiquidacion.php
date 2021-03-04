@@ -174,12 +174,23 @@ class ACTLiquidacion extends ACTbase{
         $data_json_string = $row['computed'];
         $data_json = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data_json_string), true);
 
+
+
+
         if($data_json != null) {
+
+
             /*var_dump($data_json);
         exit;*/
             //var_dump($data_json_string);
             //$data_json = json_decode($data_json_string);
             $data = $data_json[0];
+
+
+            //todo  cambiar a moneda boliviana cualquier moneda con la que se haya pagado el boleto
+
+          
+
 
             $netAmount = $data["netAmount"];
             $totalAmount = $data["totalAmount"];
@@ -208,7 +219,7 @@ class ACTLiquidacion extends ACTbase{
                 'currency' => $data["currency"],
                 'issueOfficeID' => $data["issueOfficeID"],
                 'issueAgencyCode' => $data["issueAgencyCode"], // este es el noiata
-                'netAmount' => $data["netAmount"],
+                'netAmount' => $netAmount,
                 'exento' => $exento,
                 'payment' => $data["payment"]
             ));

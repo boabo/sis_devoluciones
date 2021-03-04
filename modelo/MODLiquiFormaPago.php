@@ -42,6 +42,7 @@ class MODLiquiFormaPago extends MODbase{
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
 		$this->captura('desc_medio_pago','varchar');
+		$this->captura('nro_documento_pago','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -70,6 +71,7 @@ class MODLiquiFormaPago extends MODbase{
 		$this->setParametro('fecha_tarjeta','fecha_tarjeta','date');
 		$this->setParametro('nro_tarjeta','nro_tarjeta','varchar');
 		$this->setParametro('importe','importe','numeric');
+		$this->setParametro('nro_documento_pago','nro_documento_pago','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -99,8 +101,10 @@ class MODLiquiFormaPago extends MODbase{
 		$this->setParametro('fecha_tarjeta','fecha_tarjeta','date');
 		$this->setParametro('nro_tarjeta','nro_tarjeta','varchar');
 		$this->setParametro('importe','importe','numeric');
+        $this->setParametro('nro_documento_pago','nro_documento_pago','varchar');
 
-		//Ejecuta la instruccion
+
+        //Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
 

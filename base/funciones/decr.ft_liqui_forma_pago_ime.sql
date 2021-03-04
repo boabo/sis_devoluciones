@@ -61,7 +61,8 @@ BEGIN
 			id_usuario_ai,
 			usuario_ai,
 			id_usuario_mod,
-			fecha_mod
+			fecha_mod,
+        	                                   nro_documento_pago
           	) values(
 			'activo',
 			v_parametros.id_liquidacion,
@@ -80,10 +81,11 @@ BEGIN
 			v_parametros._id_usuario_ai,
 			v_parametros._nombre_usuario_ai,
 			null,
-			null
-							
-			
-			
+			null,
+          	         v_parametros.nro_documento_pago
+
+
+
 			)RETURNING id_liqui_forma_pago into v_id_liqui_forma_pago;
 			
 			--Definicion de la respuesta
@@ -121,7 +123,8 @@ BEGIN
 			id_usuario_mod = p_id_usuario,
 			fecha_mod = now(),
 			id_usuario_ai = v_parametros._id_usuario_ai,
-			usuario_ai = v_parametros._nombre_usuario_ai
+			usuario_ai = v_parametros._nombre_usuario_ai,
+			                                  nro_documento_pago = v_parametros.nro_documento_pago
 			where id_liqui_forma_pago=v_parametros.id_liqui_forma_pago;
                
 			--Definicion de la respuesta

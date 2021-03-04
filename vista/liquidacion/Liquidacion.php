@@ -223,6 +223,8 @@ header("content-type: text/javascript; charset=UTF-8");
                             <span style="display: block;"><b>A Nombre:</b>${json.nombre || json.nombre_factura }</span>
                             <span style="display: block;"><b>Importe Original:</b>${json.importe_original}</span>
                             <span style="display: block;"><b>Importe Total:</b>${json.importe_total}</span>
+                            ${json.util > 0 ? `<span style="display: block;"><b>Tramos Utilizados:</b>${json.util}</span>` : ''}
+                            ${json.importe_tramo_utilizado > 0 ? `<span style="display: block;"><b>Importe Tramos Utilizados:</b>${json.importe_tramo_utilizado}</span>` : ''}
 
                             </div>`;
 
@@ -273,8 +275,10 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
                             return `<div style="vertical-align:middle;"><table style="font-size: 11px;"><tr><th><b>Tipo</b></th><th><b>Desc.</b></th><th><b>Importe.</b></th></tr>${descuentosTemplate}
-                            <tr><td colspan="2"><b>Total Descuetos:</b></td><td>${json.sum_total_descuentos}</td></tr>
-                            <tr><td colspan="2"><b>Importe Original:</b></td><td>${json.importe_total}</td></tr>
+                            <tr><td colspan="2"><b>Total Descuetos:</b></td><td>-${json.sum_total_descuentos}</td></tr>
+                            <tr><td colspan="2"><b>Importe Original:</b></td><td>+${json.importe_total}</td></tr>
+                            ${json.importe_tramo_utilizado > 0 ? `<tr><td colspan="2"><b>Importe Tramos Utilizados:</b></td><td>-${json.importe_tramo_utilizado}</td></tr>` : ''}
+
                             <tr><td colspan="2"><b>Importe a Devolver:</b></td><td><b style="color: green">${json.importe_devolver ? json.importe_devolver :0}</b></td></tr>
                             </table>
                             </div>`;
@@ -1442,7 +1446,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 var rec = this.sm.getSelected();
 
                 Ext.Ajax.request({
-                    url: '../../sis_devoluciones/control/Liquidacion/verLiquidacion',
+                    url: '../../sis_devoluciones/control/Liquidacion/listarLiquidacionJson',
                     params: {'id_liquidacion': rec.data['id_liquidacion']},
                     success: this.successVistaPrevia,
                     failure: this.conexionFailure,
@@ -1518,12 +1522,29 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
             successVistaPrevia: function (resp) {
-                var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-                console.log(JSON.parse(objRes.ROOT.datos.mensaje));
-                const {liquidacion, descuentos, descuentos_impuestos_no_reembolsable, notas, liqui_venta_detalle_seleccionados, sum_venta_seleccionados} = JSON.parse(objRes.ROOT.datos.mensaje);
 
+                const objRes = JSON.parse(resp.responseText);
+                const liquidacion = objRes.datos[0];
+                const {descuentos, descuentos_impuestos_no_reembolsable, notas, liqui_venta_detalle_seleccionados, sum_venta_seleccionados, liqui_forma_pago, sum_total_descuentos} = liquidacion;
+
+                console.log('liquidacion', liquidacion)
+                const descuentosPorTipo = descuentos.reduce((valorAnterior, valorActual, indice, vector) => {
+                    console.log('valorAnterior',valorAnterior)
+                    console.log('valorActual.tipo', valorActual.tipo)
+                    console.log(valorActual.tipo in valorAnterior)
+                    return {
+                        ...valorAnterior,
+                        ...((valorActual.tipo in valorAnterior) ?
+                            {[valorActual.tipo]: [...valorAnterior[valorActual.tipo], valorActual]}
+                            : {[valorActual.tipo]: [valorActual]}),
+
+                    }
+                }, {});
+                console.log('descuentosPorTipo', descuentosPorTipo)
                 let sum_descuentos_impuestos_no_reembolsable = 0;
                 let sum_descuentos = 0;
+
+
                 const htmlPreview = `
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -1630,13 +1651,13 @@ header("content-type: text/javascript; charset=UTF-8");
             <table width="100%">
                 <tr>
                     <td width="80%" colspan="2">
-                        ${ liquidacion.tipo_documento === 'BOLEMD' ? (`BOLETO: ${liquidacion.nro_boleto} ${liquidacion.fecha_emision}`) : `` }
-                        ${ liquidacion.tipo_documento === 'FACCOM' ? (`FACTURA COMPUTARIZADA: ${liquidacion.nombre_factura} / ${liquidacion.nro_factura} / ${liquidacion.fecha_factura}`) : ``}
+                        ${ liquidacion.desc_tipo_documento === 'BOLEMD' ? (`BOLETO: ${liquidacion.data_boleto.nro_boleto} ${liquidacion.data_boleto.fecha_emision}`) : `` }
+                        ${ liquidacion.desc_tipo_documento === 'FACCOM' ? (`FACTURA COMPUTARIZADA: ${liquidacion.nombre_factura} / ${liquidacion.nro_factura} / ${liquidacion.fecha_factura}`) : ``}
                     </td>
                     <td width="10%"></td>
                     <td width="10%"></td>
                 </tr>
-                 ${ liquidacion.tipo_documento === 'BOLEMD' ? (`
+                 ${ liquidacion.desc_tipo_documento === 'BOLEMD' ? (`
                 <tr>
                     <td width="80%" colspan="2">P-VENTA/AGENCIA: ${liquidacion.noiata} ${''} ${liquidacion.punto_venta}
                     </td>
@@ -1649,13 +1670,13 @@ header("content-type: text/javascript; charset=UTF-8");
                     <td width="10%"></td>
                 </tr>
                 <tr>
-                    <td width="60%">Tramos a Devolver:    TOTAL A DEVOLVER</td>
+                    <td width="60%"></td>
                     <td width="20%">TOTAL A DEVOLVER</td>
                     <td width="10%" ></td>
-                    <td width="10%" align="right">${ String.format('{0}', Ext.util.Format.number(liquidacion.importe_devolver_liquidacion, '0,000.00'))}</td>
+                    <td width="10%" align="right">${ String.format('{0}', Ext.util.Format.number(liquidacion.importe_devolver_sin_descuentos, '0,000.00'))}</td>
                 </tr>
                 <tr>
-                    <td width="80%" colspan="2">${liquidacion.tramo_devolucion}</td>
+                    <td width="80%" colspan="2">Tramos a Devolver: ${liquidacion.tramo_devolucion}</td>
                     <td width="10%"></td>
                     <td width="10%" align="right"></td>
                 </tr>`) : ``}
@@ -1698,60 +1719,37 @@ header("content-type: text/javascript; charset=UTF-8");
     <tr>
         <td>
             <table width="100%">
-                <tr>
-                    <td width="20%">(MENOS)</td>
-                    <td width="60%" style="letter-spacing: 3px;">IMPUESTOS NO REEMBOLSABLES:</td>
-                    <td width="10%"></td>
-                    <td width="10%"></td>
-                </tr>
-                <tr>
-                    <td width="20%"></td>
-                    <td width="60%" style="letter-spacing: 3px;">-----------------</td>
-                    <td width="10%"></td>
-                    <td width="10%"></td>
-                </tr>
-${descuentos_impuestos_no_reembolsable && descuentos_impuestos_no_reembolsable.map(function (descuento) {
-                    console.log('descuento',descuento)
-                    sum_descuentos_impuestos_no_reembolsable = sum_descuentos_impuestos_no_reembolsable + descuento.importe;
-                    return '<tr>'
-                        +'<td width="20%">'+descuento.codigo+'</td>'
-                        +'<td width="60%">'+descuento.desc_ingas+'</td>'
-                        +'<td width="10%">'+String.format('{0}', Ext.util.Format.number(descuento.importe, '0,000.00'))+'</td>'
-                        +'<td width="10%"></td>'
-                        +'</tr>';
-                }).join("ASASASD")}
-
-
-
-                ${descuentos_impuestos_no_reembolsable != null ? (`<tr>
-                    <td width="20%"></td>
-                    <td width="60%" style="letter-spacing: 3px;" align="right">TOTAL IMPUESTOS:</td>
-                    <td width="10%"></td>
-                    <td width="10%" align="right">${sum_descuentos_impuestos_no_reembolsable || 0}</td>
-                </tr>`) : ''}
-
-                <tr>
-                    <td width="20%">(MENOS)</td>
-                    <td width="60%" style="letter-spacing: 3px;">DESCUENTOS:</td>
-                    <td width="10%"></td>
-                    <td width="10%"></td>
-                </tr>
-                <tr>
-                    <td width="20%"></td>
-                    <td width="60%" style="letter-spacing: 3px;">-----------------</td>
-                    <td width="10%"></td>
-                    <td width="10%"></td>
-                </tr>
-${descuentos && descuentos.map(function (descuento) {
-                    sum_descuentos = sum_descuentos + descuento.importe;
-                    console.log('descuento',descuento)
-                    return '<tr>'
-                        +'<td width="20%">'+descuento.codigo+'</td>'
-                        +'<td width="60%">'+descuento.desc_ingas+'</td>'
-                        +'<td width="10%">'+String.format('{0}', Ext.util.Format.number(descuento.importe, '0,000.00'))+'</td>'
-                        +'<td width="10%"></td>'
-                        +'</tr>';
-                }).join("")}
+                ${Object.entries(descuentosPorTipo).map(([nameKey, values], index) => {
+                    return (
+                        ` <tr>
+                                <td width="20%">(MENOS)</td>
+                                <td width="60%" style="letter-spacing: 3px;">${nameKey}</td>
+                                <td width="10%"></td>
+                                <td width="10%"></td>
+                            </tr>
+                            <tr>
+                                <td width="20%"></td>
+                                <td width="60%" style="letter-spacing: 3px;">-----------------</td>
+                                <td width="10%"></td>
+                                <td width="10%"></td>
+                            </tr>
+                            ${values.map((des)=> {
+                                return '<tr>'
+                                    +'<td width="20%">'+des.codigo+'</td>'
+                                    +'<td width="60%">'+des.desc_ingas+'</td>'
+                                    +'<td width="10%">'+String.format('{0}', Ext.util.Format.number(des.importe, '0,000.00'))+'</td>'
+                                    +'<td width="10%"></td>'
+                                    +'</tr>';
+                            })}
+<tr>
+                                <td width="20%"></td>
+                                <td width="60%" style="letter-spacing: 3px;">-----------------</td>
+                                <td width="10%"></td>
+                                <td width="10%"></td>
+                            </tr>
+                            `
+                    )
+                })}
 
 
 
@@ -1759,7 +1757,7 @@ ${descuentos && descuentos.map(function (descuento) {
                     <td width="20%"></td>
                     <td width="60%" style="letter-spacing: 3px;" align="right">TOTAL DECUENTOS:</td>
                     <td width="10%"></td>
-                    <td width="10%" align="right">${ String.format('{0}', Ext.util.Format.number(sum_descuentos, '0,000.00')) || 0} </td>
+                    <td width="10%" align="right">${ String.format('{0}', Ext.util.Format.number(sum_total_descuentos, '0,000.00')) || 0} </td>
                 </tr>`) : ''}
 
 
@@ -1773,7 +1771,7 @@ ${descuentos && descuentos.map(function (descuento) {
                     <td width="20%"></td>
                     <td width="60%" align="right" style="letter-spacing: 3px;">TOTAL REEMBOLSO BOB:</td>
                     <td width="10%"></td>
-                    <td width="10%" align="right">*****${String.format('{0}', Ext.util.Format.number(liquidacion.total_liquidacion, '0,000.00')) || String.format('{0}', Ext.util.Format.number(liquidacion.importe_devolver_liquidacion, '0,000.00'))}</td>
+                    <td width="10%" align="right">*****${String.format('{0}', Ext.util.Format.number(liquidacion.importe_devolver, '0,000.00')) || String.format('{0}', Ext.util.Format.number(liquidacion.importe_devolver_liquidacion, '0,000.00'))}</td>
                 </tr>
 
             </table>
@@ -1803,10 +1801,22 @@ ${notas && notas.map(function (nota) {
                 }).join("")}
 
     <tr>
+<td>
+ <table width="100%" style="width: 100%;">
+                <tr><td align="center">Forma de Pago:</td></tr>
+${liqui_forma_pago.map((forma_pago) => {
+                return `<tr><td align="center">${forma_pago.desc_forma_pago_pw === 'CREDIT CARD' ? `${forma_pago.desc_medio_pago_pw} / ${forma_pago.nro_tarjeta} / ${forma_pago.pais}` : `${forma_pago.desc_medio_pago_pw}/${forma_pago.nro_documento_pago}` }</td></tr>`
+
+                }).join("")}
+            </table>
+</td>
+</tr>
+
+     <tr>
         <td>
             <table width="100%" style="width: 100%;">
-                <tr><td align="center">Creado por:</td><td align="center">Aprobado por:</td><td align="center">Pagado por:</td></tr>
-                <tr><td align="center">${liquidacion.registrado_por}</td><td align="center">${liquidacion.aprobado_por || ''}</td><td align="center">${liquidacion.pagado_por || ''}</td></tr>
+                <tr><td align="center">Creado por:</td><td align="center">Aprobado por:</td><td align="center">Pagado por:</b></td></tr>
+                <tr><td align="center">${liquidacion.usr_reg}</td><td align="center">${liquidacion.aprobado_por || ''}</td><td align="center">${liquidacion.pagado_por || ''}</td></tr>
             </table>
         </td>
     </tr>

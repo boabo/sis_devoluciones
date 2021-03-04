@@ -288,6 +288,21 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config:{
+				name: 'nro_documento_pago',
+				fieldLabel: 'Nro Doc Pago(cheque u otro)',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:655362
+			},
+				type:'NumberField',
+				filters:{pfiltro:'tlp.nro_documento_pago',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
 				name: 'usr_reg',
 				fieldLabel: 'Creado por',
 				allowBlank: true,
@@ -409,6 +424,7 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
 		{name:'desc_medio_pago', type: 'string'},
+		{name:'nro_documento_pago', type: 'string'},
 
 	],
 	sortInfo:{

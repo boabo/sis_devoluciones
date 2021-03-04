@@ -394,7 +394,7 @@ inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
     	begin
     		--Sentencia de la consulta
             v_consulta:='select
-						bol.id_boleto, bol.nro_boleto
+						bol.id_boleto, bol.nro_boleto, bol.fecha_emision
 						from obingresos.tboleto bol
 				        where  nro_boleto = '''||v_parametros.nro_boleto||''' ';
 

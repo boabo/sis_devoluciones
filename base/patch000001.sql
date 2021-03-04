@@ -571,6 +571,13 @@ alter table decr.tliqui_venta_detalle
     add tipo varchar(255);
 
 
+
+
+alter table decr.tliqui_forma_pago
+    add nro_documento_pago varchar;
+
+
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
 
