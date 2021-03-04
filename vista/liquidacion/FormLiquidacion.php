@@ -211,7 +211,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     triggerAction: 'all',
                     lazyRender: true,
                     mode: 'local',
-                    store: ['DESCUENTO', 'IMPUESTO NO REEMBOLSABLE'],
+                    store: ['DESCUENTO', 'IMPUESTO NO REEMBOLSABLE', 'BO'],
                     allowBlank: false,
 
 
@@ -875,6 +875,7 @@ header("content-type: text/javascript; charset=UTF-8");
                              for(var i = 0; i < this.storeBoletosRecursivo.getTotalCount() ;i++) {
                                  var fp = this.storeBoletosRecursivo.getAt(i);
                                  if (fp.data.seleccionado == 'si') {
+                                     console.log('fp.data.currency', fp.data.currency)
                                      total = total + fp.data.monto;
                                      console.log('siiii')
                                  } else {

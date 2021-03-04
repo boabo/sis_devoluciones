@@ -171,6 +171,8 @@ class ACTLiquidacion extends ACTbase{
         $query = @mssql_query($query_string, $conn);
         $row = mssql_fetch_array($query, MSSQL_ASSOC);
 
+        var_dump($row);
+        exit;
         $data_json_string = $row['computed'];
         $data_json = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data_json_string), true);
 

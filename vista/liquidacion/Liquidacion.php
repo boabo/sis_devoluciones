@@ -1456,18 +1456,25 @@ header("content-type: text/javascript; charset=UTF-8");
             },
 
             pagar : function () {
-                Phx.CP.loadingShow();
+
 
                 var rec = this.sm.getSelected();
+                console.log('recccc',rec)
+                const find = rec.json.descuentos.find((resq) => resq.tipo === 'BO');
+                console.log('find',find);
+                if(find === undefined && (rec.json.id_nota != null || rec.json.id_nota != '')) {
+                    Phx.CP.loadingShow();
+                    Ext.Ajax.request({
+                        url: '../../sis_devoluciones/control/Liquidacion/obtenerJsonPagar',
+                        params: {'id_liquidacion': rec.data['id_liquidacion']},
+                        success: this.successObtenerJsonPagar,
+                        failure: this.conexionFailure,
+                        timeout: this.timeout,
+                        scope: this
+                    });
+                }
 
-                Ext.Ajax.request({
-                    url: '../../sis_devoluciones/control/Liquidacion/obtenerJsonPagar',
-                    params: {'id_liquidacion': rec.data['id_liquidacion']},
-                    success: this.successObtenerJsonPagar,
-                    failure: this.conexionFailure,
-                    timeout: this.timeout,
-                    scope: this
-                });
+
             },
             successObtenerJsonPagar : function (resp) {
                 console.log(resp)
