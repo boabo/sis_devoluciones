@@ -1122,6 +1122,24 @@ class MODNota extends MODbase
         return $this->respuesta;
     }
 
+    function generarNotaDesdeLiquidacion(){
+
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento = 'decr.ft_nota_ime';
+        $this->transaccion = 'FAC_NOT_NOTLIQ';
+        $this->tipo_procedimiento = 'IME';
+
+        $this->setParametro('id_liquidacion','id_liquidacion','int4');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
+
 
 
 }

@@ -93,7 +93,7 @@ BEGIN
                 INNER JOIN decr.ttipo_doc_liquidacion ttdl ON ttdl.id_tipo_doc_liquidacion = tl.id_tipo_doc_liquidacion
                 INNER JOIN decr.ttipo_liquidacion ttl ON ttl.id_tipo_liquidacion = tl.id_tipo_liquidacion
                 INNER JOIN vef.tpunto_venta pv ON pv.id_punto_venta = tl.id_punto_venta
-                LEFT JOIN decr.tnota nota ON nota.id_liquidacion::integer = tl.id_liquidacion
+                --LEFT JOIN decr.tnota nota ON nota.id_liquidacion::integer = tl.id_liquidacion
             WHERE (case when v_id_liquidacion is not null then tl.id_liquidacion = v_id_liquidacion else 1=1 end)
             AND (case when v_tipo_tab_liqui is not null then ttdl.tipo_documento = v_tipo_tab_liqui else 1=1 end)
                     AND (CASE WHEN v_filtro_value is not null then tl.nro_liquidacion like '%' ||v_filtro_value|| '%' else 1=1 end)
@@ -113,7 +113,6 @@ BEGIN
                            ttdl.tipo_documento                  AS desc_tipo_documento,
                            ttl.tipo_liquidacion                 AS desc_tipo_liquidacion,
                            pv.nombre                            AS desc_punto_venta,
-                           nota.nro_nota,
                            tl.id_factucom -- solo para el tipo fac-antigua
                     FROM decr.tliquidacion tl
                              INNER JOIN segu.tusuario usu1 ON usu1.id_usuario = tl.id_usuario_reg
@@ -121,7 +120,7 @@ BEGIN
                              INNER JOIN decr.ttipo_doc_liquidacion ttdl ON ttdl.id_tipo_doc_liquidacion = tl.id_tipo_doc_liquidacion
                              INNER JOIN decr.ttipo_liquidacion ttl ON ttl.id_tipo_liquidacion = tl.id_tipo_liquidacion
                              INNER JOIN vef.tpunto_venta pv ON pv.id_punto_venta = tl.id_punto_venta
-                             LEFT JOIN decr.tnota nota ON nota.id_liquidacion::integer = tl.id_liquidacion
+                             --LEFT JOIN decr.tnota nota ON nota.id_liquidacion::integer = tl.id_liquidacion
                     WHERE (case when v_id_liquidacion is not null then tl.id_liquidacion = v_id_liquidacion else 1=1 end)
                     AND (case when v_tipo_tab_liqui is not null then ttdl.tipo_documento = v_tipo_tab_liqui else 1=1 end)
                     AND (CASE WHEN v_filtro_value is not null then tl.nro_liquidacion like '%' ||v_filtro_value|| '%' else 1=1 end)
@@ -150,6 +149,11 @@ BEGIN
                      inner join t_liqui tl on tl.id_liquidacion = tlfp.id_liquidacion
                      inner join obingresos.tmedio_pago_pw tmpw on tmpw.id_medio_pago_pw = tlfp.id_medio_pago
                      inner join obingresos.tforma_pago_pw tfpp on tfpp.id_forma_pago_pw = tmpw.forma_pago_id
+                 ),
+                 t_nota AS (
+                     SELECT nota.*
+                     FROM decr.tnota nota
+                     inner join t_liqui tl on tl.id_liquidacion::integer = nota.id_liquidacion::integer
                  )
             SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(liqui)))
             INTO v_liqui_json
@@ -177,7 +181,14 @@ BEGIN
                                         SELECT *
                                         FROM t_liqui_forma_pago tlfp WHERE tlfp.id_liquidacion = tl.id_liquidacion
                                     ) liqui_forma_pago
-                           ) AS liqui_forma_pago
+                           ) AS liqui_forma_pago,
+                           (
+                               SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(nota)))
+                               FROM (
+                                        SELECT *
+                                        FROM t_nota tn WHERE tn.id_liquidacion::integer = tl.id_liquidacion::integer
+                                    ) nota
+                           ) AS notas
                     FROM t_liqui tl
                 ) liqui;
 
@@ -201,11 +212,18 @@ BEGIN
                                liqui_tabla.descuentos,
                                liqui_tabla.sum_descuentos,
                                liqui_tabla.liqui_forma_pago,
+                               liqui_tabla.notas,
                                'otro campo' as otr_campo
                         FROM decr.tliquidacion tl
                                  INNER JOIN (SELECT * FROM json_populate_recordset(NULL::decr.json_type_liquidacion, v_liqui_json::json)
                         ) liqui_tabla ON liqui_tabla.id_liquidacion = tl.id_liquidacion
-                    ), t_liqui_boleto as
+                    ), t_liqui_boleto_recursivo AS
+                        (
+                            SELECT tlbr.*
+                            FROM decr.tliqui_boleto_recursivo tlbr
+                            inner join t_liqui tl on tl.id_liquidacion = tlbr.id_liquidacion
+                        )
+                   , t_liqui_boleto as
                     (
                         SELECT tl.*,
                                tl.importe_total - tl.importe_tramo_utilizado as importe_devolver_sin_descuentos,
@@ -232,10 +250,19 @@ BEGIN
                                             SELECT *
                                             FROM obingresos.tboleto tb2 where tb2.id_boleto = tl.id_boleto
                                         ) boleto
-                               ) AS data_boleto
+                               ) AS data_boleto,
+                               (
+                                   SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(liqui_boleto_recursivo)))
+                                   FROM
+                                       (
+                                           select * from t_liqui_boleto_recursivo t_lbr
+                                           where t_lbr.id_liquidacion = tl.id_liquidacion
+                                       ) liqui_boleto_recursivo
+                               ) as boletos_recursivo
 
                         FROM t_liqui tl
                                  INNER JOIN obingresos.tboleto tb on tb.id_boleto = tl.id_boleto
+
                     )
                 SELECT TO_JSON(ROW_TO_JSON(jsonData) :: TEXT) #>> '{}' as json
                 into v_json

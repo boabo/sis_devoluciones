@@ -248,6 +248,7 @@ class MODLiquidacion extends MODbase{
 		$this->setParametro('exento','exento','numeric');
 		$this->setParametro('importe_tramo_utilizado','importe_tramo_utilizado','numeric');
         $this->setParametro('json','json_new_records','text');
+        $this->setParametro('json_data_boletos_recursivo','json_data_boletos_recursivo','text');
         $this->setParametro('id_medio_pago','id_medio_pago','int4');
         $this->setParametro('id_moneda','id_moneda','int4');
         $this->setParametro('payment','payment','text'); // this is a json

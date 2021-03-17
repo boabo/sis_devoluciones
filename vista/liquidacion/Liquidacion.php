@@ -98,20 +98,26 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 this.addButton('verLiquidacion', {
                     argument: {imprimir: 'verLiquidacion'},
-                    text: '<i class="fa fa-file-text-o fa-2x"></i> Ver Liquidación',/*iconCls:'' ,*/
+                    text: '<i class="fa fa-file-text-o fa-2x"></i> <br>Ver Liquidación',/*iconCls:'' ,*/
                     disabled: false,
                     handler: this.verLiquidacion
                 });
+                this.addButton('generarNotaCredito', {
+                    argument: {imprimir: 'notaAgencia'},
+                    text: '<i class="fa fa-file-text-o fa-2x"></i> <br>Generar Nota',/*iconCls:'' ,*/
+                    disabled: false,
+                    handler: this.generarNotaCredito
+                });
                 this.addButton('Nota Agencia', {
                     argument: {imprimir: 'notaAgencia'},
-                    text: '<i class="fa fa-file-text-o fa-2x"></i> Nota Agencia',/*iconCls:'' ,*/
+                    text: '<i class="fa fa-file-text-o fa-2x"></i> <br>Nota Agencia',/*iconCls:'' ,*/
                     disabled: false,
                     handler: this.notaAgencia
                 });
 
                 this.addButton('Pagar(Facturacion)', {
                     argument: {imprimir: 'pagarFacturacion'},
-                    text: '<i class="fa fa-file-text-o fa-2x"></i> Pagar',/*iconCls:'' ,*/
+                    text: '<i class="fa fa-file-text-o fa-2x"></i><br> Pagar',/*iconCls:'' ,*/
                     disabled: false,
                     handler: this.pagar
                 });
@@ -177,6 +183,7 @@ header("content-type: text/javascript; charset=UTF-8");
                            console.log(p)
                            console.log(record)
                             const { json } = record;
+                           const renderNotas = json.notas ? json.notas.reduce((valorAnterior, valorActual, indice, vector) => `${valorAnterior}, ${valorActual.nro_nota}`  ,'') : undefined;
 
                             return  `<div style="vertical-align:middle;">
                             <span style="display: block;"><b>Estado:</b>${json.estado}</span>
@@ -184,7 +191,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             <span style="display: block;"><b>Punto de Venta:</b>${json.desc_punto_venta}</span>
                             <span style="display: block;"><b>Tipo Liqui Doc:</b>${json.desc_tipo_documento}</span>
                             <span style="display: block;"><b>Estacion:</b>${json.estacion}</span>
-                            <span style="display: block;"><b>${json.nro_nota ? `<i class="fa fa-file"></i>Nro Nota:${json.nro_nota}`: 'No tiene Nota'} - ${json.id_proceso_wf_factura ? `<i class="fa fa-file"></i>Nro Nota:${json.id_proceso_wf_factura}`: 'No tiene Factura'} </span>
+                            <span style="display: block;"><b>${json.notas ? `<i class="fa fa-file"></i>Nro Nota:${renderNotas}`: 'No tiene Nota'} - ${json.id_proceso_wf_factura ? `<i class="fa fa-file"></i>Nro Nota:${json.id_proceso_wf_factura}`: 'No tiene Factura'} </span>
 
 
                             </div>`;
@@ -1455,6 +1462,81 @@ header("content-type: text/javascript; charset=UTF-8");
                 });
             },
 
+
+            successVistaPreviaNota: function (resp) {
+
+                Phx.CP.loadingHide();
+
+
+                //doc.write(texto);
+                var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+
+                //console.log(objRes.ROOT.datos[0].length)
+
+
+                objetoDatos = (objRes.ROOT == undefined) ? objRes.datos : objRes.ROOT.datos;
+                var i = 0;
+                objetoDatos.forEach(function (item) {
+
+                    var texto = item;
+                    ifrm = document.createElement("IFRAME");
+                    ifrm.name = 'mifr' + i;
+                    ifrm.id = 'mifr' + i;
+                    document.body.appendChild(ifrm);
+                    var doc = window.frames['mifr' + i].document;
+                    doc.open();
+                    doc.write(texto);
+                    doc.close();
+                    i++;
+
+                });
+            },
+            successGenerarNota: function (resp) {
+                Phx.CP.loadingHide();
+
+                var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+
+                console.log('bjRes.ROOT.datos.id_nota',objRes.ROOT.datos.id_nota)
+
+                const id_notas = objRes.ROOT.datos.id_nota;
+                id_notas.split(',').forEach((id) => {
+                    Phx.CP.loadingShow();
+
+                    Ext.Ajax.request({
+                        url: '../../sis_devoluciones/control/Nota/verNota',
+                        params: {'notas': id, 'version': '2'}, // cambiar esto en la bd para que podamos enviar varios si se desea
+                        success: this.successVistaPreviaNota,
+                        failure: this.conexionFailure,
+                        timeout: this.timeout,
+                        scope: this
+                    });
+                });
+
+
+
+            },
+            generarNotaCredito : function () {
+                var rec = this.sm.getSelected();
+                console.log('recccc',rec.json.boletos_recursivo)
+                const { id_liquidacion, boletos_recursivo } = rec.json;
+                const datosParaNotas = boletos_recursivo.filter((row) => row.tiene_nota === 'si'  );
+
+                Phx.CP.loadingShow();
+
+                var rec = this.sm.getSelected();
+
+                Ext.Ajax.request({
+                    url: '../../sis_devoluciones/control/Nota/generarNotaDesdeLiquidacion',
+                    params: {'id_liquidacion': id_liquidacion},
+                    success: this.successGenerarNota,
+                    failure: this.conexionFailure,
+                    timeout: this.timeout,
+                    scope: this
+                });
+
+
+            },
+
             pagar : function () {
 
 
@@ -1811,7 +1893,7 @@ ${notas && notas.map(function (nota) {
 <td>
  <table width="100%" style="width: 100%;">
                 <tr><td align="center">Forma de Pago:</td></tr>
-${liqui_forma_pago.map((forma_pago) => {
+${liqui_forma_pago && liqui_forma_pago.map((forma_pago) => {
                 return `<tr><td align="center">${forma_pago.desc_forma_pago_pw === 'CREDIT CARD' ? `${forma_pago.desc_medio_pago_pw} / ${forma_pago.nro_tarjeta} / ${forma_pago.pais}` : `${forma_pago.desc_medio_pago_pw}/${forma_pago.nro_documento_pago}` }</td></tr>`
 
                 }).join("")}

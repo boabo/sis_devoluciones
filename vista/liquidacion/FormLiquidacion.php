@@ -73,14 +73,14 @@ header("content-type: text/javascript; charset=UTF-8");
 
         },
 
-        obtenerTipoDeCambioConFecha: function (fecha_emision) {
+        obtenerTipoDeCambioConFecha: function (fecha_emision, callbackFin) {
             Ext.Ajax.request({
                 url: '../../sis_devoluciones/control/Liquidacion/obtenerCambioOficiales',
                 params: {
                     codigo: 'conta_partidas', fecha_emision:fecha_emision,
                 },
                 success: function (resp) {
-                    Phx.CP.loadingHide();
+                    //Phx.CP.loadingHide();
                     var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
 
                     if (reg.ROOT.error) {
@@ -100,6 +100,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                 from_to: this.from_to
 
                             };
+                            callbackFin();
                         }
                     }
 
@@ -743,6 +744,13 @@ header("content-type: text/javascript; charset=UTF-8");
                     {name: 'seleccionado',      type: 'string'},
                     {name: 'billete',      type: 'string'},
                     {name: 'monto',     type: 'numeric'},
+                    {name: 'tiene_nota',     type: 'string'},
+                    {name: 'iva',     type: 'numeric'},
+                    {name: 'iva_contabiliza_no_liquida',     type: 'numeric'},
+                    {name: 'exento',     type: 'numeric'},
+                    {name: 'concepto_para_nota',     type: 'string'},
+                    {name: 'foid',     type: 'string'},
+                    {name: 'fecha_emision',     type: 'string'},
                 ],
             });
             this.storeBoletosRecursivo.baseParams.billete = billete;
@@ -798,6 +806,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     Phx.CP.loadingHide();
                 },
             });
+
         },
         onDatosBoleto : function () {
             if (!this.Cmp.id_boleto.getValue() && !this.Cmp.id_boleto.getValue()) {
@@ -819,7 +828,7 @@ header("content-type: text/javascript; charset=UTF-8");
                      columns: [
                          {
                              header     : 'seleccionado',
-                             width    : 125,
+                             width    : 60,
                              dataIndex: 'seleccionado',
                              editable : true,
                              editor: new Ext.form.ComboBox({
@@ -842,14 +851,133 @@ header("content-type: text/javascript; charset=UTF-8");
                          {
                              header     : 'Billete',
                              flex     : 1,
-                             width    : 280,
-                             dataIndex: 'billete'
+                             width    : 130,
+                             dataIndex: 'billete',
+
                          },
+
                          {
                              header     : 'Monto',
                              flex     : 1,
-                             width    : 280,
+                             width    : 100,
                              dataIndex: 'monto'
+                         },
+                         {
+                             header     : 'tiene_nota',
+                             width    : 100,
+                             dataIndex: 'tiene_nota',
+                             editable : true,
+                             editor: new Ext.form.ComboBox({
+                                 name: 'tiene_nota',
+                                 fieldLabel: 'tiene_nota',
+                                 allowBlank: true,
+                                 emptyText:'tiene nota?...',
+                                 triggerAction: 'all',
+                                 lazyRender:true,
+                                 mode: 'local',
+                                 displayField: 'text',
+                                 valueField: 'value',
+                                 store:new Ext.data.SimpleStore({
+                                     data : [['si', 'si'], ['no', 'no'],],
+                                     id : 'value',
+                                     fields : ['value', 'text']
+                                 })
+                             })
+                         },
+                         {
+                             header     : 'Concepto Para Nota',
+                             flex     : 1,
+                             width    : 130,
+                             dataIndex: 'concepto_para_nota',
+                             editable : true,
+                             editor: new Ext.form.TextField({
+                                 name: 'concepto_para_nota',
+                                 msgTarget: 'title',
+                                 fieldLabel: 'concepto_para_nota',
+                                 allowBlank: true,
+                                 anchor: '80%',
+                                 maxLength: 1200,
+                                 disabled: false
+                             }),
+
+                         },
+                         {
+                             header     : 'Foid',
+                             flex     : 1,
+                             width    : 130,
+                             dataIndex: 'foid',
+                             editable : true,
+                             editor: new Ext.form.TextField({
+                                 name: 'foid',
+                                 msgTarget: 'title',
+                                 fieldLabel: 'foid',
+                                 allowBlank: true,
+                                 anchor: '80%',
+                                 maxLength: 1200,
+                                 disabled: false
+                             }),
+
+                         },
+                         {
+                             header     : 'fecha_emision',
+                             flex     : 1,
+                             width    : 130,
+                             dataIndex: 'fecha_emision',
+                             editable : true,
+                             editor: new Ext.form.TextField({
+                                 name: 'fecha_emision',
+                                 msgTarget: 'title',
+                                 fieldLabel: 'fecha_emision',
+                                 allowBlank: true,
+                                 anchor: '80%',
+                                 maxLength: 1200,
+                                 disabled: false
+                             }),
+
+                         },
+                         {
+                             header     : 'iva',
+                             flex     : 1,
+                             width    : 80,
+                             dataIndex: 'iva'
+                         },
+                         {
+                             header: 'exento',
+                             dataIndex: 'exento',
+                             align: 'center',
+                             width: 80,
+                             trueText: 'Yes',
+                             falseText: 'No',
+                             //minValue: 0.001,
+                             minValue: 0,
+                             editor: new Ext.form.NumberField({
+                                 name: 'exento',
+                                 msgTarget: 'title',
+                                 fieldLabel: 'exento ',
+                                 allowBlank: false,
+                                 allowDecimals: false,
+                                 minValue: 1,
+                                 maxLength: 10
+                             }),
+                         },
+                         {
+                             header: 'Iva contabiliza no liquida',
+                             dataIndex: 'iva_contabiliza_no_liquida',
+                             align: 'center',
+                             width: 180,
+                             trueText: 'Yes',
+                             falseText: 'No',
+                             //minValue: 0.001,
+                             minValue: 0,
+                             editor: new Ext.form.NumberField({
+                                 name: 'iva_contabiliza_no_liquida',
+                                 msgTarget: 'title',
+                                 fieldLabel: 'Iva contabiliza no liquida ',
+                                 allowBlank: false,
+                                 allowDecimals: false,
+                                 minValue: 1,
+                                 maxLength: 10
+                             }),
                          },
                      ],
                      region:  'center',
@@ -870,7 +998,8 @@ header("content-type: text/javascript; charset=UTF-8");
                          handler : function () {
                              this.storeBoletosRecursivo.commitChanges();
                              var validado = true;
-                             console.log(this.storeBoletosRecursivo.getTotalCount())
+
+
                              let total = 0;
                              for(var i = 0; i < this.storeBoletosRecursivo.getTotalCount() ;i++) {
                                  var fp = this.storeBoletosRecursivo.getAt(i);
@@ -886,24 +1015,6 @@ header("content-type: text/javascript; charset=UTF-8");
                              this.cmpImporte_total.setValue(total);
                              console.log(total)
                              win.close();
-
-                             /*if (validado) {
-                                 this.Cmp.id_forma_pago.setValue(0);
-                                 this.Cmp.monto_forma_pago.setValue(0);
-                                 this.Cmp.monto_forma_pago.setDisabled(true);
-                                 this.Cmp.id_forma_pago.setRawValue('DIVIDIDO');
-                                 this.Cmp.id_forma_pago.setDisabled(true);
-                                 this.ocultarComponente(this.Cmp.numero_tarjeta);
-                                 this.ocultarComponente(this.Cmp.codigo_tarjeta);
-                                 this.ocultarComponente(this.Cmp.tipo_tarjeta);
-                                 this.Cmp.numero_tarjeta.allowBlank = false;
-                                 this.Cmp.codigo_tarjeta.allowBlank = false;
-                                 this.Cmp.tipo_tarjeta.allowBlank = false;
-                                 this.Cmp.numero_tarjeta.reset();
-                                 this.Cmp.codigo_tarjeta.reset();
-                                 this.Cmp.tipo_tarjeta.reset();
-                                 win.close();
-                             }*/
 
                          }
                      }]
@@ -2268,19 +2379,24 @@ header("content-type: text/javascript; charset=UTF-8");
 
                         console.log(resp)
 
-                        Phx.CP.loadingHide();
+
+                       // Phx.CP.loadingHide();
+                        Phx.CP.loadingShow();
 
                         var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
                         this.cmpIdBoleto.setValue(reg.datos[0].id_boleto);
                         if(reg.datos.length > 0) {
                             
                             //obtenemos datos de tipo de cambio para la fecha de emision del boleto
-                            this.obtenerTipoDeCambioConFecha(reg.datos[0].fecha_emision);
-                            
+                            const that = this;
+                            this.obtenerTipoDeCambioConFecha(reg.datos[0].fecha_emision, () => {
+                                that.crearStoreBoletosRecursivo(nro_boleto);
+
+                            });
+
                             this.cmpTramo_devolucion.store.setBaseParam('billete', nro_boleto);
 
 
-                            this.crearStoreBoletosRecursivo(nro_boleto);
 
 
                             this.cmpTramo_devolucion.enable();
@@ -2600,8 +2716,21 @@ header("content-type: text/javascript; charset=UTF-8");
                 }
 
 
+                var arraParaNota = [], i, me = this;
+                for (i = 0; i < this.storeBoletosRecursivo.getCount(); i++) {
+                    record = this.storeBoletosRecursivo.getAt(i);
+                    arraParaNota[i] = record.data;
+
+                }
+                console.log('arraParaNota',arraParaNota);
                 me.argumentExtraSubmit = {
                     'json_new_records': JSON.stringify(arra, function replacer(key, value) {
+                        /*if (typeof value === 'string') {
+                         return String(value).replace(/&/g, "%26")
+                         }*/
+                        return value;
+                    }),
+                    'json_data_boletos_recursivo': JSON.stringify(arraParaNota, function replacer(key, value) {
                         /*if (typeof value === 'string') {
                          return String(value).replace(/&/g, "%26")
                          }*/

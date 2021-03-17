@@ -559,7 +559,8 @@ create type decr.json_type_liquidacion as (
                                          sum_total_descuentos numeric,
                                          descuentos json,
                                          sum_descuentos json,
-                                         liqui_forma_pago json
+                                         liqui_forma_pago json,
+                                         notas json
                                      );
 
 
@@ -577,6 +578,27 @@ alter table decr.tliqui_forma_pago
     add nro_documento_pago varchar;
 
 
+
+
+CREATE TABLE decr.tliqui_boleto_recursivo (
+                                           id_liqui_boleto_recursivo SERIAL,
+                                           id_liquidacion INTEGER,
+                                           seleccionado varchar(10),
+                                               billete varchar(255),
+                                               monto numeric(10,2),
+                                               tiene_nota varchar(255),
+                                               iva numeric(10,2),
+                                               iva_contabiliza_no_liquida numeric(10,2),
+                                               exento numeric(10,2),
+                                           CONSTRAINT pk_tliqui_boleto_recursivo__id_liqui_boleto_recursivo PRIMARY KEY(id_liqui_boleto_recursivo)
+) INHERITS (pxp.tbase)
+  WITHOUT OIDS;
+
+alter table decr.tliqui_boleto_recursivo
+    add concepto_para_nota varchar(255);
+
+alter table decr.tliqui_boleto_recursivo
+    add fecha_emision date;
 
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 

@@ -152,6 +152,38 @@ class ACTLiquidacion extends ACTbase{
 
 
     function getTicketInformationRecursive() {
+
+
+        //solo por el momento
+        $billete = $this->objParam->getParametro('billete');
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'erp.obairlines.bo/lib/rest/boakiu/Boleto/getTicketInformationRecursiveForLiqui?start=0&limit=100&dir=asc&billete='.$billete,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => array('billete' => $billete),
+            CURLOPT_HTTPHEADER => array(
+                'Php-Auth-User: HQ6mrl8VXdDUX2iM6ooYhMPJMJycTHNBq+a63zvYmzQ=',
+                'Pxp-user: favio.figueroa',
+                'auth-version: 1',
+                'Cookie: PHPSESSID=5fvb5pdc0bruj8rr4k20d6jkt5'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        echo $response;
+
+
+        exit;
+
         $billete = $this->objParam->getParametro('billete');
         $array = array();
 

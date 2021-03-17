@@ -44,6 +44,7 @@ DECLARE
     v_titulo                      varchar;
     v_id_estado_actual            integer;
     v_conceptos_json            record;
+    v_boletos_recursivo_json            record;
     v_payments_json            record;
     v_detalle            record;
     v_detalle_descuento_liquidacion            record;
@@ -389,6 +390,65 @@ BEGIN
             --RAISE EXCEPTION '%', v_parametros.payment;
 
             IF v_tipo_documento = 'BOLEMD' THEN
+
+
+                --guardar los boletos recursivos
+
+                FOR v_boletos_recursivo_json
+                    IN (
+                        SELECT *
+                        FROM json_populate_recordset(NULL::record, v_parametros.json_data_boletos_recursivo::json)
+                                 AS
+                                 (
+                                  seleccionado varchar,  billete varchar, monto varchar,  tiene_nota varchar,   concepto_para_nota varchar,  foid varchar, fecha_emision varchar,  iva varchar,  iva_contabiliza_no_liquida varchar,  exento varchar
+                                     )
+
+                    )
+                    LOOP
+
+                        insert into decr.tliqui_boleto_recursivo(
+                            seleccionado,
+                            billete,
+                            monto,
+                            tiene_nota,
+                            concepto_para_nota,
+                            foid,
+                             fecha_emision,
+                            iva,
+                            iva_contabiliza_no_liquida,
+                            exento,
+                            estado_reg,
+                            id_liquidacion,
+                            fecha_reg,
+                            usuario_ai,
+                            id_usuario_reg,
+                            id_usuario_ai,
+                            fecha_mod,
+                            id_usuario_mod
+                        ) values(
+                                    v_boletos_recursivo_json.seleccionado,
+                                    v_boletos_recursivo_json.billete::numeric, --todo
+                                    v_boletos_recursivo_json.monto::numeric, --todo
+                                    v_boletos_recursivo_json.tiene_nota, --todo
+                                    v_boletos_recursivo_json.concepto_para_nota, --todo
+                                    v_boletos_recursivo_json.foid, --todo
+                                    v_boletos_recursivo_json.fecha_emision::date, --todo
+                                    v_boletos_recursivo_json.iva::numeric, --todo
+                                    v_boletos_recursivo_json.iva_contabiliza_no_liquida::numeric, --todo
+                                    v_boletos_recursivo_json.exento::numeric, --todo
+                                    'activo',
+                                    v_id_liquidacion,
+                                    now(),
+                                    v_parametros._nombre_usuario_ai,
+                                    p_id_usuario,
+                                    v_parametros._id_usuario_ai,
+                                    null,
+                                    null
+                                );
+
+                    END LOOP;
+
+
                 FOR v_payments_json
                     IN (
                         SELECT *
