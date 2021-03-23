@@ -249,6 +249,7 @@ class MODLiquidacion extends MODbase{
 		$this->setParametro('importe_tramo_utilizado','importe_tramo_utilizado','numeric');
         $this->setParametro('json','json_new_records','text');
         $this->setParametro('json_data_boletos_recursivo','json_data_boletos_recursivo','text');
+        $this->setParametro('json_data_liqui_manual_det','json_data_liqui_manual_det','text');
         $this->setParametro('id_medio_pago','id_medio_pago','int4');
         $this->setParametro('id_moneda','id_moneda','int4');
         $this->setParametro('payment','payment','text'); // this is a json
@@ -258,6 +259,7 @@ class MODLiquidacion extends MODbase{
         $this->setParametro('id_liquidacion_fk','id_liquidacion_fk','int4');
         $this->setParametro('id_factucom','id_factucom','int4');
         $this->setParametro('id_factucomcon','id_factucomcon','varchar');
+        $this->setParametro('tipo_manual','tipo_manual','varchar');
 
 
         //Ejecuta la instruccion

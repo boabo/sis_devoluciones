@@ -626,7 +626,76 @@ BEGIN
 
                      ) jsonData;
 
-                ELSE -- EJEMPLO MUESTRA TODAS LAS LIQUIDACIONES SIN IMPORTAR SU TIPO DOC
+            elsif v_tipo_tab_liqui = 'LIQUIMAN' THEN
+
+
+                WITH t_liqui AS
+                    (
+                        SELECT tl.*,
+                               liqui_tabla.usr_reg,
+                               liqui_tabla.usr_mod,
+                               liqui_tabla.desc_tipo_documento,
+                               liqui_tabla.desc_tipo_liquidacion,
+                               liqui_tabla.desc_punto_venta,
+                               liqui_tabla.nro_nota,
+                               liqui_tabla.sum_total_descuentos,
+                               liqui_tabla.descuentos,
+                               liqui_tabla.sum_descuentos,
+                               liqui_tabla.liqui_forma_pago,
+                               liqui_tabla.notas
+                        FROM decr.tliquidacion tl
+                                 INNER JOIN (SELECT * FROM json_populate_recordset(NULL::decr.json_type_liquidacion, v_liqui_json::json)
+                        ) liqui_tabla ON liqui_tabla.id_liquidacion = tl.id_liquidacion
+                    ),t_liquiman_detalle AS
+                    (
+                        SELECT tlm.tipo_manual, tlmd.*
+                        from decr.tliqui_manual_detalle tlmd
+                                 inner join decr.tliqui_manual tlm on tlm.id_liqui_manual = tlmd.id_liqui_manual
+                                 INNER JOIN t_liqui tl on tl.id_liqui_manual = tlm.id_liqui_manual
+                    ),
+                     t_sum_totales_manual as
+                     (
+                         SELECT tld.id_liqui_manual, sum(tld.importe_original) as importe_original, sum(tld.importe_devolver) as importe_devolver_sin_descuentos
+                         FROM t_liquiman_detalle tld
+                         GROUP BY tld.id_liqui_manual
+                     )
+                   , t_liquiman as
+                    (
+                        SELECT  tl.*,
+                                tstm.importe_devolver_sin_descuentos - tl.sum_total_descuentos as importe_devolver,
+                               tstm.importe_original,
+                               tstm.importe_devolver_sin_descuentos,
+                                tlm.tipo_manual,
+                                tlm.tipo_manual as _desc_liqui,
+                               (
+                                   SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(liquiman_detalle)))
+                                   FROM (
+                                            SELECT *
+                                            FROM t_liquiman_detalle tld where tld.id_liqui_manual = tl.id_liqui_manual
+                                        ) liquiman_detalle
+                               ) AS _desc_liqui_det
+                        FROM t_liqui tl
+                                 INNER JOIN decr.tliqui_manual tlm on tlm.id_liqui_manual = tl.id_liqui_manual
+                        INNER JOIN t_sum_totales_manual tstm on tstm.id_liqui_manual = tlm.id_liqui_manual
+                    )
+                SELECT TO_JSON(ROW_TO_JSON(jsonData) :: TEXT) #>> '{}' as json
+                into v_json
+                from (
+                         SELECT
+                             (
+                                 SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(liqui_manual)))
+                                 FROM
+                                     (
+                                         SELECT *
+                                         FROM t_liquiman tl
+                                     ) liqui_manual
+                             ) as datos,
+                             v_count as count
+
+                     ) jsonData;
+
+
+            ELSE -- EJEMPLO MUESTRA TODAS LAS LIQUIDACIONES SIN IMPORTAR SU TIPO DOC
 
 
                     WITH t_liqui AS

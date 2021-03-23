@@ -53,6 +53,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.buildDetailGrid();
             }
 
+            this.buildComponentesLiquiManDetalle();
             this.buildGrupos();
 
 
@@ -222,7 +223,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     msgTarget: 'title',
                     fieldLabel: 'Importe ',
                     allowBlank: false,
-                    allowDecimals: false,
+                    allowDecimals: true,
                     minValue: 1,
                     maxLength: 10
                 }),
@@ -358,13 +359,17 @@ header("content-type: text/javascript; charset=UTF-8");
 
             this.summary = new Ext.ux.grid.GridSummary();
             // al iniciar la edicion
-            this.editorDetail.on('beforeedit', this.onInitAdd, this);
+            this.editorDetail.on('beforeedit', () => {
+                console.log('beforeedit')
+            }, this);
 
             //al cancelar la edicion
             this.editorDetail.on('canceledit', this.onCancelAdd, this);
 
             //al cancelar la edicion
-            this.editorDetail.on('validateedit', this.onUpdateRegister, this);
+            this.editorDetail.on('validateedit', () => {
+                console.log('validateedit');
+            }, this);
 
             this.editorDetail.on('afteredit', this.onAfterEdit, this);
 
@@ -575,6 +580,28 @@ header("content-type: text/javascript; charset=UTF-8");
                                             bodyStyle: 'padding-left:5px;',
                                             id_grupo: 3,
                                             items: [],
+                                        },
+                                        {
+                                            xtype: 'fieldset',
+                                            /*frame: true,
+                                            border: false,*/
+                                            layout: 'form',
+                                            title: ' Factura Manual',
+                                            //width: '33%',
+
+                                            //margins: '0 0 0 5',
+                                            padding: '0 0 0 10',
+                                            bodyStyle: 'padding-left:5px;',
+                                            id_grupo: 4,
+                                            items: [{
+                                                xtype:'button',
+
+                                                text:'Agregar datos manuales',
+                                                handler: this.onAgregarDatosManuales,
+                                                scope:this,
+                                                //makes the button 24px high, there is also 'large' for this config
+                                                scale: 'medium'
+                                            }],
                                         }]
                                 },
                                 {
@@ -680,7 +707,31 @@ header("content-type: text/javascript; charset=UTF-8");
                                     bodyStyle: 'padding-left:5px;',
                                     id_grupo: 3,
                                     items: [],
-                                }]
+                                },
+                                {
+                                    xtype: 'fieldset',
+                                    /*frame: true,
+                                    border: false,*/
+                                    layout: 'form',
+                                    title: ' Factura Manual',
+                                    //width: '33%',
+
+                                    //margins: '0 0 0 5',
+                                    padding: '0 0 0 10',
+                                    bodyStyle: 'padding-left:5px;',
+                                    id_grupo: 4,
+                                    items: [{
+                                        xtype:'button',
+
+                                        text:'Agregar datos manuales',
+                                        handler: this.onAgregarDatosManuales,
+                                        scope:this,
+                                        //makes the button 24px high, there is also 'large' for this config
+                                        scale: 'medium'
+                                    }],
+                                }
+
+                                ]
                         },
                         {
                             bodyStyle: 'padding-right:2px;',
@@ -783,6 +834,28 @@ header("content-type: text/javascript; charset=UTF-8");
                     puntoVenta.setValue(e[0].json.issueOfficeID);
                     pvAgt.setValue(e[0].json.issueOfficeID);
                     noiata.setValue(e[0].json.issueAgencyCode);
+                    //debemos recorrer todos payments por si hay de un exchange
+                    const allPayments = e.reduce((valorAnterior, valorActual) => {
+                        const { payment, concilliation } =  valorActual.json;
+                        let payments = [...valorAnterior]
+                        payment.forEach((p)=> {
+                            payments = [...payments,
+                                {
+                                    code : p.paymentCode,
+                                    description: p.paymentDescription,
+                                    amount: that.convertirImportePorMoneda(p.paymentAmount, currency),
+                                    method_code: p.paymentMethodCode,
+                                    reference: p.reference,
+                                    ...(p.paymentDescription === 'CREDIT CARD' ? { administradora: concilliation[0].Formato, comprobante: concilliation[0].AuthorizationCode, lote: concilliation[0].LotNumber, cod_est: concilliation[0].EstablishmentCode } : { administradora:'',comprobante:'' ,lote: '', cod_est: '' } )
+                                }
+                            ]
+                        })
+
+                        return payments;
+                    }, []);
+                    console.log('allPayments', allPayments)
+
+/*
                     const paymentData = e[0].json.payment;
                     const dataPaymentForInsert = paymentData.reduce((valorAnterior, valorActual) => {
 
@@ -797,9 +870,9 @@ header("content-type: text/javascript; charset=UTF-8");
                         ]
                         return data;
                     }, []);
-                    console.log('dataPaymentForInsert',dataPaymentForInsert)
+                    console.log('dataPaymentForInsert',dataPaymentForInsert)*/
 
-                    payment.setValue(JSON.stringify(dataPaymentForInsert, function replacer(key, value) {
+                    payment.setValue(JSON.stringify(allPayments, function replacer(key, value) {
                         return value;
                     }));
 
@@ -807,6 +880,401 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
             });
 
+        },
+
+        buildComponentesLiquiManDetalle: function () {
+
+
+            const itemsLiquiMan = Ext.data.Record.create([ {
+                name: 'id',
+                type: 'int'
+            },{
+                name: 'concepto_original',
+                type: 'string'
+            }, {
+                name: 'concepto_devolver',
+                type: 'string'
+            },
+            ]);
+
+            this.editorLiquiManDetail = new Ext.ux.grid.RowEditor({
+                saveText: 'Aceptar',
+                name: 'btn_editor'
+
+            });
+
+            this.summaryLiquiManDet = new Ext.ux.grid.GridSummary();
+            // al iniciar la edicion
+            this.editorLiquiManDetail.on('beforeedit', this.onInitAdd, this);
+
+            //al cancelar la edicion
+            this.editorLiquiManDetail.on('canceledit', (re, save) => {
+                if (this.liquimandet_init_add) {
+                    this.mestoreLiquiManDetail.remove(this.mestoreLiquiManDetail.getAt(0));
+                }
+
+                this.liquimandet_init_add = false;
+            }, this);
+
+            //al cancelar la edicion
+            this.editorLiquiManDetail.on('validateedit', () => {
+                this.liquimandet_init_add = false;
+            }, this);
+
+            this.editorLiquiManDetail.on('afteredit', (re, o, rec, num) => {
+                console.log('editorLiquiManDetail afteredit', rec );
+            }, this);
+
+
+            this.mestoreLiquiManDetail = new Ext.data.JsonStore({
+                //los datos de abajo no son correctos se deberian cambiar si quisieramos traer datos
+                url: '../../sis_adquisiciones/control/SolicitudDet/listarSolicitudDet',
+                id: 'id',
+                root: 'datos',
+                totalProperty: 'total',
+                fields: ['id_solicitud_det', 'id_centro_costo', 'descripcion', 'precio_unitario',
+                    'id_solicitud', 'id_orden_trabajo', 'id_concepto_ingas', 'precio_total', 'cantidad_sol',
+                    'desc_centro_costo', 'desc_concepto_ingas', 'desc_orden_trabajo', 'id_activo_fijo',
+                    'fecha_ini_act', 'fecha_fin_act', 'lista', 'desc_ingas', 'exento', 'excento'
+                ], remoteSort: true,
+                baseParams: {dir: 'ASC', sort: 'id_concepto_ingas', limit: '50', start: '0'}
+            });
+
+
+            this.CmpLiquiManDet = {
+
+                'id_medio_pago': new Ext.form.ComboBox({
+                    name: 'id_medio_pago',
+                    fieldLabel: 'Medio de Pago',
+                    allowBlank: false,
+                    width:150,
+                    id: 'testeoColor',
+                    emptyText: 'Medio de pago...',
+                    store: new Ext.data.JsonStore({
+                        url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
+                        id: 'id_medio_pago',
+                        root: 'datos',
+                        sortInfo: {
+                            field: 'name',
+                            direction: 'ASC'
+                        },
+                        totalProperty: 'total',
+                        fields: ['id_medio_pago_pw', 'name', 'fop_code'],
+                        remoteSort: true,
+                        baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'dev', regional: 'BOL'}
+                    }),
+                    valueField: 'id_medio_pago_pw',
+                    displayField: 'name',
+                    gdisplayField: 'desc_medio_pago',
+                    hiddenName: 'id_medio_pago_pw',
+                    tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Medio de Pago: <font color="Blue">{name}</font></b></p><b><p>Codigo: <font color="red">{fop_code}</font></b></p></div></tpl>',
+                    forceSelection: true,
+                    typeAhead: false,
+                    triggerAction: 'all',
+                    lazyRender: true,
+                    mode: 'remote',
+                    pageSize: 15,
+                    queryDelay: 1000,
+                    // gwidth: 150,
+                    listWidth:250,
+                    resizable:true,
+                    minChars: 2,
+                    disabled:false
+                }),
+                'administradora': new Ext.form.ComboBox({
+                    name: 'administradora',
+                    fieldLabel: 'administradora',
+                    qtip: 'administradora',
+                    allowBlank: true,
+                    anchor: '85%',
+                    gwidth: 120,
+                    typeAhead: true,
+                    triggerAction: 'all',
+                    lazyRender: true,
+                    mode: 'local',
+                    store: ['AMEX', 'OTROAMEX'],
+                    allowBlank: false,
+
+
+                }),
+                'lote': new Ext.form.TextField({
+                    name: 'lote',
+                    msgTarget: 'title',
+                    fieldLabel: 'lote',
+                    allowBlank: true,
+                    anchor: '80%',
+                    maxLength: 1200,
+                    disabled: false
+                }),
+                'comprobante': new Ext.form.TextField({
+                    name: 'comprobante',
+                    msgTarget: 'title',
+                    fieldLabel: 'comprobante',
+                    allowBlank: true,
+                    anchor: '80%',
+                    maxLength: 1200,
+                    disabled: false
+                }),
+                'fecha': new Ext.form.TextField({
+                    name: 'fecha',
+                    msgTarget: 'title',
+                    fieldLabel: 'fecha',
+                    allowBlank: true,
+                    anchor: '80%',
+                    maxLength: 1200,
+                    disabled: false
+                }),
+                'nro_tarjeta': new Ext.form.TextField({
+                    name: 'nro_tarjeta',
+                    msgTarget: 'title',
+                    fieldLabel: 'nro_tarjeta',
+                    allowBlank: true,
+                    anchor: '80%',
+                    maxLength: 1200,
+                    disabled: false
+                }),
+                'concepto_original': new Ext.form.TextField({
+                    name: 'concepto_original',
+                    msgTarget: 'title',
+                    fieldLabel: 'concepto_original',
+                    allowBlank: true,
+                    anchor: '80%',
+                    maxLength: 1200,
+                    disabled: false
+                }),
+                'concepto_devolver': new Ext.form.TextField({
+                    name: 'concepto_devolver',
+                    msgTarget: 'title',
+                    fieldLabel: 'concepto_devolver',
+                    allowBlank: true,
+                    anchor: '80%',
+                    maxLength: 1200,
+                    disabled: false
+                }),
+
+                'descripcion': new Ext.form.TextField({
+                    name: 'descripcion',
+                    msgTarget: 'title',
+                    fieldLabel: 'descripcion',
+                    allowBlank: true,
+                    anchor: '80%',
+                    maxLength: 1200,
+                    disabled: false
+                }),
+
+                'importe_original': new Ext.form.NumberField({
+                    name: 'importe_original',
+                    msgTarget: 'title',
+                    fieldLabel: 'Importe Original',
+                    allowBlank: false,
+                    allowDecimals: true,
+                    minValue: 1,
+                    maxLength: 10
+                }),
+                'importe_devolver': new Ext.form.NumberField({
+                    name: 'importe_devolver',
+                    msgTarget: 'title',
+                    fieldLabel: 'Importe Devolver',
+                    allowBlank: false,
+                    allowDecimals: true,
+                    minValue: 1,
+                    maxLength: 10
+                }),
+
+            }
+
+
+            this.megridDatosManuales = new Ext.grid.GridPanel({
+                layout: 'fit',
+                store: this.mestoreLiquiManDetail,
+                region: 'center',
+                split: true,
+                border: false,
+                plain: true,
+                //autoHeight: true,
+                plugins: [this.editorLiquiManDetail, this.summaryLiquiManDet],
+                stripeRows: true,
+                tbar: [{
+                    /*iconCls: 'badd',*/
+                    text: '<i class="fa fa-plus-circle fa-lg"></i> Agregar Detalle Manual',
+                    scope: this,
+                    width: '100',
+                    handler: function () {
+                        console.log('asdasdsad asdasd ')
+                        const id = Math.floor(Math.random() * (1000 - 1 + 1)) + 1;
+                        console.log('idddd',id)
+                        var e = new itemsLiquiMan({
+                            id: id,
+                            concepto_original: '',
+                            concepto_devolver: ''
+                        });
+                        this.editorLiquiManDetail.stopEditing();
+                        this.mestoreLiquiManDetail.insert(0, e);
+                        this.megridDatosManuales.getView().refresh();
+                        this.megridDatosManuales.getSelectionModel().selectRow(0);
+                        this.editorLiquiManDetail.startEditing(0);
+                        this.liquimandet_init_add = true;
+
+                    }
+                }, {
+                    ref: '../removeBtn',
+                    text: '<i class="fa fa-trash fa-lg"></i> Eliminar',
+                    scope: this,
+                    handler: function () {
+                        this.editorLiquiManDetail.stopEditing();
+                        var s = this.megridDatosManuales.getSelectionModel().getSelections();
+                        for (var i = 0, r; r = s[i]; i++) {
+                            this.mestoreLiquiManDetail.remove(r);
+                        }
+                    }
+                }],
+
+                columns: [
+                    new Ext.grid.RowNumberer(),
+                    {
+                        header: 'Medio de Pago',
+                        dataIndex: 'id_medio_pago',
+                        width: 200,
+                        sortable: false,
+                        editor: this.CmpLiquiManDet.id_medio_pago
+                    },
+                    {
+                        header: 'administradora',
+                        dataIndex: 'administradora',
+                        width: 100,
+                        sortable: false,
+                        editor: this.CmpLiquiManDet.administradora
+                    },
+                    {
+                        header: 'lote',
+                        dataIndex: 'lote',
+                        width: 100,
+                        sortable: false,
+                        editor: this.CmpLiquiManDet.lote
+                    },
+                    {
+                        header: 'comprobante',
+                        dataIndex: 'comprobante',
+                        width: 100,
+                        sortable: false,
+                        editor: this.CmpLiquiManDet.comprobante
+                    },
+                    {
+                        header: 'fecha',
+                        dataIndex: 'fecha',
+                        width: 100,
+                        sortable: false,
+                        editor: this.CmpLiquiManDet.fecha
+                    },
+                    {
+                        header: 'nro_tarjeta',
+                        dataIndex: 'nro_tarjeta',
+                        width: 100,
+                        sortable: false,
+                        editor: this.CmpLiquiManDet.nro_tarjeta
+                    },
+                    {
+                        header: 'concepto_original',
+                        dataIndex: 'concepto_original',
+                        width: 100,
+                        sortable: false,
+                        editor: this.CmpLiquiManDet.concepto_original
+                    },
+                    {
+                        header: 'concepto_devolver',
+                        dataIndex: 'concepto_devolver',
+                        width: 100,
+                        sortable: false,
+                        editor: this.CmpLiquiManDet.concepto_devolver
+                    },
+                    {
+                        header: 'descripcion',
+                        dataIndex: 'descripcion',
+                        width: 100,
+                        sortable: false,
+                        editor: this.CmpLiquiManDet.descripcion
+                    },
+
+                    {
+
+                        header: 'importe_original',
+                        dataIndex: 'importe_original',
+                        align: 'center',
+                        width: 50,
+                        trueText: 'Yes',
+                        falseText: 'No',
+                        //minValue: 0.001,
+                        minValue: 0,
+                        summaryType: 'sum',
+                        editor: this.CmpLiquiManDet.importe_original
+                    },
+                    {
+
+                        header: 'importe_devolver',
+                        dataIndex: 'importe_devolver',
+                        align: 'center',
+                        width: 50,
+                        trueText: 'Yes',
+                        falseText: 'No',
+                        //minValue: 0.001,
+                        minValue: 0,
+                        summaryType: 'sum',
+                        editor: this.CmpLiquiManDet.importe_devolver
+                    },
+
+
+
+                ]
+            });
+
+
+            const that = this;
+
+            const wid = Ext.id();
+
+            this.winLiquiMan = new Ext.Window({
+                id: wid,
+                layout:'fit',
+                width:820,
+                height:350,
+                modal:true,
+                items: this.megridDatosManuales,
+                title: 'Liquidacion Manual (LIQUIMAN)',
+                buttons: [{
+                    text:'Guardar',
+                    disabled:false,
+                    scope : this,
+                    handler : function () {
+
+
+                        this.mestoreLiquiManDetail.commitChanges();
+                        that.megridDatosManuales.store.commitChanges();
+
+                        let total = 0;
+                        for(var i = 0; i < that.megridDatosManuales.store.getCount() ;i++) {
+                            var fp = that.mestoreLiquiManDetail.getAt(i);
+                            console.log('fp',fp)
+                            total = total + fp.data.importe_devolver;
+                        }
+                        this.Cmp.importe_total_devolver_manual.setValue(total);
+                        console.log(total)
+                        this.winLiquiMan.close();
+
+                    }
+                }]
+            });
+
+
+
+        },
+        onAgregarDatosManuales: function () {
+            if (!this.Cmp.tipo_manual.getValue()) {
+                Ext.Msg.alert('ATENCION', 'Debe seleccionar un tipo manual');
+            } else {
+
+                this.winLiquiMan.show();
+
+            }
         },
         onDatosBoleto : function () {
             if (!this.Cmp.id_boleto.getValue() && !this.Cmp.id_boleto.getValue()) {
@@ -955,7 +1423,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                  msgTarget: 'title',
                                  fieldLabel: 'exento ',
                                  allowBlank: false,
-                                 allowDecimals: false,
+                                 allowDecimals: true,
                                  minValue: 1,
                                  maxLength: 10
                              }),
@@ -974,7 +1442,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                  msgTarget: 'title',
                                  fieldLabel: 'Iva contabiliza no liquida ',
                                  allowBlank: false,
-                                 allowDecimals: false,
+                                 allowDecimals: true,
                                  minValue: 1,
                                  maxLength: 10
                              }),
@@ -2148,6 +2616,43 @@ header("content-type: text/javascript; charset=UTF-8");
             },
 
 
+            {
+                config: {
+                    name: 'tipo_manual',
+                    fieldLabel: 'tipo_manual',
+                    allowBlank: true,
+                    emptyText: 'Tipo...',
+                    typeAhead: true,
+                    triggerAction: 'all',
+                    lazyRender: true,
+                    mode: 'local',
+                    store: ['ERRORES TARJETA', 'BOLETOS INEXISTENTE', 'RO MANUAL'],
+                    width: 200
+                },
+                type: 'ComboBox',
+                id_grupo: 4,
+                form: true
+            },
+
+            {
+                config:{
+                    name: 'importe_total_devolver_manual',
+                    fieldLabel: 'Importe Total Devolver',
+                    allowBlank: true,
+                    width: 200,
+                    gwidth: 100,
+                    maxLength:255,
+                    //disabled: true,
+                },
+                type:'TextField',
+                filters:{pfiltro:'liqui.importe_tramo_utilizado',type:'string'},
+                id_grupo:4,
+                grid:true,
+                form:true
+            },
+
+
+
         ],
         title: 'Frm solicitud',
 
@@ -2179,6 +2684,8 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
             this.ocultarGrupo(1);
+            this.ocultarGrupo(4);
+
             this.mostrarGrupo(3);
             //debemos ocultar los campos de factura que tambien se encuentran en el grupo 3
             this.ocultarComponente(this.Cmp.id_venta);
@@ -2202,6 +2709,8 @@ header("content-type: text/javascript; charset=UTF-8");
 
             this.ocultarGrupo(1);
             this.mostrarGrupo(3);
+            this.ocultarGrupo(4);
+
             //debemos ocultar los campos de factura que tambien se encuentran en el grupo 3
             this.ocultarComponente(this.Cmp.id_deposito);
             this.ocultarComponente(this.Cmp.importe_total_deposito);
@@ -2221,6 +2730,8 @@ header("content-type: text/javascript; charset=UTF-8");
         liquidacionPorRecibo: function () {
             this.ocultarGrupo(1);
             this.mostrarGrupo(3);
+            this.ocultarGrupo(4);
+
             //debemos ocultar los campos de factura que tambien se encuentran en el grupo 3
             this.ocultarComponente(this.Cmp.id_deposito);
             this.ocultarComponente(this.Cmp.importe_total_deposito);
@@ -2241,6 +2752,8 @@ header("content-type: text/javascript; charset=UTF-8");
 
             this.ocultarGrupo(1);
             this.mostrarGrupo(3);
+            this.ocultarGrupo(4);
+
             //debemos ocultar los campos de factura que tambien se encuentran en el grupo 3
             this.ocultarComponente(this.Cmp.id_deposito);
             this.ocultarComponente(this.Cmp.importe_total_deposito);
@@ -2258,6 +2771,7 @@ header("content-type: text/javascript; charset=UTF-8");
         liquidacionPorFacturaAntigua: function () {
 
             this.ocultarGrupo(1);
+            this.ocultarGrupo(4);
             this.mostrarGrupo(3);
             //debemos ocultar los campos de factura que tambien se encuentran en el grupo 3
             this.ocultarComponente(this.Cmp.id_deposito);
@@ -2266,6 +2780,17 @@ header("content-type: text/javascript; charset=UTF-8");
             this.ocultarComponente(this.Cmp.id_venta_detalle);
             this.ocultarComponente(this.Cmp.id_liquidacion_fk);
             this.ocultarComponente(this.Cmp.id_descuento_liquidacion);
+
+
+
+        },
+        liquidacionManual: function () {
+
+            this.ocultarGrupo(1);
+            this.ocultarGrupo(2);
+            this.ocultarGrupo(3);
+            this.mostrarGrupo(4);
+
 
 
 
@@ -2452,6 +2977,10 @@ header("content-type: text/javascript; charset=UTF-8");
                         break;
                     case 'FAC-ANTIGUAS':
                         this.liquidacionPorFacturaAntigua();
+
+                        break;
+                    case 'LIQUIMAN':
+                        this.liquidacionManual();
 
                         break;
                     default:
@@ -2716,12 +3245,26 @@ header("content-type: text/javascript; charset=UTF-8");
                 }
 
 
-                var arraParaNota = [], i, me = this;
-                for (i = 0; i < this.storeBoletosRecursivo.getCount(); i++) {
-                    record = this.storeBoletosRecursivo.getAt(i);
-                    arraParaNota[i] = record.data;
+                var arraParaNota = [], i2;
+                console.log('this.storeBoletosRecursivo',this.storeBoletosRecursivo)
+                if(this.storeBoletosRecursivo) {
+                    for (i2 = 0; i2 < this.storeBoletosRecursivo.getCount(); i2++) {
+                        record = this.storeBoletosRecursivo.getAt(i2);
+                        arraParaNota[i2] = record.data;
 
+                    }
                 }
+
+                var arraParaLiquiManual = [], i3;
+                if(this.mestoreLiquiManDetail) {
+                    for (i3 = 0; i3 < this.mestoreLiquiManDetail.getCount(); i3++) {
+                        record = this.mestoreLiquiManDetail.getAt(i3);
+                        arraParaLiquiManual[i3] = record.data;
+
+                    }
+                }
+
+                console.log('arraParaLiquiManual',arraParaLiquiManual);
                 console.log('arraParaNota',arraParaNota);
                 me.argumentExtraSubmit = {
                     'json_new_records': JSON.stringify(arra, function replacer(key, value) {
@@ -2731,6 +3274,12 @@ header("content-type: text/javascript; charset=UTF-8");
                         return value;
                     }),
                     'json_data_boletos_recursivo': JSON.stringify(arraParaNota, function replacer(key, value) {
+                        /*if (typeof value === 'string') {
+                         return String(value).replace(/&/g, "%26")
+                         }*/
+                        return value;
+                    }),
+                    'json_data_liqui_manual_det': JSON.stringify(arraParaLiquiManual, function replacer(key, value) {
                         /*if (typeof value === 'string') {
                          return String(value).replace(/&/g, "%26")
                          }*/

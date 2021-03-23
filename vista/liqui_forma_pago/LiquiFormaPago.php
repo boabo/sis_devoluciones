@@ -438,10 +438,25 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
         this.maestro=m;
         this.store.baseParams={id_liquidacion:this.maestro.id_liquidacion};
         this.load({params: {start: 0, limit: 50}});
+
+
     },
     loadValoresIniciales: function () {
         this.Cmp.id_liquidacion.setValue(this.maestro.id_liquidacion);
         Phx.vista.LiquiFormaPago.superclass.loadValoresIniciales.call(this);
+    },
+    successSave: function (resp) {
+	    console.log('onSuccessonSuccessonSuccess');
+        Phx.vista.LiquiFormaPago.superclass.successSave.call(this,resp);
+        Phx.CP.getPagina(this.idContenedorPadre).reload();
+    },
+
+    onSubmit:function(o) {
+
+        this.refreshPadre = true;
+        Phx.vista.LiquiFormaPago.superclass.onSubmit.call(this, o, undefined, true);//habilita el boton y se abre
+
+
     }
 
 	}

@@ -45,6 +45,7 @@ DECLARE
     v_id_estado_actual            integer;
     v_conceptos_json            record;
     v_boletos_recursivo_json            record;
+    v_liquiman_det_json            record;
     v_payments_json            record;
     v_detalle            record;
     v_detalle_descuento_liquidacion            record;
@@ -55,6 +56,7 @@ DECLARE
     v_id_medio_pago_pw integer;
     v_importe_tramo_utilizado numeric(10,2);
     v_fecha_emision date;
+    v_id_liqui_manual integer;
 BEGIN
 
     v_nombre_funcion = 'decr.ft_liquidacion_ime';
@@ -455,7 +457,9 @@ BEGIN
                         FROM json_populate_recordset(NULL::record, v_parametros.payment::json)
                                  AS
                                  (
-                                  code varchar, description varchar, amount varchar, method_code varchar, reference varchar
+                                  code varchar, description varchar, amount varchar, method_code varchar,
+                                  reference varchar, administradora varchar, comprobante varchar, lote varchar,
+                                  cod_est varchar
                                      )
 
                     )
@@ -483,7 +487,8 @@ BEGIN
                                 id_usuario_ai,
                                 usuario_ai,
                                 id_usuario_mod,
-                                fecha_mod
+                                fecha_mod,
+                                administradora
                             ) values(
                                         'activo',
                                         v_id_liquidacion,
@@ -491,9 +496,9 @@ BEGIN
                                         v_parametros.punto_venta,
                                         v_parametros.punto_venta,
                                         null,
-                                        null,
-                                        null,
-                                        null,
+                                        v_payments_json.cod_est,
+                                        v_payments_json.lote,
+                                        v_payments_json.comprobante,
                                         RIGHT(v_payments_json.reference, 4),
                                         LEFT(v_payments_json.reference,-6),
                                         v_payments_json.amount::numeric,
@@ -502,7 +507,8 @@ BEGIN
                                         v_parametros._id_usuario_ai,
                                         v_parametros._nombre_usuario_ai,
                                         null,
-                                        null
+                                        null,
+                                     v_payments_json.administradora
 
 
 
@@ -511,6 +517,151 @@ BEGIN
                             /*ELSE
                             RAISE EXCEPTION '%','NO ES CREDIT CARD';*/
                         END IF;
+
+                    END LOOP;
+
+            ELSEIF v_tipo_documento = 'LIQUIMAN' THEN
+
+                --guardamos el detalle de liquidacion manual y el tipo manual
+
+                insert into decr.tliqui_manual(
+                    estado_reg,
+                    id_liquidacion,
+                    tipo_manual,
+                    id_usuario_reg,
+                    fecha_reg,
+                    id_usuario_ai,
+                    usuario_ai,
+                    id_usuario_mod,
+                    fecha_mod
+                ) values(
+                            'activo',
+                            v_id_liquidacion,
+                            v_parametros.tipo_manual,
+                            p_id_usuario,
+                            now(),
+                            v_parametros._id_usuario_ai,
+                            v_parametros._nombre_usuario_ai,
+                            null,
+                            null
+                        )RETURNING id_liqui_manual into v_id_liqui_manual;
+
+                --actualizamos la liquidacion para agregarle este id_liqui_manual
+                update decr.tliquidacion set id_liqui_manual = v_id_liqui_manual
+                where id_liquidacion = v_id_liquidacion;
+
+                FOR v_liquiman_det_json
+                    IN (
+                        SELECT *
+                        FROM json_populate_recordset(NULL::record, v_parametros.json_data_liqui_manual_det::json)
+                                 AS
+                                 (
+                                        id_medio_pago varchar,
+                                        administradora varchar,
+                                        lote varchar,
+                                        comprobante varchar,
+                                        fecha varchar,
+                                        nro_tarjeta varchar,
+                                        concepto_original varchar,
+                                        concepto_devolver varchar,
+                                        descripcion varchar,
+                                        importe_original varchar,
+                                        importe_devolver varchar
+                                     )
+
+                    )
+                    LOOP
+
+
+                        insert into decr.tliqui_manual_detalle(
+                            estado_reg,
+                            id_liqui_manual,
+                            id_medio_pago,
+                            administradora,
+                            lote,
+                            comprobante,
+                            fecha,
+                            nro_tarjeta,
+                            concepto_original,
+                            concepto_devolver,
+                            importe_original,
+                            importe_devolver,
+                            descripcion,
+                            id_usuario_reg,
+                            fecha_reg,
+                            id_usuario_ai,
+                            usuario_ai,
+                            id_usuario_mod,
+                            fecha_mod
+                        ) values(
+                                    'activo',
+                                    v_id_liqui_manual,
+                                    v_liquiman_det_json.id_medio_pago::integer,
+                                    v_liquiman_det_json.administradora,
+                                    v_liquiman_det_json.lote,
+                                    v_liquiman_det_json.comprobante,
+                                    v_liquiman_det_json.fecha,
+                                    v_liquiman_det_json.nro_tarjeta,
+                                    v_liquiman_det_json.concepto_original,
+                                    v_liquiman_det_json.concepto_devolver,
+                                    v_liquiman_det_json.importe_original::numeric,
+                                    v_liquiman_det_json.importe_devolver::numeric,
+                                    v_liquiman_det_json.descripcion,
+                                    p_id_usuario,
+                                    now(),
+                                    v_parametros._id_usuario_ai,
+                                    v_parametros._nombre_usuario_ai,
+                                    null,
+                                    null
+
+                                );
+
+
+                        insert into decr.tliqui_forma_pago(
+                            estado_reg,
+                            id_liquidacion,
+                            id_medio_pago,
+                            pais,
+                            ciudad,
+                            fac_reporte,
+                            cod_est,
+                            lote,
+                            comprobante,
+                            fecha_tarjeta,
+                            nro_tarjeta,
+                            importe,
+                            id_usuario_reg,
+                            fecha_reg,
+                            id_usuario_ai,
+                            usuario_ai,
+                            id_usuario_mod,
+                            fecha_mod
+                        ) values(
+                                    'activo',
+                                    v_id_liquidacion,
+                                    v_liquiman_det_json.id_medio_pago::integer,
+                                    v_parametros.punto_venta,
+                                    v_parametros.punto_venta,
+                                    null,
+                                    null,
+                                    v_liquiman_det_json.lote,
+                                    v_liquiman_det_json.comprobante,
+                                    v_liquiman_det_json.fecha,
+                                    v_liquiman_det_json.nro_tarjeta,
+                                    v_liquiman_det_json.importe_devolver::numeric,
+                                    p_id_usuario,
+                                    now(),
+                                    v_parametros._id_usuario_ai,
+                                    v_parametros._nombre_usuario_ai,
+                                    null,
+                                    null
+
+
+
+                                );
+
+
+
 
                     END LOOP;
             END IF;

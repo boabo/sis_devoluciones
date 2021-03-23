@@ -26,7 +26,8 @@ DECLARE
 	v_nombre_funcion        text;
 	v_mensaje_error         text;
 	v_id_nota_agencia	integer;
-			    
+	v_id_liquidacion	integer;
+
 BEGIN
 
     v_nombre_funcion = 'decr.ft_nota_agencia_ime';
@@ -42,7 +43,14 @@ BEGIN
 	if(p_transaccion='DECR_NOTAGE_INS')then
 					
         begin
-        	--Sentencia de la insercion
+
+            IF (pxp.f_existe_parametro(p_tabla, 'id_liquidacion')) then
+                v_id_liquidacion:= v_parametros.id_liquidacion;
+            else
+                v_id_liquidacion:= NULL;
+            END IF;
+
+            --Sentencia de la insercion
         	insert into decr.tnota_agencia(
 			estado_reg,
 			id_doc_compra_venta,
@@ -108,7 +116,7 @@ BEGIN
 			v_parametros._nombre_usuario_ai,
 			null,
 			null,
-          	         v_parametros.id_liquidacion
+            v_id_liquidacion
 							
 			
 			

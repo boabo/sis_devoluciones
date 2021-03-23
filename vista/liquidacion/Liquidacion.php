@@ -26,6 +26,12 @@ header("content-type: text/javascript; charset=UTF-8");
                 height: 0
             },
             {
+                name: 'LIQUIMAN',
+                title: '<H1 align="center"><i class="fa fa-file"></i> Liqui Man</h1>',
+                grupo: 0,
+                height: 0
+            },
+            {
                 name: 'FACCOM',
                 title: '<H1 align="center"><i class="fa fa-file"></i> Factura Com</h1>',
                 grupo: 0,
@@ -218,18 +224,60 @@ header("content-type: text/javascript; charset=UTF-8");
                            console.log(p)
                            console.log(record)
                             const { json } = record;
-                           const liquiDet = (_desc_liqui_det) => {
+
+                           const renderLiquiDetalle = ({desc_tipo_documento, _desc_liqui_det}) => {
                                const res = _desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
                                    return `${valorAnterior} <br> cant:${valorActual.cantidad }/${valorActual.desc_ingas }/${valorActual.precio || valorActual.importe }`;
                                },'');
                                return res;
                            }
+                           const renderLiquiManDet = ({tipo_manual, desc_tipo_documento, _desc_liqui_det}) => {
+
+                               let res;
+                               switch (tipo_manual) {
+                                   case 'ERRORES TARJETA':
+                                       res = _desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
+                                           return `${valorAnterior} <br> ${valorActual.administradora }/${valorActual.comprobante}/${valorActual.lote}/${valorActual.nro_tarjeta}/<b>Imp Error:</b>${valorActual.importe_original}/<b>Imp Dev:</b> ${valorActual.importe_devolver}`;
+                                       },'');
+                                       break;
+                                   case 'BOLETOS INEXISTENTE':
+                                   case 'RO MANUAL':
+                                       res = 'no hay logica aun';
+                                       break;
+                                   default:
+                                       console.log('Lo lamentamos, por el momento no disponemos de ' + expr + '.');
+                               }
+
+
+                               return res;
+                           }
+                           const liquiDet = ({tipo_manual, desc_tipo_documento, _desc_liqui_det}) => {
+
+                               let res;
+                               switch (desc_tipo_documento) {
+                                   case 'LIQUIMAN':
+                                       res = renderLiquiManDet({tipo_manual, desc_tipo_documento,_desc_liqui_det});
+                                       break;
+                                   case 'FACCOM':
+                                   case 'FAC-ANTIGUAS':
+                                   case 'PORLIQUI':
+                                   case 'DEPOSITO':
+                                   case 'RO':
+                                       res = renderLiquiDetalle({desc_tipo_documento,_desc_liqui_det});
+                                       break;
+                                   default:
+                                       console.log('Lo lamentamos, por el momento no disponemos de ' + expr + '.');
+                               }
+                               return res;
+
+
+                           }
                             return  `<div style="vertical-align:middle;">
                             <span style="display: block;"><b>Desc Liqui:</b>${json._desc_liqui}</span>
-                            <span style="display: block;"><b>Desc Det:</b>${typeof json._desc_liqui_det === 'object' ? liquiDet(json._desc_liqui_det) : json._desc_liqui_det }</span>
+                            <span style="display: block;"><b>Desc Det:</b>${typeof json._desc_liqui_det === 'object' ? liquiDet(json) : json._desc_liqui_det }</span>
                             <span style="display: block;"><b>A Nombre:</b>${json.nombre || json.nombre_factura }</span>
                             <span style="display: block;"><b>Importe Original:</b>${json.importe_original}</span>
-                            <span style="display: block;"><b>Importe Total:</b>${json.importe_total}</span>
+                            <span style="display: block;"><b>Importe Total:</b>${json.importe_total || json.importe_devolver_sin_descuentos}</span>
                             ${json.util > 0 ? `<span style="display: block;"><b>Tramos Utilizados:</b>${json.util}</span>` : ''}
                             ${json.importe_tramo_utilizado > 0 ? `<span style="display: block;"><b>Importe Tramos Utilizados:</b>${json.importe_tramo_utilizado}</span>` : ''}
 
@@ -283,7 +331,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                             return `<div style="vertical-align:middle;"><table style="font-size: 11px;"><tr><th><b>Tipo</b></th><th><b>Desc.</b></th><th><b>Importe.</b></th></tr>${descuentosTemplate}
                             <tr><td colspan="2"><b>Total Descuetos:</b></td><td>-${json.sum_total_descuentos}</td></tr>
-                            <tr><td colspan="2"><b>Importe Original:</b></td><td>+${json.importe_total}</td></tr>
+                            <tr><td colspan="2"><b>Importe :</b></td><td>+${json.importe_total || json.importe_devolver_sin_descuentos}</td></tr>
                             ${json.importe_tramo_utilizado > 0 ? `<tr><td colspan="2"><b>Importe Tramos Utilizados:</b></td><td>-${json.importe_tramo_utilizado}</td></tr>` : ''}
 
                             <tr><td colspan="2"><b>Importe a Devolver:</b></td><td><b style="color: green">${json.importe_devolver ? json.importe_devolver :0}</b></td></tr>
@@ -1389,26 +1437,34 @@ header("content-type: text/javascript; charset=UTF-8");
             sigEstado:function(){
                 var rec=this.sm.getSelected();
                 console.log(rec)
+                const {liqui_forma_pago, importe_devolver} = rec.json;
+                const sumFormaPago = liqui_forma_pago.reduce((sum, fp) => sum + parseFloat(fp.importe) , 0);
+                console.log('sumFormaPago',sumFormaPago)
+                if(importe_devolver === sumFormaPago) {
+                    this.objWizard = Phx.CP.loadWindows('../../../sis_workflow/vista/estado_wf/FormEstadoWf.php',
+                        'Estado de Wf',
+                        {
+                            modal:true,
+                            width:700,
+                            height:450
+                        }, {data:{
+                                id_estado_wf:rec.json.id_estado_wf,
+                                id_proceso_wf:rec.json.id_proceso_wf,
+                                fecha_ini:rec.json.fecha_liqui,
+                            }}, this.idContenedor,'FormEstadoWf',
+                        {
+                            config:[{
+                                event:'beforesave',
+                                delegate: this.onSaveWizard,
 
-                this.objWizard = Phx.CP.loadWindows('../../../sis_workflow/vista/estado_wf/FormEstadoWf.php',
-                    'Estado de Wf',
-                    {
-                        modal:true,
-                        width:700,
-                        height:450
-                    }, {data:{
-                            id_estado_wf:rec.json.id_estado_wf,
-                            id_proceso_wf:rec.json.id_proceso_wf,
-                            fecha_ini:rec.json.fecha_liqui,
-                        }}, this.idContenedor,'FormEstadoWf',
-                    {
-                        config:[{
-                            event:'beforesave',
-                            delegate: this.onSaveWizard,
+                            }],
+                            scope:this
+                        });
+                } else {
+                    alert(`ERROR IMPORTE DEVOLVER ${importe_devolver} NO CUADRA CON LA DEVOLUCION EN FORMA DE PAGO ${sumFormaPago}`)
+                }
 
-                        }],
-                        scope:this
-                    });
+
             },
             onSaveWizard:function(wizard,resp){
                 Phx.CP.loadingShow();

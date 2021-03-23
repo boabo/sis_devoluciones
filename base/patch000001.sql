@@ -600,6 +600,46 @@ alter table decr.tliqui_boleto_recursivo
 alter table decr.tliqui_boleto_recursivo
     add fecha_emision date;
 
+
+
+
+CREATE TABLE decr.tliqui_manual (
+                                              id_liqui_manual SERIAL,
+                                              id_liquidacion INTEGER,
+                                              tipo_manual varchar(255),
+                                              CONSTRAINT pk_tliqui_manual__id_liqui_manual PRIMARY KEY(id_liqui_manual)
+) INHERITS (pxp.tbase)
+  WITHOUT OIDS;
+
+
+CREATE TABLE decr.tliqui_manual_detalle (
+                                              id_liqui_manual_detalle SERIAL,
+                                              id_liqui_manual INTEGER,
+                                              administradora varchar(255),
+                                              lote varchar(255),
+                                              comprobante varchar(255),
+                                              fecha varchar(255),
+                                              nro_tarjeta varchar(255),
+                                              concepto_original varchar(255),
+                                              concepto_devolver varchar(255),
+                                              importe_original numeric(10,2),
+                                              importe_devolver numeric(10,2),
+                                              descripcion varchar(255),
+                                              CONSTRAINT pk_tliqui_manual_detalle__id_liqui_manual_detalle PRIMARY KEY(id_liqui_manual_detalle)
+) INHERITS (pxp.tbase)
+  WITHOUT OIDS;
+
+
+alter table decr.tliquidacion
+    add id_liqui_manual integer;
+
+alter table decr.tliqui_manual_detalle
+    add id_medio_pago integer;
+
+alter table decr.tliqui_forma_pago
+    add administradora varchar(255);
+
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
 
