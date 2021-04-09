@@ -44,6 +44,11 @@ class ACTNotaAgencia extends ACTbase{
 		$this->res=$this->objFunc->eliminarNotaAgencia($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
+	function listarDocumentoJson(){
+			$this->objFunc=$this->create('MODNotaAgencia');
+		$this->res=$this->objFunc->listarDocumentoJson($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
 			
 }
 

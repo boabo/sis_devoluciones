@@ -26,7 +26,9 @@ DECLARE
 	v_nombre_funcion        text;
 	v_mensaje_error         text;
 	v_id_nota_agencia	integer;
-			    
+	v_id_liquidacion	integer;
+    v_json	varchar;
+
 BEGIN
 
     v_nombre_funcion = 'decr.ft_nota_agencia_ime';
@@ -42,7 +44,14 @@ BEGIN
 	if(p_transaccion='DECR_NOTAGE_INS')then
 					
         begin
-        	--Sentencia de la insercion
+
+            IF (pxp.f_existe_parametro(p_tabla, 'id_liquidacion')) then
+                v_id_liquidacion:= v_parametros.id_liquidacion;
+            else
+                v_id_liquidacion:= NULL;
+            END IF;
+
+            --Sentencia de la insercion
         	insert into decr.tnota_agencia(
 			estado_reg,
 			id_doc_compra_venta,
@@ -108,7 +117,7 @@ BEGIN
 			v_parametros._nombre_usuario_ai,
 			null,
 			null,
-          	         v_parametros.id_liquidacion
+            v_id_liquidacion
 							
 			
 			
@@ -193,6 +202,36 @@ BEGIN
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Nota Agencia eliminado(a)'); 
             v_resp = pxp.f_agrega_clave(v_resp,'id_nota_agencia',v_parametros.id_nota_agencia::varchar);
               
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+	/*********************************
+ 	#TRANSACCION:  'DECR_DOC_JSON'
+ 	#DESCRIPCION:	Eliminacion de registros
+ 	#AUTOR:		admin
+ 	#FECHA:		26-04-2020 21:14:13
+	***********************************/
+
+	elsif(p_transaccion='DECR_DOC_JSON')then
+
+		begin
+
+
+            SELECT TO_JSON(doc)::text
+            into v_json
+            from (
+                select *
+		        FROM conta.tdoc_compra_venta
+                where nro_autorizacion = v_parametros.nro_aut
+                  and nro_documento = v_parametros.nro_fac
+                limit 1
+		          ) doc;
+
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'json',v_json);
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje',v_json);
+
             --Devuelve la respuesta
             return v_resp;
 

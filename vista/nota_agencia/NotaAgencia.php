@@ -691,6 +691,7 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
 		{name:'desc_moneda', type: 'string'},
+		{name:'desc_depto', type: 'string'},
 
 	],
 	sortInfo:{
@@ -712,6 +713,41 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
             console.log(d.json)
 
         }, this);
+    },
+
+    abrirFormulario: function (tipo, record) {
+        var me = this;
+        console.log(' me.regitrarDetalle', me.regitrarDetalle)
+        me.objSolForm = Phx.CP.loadWindows('../../../sis_devoluciones/vista/nota_agencia/formNotaAgencia.php',
+            me.formTitulo,
+            {
+                modal: true,
+                width: '90%',
+                height: (me.regitrarDetalle == 'si') ? '100%' : '60%',
+            }, {
+                data: {
+                    objPadre: me,
+                    tipo_form: tipo,
+                    datosOriginales: record
+                },
+                regitrarDetalle: me.regitrarDetalle
+            },
+            this.idContenedor,
+            'FormNotaAgencia',
+            {
+                config: [{
+                    event: 'successsave',
+                    delegate: this.onSaveForm,
+                }],
+                scope: this
+            });
+    },
+
+    onButtonNew: function () {
+        this.abrirFormulario('new')
+    },
+    onButtonEdit: function () {
+        this.abrirFormulario('edit',this.sm.getSelected())
     },
 
     }
