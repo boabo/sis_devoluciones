@@ -846,7 +846,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                     amount: that.convertirImportePorMoneda(p.paymentAmount, currency),
                                     method_code: p.paymentMethodCode,
                                     reference: p.reference,
-                                    ...(p.paymentDescription === 'CREDIT CARD' ? { administradora: concilliation[0].Formato, comprobante: concilliation[0].AuthorizationCode, lote: concilliation[0].LotNumber, cod_est: concilliation[0].EstablishmentCode } : { administradora:'',comprobante:'' ,lote: '', cod_est: '' } )
+                                    ...(p.paymentDescription === 'CREDIT CARD' && concilliation.lenght > 0 ? { administradora: concilliation[0].Formato, comprobante: concilliation[0].AuthorizationCode, lote: concilliation[0].LotNumber, cod_est: concilliation[0].EstablishmentCode } : { administradora:'',comprobante:'' ,lote: '', cod_est: '' } )
                                 }
                             ]
                         })
@@ -992,7 +992,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     triggerAction: 'all',
                     lazyRender: true,
                     mode: 'local',
-                    store: ['AMEX', 'OTROAMEX'],
+                    store: ['LINKSER', 'ATC'],
                     allowBlank: false,
 
 
@@ -1015,7 +1015,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     maxLength: 1200,
                     disabled: false
                 }),
-                'fecha': new Ext.form.TextField({
+                /*'fecha': new Ext.form.TextField({
                     name: 'fecha',
                     msgTarget: 'title',
                     fieldLabel: 'fecha',
@@ -1023,6 +1023,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     anchor: '80%',
                     maxLength: 1200,
                     disabled: false
+                }),*/
+                'fecha': new Ext.form.DateField({
+                    name: 'fecha',
+                    fieldLabel: 'Fecha',
+                    allowBlank: false,
+                    disabled: false,
+                    width: 105,
+                    format: 'd/m/Y'
+
                 }),
                 'nro_tarjeta': new Ext.form.TextField({
                     name: 'nro_tarjeta',
@@ -1272,6 +1281,24 @@ header("content-type: text/javascript; charset=UTF-8");
                 Ext.Msg.alert('ATENCION', 'Debe seleccionar un tipo manual');
             } else {
 
+                if(this.Cmp.tipo_manual.getValue() === 'ERRORES TARJETA') {
+                    this.CmpLiquiManDet.id_medio_pago.setDisabled(false);
+                    this.CmpLiquiManDet.administradora.setDisabled(false);
+                    this.CmpLiquiManDet.lote.setDisabled(false);
+                    this.CmpLiquiManDet.comprobante.setDisabled(false);
+                    this.CmpLiquiManDet.fecha.setDisabled(false);
+                    this.CmpLiquiManDet.nro_tarjeta.setDisabled(false);
+
+
+                } else {
+                    this.CmpLiquiManDet.id_medio_pago.setDisabled(true);
+                    this.CmpLiquiManDet.administradora.setDisabled(true);
+                    this.CmpLiquiManDet.lote.setDisabled(true);
+                    this.CmpLiquiManDet.comprobante.setDisabled(true);
+                    this.CmpLiquiManDet.fecha.setDisabled(true);
+                    this.CmpLiquiManDet.nro_tarjeta.setDisabled(true);
+
+                }
                 this.winLiquiMan.show();
 
             }

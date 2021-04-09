@@ -116,6 +116,12 @@ class MODLiquidacion extends MODbase{
         $this->setParametro('bottom_filtro_value','bottom_filtro_value','varchar');
         $this->setParametro('query','query','varchar');
 
+
+        $this->setParametro('administradora','administradora','varchar');
+        $this->setParametro('fecha_ini','fecha_ini','date');
+        $this->setParametro('fecha_fin','fecha_fin','date');
+
+
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();
@@ -584,6 +590,30 @@ class MODLiquidacion extends MODbase{
         return $this->respuesta;
     }
 
+    function listarDeposito(){
+        $this->procedimiento='decr.ft_liquidacion_sel';
+        $this->transaccion='DECR_DEPOS_SEL';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+
+        //Define los parametros para la funcion
+
+        $this->captura('id_deposito','int4');
+        $this->captura('nro_deposito','varchar');
+        $this->captura('monto_deposito','numeric');
+        $this->captura('fecha','date');
+        $this->captura('saldo','numeric');
+        $this->captura('monto_total','numeric');
+
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+
+        //echo($this->consulta);exit;
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
 
 
 

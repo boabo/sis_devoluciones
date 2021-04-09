@@ -691,6 +691,7 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
 		{name:'desc_moneda', type: 'string'},
+		{name:'desc_depto', type: 'string'},
 
 	],
 	sortInfo:{
@@ -742,10 +743,12 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
             });
     },
 
-   /* onButtonNew: function () {
+    onButtonNew: function () {
         this.abrirFormulario('new')
-    },*/
-
+    },
+    onButtonEdit: function () {
+        this.abrirFormulario('edit',this.sm.getSelected())
+    },
 
     }
 )

@@ -13,6 +13,7 @@ HISTORIAL DE MODIFICACIONES:
 
 header("content-type: text/javascript; charset=UTF-8");
 ?>
+<script src="../../../sis_devoluciones/vista/liquidacion/ReportesLiquidacion.js"></script>
 <script>
     Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 
@@ -70,13 +71,79 @@ header("content-type: text/javascript; charset=UTF-8");
         btestGroups: [0,1, 2],
         bexcelGroups: [0, 1, 2],
 
+        cmbTipoAdministradora: new Ext.form.ComboBox({
 
+            name: 'tipo_administradora',
+            fieldLabel: 'Tipo Administradora',
+            allowBlank: true,
+            emptyText: 'tipo_administradora...',
+            typeAhead: true,
+            triggerAction: 'all',
+            lazyRender: true,
+            mode: 'local',
+            store: ['LINKSER', 'ATC'],
+            width: 200,
+            type: 'ComboBox',
+
+        }),
+        cmbFecha_ini: new Ext.form.DateField({
+            name: 'fecha_ini',
+            fieldLabel: 'Fecha',
+            allowBlank: false,
+            disabled: false,
+            width: 105,
+            format: 'd/m/Y'
+
+        }),
+        cmbFecha_fin: new Ext.form.DateField({
+            name: 'fecha_fim',
+            fieldLabel: 'Fecha fin',
+            allowBlank: true,
+            disabled: false,
+            width: 105,
+            format: 'd/m/Y'
+
+        }),
 
             constructor:function(config){
                 this.maestro=config.maestro;
                 //llama al constructor de la clase padre
                 Phx.vista.Liquidacion.superclass.constructor.call(this,config);
 
+
+
+                this.popUpByAdministradora = new Ext.Window(
+                    {
+                        layout: 'fit',
+                        width: 500,
+                        height: 250,
+                        modal: true,
+                        closeAction: 'hide',
+
+                        items: new Ext.FormPanel({
+                            labelWidth: 75, // label settings here cascade unless overridden
+
+                            frame: true,
+                            // title: 'Factura Manual Concepto',
+                            bodyStyle: 'padding:5px 5px 0',
+                            width: 339,
+                            defaults: {width: 191},
+                            // defaultType: 'textfield',
+
+                            items: [this.cmbTipoAdministradora, this.cmbFecha_ini, this.cmbFecha_fin],
+
+                            buttons: [{
+                                text: 'Save',
+                                handler: this.genPorAdministradora,
+
+                                scope: this
+                            }, {
+                                text: 'Cancel',
+                                handler: ()=>{this.popUpByAdministradora.hide()}
+                            }]
+                        }),
+
+                    });
 
 
                 this.init();
@@ -127,6 +194,12 @@ header("content-type: text/javascript; charset=UTF-8");
                     disabled: false,
                     handler: this.pagar
                 });
+                this.addButton('ReporteAdministradora', {
+                    argument: {imprimir: 'genPorAdministradora'},
+                    text: '<i class="fa fa-file-text-o fa-2x"></i><br> Generar para Administradora',/*iconCls:'' ,*/
+                    disabled: false,
+                    handler: ()=> this.popUpByAdministradora.show()
+                });
 
                 function diagramGantt(){
                     var data=this.sm.getSelected().data.id_proceso_wf;
@@ -140,6 +213,11 @@ header("content-type: text/javascript; charset=UTF-8");
                         scope:this
                     });
                 }
+
+
+
+
+
 
 
 
@@ -1591,6 +1669,32 @@ header("content-type: text/javascript; charset=UTF-8");
                 });
 
 
+            },
+
+            successGenerarRepAdiministradora: function (resp) {
+                Phx.CP.loadingHide();
+
+                var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+                if (objRes.total > 0 ) {
+                    const resHtml = imprimirParaAdministradora(objRes);
+                    const myWindowAdministradora = window.open("", "_blank");
+                    myWindowAdministradora.document.write(resHtml);
+
+
+                }
+
+            },
+            genPorAdministradora: function () {
+                Phx.CP.loadingShow();
+
+                Ext.Ajax.request({
+                    url: '../../sis_devoluciones/control/Liquidacion/listarLiquidacionJson',
+                    params: {'administradora': this.cmbTipoAdministradora.getValue(), fecha_ini: this.cmbFecha_ini.getValue(), fecha_fin: this.cmbFecha_fin.getValue()},
+                    success: this.successGenerarRepAdiministradora,
+                    failure: this.conexionFailure,
+                    timeout: this.timeout,
+                    scope: this
+                });
             },
 
             pagar : function () {

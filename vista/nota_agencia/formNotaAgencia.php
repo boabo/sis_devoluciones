@@ -44,12 +44,11 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
             Phx.vista.FormNotaAgencia.superclass.constructor.call(this, config);
-            alert('llega')
 
             this.init();
 
 
-            //this.iniciarEventos();
+            this.iniciarEventos();
 
             if (this.data.tipo_form == 'new') {
                 this.onNew();
@@ -121,7 +120,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                     frame: true,
                                     border: false,
                                     layout: 'form',
-                                    title: 'Tipo',
+                                    title: 'Datos Documento',
                                     width: '100%',
 
                                     //margins: '0 0 0 5',
@@ -140,7 +139,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                 xtype: 'fieldset',
                                 frame: true,
                                 layout: 'form',
-                                title: ' Datos básicos ',
+                                title: ' Datos Nota ',
                                 width: '100%',
                                 border: false,
                                 //margins: '0 0 0 5',
@@ -159,7 +158,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                 xtype: 'fieldset',
                                 frame: true,
                                 layout: 'form',
-                                title: 'Detalle de pago',
+                                title: 'Montos',
                                 width: '100%',
                                 border: false,
                                 //margins: '0 0 0 5',
@@ -199,650 +198,558 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 {
                     config: {
-                        name: 'id_plantilla',
-                        fieldLabel: 'Tipo Documento',
-                        allowBlank: false,
-                        anchor: '85%',
-                        emptyText: 'Elija una plantilla...',
-                        store: new Ext.data.JsonStore(
-                            {
-                                url: '../../sis_parametros/control/Plantilla/listarPlantillaFil',
-                                id: 'id_plantilla',
-                                root: 'datos',
-                                sortInfo: {
-                                    field: 'desc_plantilla',
-                                    direction: 'ASC'
-                                },
-                                totalProperty: 'total',
-                                fields: ['id_plantilla', 'nro_linea', 'desc_plantilla', 'tipo',
-                                    'sw_tesoro', 'sw_compro', 'sw_monto_excento', 'sw_descuento',
-                                    'sw_autorizacion', 'sw_codigo_control', 'tipo_plantilla', 'sw_nro_dui', 'sw_ic', 'tipo_excento', 'valor_excento', 'sw_qr', 'sw_nit', 'plantilla_qr',
-                                    'sw_estacion', 'sw_punto_venta', 'sw_codigo_no_iata'],
-                                remoteSort: true,
-                                baseParams: {par_filtro: 'plt.desc_plantilla', sw_compro: 'si', sw_tesoro: 'si'}
-                            }),
-                        tpl: '<tpl for="."><div class="x-combo-list-item"><p>{desc_plantilla}</p></div></tpl>',
-                        valueField: 'id_plantilla',
-                        hiddenValue: 'id_plantilla',
-                        displayField: 'desc_plantilla',
-                        gdisplayField: 'desc_plantilla',
-                        listWidth: '280',
-                        forceSelection: true,
-                        typeAhead: false,
+                        name: 'id_depto_conta',
+                        fieldLabel: 'Depto Conta',
+                        allowBlank: true,
+                        emptyText: 'Elija una opción...',
+                        store: new Ext.data.JsonStore({
+                            url: '../../sis_parametros/control/Depto/listarDeptoFiltradoDeptoUsuario',
+                            id: 'id_depto',
+                            root: 'datos',
+                            sortInfo:{
+                                field: 'deppto.nombre',
+                                direction: 'ASC'
+                            },
+                            totalProperty: 'total',
+                            fields: ['id_depto','nombre','codigo'],
+                            // turn on remote sorting
+                            remoteSort: true,
+                            baseParams: { par_filtro:'deppto.nombre#deppto.codigo', estado:'activo', codigo_subsistema: 'CONTA'}
+                        }),
+                        valueField: 'id_depto',
+                        displayField: 'nombre',
+                        hiddenName: 'id_depto',
+                        enableMultiSelect: true,
                         triggerAction: 'all',
                         lazyRender: true,
                         mode: 'remote',
                         pageSize: 20,
-                        queryDelay: 500,
-                        minChars: 2
+                        queryDelay: 200,
+                        anchor: '80%',
+                        listWidth:'280',
+                        resizable:true,
+                        minChars: 2,
+                        renderer : function(value, p, record) {
+                            return String.format('{0}', record.data['desc_depto']);
+                        }
                     },
                     type: 'ComboBox',
                     id_grupo: 0,
+                    filters: {pfiltro: 'movtip.nombre',type: 'string'},
+                    grid: true,
                     form: true
                 },
+                {
+                    config:{
+                        name: 'estado_reg',
+                        fieldLabel: 'Estado Reg.',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:10
+                    },
+                    type:'TextField',
+                    filters:{pfiltro:'notage.estado_reg',type:'string'},
+                    id_grupo:0,
+                    grid:true,
+                    form:false
+                },
+
+
+
+                {
+                    config:{
+                        name: 'nroaut',
+                        fieldLabel: 'Nro Aut',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:100
+                    },
+                    type:'TextField',
+                    filters:{pfiltro:'notage.nroaut',type:'string'},
+                    id_grupo:0,
+                    grid:true,
+                    form:true
+                },
+                {
+                    config:{
+                        name: 'nrofac',
+                        fieldLabel: 'Nro Fac',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:100
+                    },
+                    type:'TextField',
+                    filters:{pfiltro:'notage.nrofac',type:'string'},
+                    id_grupo:0,
+                    grid:true,
+                    form:true
+                },
+                {
+                    config:{
+                        name: 'id_doc_compra_venta',
+                        fieldLabel: 'id doc cv',
+                        allowBlank: false,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:8,
+                        disabled: true,
+                    },
+                    type:'TextField',
+                    filters:{pfiltro:'notage.nroaut',type:'string'},
+                    id_grupo:0,
+                    grid:true,
+                    form:true
+                },
+                {
+                    config:{
+                        name: 'fecha_fac',
+                        fieldLabel: 'Fecha Fac',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 100,
+                        format: 'd/m/Y',
+                        renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''},
+                        disabled: true,
+                    },
+                    type:'DateField',
+                    filters:{pfiltro:'notage.fecha_fac',type:'date'},
+                    id_grupo:0,
+                    grid:true,
+                    form:true
+                },
+                {
+                    config:{
+                        name: 'codito_control_fac',
+                        fieldLabel: 'Codito Control Fac',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:255,
+                        disabled: true,
+                    },
+                    type:'TextField',
+                    filters:{pfiltro:'notage.codito_control_fac',type:'string'},
+                    id_grupo:0,
+                    grid:true,
+                    form:true
+                },
+                {
+                    config:{
+                        name: 'monto_total_fac',
+                        fieldLabel: 'Monto Total Fac',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:655362,
+                        disabled: true,
+                    },
+                    type:'NumberField',
+                    filters:{pfiltro:'notage.monto_total_fac',type:'numeric'},
+                    id_grupo:0,
+                    grid:true,
+                    form:true
+                },
+                {
+                    config:{
+                        name: 'iva',
+                        fieldLabel: 'Iva',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:10,
+                        disabled: true,
+                    },
+                    type:'TextField',
+                    filters:{pfiltro:'notage.iva',type:'string'},
+                    id_grupo:0,
+                    grid:true,
+                    form:true
+                },
+
+
+
+                {
+                    config:{
+                        name: 'usr_reg',
+                        fieldLabel: 'Creado por',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:4
+                    },
+                    type:'Field',
+                    filters:{pfiltro:'usu1.cuenta',type:'string'},
+                    id_grupo:0,
+                    grid:true,
+                    form:false
+                },
+                {
+                    config:{
+                        name: 'fecha_reg',
+                        fieldLabel: 'Fecha creación',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 100,
+                        format: 'd/m/Y',
+                        renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
+                    },
+                    type:'DateField',
+                    filters:{pfiltro:'notage.fecha_reg',type:'date'},
+                    id_grupo:0,
+                    grid:true,
+                    form:false
+                },
+                {
+                    config:{
+                        name: 'id_usuario_ai',
+                        fieldLabel: 'Fecha creación',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:4
+                    },
+                    type:'Field',
+                    filters:{pfiltro:'notage.id_usuario_ai',type:'numeric'},
+                    id_grupo:0,
+                    grid:false,
+                    form:false
+                },
+                {
+                    config:{
+                        name: 'usuario_ai',
+                        fieldLabel: 'Funcionaro AI',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:300
+                    },
+                    type:'TextField',
+                    filters:{pfiltro:'notage.usuario_ai',type:'string'},
+                    id_grupo:0,
+                    grid:true,
+                    form:false
+                },
+                {
+                    config:{
+                        name: 'usr_mod',
+                        fieldLabel: 'Modificado por',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:4
+                    },
+                    type:'Field',
+                    filters:{pfiltro:'usu2.cuenta',type:'string'},
+                    id_grupo:0,
+                    grid:true,
+                    form:false
+                },
+                {
+                    config:{
+                        name: 'fecha_mod',
+                        fieldLabel: 'Fecha Modif.',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 100,
+                        format: 'd/m/Y',
+                        renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
+                    },
+                    type:'DateField',
+                    filters:{pfiltro:'notage.fecha_mod',type:'date'},
+                    id_grupo:0,
+                    grid:true,
+                    form:false
+                },
+
+
 
                 {
                     config: {
                         name: 'id_moneda',
-                        origen: 'MONEDA',
-                        allowBlank: false,
-                        //02-09-2019, se comenta poque se tiene que ver las demas monedas para los pagos
-                        //baseParams: {id_moneda_defecto: me.id_moneda_defecto},
                         fieldLabel: 'Moneda',
+                        allowBlank: true,
+                        emptyText: 'Seleccione una Moneda...',
+                        store: new Ext.data.JsonStore({
+                            url: '../../sis_parametros/control/Moneda/listarMoneda',
+                            id: 'id_moneda',
+                            root: 'datos',
+                            sortInfo: {
+                                field: 'codigo',
+                                direction: 'ASC'
+                            },
+                            totalProperty: 'total',
+                            fields: ['id_moneda','codigo'],
+                            remoteSort: true,
+                            baseParams: {par_filtro:'codigo'}
+                        }),
+                        //hidden: true,
+                        valueField: 'id_moneda',
+                        displayField: 'codigo',
                         gdisplayField: 'desc_moneda',
+                        forceSelection: false,
+                        typeAhead: false,
+                        triggerAction: 'all',
+                        lazyRender: true,
+                        mode: 'remote',
+                        pageSize: 20,
+                        queryDelay: 500,
+                        anchor: '99%',
+                        gwidth: 70,
+                        minChars: 2,
+                        renderer: function (value, p, record) {
+                            return String.format('{0}', value?record.data['desc_moneda']:'');
+                        }
+                    },
+                    type: 'ComboBox',
+                    filters: {
+                        pfiltro: 'mon.codigo',
+                        type: 'string'
+                    },
+                    id_grupo: 1,
+                    grid: true,
+                    form: true
+                },
+
+                {
+                    config:{
+                        name: 'tcambio',
+                        fieldLabel: 'Cambio',
+                        allowBlank: false,
+                        anchor: '80%',
                         gwidth: 100,
-                        anchor: '85%',
-                        width: 180
+                        maxLength:1179654
                     },
-                    type: 'ComboRec',
-                    id_grupo: 0,
-                    form: true
-                },
-                {
-                    config: {
-                        name: 'nro_autorizacion',
-                        fieldLabel: 'Autorización',
-                        allowBlank: false,
-                        anchor: '85%',
-                        emptyText: 'autorización ...',
-                        store: new Ext.data.JsonStore(
-                            {
-                                url: '../../sis_contabilidad/control/DocCompraVenta/listarNroAutorizacion',
-                                id: 'nro_autorizacion',
-                                root: 'datos',
-                                sortInfo: {
-                                    field: 'nro_autorizacion',
-                                    direction: 'ASC'
-                                },
-                                totalProperty: 'total',
-                                fields: ['nro_autorizacion', 'nit', 'razon_social'],
-                                remoteSort: true
-                            }),
-                        valueField: 'nro_autorizacion',
-                        hiddenValue: 'nro_autorizacion',
-                        displayField: 'nro_autorizacion',
-                        queryParam: 'nro_autorizacion',
-                        listWidth: '280',
-                        forceSelection: false,
-                        autoSelect: false,
-                        hideTrigger: true,
-                        typeAhead: false,
-                        typeAheadDelay: 75,
-                        lazyRender: false,
-                        mode: 'remote',
-                        pageSize: 20,
-                        width: 180,
-                        boxMinWidth: 200,
-                        queryDelay: 500,
-                        minChars: 1,
-                        maskRe: /[0-9/-]+/i,
-                        regex: /[0-9/-]+/i
-                    },
-                    type: 'ComboBox',
-                    id_grupo: 0,
-                    form: true
+                    type:'NumberField',
+                    filters:{pfiltro:'notage.tcambio',type:'numeric'},
+                    id_grupo:1,
+                    grid:true,
+                    form:true
                 },
 
                 {
-                    config: {
+                    config:{
+                        name: 'estado',
+                        fieldLabel: 'Estado',
+                        allowBlank: false,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:50
+                    },
+                    type:'TextField',
+                    filters:{pfiltro:'notage.estado',type:'string'},
+                    id_grupo:1,
+                    grid:true,
+                    form:true
+                },
+
+
+                {
+                    config:{
                         name: 'nit',
-                        fieldLabel: 'NIT',
-                        qtip: 'Número de indentificación del proveedor',
+                        fieldLabel: 'Nit',
                         allowBlank: false,
-                        emptyText: 'nit ...',
-                        store: new Ext.data.JsonStore(
-                            {
-                                url: '../../sis_contabilidad/control/DocCompraVenta/listarNroNit',
-                                id: 'nit',
-                                root: 'datos',
-                                sortInfo: {
-                                    field: 'nit',
-                                    direction: 'ASC'
-                                },
-                                totalProperty: 'total',
-                                fields: ['nit', 'razon_social'],
-                                remoteSort: true
-                            }),
-                        valueField: 'nit',
-                        hiddenValue: 'nit',
-                        displayField: 'nit',
-                        gdisplayField: 'nit',
-                        queryParam: 'nit',
-                        listWidth: '280',
-                        forceSelection: false,
-                        autoSelect: false,
-                        typeAhead: false,
-                        typeAheadDelay: 75,
-                        hideTrigger: true,
-                        triggerAction: 'query',
-                        lazyRender: false,
-                        mode: 'remote',
-                        pageSize: 20,
-                        queryDelay: 500,
-                        anchor: '85%',
-                        minChars: 1
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:50
                     },
-                    type: 'ComboBox',
-                    id_grupo: 0,
-                    form: true
+                    type:'TextField',
+                    filters:{pfiltro:'notage.nit',type:'string'},
+                    id_grupo:1,
+                    grid:true,
+                    form:true
                 },
                 {
-                    config: {
-                        name: 'id_proveedor',
-                        fieldLabel: 'Proveedor',
-                        anchor: '85%',
-                        tinit: false,
+                    config:{
+                        name: 'nro_nota',
+                        fieldLabel: 'Nro Nota',
+                        allowBlank: false,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:50
+                    },
+                    type:'TextField',
+                    filters:{pfiltro:'notage.nro_nota',type:'string'},
+                    id_grupo:1,
+                    grid:true,
+                    form:true
+                },
+                {
+                    config:{
+                        name: 'nro_aut_nota',
+                        fieldLabel: 'Nro Aut Nota',
                         allowBlank: true,
-                        origen: 'PROVEEDOR',
-                        listWidth: '280',
-                        resizable: true
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:8
                     },
-                    type: 'ComboRec',
-                    id_grupo: 0,
-                    form: true
-                },
-
-                {
-                    config: {
-                        name: 'razon_social',
-                        fieldLabel: 'Razón Social (Impuestos)',
-                        allowBlank: false,
-                        // maskRe: /[A-Za-z0-9 &-. ñ Ñ]/,
-                        // fieldStyle: 'text-transform:uppercase',
-                        style: 'text-transform:uppercase;',
-                        // listeners:{
-                        //     'change': function(field, newValue, oldValue){
-                        //
-                        //         field.suspendEvents(true);
-                        //         field.setValue(newValue.toUpperCase());
-                        //         field.resumeEvents(true);
-                        //     }
-                        // },
-                        anchor: '85%',
-                        maxLength: 180
-                    },
-                    type: 'TextField',
-                    id_grupo: 0,
-                    form: true
+                    type:'TextField',
+                    filters:{pfiltro:'notage.nro_aut_nota',type:'string'},
+                    id_grupo:1,
+                    grid:true,
+                    form:true
                 },
                 {
-                    config: {
-                        name: 'nro_documento',
-                        fieldLabel: 'Nro Factura / Doc',
-                        allowBlank: false,
-                        anchor: '85%',
-                        allowDecimals: false,
-                        maxLength: 100
-                        // maskRe: /[0-9/-]+/i,
-                        // regex: /[0-9/-]+/i
-
-
-                    },
-                    // type:'NumberField',
-                    type: 'TextField',
-                    id_grupo: 1,
-                    form: true
-                },
-                {
-                    config: {
-                        name: 'dia',
-                        fieldLabel: 'Día',
-                        allowBlank: true,
-                        allowNEgative: false,
-                        allowDecimal: false,
-                        anchor: '85%',
-                        maxValue: 31,
-                        minValue: 1,
-                        width: 40
-                    },
-                    type: 'NumberField',
-                    id_grupo: 1,
-                    form: true
-                },
-                {
-                    config: {
+                    config:{
                         name: 'fecha',
                         fieldLabel: 'Fecha',
                         allowBlank: false,
-                        anchor: '85%',
-                        format: 'd/m/Y',
-                        readOnly: true,
-                        renderer: function (value, p, record) {
-                            return value ? value.dateFormat('d/m/Y') : ''
-                        }
-                    },
-                    type: 'DateField',
-                    id_grupo: 1,
-                    form: true
-                },
-                {
-                    config: {
-                        name: 'fecha_vencimiento',
-                        fieldLabel: 'Fecha de Vencimiento de la Deuda',
-                        allowBlank: true,
-                        anchor: '85%',
-                        format: 'd/m/Y',
-                        readOnly: true,
-                        renderer: function (value, p, record) {
-                            return value ? value.dateFormat('d/m/Y') : ''
-                        }
-                    },
-                    type: 'DateField',
-                    id_grupo: 1,
-                    form: true
-                },
-                {
-                    config: {
-                        name: 'nro_dui',
-                        fieldLabel: 'DUI',
-                        allowBlank: true,
-                        anchor: '85%',
+                        anchor: '80%',
                         gwidth: 100,
-                        maxLength: 16,
-                        minLength: 9,
-                        listeners: {
-                            'change': function (field, newValue, oldValue) {
+                        format: 'd/m/Y',
+                        renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
+                    },
+                    type:'DateField',
+                    filters:{pfiltro:'notage.fecha',type:'date'},
+                    id_grupo:1,
+                    grid:true,
+                    form:true
+                },
+                {
+                    config:{
+                        name: 'razon',
+                        fieldLabel: 'Razon',
+                        allowBlank: false,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:50
+                    },
+                    type:'TextField',
+                    filters:{pfiltro:'notage.razon',type:'string'},
+                    id_grupo:1,
+                    grid:true,
+                    form:true
+                },
 
-                                field.suspendEvents(true);
-                                field.setValue(newValue.toUpperCase());
-                                field.resumeEvents(true);
-                            }
-                        },
-                    },
-                    type: 'TextField',
-                    id_grupo: 1,
-                    form: true
-                },
                 {
-                    config: {
-                        name: 'codigo_control',
-                        fieldLabel: 'Código de Control',
+                    config:{
+                        name: 'billete',
+                        fieldLabel: 'Billete',
                         allowBlank: true,
-                        anchor: '85%',
+                        anchor: '80%',
                         gwidth: 100,
-                        enableKeyEvents: true,
-                        fieldStyle: 'text-transform: uppercase',
-                        maxLength: 200,
-                        validator: function (v) {
-                            return /^0|^([A-Fa-f0-9]{2,2}\-)*[A-Fa-f0-9]{2,2}$/i.test(v) ? true : 'Introducir texto de la forma xx-xx, donde x representa dígitos  hexadecimales  [0-9]ABCDEF.';
-                        },
-                        maskRe: /[0-9ABCDEF/-]+/i,
-                        regex: /[0-9ABCDEF/-]+/i
+                        maxLength:255
                     },
-                    type: 'TextField',
-                    id_grupo: 1,
-                    form: true
+                    type:'TextField',
+                    filters:{pfiltro:'notage.billete',type:'string'},
+                    id_grupo:2,
+                    grid:true,
+                    form:true
+                },
+
+                {
+                    config:{
+                        name: 'monto_total',
+                        fieldLabel: 'Monto Total',
+                        allowBlank: false,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:1179654
+                    },
+                    type:'NumberField',
+                    filters:{pfiltro:'notage.monto_total',type:'numeric'},
+                    id_grupo:2,
+                    grid:true,
+                    form:true
                 },
                 {
-                    config: {
-                        name: 'estacion',
-                        fieldLabel: 'Estacion',
-                        qtip: 'Estacion donde se encentra el punto de venta y la agencia',
+                    config:{
+                        name: 'excento',
+                        fieldLabel: 'Excento',
+                        allowBlank: false,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:1179654
+                    },
+                    type:'NumberField',
+                    filters:{pfiltro:'notage.excento',type:'numeric'},
+                    id_grupo:2,
+                    grid:true,
+                    form:true
+                },
+                {
+                    config:{
+                        name: 'total_devuelto',
+                        fieldLabel: 'Total Devuelto',
+                        allowBlank: false,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:1179654
+                    },
+                    type:'NumberField',
+                    filters:{pfiltro:'notage.total_devuelto',type:'numeric'},
+                    id_grupo:2,
+                    grid:true,
+                    form:true
+                },
+                {
+                    config:{
+                        name: 'credfis',
+                        fieldLabel: 'Credifis',
+                        allowBlank: false,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:1179654
+                    },
+                    type:'NumberField',
+                    filters:{pfiltro:'notage.credfis',type:'numeric'},
+                    id_grupo:2,
+                    grid:true,
+                    form:true
+                },
+
+                {
+                    config:{
+                        name: 'codigo_control',
+                        fieldLabel: 'Codigo Control',
                         allowBlank: true,
-                        anchor: '85%',
-                        gwidth: 120,
-                        typeAhead: true,
-                        triggerAction: 'all',
-                        lazyRender: true,
-                        mode: 'local',
-                        store: ['CBB', 'LPB', 'SRZ', 'CIJ', 'TJA', 'POI', 'ORU', 'TDD', 'SRE', 'UYU', 'CCA', 'RIB', 'RBQ', 'GYA', 'BYC']
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:255
                     },
-                    type: 'ComboBox',
-                    id_grupo: 1,
-                    filters: {
-                        type: 'list',
-                        options: ['CBB', 'LPB', 'SRZ', 'CIJ', 'TJA', 'POI', 'ORU', 'TDD', 'SRE', 'UYU', 'CCA', 'RIB', 'RBQ', 'GYA', 'BYC']
-                    },
-                    grid: true,
-                    egrid: true,
-                    form: true
+                    type:'TextField',
+                    filters:{pfiltro:'notage.codigo_control',type:'string'},
+                    id_grupo:2,
+                    grid:true,
+                    form:true
                 },
+
                 {
-                    config: {
-                        name: 'id_punto_venta',
-                        fieldLabel: 'Punto de Venta/Agencia IATA',
+                    config:{
+                        name: 'neto',
+                        fieldLabel: 'Neto',
                         allowBlank: true,
-                        anchor: '85%',
-                        emptyText: 'Elija un punto de venta...',
-                        store: new Ext.data.JsonStore(
-                            {
-                                url: '../../sis_ventas_facturacion/control/PuntoVenta/listarPuntoVenta',
-                                id: 'id_punto_venta',
-                                root: 'datos',
-                                sortInfo: {
-                                    field: 'codigo',
-                                    direction: 'ASC'
-                                },
-                                totalProperty: 'total',
-                                fields: ['id_punto_venta', 'nombre', 'codigo'],
-                                remoteSort: true,
-                                baseParams: {par_filtro: 'puve.nombre#puve.codigo'}
-                            }),
-                        tpl: '<tpl for="."><div class="x-combo-list-item"><p>{nombre}</p><p>{codigo}</p></div></tpl>',
-                        valueField: 'id_punto_venta',
-                        hiddenValue: 'id_punto_venta',
-                        displayField: 'nombre',
-                        gdisplayField: 'nombre',
-                        listWidth: '280',
-                        forceSelection: true,
-                        typeAhead: false,
-                        triggerAction: 'all',
-                        lazyRender: true,
-                        mode: 'remote',
-                        pageSize: 20,
-                        queryDelay: 500,
-                        minChars: 2
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength:655362
                     },
-                    type: 'ComboBox',
-                    id_grupo: 1,
-                    form: true
+                    type:'NumberField',
+                    filters:{pfiltro:'notage.neto',type:'numeric'},
+                    id_grupo:2,
+                    grid:true,
+                    form:true
                 },
                 {
-                    config: {
-                        name: 'id_agencia',
-                        fieldLabel: 'Agencia IATA/Agencia No IATA',
-                        anchor: '85%',
-                        allowBlank: true,
-                        emptyText: 'Elija una agencia...',
-                        store: new Ext.data.JsonStore(
-                            {
-                                url: '../../sis_obingresos/control/Agencia/listarAgencia',
-                                id: 'id_agencia',
-                                root: 'datos',
-                                sortInfo: {
-                                    field: 'codigo_noiata',
-                                    direction: 'ASC'
-                                },
-                                totalProperty: 'total',
-                                fields: ['id_agencia', 'nombre', 'codigo_noiata', 'codigo', 'tipo_agencia', 'codigo_int'],
-                                remoteSort: true,
-                                baseParams: {
-                                    par_filtro: 'age.nombre#age.codigo_noiata#age.codigo#age.tipo_agencia#codigo_int',
-                                    tipo_agencia: ''
-                                }
-                            }),
-                        tpl: '<tpl for="."><div class="x-combo-list-item"><p>{nombre}</p><p>Codigo IATA: {codigo}</p><p>Codigo NO IATA: {codigo_noiata}</p><p>OficceId: {codigo_int}</p></div></tpl>',
-                        valueField: 'id_agencia',
-                        hiddenValue: 'id_agencia',
-                        displayField: 'nombre',//codigo_noiata
-                        gdisplayField: 'nombre',//codigo_noiata
-                        listWidth: '280',
-                        forceSelection: true,
-                        typeAhead: false,
-                        triggerAction: 'all',
-                        lazyRender: true,
-                        mode: 'remote',
-                        pageSize: 20,
-                        queryDelay: 500,
-                        minChars: 2
-                    },
-                    type: 'ComboBox',
-                    id_grupo: 1,
-                    form: true
-                },
-                {
-                    config: {
+                    config:{
                         name: 'obs',
                         fieldLabel: 'Obs',
                         allowBlank: true,
-                        anchor: '85%',
+                        anchor: '80%',
                         gwidth: 100,
-                        maxLength: 400
+                        maxLength:255
                     },
-                    type: 'TextArea',
-                    id_grupo: 1,
-                    bottom_filter: true,
-                    form: true
+                    type:'TextField',
+                    filters:{pfiltro:'notage.obs',type:'string'},
+                    id_grupo:2,
+                    grid:true,
+                    form:true
                 },
-                {
-                    config: {
-                        name: 'importe_doc',
-                        fieldLabel: 'Monto',
-                        allowBlank: false,
-                        allowNegative: false,
 
-                        anchor: '80%',
-                        gwidth: 100,
-                        maxLength: 1179650
-                    },
-                    type: 'NumberField',
-                    id_grupo: 2,
-                    form: true
-                },
-                {
-                    config: {
-                        name: 'cambio',
-                        fieldLabel: 'Tipo de Cambio',
-                        allowBlank: false,
-                        anchor: '80%',
-                        maxLength: 100,
-                        allowDecimals: true,
-                        decimalPrecision: 15
-                    },
-                    type: 'NumberField',
-                    valorInicial: 1,
-                    id_grupo: 2,
-                    form: true
-                },
-                {
-                    config: {
-                        name: 'importe_descuento',
-                        fieldLabel: 'Descuento',
-                        allowBlank: true,
-                        allowNegative: false,
-                        anchor: '80%',
-                        gwidth: 100
-                    },
-                    type: 'NumberField',
-                    id_grupo: 2,
-                    form: true
-                },
-                {
-                    config: {
-                        name: 'importe_neto',
-                        qtip: 'Importe del documento menos descuentos, sobre este monto se calcula el iva',
-                        fieldLabel: 'Monto Neto',
-                        allowBlank: false,
-                        allowNegative: false,
-                        readOnly: true,
-                        anchor: '80%',
-                        gwidth: 100,
-                        maxLength: 1179650
-                    },
-                    type: 'NumberField',
-                    id_grupo: 2,
-                    form: true
-                },
-                {
-                    config: {
-                        name: 'importe_excento',
-                        qtip: 'sobre el importe ento, ¿que monto es exento de impuestos?',
-                        fieldLabel: 'Exento',
-                        allowNegative: false,
-                        allowBlank: true,
-                        anchor: '80%',
-                        gwidth: 100
-                    },
-                    type: 'NumberField',
-                    id_grupo: 2,
-                    form: true
-                },
-                {
-                    config: {
-                        name: 'importe_pendiente',
-                        fieldLabel: (me.data.tipoDoc == 'compra') ? 'Cuentas por  Pagar' : 'Cuentas por Cobrar',
-                        qtip: 'Usualmente una cuenta pendiente de  cobrar o  pagar, si la cuenta se aplica posterior a la emisión del documento',
-                        allowBlank: true,
-                        allowNegative: false,
-                        anchor: '80%',
-                        gwidth: 100
-                    },
-                    type: 'NumberField',
-                    filters: {pfiltro: 'dcv.importe_pendiente', type: 'numeric'},
-                    id_grupo: 2,
-                    form: true
-                },
-                {
-                    config: {
-                        name: 'importe_anticipo',
-                        fieldLabel: 'Anticipo',
-                        qtip: 'Importe pagado por anticipado al documento',
-                        allowBlank: true,
-                        allowNegative: false,
-                        anchor: '80%'
-                    },
-                    type: 'NumberField',
-                    filters: {pfiltro: 'dcv.importe_anticipo', type: 'numeric'},
-                    id_grupo: 2,
-                    form: true
-                },
-                {
-                    config: {
-                        name: 'importe_retgar',
-                        fieldLabel: 'Ret. Garantia',
-                        qtip: 'Importe retenido por garantia',
-                        allowBlank: true,
-                        allowNegative: false,
-                        anchor: '80%'
-                    },
-                    type: 'NumberField',
-                    filters: {pfiltro: 'dcv.importe_retgar', type: 'numeric'},
-                    id_grupo: 2,
-                    form: true
-                },
-                {
-                    config: {
-                        sysorigen: 'sis_contabilidad',
-                        name: 'id_auxiliar',
-                        origen: 'AUXILIAR',
-                        readOnly: true,
-                        allowBlank: true,
-                        fieldLabel: 'Cuenta Corriente',
-                        baseParams: {corriente: 'si'},
-                        gdisplayField: 'codigo_auxiliar',//mapea al store del grid
-                        anchor: '85%',
-                        listWidth: 350
-                    },
-                    type: 'ComboRec',
-                    id_grupo: 2,
-                    form: true
-                },
-                {
-                    config: {
-                        name: 'importe_descuento_ley',
-                        fieldLabel: 'Descuentos de Ley',
-                        allowBlank: true,
-                        readOnly: true,
-                        anchor: '80%',
-                        allowNegative: false,
-                        gwidth: 100
-                    },
-                    type: 'NumberField',
-                    id_grupo: 2,
-                    form: true
-                },
-                {
-                    config: {
-                        name: 'importe_ice',
-                        fieldLabel: 'ICE',
-                        allowBlank: true,
-                        allowNegative: false,
-                        anchor: '80%',
-                        gwidth: 100
-                    },
-                    type: 'NumberField',
-                    id_grupo: 2,
-                    form: true
-                },
-                {
-                    config: {
-                        name: 'importe_iva',
-                        fieldLabel: 'IVA',
-                        allowBlank: true,
-                        readOnly: true,
-                        allowNegative: false,
-                        anchor: '80%',
-                        gwidth: 100
-                    },
-                    type: 'NumberField',
-                    id_grupo: 2,
-                    form: true
-                },
-                {
-                    config: {
-                        name: 'importe_it',
-                        fieldLabel: 'IT',
-                        allowBlank: true,
-                        allowNegative: false,
-                        anchor: '80%',
-                        readOnly: true,
-                        gwidth: 100
-                    },
-                    type: 'NumberField',
-                    id_grupo: 2,
-                    form: true
-                },
-                {
-                    config: {
-                        name: 'importe_pago_liquido',
-                        fieldLabel: 'Líquido Pagado',
-                        allowBlank: true,
-                        allowNegative: false,
-                        readOnly: true,
-                        anchor: '80%',
-                        gwidth: 100
-                    },
-                    type: 'NumberField',
-                    id_grupo: 2,
-                    form: true
-                },
-                {
-                    config: {
-                        labelSeparator: '',
-                        inputType: 'hidden',
-                        name: 'new_relation_editable'
-                    },
-                    type: 'Field',
-                    form: true
-                },
-                {
-                    config: {
-                        labelSeparator: '',
-                        inputType: 'hidden',
-                        name: 'boton_rendicion'
-                    },
-                    type: 'Field',
-                    form: true
-                },
-                {
-                    config: {
-                        labelSeparator: '',
-                        inputType: 'hidden',
-                        name: 'mod_rev'
-                    },
-                    type: 'Field',
-                    form: true
-                }
+
+
+
 
             ];
 
@@ -853,7 +760,22 @@ header("content-type: text/javascript; charset=UTF-8");
         iniciarEventos: function () {
 
 
-            this.Cmp.nro_autorizacion.on('select', function (cmb, rec, i) {
+            this.Cmp.nroaut.on('blur', function () {
+                const nroFac = this.Cmp.nrofac.getValue();
+                const nroAut = this.Cmp.nroaut.getValue();
+
+                this.obtenerDatosFactucom({nroAut: nroAut, nroFac: nroFac});
+            }, this);
+            this.Cmp.nrofac.on('blur', function () {
+                const nroFac = this.Cmp.nrofac.getValue();
+                const nroAut = this.Cmp.nroaut.getValue();
+                this.obtenerDatosFactucom({nroAut: nroAut, nroFac: nroFac});
+            }, this);
+
+
+
+
+            /*this.Cmp.nro_autorizacion.on('select', function (cmb, rec, i) {
 
                 if (this.data.tipoDoc == 'compra') {
                     this.Cmp.nit.setValue(rec.data.nit);
@@ -940,23 +862,72 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.Cmp.tipo_cambio.reset();
                     //this.Cmp.tipo_cambio.reset();
                 }
-            }, this);
+            }, this);*/
 
 
 
         },
 
 
+        obtenerDatosFactucom: function ({nroAut, nroFac}) {
+
+            if(nroAut !== '' && nroFac !== '') {
+                Phx.CP.loadingShow();
+
+                Ext.Ajax.request({
+                    url: '../../sis_devoluciones/control/NotaAgencia/listarDocumentoJson',
+                    params: {
+                        'nro_aut': nroAut,
+                        'nro_fac': nroFac,
+                    },
+                    success: function (resp) {
+
+                        console.log(resp)
+
+                        Phx.CP.loadingHide();
+
+                        var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+                        const dataJson = JSON.parse(reg.ROOT.datos.mensaje);
+                        console.log('dataJson',dataJson)
+                        //this.cmpIdBoleto.setValue(reg.datos[0].id_boleto);
+                        if(typeof dataJson === 'object') {
+
+                            this.Cmp.id_doc_compra_venta.setValue(dataJson.id_doc_compra_venta);
+                            this.Cmp.id_doc_compra_venta.setDisabled(true);
+
+                            this.Cmp.fecha_fac.setValue(dataJson.fecha);
+                            this.Cmp.codito_control_fac.setValue(dataJson.codigo_control);
+                            this.Cmp.monto_total_fac.setValue(dataJson.importe_doc);
+                            this.Cmp.iva.setValue(dataJson.importe_iva);
+
+
+
+                        } else {
+                            this.Cmp.id_doc_compra_venta.setValue('');
+                        }
+                        console.log('reg',reg)
+                    },
+                    failure: this.conexionFailure,
+                    timeout: this.timeout,
+                    scope: this
+                })
+            }
+
+        },
+
+
+
         onEdit: function () {
-            this.Cmp.nit.modificado = true;
-            this.Cmp.nro_autorizacion.modificado = true;
-            this.Cmp.fecha.setReadOnly(false);
+            this.Cmp.id_depto_conta.modificado = true;
+            this.Cmp.id_doc_compra_venta.modificado = true;
+            //this.Cmp.fecha.setReadOnly(false);
+
+            console.log('this.data',this.data)
             this.accionFormulario = 'EDIT';
             if (this.data.datosOriginales) {
                 this.loadForm(this.data.datosOriginales);
+
             }
-
-
 
 
 
@@ -981,61 +952,10 @@ header("content-type: text/javascript; charset=UTF-8");
 
         onSubmit: function (o) {
             var me = this;
-            if (me.regitrarDetalle == 'si') {
-                //  validar formularios
-                var arra = [], total_det = 0.0, i;
-                for (i = 0; i < me.megrid.store.getCount(); i++) {
-                    record = me.megrid.store.getAt(i);
-                    arra[i] = record.data;
-                    total_det = total_det + (record.data.precio_total) * 1
-
-                }
-
-                //si tiene conceptos eliminados es necesari oincluirlos ...
 
 
-                me.argumentExtraSubmit = {
-                    'regitrarDetalle': me.regitrarDetalle,
-                    'id_doc_conceto_elis': this.conceptos_eliminados.join(),
-                    'json_new_records': JSON.stringify(arra, function replacer(key, value) {
-                        if (typeof value === 'string') {
-                            return String(value).replace(/&/g, "%26")
-                        }
-                        return value;
-                    })
-                };
+            Phx.vista.FormNotaAgencia.superclass.onSubmit.call(this, o, undefined, true);
 
-                if (i > 0 && !this.editorDetail.isVisible()) {
-
-                    if (this.aux != 'Póliza de Importación - DUI') {
-                        // importe_pago_liquido
-                        if ((total_det.toFixed(2) * 1) == this.Cmp.importe_doc.getValue()) {
-                            Phx.vista.FormNotaAgencia.superclass.onSubmit.call(this, o, undefined, true);
-                        }
-                        else {
-                            alert('El total del detalle no cuadra con el total del documento');
-                        }
-
-                    } else {
-
-
-                        if ((total_det.toFixed(2) * 1) == this.Cmp.importe_pago_liquido.getValue()) {
-                            Phx.vista.FormNotaAgencia.superclass.onSubmit.call(this, o, undefined, true);
-                        }
-                        else {
-                            alert('El total del detalle no cuadra con el Liquido Pagado');
-                        }
-
-                    }
-                }
-                else {
-                    alert('no tiene ningun concepto  en el documento')
-                }
-            }
-            else {
-                me.argumentExtraSubmit = {'regitrarDetalle': me.regitrarDetalle};
-                Phx.vista.FormNotaAgencia.superclass.onSubmit.call(this, o, undefined, true);
-            }
         },
 
 
@@ -1045,98 +965,6 @@ header("content-type: text/javascript; charset=UTF-8");
             this.panel.close();
         },
 
-        checkRelacionConcepto: function (cfg) {
-            var me = this;
-            Phx.CP.loadingShow();
-            Ext.Ajax.request({
-                url: '../../sis_contabilidad/control/DocConcepto/verificarRelacionConcepto',
-                params: {
-                    id_centro_costo: cfg.id_centro_costo,
-                    id_gestion: cfg.id_gestion,
-                    id_concepto_ingas: cfg.id_concepto_ingas,
-                    relacion: me.data.tipoDoc
-                },
-                success: function (resp) {
-                    Phx.CP.loadingHide();
-                    var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-
-                },
-                failure: function (resp) {
-
-                    this.conexionFailure(resp);
-                    Phx.CP.loadingHide();
-                },
-                timeout: this.timeout,
-                scope: this
-            });
-
-        },
-        getPlantilla: function (id_plantilla) {
-            Phx.CP.loadingShow();
-
-            Ext.Ajax.request({
-                // form:this.form.getForm().getEl(),
-                url: '../../sis_parametros/control/Plantilla/listarPlantilla',
-                params: {id_plantilla: id_plantilla, start: 0, limit: 1},
-                success: this.successPlantilla,
-                failure: this.conexionFailure,
-                timeout: this.timeout,
-                scope: this
-            });
-
-        },
-        successPlantilla: function (resp) {
-            Phx.CP.loadingHide();
-            var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-            if (reg.total == 1) {
-
-                this.Cmp.id_plantilla.fireEvent('select', this.Cmp.id_plantilla, {data: reg.datos[0]}, 0);
-                this.Cmp.nro_autorizacion.fireEvent('change', this.Cmp.nro_autorizacion, this.data.datosOriginales.data.nro_autorizacion)
-
-
-            } else {
-                alert('error al recuperar la plantilla para editar, actualice su navegador');
-            }
-        },
-
-
-        cargarRazonSocial: function (nit) {
-            //Busca en la base de datos la razon social en función del NIT digitado. Si Razon social no esta vacío, entonces no hace nada
-            if (this.getComponente('razon_social').getValue() == '') {
-                Phx.CP.loadingShow();
-                Ext.Ajax.request({
-                    url: '../../sis_contabilidad/control/DocCompraVenta/obtenerRazonSocialxNIT',
-                    params: {'nit': this.Cmp.nit.getValue()},
-                    success: function (resp) {
-                        Phx.CP.loadingHide();
-                        var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-                        var razonSocial = objRes.ROOT.datos.razon_social;
-                        this.getComponente('razon_social').setValue(razonSocial);
-                        this.getComponente('id_moneda').setValue(1);
-                        this.getComponente('id_moneda').setRawValue('Bolivianos');
-
-                    },
-                    failure: this.conexionFailure,
-                    timeout: this.timeout,
-                    scope: this
-                });
-            }
-
-        },
-        mensaje_: function (titulo, mensaje) {
-
-            var tipo = 'ext-mb-warning';
-            Ext.MessageBox.show({
-                title: titulo,
-                msg: mensaje,
-                buttons: Ext.MessageBox.OK,
-                icon: tipo
-            })
-
-        },
-        controlMiles: function (value) {
-            return value.replace(',', "")
-        }
 
 
     })

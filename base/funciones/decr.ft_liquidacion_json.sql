@@ -36,6 +36,10 @@ DECLARE
     v_tipo_tab_liqui varchar;
     v_ids_liqui int[];
     v_ids_factucom varchar;
+    v_administradora varchar;
+    v_fecha_ini date;
+    v_fecha_fin date;
+    v_id_liquidacion_array int[];
 
 
 BEGIN
@@ -72,6 +76,7 @@ BEGIN
                 END IF;
             END IF;
 
+
             if(pxp.f_existe_parametro(p_tabla, 'id_liquidacion' )) then
 
 
@@ -83,6 +88,42 @@ BEGIN
                 where tl.id_liquidacion = v_id_liquidacion;
             END IF;
 
+
+            if(pxp.f_existe_parametro(p_tabla, 'administradora' )) then
+                if(v_parametros.administradora != '') then
+                    v_administradora := v_parametros.administradora;
+                END IF;
+            END IF;
+
+
+            if(pxp.f_existe_parametro(p_tabla, 'fecha_ini' )) then
+                if(v_parametros.fecha_ini is not null) then
+                    v_fecha_ini := v_parametros.fecha_ini;
+                END IF;
+            END IF;
+            if(pxp.f_existe_parametro(p_tabla, 'fecha_fin' )) then
+                if(v_parametros.fecha_fin is not null) then
+                    v_fecha_fin := v_parametros.fecha_fin;
+                END IF;
+            END IF;
+
+            if(v_administradora is not null and v_fecha_ini is not null and v_fecha_fin is not null) then
+
+                --obtenemos todas las liquidaciones que tengan forma de pago con tarjeta de credito y ademas entre un
+                -- determinado rango de fechas y con el tipo de administradora
+                SELECT array_agg(tl.id_liquidacion)
+                into v_id_liquidacion_array
+                FROM decr.tliquidacion tl
+                inner join decr.tliqui_forma_pago tlfp on tlfp.id_liquidacion = tl.id_liquidacion
+                where tlfp.administradora = v_administradora
+                AND tl.fecha_reg::date BETWEEN v_fecha_ini::date and v_fecha_fin::date;
+
+                IF v_id_liquidacion_array is null then
+                    raise EXCEPTION '%', 'NO EXISTE DATOS PARA ESTOS PARAMETROS DE BUSQUEDA';
+                END IF;
+
+
+            END IF;
 
 
             select count(tl.id_liquidacion)
@@ -97,7 +138,8 @@ BEGIN
             WHERE (case when v_id_liquidacion is not null then tl.id_liquidacion = v_id_liquidacion else 1=1 end)
             AND (case when v_tipo_tab_liqui is not null then ttdl.tipo_documento = v_tipo_tab_liqui else 1=1 end)
                     AND (CASE WHEN v_filtro_value is not null then tl.nro_liquidacion like '%' ||v_filtro_value|| '%' else 1=1 end)
-                    AND (CASE WHEN v_query_value is not null then tl.nro_liquidacion like '%' ||v_query_value|| '%' else 1=1 end);
+                    AND (CASE WHEN v_query_value is not null then tl.nro_liquidacion like '%' ||v_query_value|| '%' else 1=1 end)
+              AND (CASE WHEN v_id_liquidacion_array is not null then tl.id_liquidacion = any (v_id_liquidacion_array) else 1=1 end);
 
 
 
@@ -125,6 +167,7 @@ BEGIN
                     AND (case when v_tipo_tab_liqui is not null then ttdl.tipo_documento = v_tipo_tab_liqui else 1=1 end)
                     AND (CASE WHEN v_filtro_value is not null then tl.nro_liquidacion like '%' ||v_filtro_value|| '%' else 1=1 end)
                     AND (CASE WHEN v_query_value is not null then tl.nro_liquidacion like '%' ||v_query_value|| '%' else 1=1 end)
+                    AND (CASE WHEN v_id_liquidacion_array is not null then tl.id_liquidacion = any (v_id_liquidacion_array) else 1=1 end)
                     order by tl.id_liquidacion DESC
                     LIMIT v_parametros.cantidad OFFSET v_parametros.puntero
 
@@ -709,8 +752,9 @@ BEGIN
                                         liqui_tabla.nro_nota,
                                         liqui_tabla.sum_total_descuentos,
                                         liqui_tabla.descuentos,
-                                        liqui_tabla.sum_descuentos
-
+                                        liqui_tabla.sum_descuentos,
+                                        liqui_tabla.liqui_forma_pago,
+                                        liqui_tabla.notas
                                  FROM decr.tliquidacion tl
                                           INNER JOIN (SELECT *
                                                       FROM json_populate_recordset(NULL::decr.json_type_liquidacion,

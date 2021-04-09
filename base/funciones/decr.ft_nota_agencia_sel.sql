@@ -75,9 +75,11 @@ BEGIN
 						usu1.cuenta as usr_reg,
 						usu2.cuenta as usr_mod,
 						mon.moneda as desc_moneda,
-						notage.id_liquidacion
+						notage.id_liquidacion,
+						td.nombre as desc_depto
 						from decr.tnota_agencia notage
 						inner join param.tmoneda mon on mon.id_moneda = notage.id_moneda
+						inner join param.tdepto td on td.id_depto = notage.id_depto_conta
 						inner join segu.tusuario usu1 on usu1.id_usuario = notage.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = notage.id_usuario_mod
 				        where  ';
@@ -105,6 +107,7 @@ BEGIN
 			v_consulta:='select count(id_nota_agencia)
 					    from decr.tnota_agencia notage
 					    inner join param.tmoneda mon on mon.id_moneda = notage.id_moneda
+					    inner join param.tdepto td on td.id_depto = notage.id_depto_conta
 					    inner join segu.tusuario usu1 on usu1.id_usuario = notage.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = notage.id_usuario_mod
 					    where ';

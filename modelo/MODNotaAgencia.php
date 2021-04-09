@@ -56,6 +56,7 @@ class MODNotaAgencia extends MODbase{
 		$this->captura('usr_mod','varchar');
 		$this->captura('desc_moneda','varchar');
 		$this->captura('id_liquidacion','int4');
+		$this->captura('desc_depto','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -167,6 +168,25 @@ class MODNotaAgencia extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+
+
+    function listarDocumentoJson(){
+        $this->procedimiento='decr.ft_nota_agencia_ime';
+        $this->transaccion='DECR_DOC_JSON';
+        $this->tipo_procedimiento='IME';
+
+        $this->setParametro('nro_aut','nro_aut','varchar');
+        $this->setParametro('nro_fac','nro_fac','varchar');
+
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
 			
 }
 ?>

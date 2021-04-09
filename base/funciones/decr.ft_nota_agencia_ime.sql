@@ -27,6 +27,7 @@ DECLARE
 	v_mensaje_error         text;
 	v_id_nota_agencia	integer;
 	v_id_liquidacion	integer;
+    v_json	varchar;
 
 BEGIN
 
@@ -201,6 +202,36 @@ BEGIN
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Nota Agencia eliminado(a)'); 
             v_resp = pxp.f_agrega_clave(v_resp,'id_nota_agencia',v_parametros.id_nota_agencia::varchar);
               
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+	/*********************************
+ 	#TRANSACCION:  'DECR_DOC_JSON'
+ 	#DESCRIPCION:	Eliminacion de registros
+ 	#AUTOR:		admin
+ 	#FECHA:		26-04-2020 21:14:13
+	***********************************/
+
+	elsif(p_transaccion='DECR_DOC_JSON')then
+
+		begin
+
+
+            SELECT TO_JSON(doc)::text
+            into v_json
+            from (
+                select *
+		        FROM conta.tdoc_compra_venta
+                where nro_autorizacion = v_parametros.nro_aut
+                  and nro_documento = v_parametros.nro_fac
+                limit 1
+		          ) doc;
+
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'json',v_json);
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje',v_json);
+
             --Devuelve la respuesta
             return v_resp;
 
