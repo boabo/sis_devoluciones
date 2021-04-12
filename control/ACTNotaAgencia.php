@@ -7,7 +7,7 @@
 *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
 */
 
-class ACTNotaAgencia extends ACTbase{    
+class ACTNotaAgencia extends ACTbase {
 
 	function listarNotaAgencia(){
 		$this->objParam->defecto('ordenacion','id_nota_agencia');
@@ -16,6 +16,9 @@ class ACTNotaAgencia extends ACTbase{
 
         if($this->objParam->getParametro('id_liquidacion') != ''){
             $this->objParam->addFiltro("notage.id_liquidacion = ".$this->objParam->getParametro('id_liquidacion'));
+        }
+        if($this->objParam->getParametro('id_periodo') != ''){
+            $this->objParam->addFiltro("notage.id_periodo = ".$this->objParam->getParametro('id_periodo'));
         }
         
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
@@ -47,6 +50,11 @@ class ACTNotaAgencia extends ACTbase{
 	function listarDocumentoJson(){
 			$this->objFunc=$this->create('MODNotaAgencia');
 		$this->res=$this->objFunc->listarDocumentoJson($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+	function obtenerRazonSocialxNIT(){
+			$this->objFunc=$this->create('MODNotaAgencia');
+		$this->res=$this->objFunc->obtenerRazonSocialxNIT($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 			

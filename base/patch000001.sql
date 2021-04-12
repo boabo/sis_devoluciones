@@ -425,6 +425,9 @@ CREATE TABLE decr.tnota_agencia (
 WITHOUT OIDS;
 
 
+alter table decr.tnota_agencia
+    add id_periodo integer;
+
 
 alter table decr.ttipo_doc_liquidacion
     add descripcion varchar(255);

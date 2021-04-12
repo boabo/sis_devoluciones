@@ -84,7 +84,8 @@ BEGIN
 			usuario_ai,
 			id_usuario_mod,
 			fecha_mod,
-        	                               id_liquidacion
+        	                               id_liquidacion,
+        	                               id_periodo
           	) values(
 			'activo',
 			v_parametros.id_doc_compra_venta,
@@ -117,7 +118,8 @@ BEGIN
 			v_parametros._nombre_usuario_ai,
 			null,
 			null,
-            v_id_liquidacion
+            v_id_liquidacion,
+          	         v_parametros.id_periodo
 							
 			
 			
@@ -225,6 +227,36 @@ BEGIN
 		        FROM conta.tdoc_compra_venta
                 where nro_autorizacion = v_parametros.nro_aut
                   and nro_documento = v_parametros.nro_fac
+                limit 1
+		          ) doc;
+
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'json',v_json);
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje',v_json);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+	/*********************************
+ 	#TRANSACCION:  'DECR_NIT_JSON'
+ 	#DESCRIPCION:	Eliminacion de registros
+ 	#AUTOR:		admin
+ 	#FECHA:		26-04-2020 21:14:13
+	***********************************/
+
+	elsif(p_transaccion='DECR_NIT_JSON')then
+
+		begin
+
+
+            SELECT TO_JSON(doc)::text
+            into v_json
+            from (
+                select razon_social, nit
+		        FROM conta.tdoc_compra_venta
+                where nit = v_parametros.nit
+                order by fecha_reg desc
                 limit 1
 		          ) doc;
 

@@ -99,6 +99,7 @@ class MODNotaAgencia extends MODbase{
 		$this->setParametro('neto','neto','numeric');
 		$this->setParametro('obs','obs','varchar');
 		$this->setParametro('id_liquidacion','id_liquidacion','int4');
+		$this->setParametro('id_periodo','id_periodo','int4');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -142,6 +143,7 @@ class MODNotaAgencia extends MODbase{
 		$this->setParametro('neto','neto','numeric');
 		$this->setParametro('obs','obs','varchar');
         $this->setParametro('id_liquidacion','id_liquidacion','int4');
+        $this->setParametro('id_periodo','id_periodo','int4');
 
 
         //Ejecuta la instruccion
@@ -177,6 +179,21 @@ class MODNotaAgencia extends MODbase{
 
         $this->setParametro('nro_aut','nro_aut','varchar');
         $this->setParametro('nro_fac','nro_fac','varchar');
+
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+    function obtenerRazonSocialxNIT(){
+        $this->procedimiento='decr.ft_nota_agencia_ime';
+        $this->transaccion='DECR_NIT_JSON';
+        $this->tipo_procedimiento='IME';
+
+        $this->setParametro('nit','nit','varchar');
 
 
         //Ejecuta la instruccion
