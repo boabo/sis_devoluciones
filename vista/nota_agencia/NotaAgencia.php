@@ -14,12 +14,102 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
 
 	constructor:function(config){
 		this.maestro=config.maestro;
+
+        this.initButtons=[ this.cmbGestion, this.cmbPeriodo];
+
+
+        this.cmbGestion.on('select', function(combo, record, index){
+            this.tmpGestion = record.data.gestion;
+            this.cmbPeriodo.enable();
+            this.cmbPeriodo.reset();
+            this.store.removeAll();
+            this.cmbPeriodo.store.baseParams = Ext.apply(this.cmbPeriodo.store.baseParams, {id_gestion: this.cmbGestion.getValue()});
+            this.cmbPeriodo.modificado = true;
+
+
+
+        },this);
+
+
+        this.cmbPeriodo.on('select', function( combo, record, index){
+            this.tmpPeriodo = record.data.periodo;
+            this.capturaFiltros();
+            this.Cmp.id_periodo.setValue(record.data.periodo)
+
+
+        },this);
+
     	//llama al constructor de la clase padre
 		Phx.vista.NotaAgencia.superclass.constructor.call(this,config);
 		this.init();
         this.iniciarEventos();
 		this.load({params:{start:0, limit:this.tam_pag, id_liquidacion:config.id_liquidacion}})
 	},
+
+
+    cmbGestion: new Ext.form.ComboBox({
+        fieldLabel: 'Gestion',
+        allowBlank: false,
+        emptyText:'Gestion...',
+        blankText: 'Año',
+        store:new Ext.data.JsonStore(
+            {
+                url: '../../sis_parametros/control/Gestion/listarGestion',
+                id: 'id_gestion',
+                root: 'datos',
+                sortInfo:{
+                    field: 'gestion',
+                    direction: 'DESC'
+                },
+                totalProperty: 'total',
+                fields: ['id_gestion','gestion'],
+                // turn on remote sorting
+                remoteSort: true,
+                baseParams:{par_filtro:'gestion'}
+            }),
+        valueField: 'id_gestion',
+        triggerAction: 'all',
+        displayField: 'gestion',
+        hiddenName: 'id_gestion',
+        mode:'remote',
+        pageSize:50,
+        queryDelay:500,
+        listWidth:'280',
+        width:80
+    }),
+
+
+    cmbPeriodo: new Ext.form.ComboBox({
+        fieldLabel: 'Periodo',
+        allowBlank: false,
+        blankText : 'Mes',
+        emptyText:'Periodo...',
+        store:new Ext.data.JsonStore(
+            {
+                url: '../../sis_parametros/control/Periodo/listarPeriodo',
+                id: 'id_periodo',
+                root: 'datos',
+                sortInfo:{
+                    field: 'periodo',
+                    direction: 'ASC'
+                },
+                totalProperty: 'total',
+                fields: ['id_periodo','periodo','id_gestion','literal'],
+                // turn on remote sorting
+                remoteSort: true,
+                baseParams:{par_filtro:'gestion',_adicionar:'si'}
+            }),
+        valueField: 'id_periodo',
+        triggerAction: 'all',
+        displayField: 'literal',
+        hiddenName: 'id_periodo',
+        mode:'remote',
+        pageSize:50,
+        disabled: true,
+        queryDelay:500,
+        listWidth:'280',
+        width:80
+    }),
 
 	Atributos:[
 		{
@@ -32,6 +122,18 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
 			type:'Field',
 			form:true
 		},
+
+        {
+            //configuracion del componente
+            config:{
+                labelSeparator:'',
+                inputType:'hidden',
+                name: 'id_periodo'
+            },
+            type:'Field',
+            form:true
+        },
+
 		{
 			config:{
 				name: 'estado_reg',
@@ -271,7 +373,7 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
                 resizable:true,
                 minChars: 2,
 				renderer : function(value, p, record) {
-					return String.format('{0}', record.data['desc_']);
+					return String.format('{0}', record.data['desc_depto']);
 				}
 			},
 			type: 'ComboBox',
@@ -700,6 +802,54 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
 	},
 	bdel:true,
 	bsave:true,
+
+    capturaFiltros:function(combo, record, index){
+        this.desbloquearOrdenamientoGrid();
+        this.getBoton('new').disable();
+        if(this.validarFiltros()){
+            this.store.baseParams.id_gestion = this.cmbGestion.getValue();
+            this.store.baseParams.id_periodo = this.cmbPeriodo.getValue();
+            this.load();
+        }
+
+    },
+
+    validarFiltros:function(){
+        if(this.cmbGestion.validate() && this.cmbPeriodo.validate()){
+
+            return true;
+        }
+        else{
+            this.getBoton('insertAuto').disable();
+            this.getBoton('exportar').disable();
+            this.getBoton('Importar').disable();
+            this.getBoton('Acumulado').disable();
+            this.getBoton('BorrarTodo').disable();
+            this.getBoton('new').disable();
+            //this.getBoton('save').disable();
+            this.getBoton('Clonar').enable();
+            this.getBoton('exportarGestionCompleta').enable();
+            this.getBoton('consultarPosiblesBancarizaciones').enable();
+
+            return false;
+
+        }
+    },
+
+    onButtonAct:function(){
+        if(!this.validarFiltros()){
+            alert('Especifique el año y el mes antes')
+        }
+        else{
+
+
+            this.store.baseParams.id_gestion=this.cmbGestion.getValue();
+            this.store.baseParams.id_periodo = this.cmbPeriodo.getValue();
+           
+            Phx.vista.NotaAgencia.superclass.onButtonAct.call(this);
+        }
+    },
+
     iniciarEventos : function () {
         this.Cmp.id_doc_compra_venta.on('select', function (rec, d) {
 
@@ -728,7 +878,8 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
                 data: {
                     objPadre: me,
                     tipo_form: tipo,
-                    datosOriginales: record
+                    datosOriginales: record,
+                    id_periodo: this.cmbPeriodo.getValue(),
                 },
                 regitrarDetalle: me.regitrarDetalle
             },

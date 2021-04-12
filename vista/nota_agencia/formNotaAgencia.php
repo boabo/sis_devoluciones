@@ -197,6 +197,16 @@ header("content-type: text/javascript; charset=UTF-8");
                     form: true
                 },
                 {
+                    //configuracion del componente
+                    config:{
+                        labelSeparator:'',
+                        inputType:'hidden',
+                        name: 'id_periodo'
+                    },
+                    type:'Field',
+                    form:true
+                },
+                {
                     config: {
                         name: 'id_depto_conta',
                         fieldLabel: 'Depto Conta',
@@ -583,7 +593,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         allowBlank: true,
                         anchor: '80%',
                         gwidth: 100,
-                        maxLength:8
+                        maxLength:100
                     },
                     type:'TextField',
                     filters:{pfiltro:'notage.nro_aut_nota',type:'string'},
@@ -700,21 +710,29 @@ header("content-type: text/javascript; charset=UTF-8");
                     form:true
                 },
 
+
+
                 {
-                    config:{
+                    config: {
                         name: 'codigo_control',
-                        fieldLabel: 'Codigo Control',
+                        fieldLabel: 'Código de Control',
                         allowBlank: true,
-                        anchor: '80%',
+                        anchor: '85%',
                         gwidth: 100,
-                        maxLength:255
+                        enableKeyEvents: true,
+                        fieldStyle: 'text-transform: uppercase',
+                        maxLength: 200,
+                        validator: function (v) {
+                            return /^0|^([A-Fa-f0-9]{2,2}\-)*[A-Fa-f0-9]{2,2}$/i.test(v) ? true : 'Introducir texto de la forma xx-xx, donde x representa dígitos  hexadecimales  [0-9]ABCDEF.';
+                        },
+                        maskRe: /[0-9ABCDEF/-]+/i,
+                        regex: /[0-9ABCDEF/-]+/i
                     },
-                    type:'TextField',
-                    filters:{pfiltro:'notage.codigo_control',type:'string'},
-                    id_grupo:2,
-                    grid:true,
-                    form:true
+                    type: 'TextField',
+                    id_grupo: 2,
+                    form: true
                 },
+
 
                 {
                     config:{
@@ -757,6 +775,9 @@ header("content-type: text/javascript; charset=UTF-8");
 
         },
         title: 'Frm solicitud',
+
+
+
         iniciarEventos: function () {
 
 
@@ -770,6 +791,53 @@ header("content-type: text/javascript; charset=UTF-8");
                 const nroFac = this.Cmp.nrofac.getValue();
                 const nroAut = this.Cmp.nroaut.getValue();
                 this.obtenerDatosFactucom({nroAut: nroAut, nroFac: nroFac});
+            }, this);
+
+            this.Cmp.monto_total.on('blur', function () {
+                this.calcularTotales();
+            }, this);
+            this.Cmp.excento.on('blur', function () {
+                this.calcularTotales();
+            }, this);
+
+            this.Cmp.codigo_control.on('keyup', function (cmp, e) {
+                //inserta guiones en codigo de contorl
+                var value = cmp.getValue(), tmp = '', tmp2 = '', sw = 0;
+                tmp = value.replace(/-/g, '');
+                for (var i = 0; i < tmp.length; i++) {
+                    tmp2 = tmp2 + tmp[i];
+                    if ((i + 1) % 2 == 0 && i != tmp.length - 1) {
+                        tmp2 = tmp2 + '-';
+                    }
+                }
+                cmp.setValue(tmp2.toUpperCase());
+            }, this);
+
+            this.Cmp.nit.on('blur', function () {
+                const nit = this.Cmp.nit.getValue();
+
+                Phx.CP.loadingShow();
+                Ext.Ajax.request({
+                    url: '../../sis_devoluciones/control/NotaAgencia/obtenerRazonSocialxNIT',
+                    params: {'nit': nit},
+                    success: function (resp) {
+                        Phx.CP.loadingHide();
+                        var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+                        console.log(objRes)
+                        var data = JSON.parse(objRes.ROOT.datos.mensaje);
+                        console.log(data)
+
+                        this.getComponente('razon').setValue(data.razon_social);
+                        /*this.getComponente('id_moneda').setValue(1);
+                        this.getComponente('id_moneda').setRawValue('Bolivianos');*/
+
+                    },
+                    failure: this.conexionFailure,
+                    timeout: this.timeout,
+                    scope: this
+                });
+
+
             }, this);
 
 
@@ -837,18 +905,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.disableComponentes();
             }, this);
 
-            this.Cmp.codigo_control.on('keyup', function (cmp, e) {
-                //inserta guiones en codigo de contorl
-                var value = cmp.getValue(), tmp = '', tmp2 = '', sw = 0;
-                tmp = value.replace(/-/g, '');
-                for (var i = 0; i < tmp.length; i++) {
-                    tmp2 = tmp2 + tmp[i];
-                    if ((i + 1) % 2 == 0 && i != tmp.length - 1) {
-                        tmp2 = tmp2 + '-';
-                    }
-                }
-                cmp.setValue(tmp2.toUpperCase());
-            }, this);
+
 
 
             // eventos ffp
@@ -869,6 +926,21 @@ header("content-type: text/javascript; charset=UTF-8");
         },
 
 
+        calcularTotales: function () {
+            /*
+            * monto_total
+                excento
+                total_devuelto
+                credfis
+            * */
+            const montoTotal = parseFloat(this.Cmp.monto_total.getValue());
+            const excento = parseFloat(this.Cmp.excento.getValue());
+            const totalDevuelto = montoTotal-excento;
+            this.Cmp.total_devuelto.setValue(totalDevuelto);
+            this.Cmp.credfis.setValue(totalDevuelto * 0.13);
+
+
+        },
         obtenerDatosFactucom: function ({nroAut, nroFac}) {
 
             if(nroAut !== '' && nroFac !== '') {
@@ -946,6 +1018,15 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.id_depto_conta.setValue(this.data.id_depto);
             this.Cmp.id_gestion.setValue(this.data.id_gestion);
             this.Cmp.tipo.setValue(this.data.tipoDoc);*/
+
+            this.Cmp.monto_total.setValue(0);
+            this.Cmp.excento.setValue(0);
+            this.Cmp.total_devuelto.setValue(0);
+            this.Cmp.credfis.setValue(0);
+            this.Cmp.id_moneda.setValue(1);
+            this.Cmp.id_moneda.setRawValue('Bolivianos');
+            this.Cmp.id_periodo.setValue(this.data.id_periodo);
+
 
 
         },
