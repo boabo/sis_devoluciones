@@ -589,33 +589,7 @@ class MODLiquidacion extends MODbase{
         //Devuelve la respuesta
         return $this->respuesta;
     }
-
-    function listarDeposito(){
-        $this->procedimiento='decr.ft_liquidacion_sel';
-        $this->transaccion='DECR_DEPOS_SEL';
-        $this->tipo_procedimiento='SEL';//tipo de transaccion
-
-        //Define los parametros para la funcion
-
-        $this->captura('id_deposito','int4');
-        $this->captura('nro_deposito','varchar');
-        $this->captura('monto_deposito','numeric');
-        $this->captura('fecha','date');
-        $this->captura('saldo','numeric');
-        $this->captura('monto_total','numeric');
-
-
-        //Ejecuta la instruccion
-        $this->armarConsulta();
-
-        //echo($this->consulta);exit;
-        $this->ejecutarConsulta();
-
-        //Devuelve la respuesta
-        return $this->respuesta;
-    }
-
-
+    
 
 }
 ?>

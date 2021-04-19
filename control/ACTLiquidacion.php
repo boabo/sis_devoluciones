@@ -10,6 +10,10 @@ HISTORIAL DE MODIFICACIONES:
 #0				17-04-2020 01:54:37								CREACION
 
  */
+
+/*error_reporting(E_ALL);
+ini_set('display_errors', 'On');*/
+
 include_once(dirname(__FILE__).'/../../lib/lib_modelo/ConexionSqlServer.php');
 
 class ACTLiquidacion extends ACTbase{
