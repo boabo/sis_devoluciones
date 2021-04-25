@@ -523,7 +523,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     form: true
                 },
 
-                {
+               /* {
                     config:{
                         name: 'tcambio',
                         fieldLabel: 'Cambio',
@@ -537,23 +537,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     id_grupo:1,
                     grid:true,
                     form:true
-                },
+                },*/
 
-                {
-                    config:{
-                        name: 'estado',
-                        fieldLabel: 'Estado',
-                        allowBlank: false,
-                        anchor: '80%',
-                        gwidth: 100,
-                        maxLength:50
-                    },
-                    type:'TextField',
-                    filters:{pfiltro:'notage.estado',type:'string'},
-                    id_grupo:1,
-                    grid:true,
-                    form:true
-                },
+
 
 
                 {
@@ -633,7 +619,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     form:true
                 },
 
-                {
+                /*{
                     config:{
                         name: 'billete',
                         fieldLabel: 'Billete',
@@ -647,7 +633,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     id_grupo:2,
                     grid:true,
                     form:true
-                },
+                },*/
 
                 {
                     config:{
@@ -722,9 +708,9 @@ header("content-type: text/javascript; charset=UTF-8");
                         enableKeyEvents: true,
                         fieldStyle: 'text-transform: uppercase',
                         maxLength: 200,
-                        validator: function (v) {
+                        /*validator: function (v) {
                             return /^0|^([A-Fa-f0-9]{2,2}\-)*[A-Fa-f0-9]{2,2}$/i.test(v) ? true : 'Introducir texto de la forma xx-xx, donde x representa dígitos  hexadecimales  [0-9]ABCDEF.';
-                        },
+                        },*/
                         maskRe: /[0-9ABCDEF/-]+/i,
                         regex: /[0-9ABCDEF/-]+/i
                     },

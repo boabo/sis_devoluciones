@@ -29,6 +29,12 @@ DECLARE
 	v_id_liquidacion	integer;
     v_json	varchar;
 
+    v_estado_periodo		varchar;
+    v_fecha_ini				varchar;
+    v_fecha_fin 			varchar;
+    v_record_nota_agencia 			record;
+
+
 BEGIN
 
     v_nombre_funcion = 'decr.ft_nota_agencia_ime';
@@ -51,24 +57,48 @@ BEGIN
                 v_id_liquidacion:= NULL;
             END IF;
 
+            /*Aqui control para no Anular Facturas cuando el periodo este cerrado*/
+            select
+                per.fecha_ini,
+                per.fecha_fin,
+                cp.estado
+            into
+                v_fecha_ini,
+                v_fecha_fin,
+                v_estado_periodo
+            from param.tgestion ges
+                     inner join param.tperiodo per on per.id_gestion = ges.id_gestion
+                     inner join conta.tperiodo_compra_venta cp on cp.id_periodo = per.id_periodo
+            where v_parametros.fecha between per.fecha_ini and per.fecha_fin
+              and cp.id_depto = v_parametros.id_depto_conta;
+            /*********************************************************************/
+
+            if (v_estado_periodo = 'cerrado') then
+                raise exception 'No se puede registrar la nota debido a que el periodo %, %, se encuentra cerrado',v_fecha_ini,v_fecha_fin;
+            end if;
+
+
+            -- select estado
+            -- from conta.tperiodo_compra_venta tpcv
+            -- where tpcv.id_periodo = 119 and tpcv.id_depto = 36;
+
             --Sentencia de la insercion
         	insert into decr.tnota_agencia(
 			estado_reg,
 			id_doc_compra_venta,
 			id_depto_conta,
 			id_moneda,
-			estado,
 			nit,
 			nro_nota,
 			nro_aut_nota,
 			fecha,
 			razon,
-			tcambio,
+			--tcambio,
 			monto_total,
 			excento,
 			total_devuelto,
 			credfis,
-			billete,
+			--billete,
 			codigo_control,
 			nrofac,
 			nroaut,
@@ -91,18 +121,17 @@ BEGIN
 			v_parametros.id_doc_compra_venta,
 			v_parametros.id_depto_conta,
 			v_parametros.id_moneda,
-			v_parametros.estado,
 			v_parametros.nit,
 			v_parametros.nro_nota,
 			v_parametros.nro_aut_nota,
 			v_parametros.fecha,
 			v_parametros.razon,
-			v_parametros.tcambio,
+			--v_parametros.tcambio,
 			v_parametros.monto_total,
 			v_parametros.excento,
 			v_parametros.total_devuelto,
 			v_parametros.credfis,
-			v_parametros.billete,
+			--v_parametros.billete,
 			v_parametros.codigo_control,
 			v_parametros.nrofac,
 			v_parametros.nroaut,
@@ -144,6 +173,53 @@ BEGIN
 	elsif(p_transaccion='DECR_NOTAGE_MOD')then
 
 		begin
+
+		    select *
+		    into v_record_nota_agencia
+		    FROM decr.tnota_agencia
+            where id_nota_agencia = v_parametros.id_nota_agencia;
+
+            /*Aqui control para no Anular Facturas cuando el periodo este cerrado*/
+            select
+                per.fecha_ini,
+                per.fecha_fin,
+                cp.estado
+            into
+                v_fecha_ini,
+                v_fecha_fin,
+                v_estado_periodo
+            from param.tgestion ges
+                     inner join param.tperiodo per on per.id_gestion = ges.id_gestion
+                     inner join conta.tperiodo_compra_venta cp on cp.id_periodo = per.id_periodo
+            where v_record_nota_agencia.fecha between per.fecha_ini and per.fecha_fin
+              and cp.id_depto = v_record_nota_agencia.id_depto_conta;
+            /*********************************************************************/
+
+            if (v_estado_periodo = 'cerrado') then
+                raise exception 'No se puede registrar la nota debido a que el periodo %, %, se encuentra cerrado',v_fecha_ini,v_fecha_fin;
+            end if;
+
+            /*Aqui control para no Anular Facturas cuando el periodo este cerrado*/
+            select
+                per.fecha_ini,
+                per.fecha_fin,
+                cp.estado
+            into
+                v_fecha_ini,
+                v_fecha_fin,
+                v_estado_periodo
+            from param.tgestion ges
+                     inner join param.tperiodo per on per.id_gestion = ges.id_gestion
+                     inner join conta.tperiodo_compra_venta cp on cp.id_periodo = per.id_periodo
+            where v_parametros.fecha_fac between per.fecha_ini and per.fecha_fin
+              and cp.id_depto = v_parametros.id_depto_conta;
+            /*********************************************************************/
+
+            if (v_estado_periodo = 'cerrado') then
+                raise exception 'No se puede registrar la nota debido a que el periodo %, %, se encuentra cerrado',v_fecha_ini,v_fecha_fin;
+            end if;
+
+
 			--Sentencia de la modificacion
 			update decr.tnota_agencia set
 			id_doc_compra_venta = v_parametros.id_doc_compra_venta,
@@ -196,6 +272,33 @@ BEGIN
 	elsif(p_transaccion='DECR_NOTAGE_ELI')then
 
 		begin
+
+
+            select *
+            into v_record_nota_agencia
+            FROM decr.tnota_agencia
+            where id_nota_agencia = v_parametros.id_nota_agencia;
+
+            /*Aqui control para no Anular Facturas cuando el periodo este cerrado*/
+            select
+                per.fecha_ini,
+                per.fecha_fin,
+                cp.estado
+            into
+                v_fecha_ini,
+                v_fecha_fin,
+                v_estado_periodo
+            from param.tgestion ges
+                     inner join param.tperiodo per on per.id_gestion = ges.id_gestion
+                     inner join conta.tperiodo_compra_venta cp on cp.id_periodo = per.id_periodo
+            where v_record_nota_agencia.fecha between per.fecha_ini and per.fecha_fin
+              and cp.id_depto = v_record_nota_agencia.id_depto_conta;
+            /*********************************************************************/
+
+            if (v_estado_periodo = 'cerrado') then
+                raise exception 'No se puede registrar la nota debido a que el periodo %, %, se encuentra cerrado',v_fecha_ini,v_fecha_fin;
+            end if;
+
 			--Sentencia de la eliminacion
 			delete from decr.tnota_agencia
             where id_nota_agencia=v_parametros.id_nota_agencia;
