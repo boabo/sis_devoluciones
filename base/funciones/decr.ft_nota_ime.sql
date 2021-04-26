@@ -254,6 +254,7 @@ BEGIN
                               AND d.tipo = 'N'
                               AND d.tipo_generacion = 'computarizada'
                               AND d.nombre_sistema = 'SISTEMA FACTURACION NCD'
+                              and d.titulo = 'FACTURA'
                               --d.id_activida_economica @> v_id_actividad_economica todo preguntar sobre esto
                                 FOR UPDATE;
 

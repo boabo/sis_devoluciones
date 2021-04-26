@@ -643,6 +643,9 @@ alter table decr.tliqui_forma_pago
     add administradora varchar(255);
 
 
+alter table decr.tnota_agencia alter column estado drop not null;
+
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
 

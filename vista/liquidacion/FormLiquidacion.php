@@ -2745,8 +2745,7 @@ header("content-type: text/javascript; charset=UTF-8");
             this.ocultarComponente(this.Cmp.id_descuento_liquidacion);
 
             //ocultar los campos para factura antigua
-            this.ocultarComponente(this.Cmp.nro_aut);
-            this.ocultarComponente(this.Cmp.nro_fac);
+
             this.ocultarComponente(this.Cmp.id_factucom);
             this.ocultarComponente(this.Cmp.id_factucomcon);
 
@@ -3059,12 +3058,26 @@ header("content-type: text/javascript; charset=UTF-8");
                 const nroFac = this.Cmp.nro_fac.getValue();
                 const nroAut = this.Cmp.nro_aut.getValue();
 
-                this.obtenerDatosFactucom({nroAut: nroAut, nroFac: nroFac});
+                const tipoDoc = this.Cmp.id_tipo_doc_liquidacion.getRawValue();
+                if(tipoDoc === 'FACCOM') {
+                    console.log('lanzara nuevo evento');
+                } else {
+                    this.obtenerDatosFactucom({nroAut: nroAut, nroFac: nroFac});
+
+                }
+
+
             }, this);
             this.Cmp.nro_fac.on('blur', function () {
                 const nroFac = this.Cmp.nro_fac.getValue();
                 const nroAut = this.Cmp.nro_aut.getValue();
-                this.obtenerDatosFactucom({nroAut: nroAut, nroFac: nroFac});
+                const tipoDoc = this.Cmp.id_tipo_doc_liquidacion.getRawValue();
+                if(tipoDoc === 'FACCOM') {
+                    console.log('lanzara nuevo evento');
+                } else {
+                    this.obtenerDatosFactucom({nroAut: nroAut, nroFac: nroFac});
+
+                }
             }, this);
 
           /*  this.cmpEstacion.on('select', function (rec, d) {
