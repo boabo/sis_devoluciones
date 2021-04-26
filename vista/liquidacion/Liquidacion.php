@@ -1706,40 +1706,80 @@ header("content-type: text/javascript; charset=UTF-8");
                 console.log('find',find);
                 if(find === undefined && (rec.json.id_nota != null || rec.json.id_nota != '')) {
                     Phx.CP.loadingShow();
+
+
                     Ext.Ajax.request({
-                        url: '../../sis_devoluciones/control/Liquidacion/obtenerJsonPagar',
+                        url: '../../sis_devoluciones/control/Liquidacion/listarLiquidacionJson',
                         params: {'id_liquidacion': rec.data['id_liquidacion']},
                         success: this.successObtenerJsonPagar,
                         failure: this.conexionFailure,
                         timeout: this.timeout,
                         scope: this
                     });
+
                 }
 
 
             },
             successObtenerJsonPagar : function (resp) {
                 console.log(resp)
+
                 var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-                console.log(objRes.ROOT.datos.mensaje);
-                let json_para_facturar = JSON.parse(objRes.ROOT.datos.mensaje);
+
+                //console.log(objRes.ROOT.datos[0].length)
 
 
-                const json_para_emitir_factura = json_para_facturar.json_para_emitir_factura;
+                const objetoDatos = (objRes.ROOT == undefined) ? objRes.datos : objRes.ROOT.datos;
+                console.log('objetoDatos',objetoDatos)
+                let objectToSend;
+                if(objetoDatos.length > 0) {
+                    const dataLiqui = objetoDatos[0];
+                    //crear objecto para enviar a pagar
+                    objectToSend = {
+                        id_liquidacion: dataLiqui.id_liquidacion,
+                        punto_venta: dataLiqui.desc_punto_venta,
+                        nit_cliente: dataLiqui.nit,
+                        razon_social: dataLiqui.nombre_factura,
+                        moneda_boleto: dataLiqui.moneda_liq,
+                        moneda: dataLiqui.moneda_liq,
+                        tipo_cambio: dataLiqui.tipo_de_cambio,
+                        exento: dataLiqui.exento || 0,
+                        observaciones: '',
+                        //conceptos: dataLiqui.descuentos,
+                    }
+                    const conceptos = dataLiqui.descuentos.reduce((valorAnterior, valorActual, indice, vector)=> {
 
-                console.log(json_para_facturar.json_para_emitir_factura);
+                        //tl.id_liquidacion, ci.id_concepto_ingas AS id_concepto, ci.desc_ingas, 1 AS cantidad, dl.importe as precio_unitario
+                        const object = {
+                            id_liquidacion: dataLiqui.id_liquidacion,
+                            id_concepto: valorActual.id_concepto_ingas,
+                            desc_ingas: valorActual.desc_ingas,
+                            cantidad: 1,
+                            precio_unitario: valorActual.importe,
+                        };
+                        valorAnterior.push(object);
+                        return valorAnterior;
 
-                Ext.Ajax.request({
-                    url: '../../sis_ventas_facturacion/control/FacturacionExterna/insertarVentaFactura',
-                    params: {
-                        ...json_para_emitir_factura,
-                        json_venta_detalle: JSON.stringify(json_para_emitir_factura.json_venta_detalle)
-                    },
-                    success: this.successPagar,
-                    failure: this.conexionFailure,
-                    timeout: this.timeout,
-                    scope: this
-                });
+                    }, []);
+                    console.log('conceptos', conceptos)
+
+                    Ext.Ajax.request({
+                        url: '../../sis_ventas_facturacion/control/FacturacionExterna/insertarVentaFactura',
+                        params: {
+                            ...objectToSend,
+                            json_venta_detalle: JSON.stringify(conceptos)
+                        },
+                        success: this.successPagar,
+                        failure: this.conexionFailure,
+                        timeout: this.timeout,
+                        scope: this
+                    });
+
+                }
+                console.log('objectToSend',objectToSend)
+
+
+
 
 
             },

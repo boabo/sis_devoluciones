@@ -362,6 +362,7 @@ BEGIN
                                sd.sum_descuentos,
                                tl.importe_total - sd.sum_descuentos as importe_devolver,
                                tv.nro_factura,
+                               tv.nit,
                                tv.nombre_factura,
                                --tvd.id_venta_detalle,
                                (select  string_agg(tvd2.id_venta_detalle::text, ',')::varchar as id_venta_detalle from t_venta_detalle tvd2 where tvd2.id_venta = tl.id_venta  GROUP BY tvd2.id_venta ) as id_venta_detalle,
