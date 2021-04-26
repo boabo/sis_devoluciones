@@ -569,7 +569,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 var rec = this.sm.getSelected();
 
                 Ext.Ajax.request({
-                    url: '../../sis_devoluciones/control/Nota/generarNota',
+                    url: '../../sis_devoluciones_ingresos/control/Nota/generarNota',
                     params: {'notas': rec.data['id_nota'], 'reimpresion': 'si','vista_previa':'si'},
                     success: this.successVistaPrevia,
                     failure: this.conexionFailure,
