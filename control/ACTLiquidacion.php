@@ -430,6 +430,13 @@ class ACTLiquidacion extends ACTbase{
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
+    //esta factura es para la version nueva del erp2 DE LA TABLA VENTA
+    function listarFactura() {
+        $this->objFunc=$this->create('MODLiquidacion');
+        $this->res=$this->objFunc->listarFactura($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
 
 }
 

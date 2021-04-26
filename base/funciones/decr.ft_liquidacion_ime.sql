@@ -1150,7 +1150,40 @@ BEGIN
         end;
 
 
-	else
+        /*********************************
+ 	#TRANSACCION:  'DECR_FACTURA_JSON'
+ 	#DESCRIPCION:	Eliminacion de registros
+ 	#AUTOR:		admin
+ 	#FECHA:		26-04-2020 21:14:13
+	***********************************/
+
+    elsif(p_transaccion='DECR_FACTURA_JSON')then
+
+        begin
+
+
+            SELECT TO_JSON(venta)::text
+            into v_json
+            from (
+                     select tv.id_venta
+                     FROM vef.tventa tv
+                     inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
+                     where td.nroaut = v_parametros.nro_aut::varchar
+                       AND tv.nro_factura = v_parametros.nro_fac::integer
+                     limit 1
+                 ) venta;
+
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'json',v_json);
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje',v_json);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+        end;
+
+
+    else
      
     	raise exception 'Transaccion inexistente: %',p_transaccion;
 

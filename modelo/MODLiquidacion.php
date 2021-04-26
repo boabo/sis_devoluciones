@@ -589,6 +589,23 @@ class MODLiquidacion extends MODbase{
         //Devuelve la respuesta
         return $this->respuesta;
     }
+
+    function listarFactura(){
+        $this->procedimiento='decr.ft_liquidacion_ime';
+        $this->transaccion='DECR_FACTURA_JSON';
+        $this->tipo_procedimiento='IME';//tipo de transaccion
+
+        $this->setParametro('nro_aut','nro_aut','numeric');
+        $this->setParametro('nro_fac','nro_fac','numeric');
+
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
     
 
 }

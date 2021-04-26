@@ -2367,179 +2367,6 @@ header("content-type: text/javascript; charset=UTF-8");
 
             //items para el tipo de faccom
 
-            {
-                config:{
-                    name: 'id_venta',
-                    fieldLabel: 'Documento',
-                    allowBlank: false,
-                    emptyText:'Elija una plantilla...',
-                    store:new Ext.data.JsonStore(
-                        {
-                            url: '../../sis_ventas_facturacion/control/Venta/listarVenta',
-                            id: 'id_venta',
-                            root:'datos',
-                            sortInfo:{
-                                field:'nro_factura',
-                                direction:'ASC'
-                            },
-                            totalProperty:'total',
-                            fields: [
-                                'id_venta',
-                                'id_cliente',
-                                'id_sucursal',
-                                'id_proceso_wf',
-                                'id_estado_wf',
-                                'estado_reg',
-                                'correlativo_venta',
-                                'a_cuenta',
-                                'total_venta',
-                                'fecha_estimada_entrega',
-                                'usuario_ai',
-                                'fecha_reg',
-                                'id_usuario_reg',
-                                'id_usuario_ai',
-                                'id_usuario_mod',
-                                'fecha_mod',
-                                'usr_reg',
-                                'usr_mod',
-                                'estado',
-                                'nombre_factura',
-                                'nombre_sucursal',
-                                'nit',
-                                'id_punto_venta',
-                                'nombre_punto_venta',
-                                'id_forma_pago',
-                                'forma_pago',
-                                'monto_forma_pago',
-                                'numero_tarjeta',
-                                'codigo_tarjeta',
-                                'tipo_tarjeta',
-                                'porcentaje_descuento',
-                                'id_vendedor_medico',
-                                'comision',
-                                'observaciones',
-                                'fecha',
-                                'nro_factura',
-                                'excento',
-                                'cod_control',
-                                'id_moneda',
-                                'total_venta_msuc',
-                                'transporte_fob',
-                                'seguros_fob',
-                                'otros_fob',
-                                'transporte_cif',
-                                'seguros_cif',
-                                'otros_cif',
-                                'tipo_cambio_venta',
-                                'desc_moneda',
-                                'valor_bruto',
-                                'descripcion_bulto',
-                                'contabilizable',
-                                'hora_estimada_entrega',
-                                'forma_pedido',
-                                'id_cliente_destino',
-                                'cliente_destino',
-                            ],
-                            remoteSort: true,
-                            baseParams:{par_filtro:'nro_factura', tipo_factura:'computarizada',tipo_usuario:'cajero'}
-                        }),
-                    tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_factura},  NIT: {nit}</p><p>{desc_plantilla} </p><p>Doc: {nro_factura} de Fecha: {fecha}</p><p> {importe_doc} {desc_moneda}  </p></div></tpl>',
-                    valueField: 'id_venta',
-                    hiddenValue: 'id_venta',
-                    displayField: 'nombre_factura',
-                    gdisplayField:'nombre_factura',
-                    listWidth:'280',
-                    forceSelection:true,
-                    typeAhead: false,
-                    triggerAction: 'all',
-                    lazyRender:true,
-                    mode:'remote',
-                    pageSize:20,
-                    queryDelay:500,
-                    gwidth: 250,
-                    minChars:2,
-
-                },
-                type:'ComboBox',
-                id_grupo: 3,
-                grid: false,
-                bottom_filter: true,
-                form: true
-            },
-            {
-                config:{
-                    name: 'id_venta_detalle',
-                    fieldLabel: 'Detalle',
-                    allowBlank: false,
-                    emptyText:'Elija una plantilla...',
-                    store:new Ext.data.JsonStore(
-                        {
-                            url: '../../sis_ventas_facturacion/control/VentaDetalleFacturacion/listarVentaDetalleFacturacion',
-                            id: 'id_venta_detalle',
-                            root:'datos',
-                            sortInfo:{
-                                field:'id_venta_detalle',
-                                direction:'ASC'
-                            },
-                            totalProperty:'total',
-                            fields: [
-                                'id_venta_detalle',
-                                'id_venta',
-                                'id_producto',
-                                'tipo',
-                                'estado_reg',
-                                'cantidad',
-                                'precio_unitario',
-                                'id_usuario_ai',
-                                'usuario_ai',
-                                'fecha_reg',
-                                'id_usuario_reg',
-                                'id_usuario_mod',
-                                'fecha_mod',
-                                'usr_reg',
-                                'usr_mod',
-                                'precio_total',
-                                'nombre_producto',
-                                'porcentaje_descuento',
-                                'precio_total_sin_descuento',
-                                'id_vendedor_medico',
-                                'nombre_vendedor_medico',
-                                'requiere_descripcion',
-                                'descripcion',
-                                'bruto',
-                                'ley',
-                                'kg_fino',
-                                'id_unidad_medida',
-                                'codigo_unidad_medida',
-                                'ruta_foto',
-                                'codigo_unidad_cig',
-                            ],
-                            remoteSort: true,
-                            baseParams:{par_filtro:'mon.codigo'}
-                        }),
-                   // tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_producto},  precio Total: {precio_total}</p></div></tpl>',
-                    valueField: 'id_venta_detalle',
-                    hiddenValue: 'id_venta_detalle',
-                    displayField: 'nombre_producto',
-                    gdisplayField:'nombre_producto',
-                    listWidth:'280',
-                    forceSelection:true,
-                    typeAhead: false,
-                    triggerAction: 'all',
-                    lazyRender:true,
-                    mode:'remote',
-                    pageSize:20,
-                    queryDelay:500,
-                    gwidth: 250,
-                    minChars:2,
-                    enableMultiSelect:true,
-
-                },
-                type:'AwesomeCombo',
-                id_grupo: 3,
-                grid: false,
-                form: true
-            },
 
 
             {
@@ -2641,6 +2468,100 @@ header("content-type: text/javascript; charset=UTF-8");
                 grid: false,
                 form: true
             },
+
+
+            {
+                config:{
+                    name: 'id_venta',
+                    fieldLabel: 'Venta',
+                    allowBlank: true,
+                    width: 200,
+                    gwidth: 100,
+                    maxLength:255,
+                    //disabled: true,
+                },
+                type:'TextField',
+                filters:{pfiltro:'liqui.id_venta',type:'string'},
+                id_grupo:3,
+                grid:false,
+                form:true
+            },
+            {
+                config:{
+                    name: 'id_venta_detalle',
+                    fieldLabel: 'Detalle',
+                    allowBlank: false,
+                    emptyText:'Elija una plantilla...',
+                    store:new Ext.data.JsonStore(
+                        {
+                            url: '../../sis_ventas_facturacion/control/VentaDetalleFacturacion/listarVentaDetalleFacturacion',
+                            id: 'id_venta_detalle',
+                            root:'datos',
+                            sortInfo:{
+                                field:'id_venta_detalle',
+                                direction:'ASC'
+                            },
+                            totalProperty:'total',
+                            fields: [
+                                'id_venta_detalle',
+                                'id_venta',
+                                'id_producto',
+                                'tipo',
+                                'estado_reg',
+                                'cantidad',
+                                'precio_unitario',
+                                'id_usuario_ai',
+                                'usuario_ai',
+                                'fecha_reg',
+                                'id_usuario_reg',
+                                'id_usuario_mod',
+                                'fecha_mod',
+                                'usr_reg',
+                                'usr_mod',
+                                'precio_total',
+                                'nombre_producto',
+                                'porcentaje_descuento',
+                                'precio_total_sin_descuento',
+                                'id_vendedor_medico',
+                                'nombre_vendedor_medico',
+                                'requiere_descripcion',
+                                'descripcion',
+                                'bruto',
+                                'ley',
+                                'kg_fino',
+                                'id_unidad_medida',
+                                'codigo_unidad_medida',
+                                'ruta_foto',
+                                'codigo_unidad_cig',
+                            ],
+                            remoteSort: true,
+                            baseParams:{par_filtro:'mon.codigo'}
+                        }),
+                    // tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nombre_producto},  precio Total: {precio_total}</p></div></tpl>',
+                    valueField: 'id_venta_detalle',
+                    hiddenValue: 'id_venta_detalle',
+                    displayField: 'nombre_producto',
+                    gdisplayField:'nombre_producto',
+                    listWidth:'280',
+                    forceSelection:true,
+                    typeAhead: false,
+                    triggerAction: 'all',
+                    lazyRender:true,
+                    mode:'remote',
+                    pageSize:20,
+                    queryDelay:500,
+                    gwidth: 250,
+                    minChars:2,
+                    enableMultiSelect:true,
+
+                },
+                type:'AwesomeCombo',
+                id_grupo: 3,
+                grid: false,
+                form: true
+            },
+
+
 
 
             {
@@ -2822,9 +2743,96 @@ header("content-type: text/javascript; charset=UTF-8");
 
         },
 
+        obtenerDatosFacturaNueva: function ({nroAut, nroFac}) {
+
+            if(nroAut !== '' && nroFac !== '') {
+                Ext.Ajax.request({
+                    url: '../../sis_devoluciones/control/Liquidacion/listarFactura',
+                    params: {
+                        'nro_aut': nroAut,
+                        'nro_fac': nroFac,
+                    },
+                    success: function (resp) {
+
+                        console.log(resp)
+
+                        Phx.CP.loadingHide();
+
+                        var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+
+                        const dataJson = JSON.parse(reg.ROOT.datos.mensaje);
+                        console.log('dataJson',dataJson)
+                        //this.cmpIdBoleto.setValue(reg.datos[0].id_boleto);
+                        if(typeof dataJson === 'object') {
+
+                            this.Cmp.id_venta.setValue(dataJson.id_venta);
+                            this.Cmp.id_venta.setDisabled(false);
+
+                            this.Cmp.id_venta_detalle.reset();
+                            this.Cmp.id_venta_detalle.store.baseParams.id_venta = dataJson.id_venta;
+                            this.Cmp.id_venta_detalle.modificado = true;
+
+
+
+                        } else {
+                            this.Cmp.id_venta.setValue('');
+
+                            this.Cmp.id_venta_detalle.setDisabled(true);
+                            this.Cmp.id_venta_detalle.reset();
+                            this.Cmp.id_venta_detalle.store.baseParams.id_venta = '';
+                            this.Cmp.id_venta_detalle.modificado = true;
+                        }
+
+                    },
+                    failure: this.conexionFailure,
+                    timeout: this.timeout,
+                    scope: this
+                })
+            }
+
+        },
         obtenerDatosFactucom: function ({nroAut, nroFac}) {
 
             if(nroAut !== '' && nroFac !== '') {
+
+                Ext.Ajax.request({
+                    url: '../../sis_devoluciones/control/NotaAgencia/listarDocumentoJson',
+                    params: {
+                        'nro_aut': nroAut,
+                        'nro_fac': nroFac,
+                    },
+                    success: function (resp) {
+
+                        console.log(resp)
+
+                        Phx.CP.loadingHide();
+
+                        var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+                        const dataJson = JSON.parse(reg.ROOT.datos.mensaje);
+                        console.log('dataJson',dataJson)
+                        //this.cmpIdBoleto.setValue(reg.datos[0].id_boleto);
+                        if(typeof dataJson === 'object') {
+
+                            this.Cmp.id_doc_compra_venta.setValue(dataJson.id_doc_compra_venta);
+                            this.Cmp.id_doc_compra_venta.setDisabled(true);
+
+                            this.Cmp.fecha_fac.setValue(dataJson.fecha);
+                            this.Cmp.codito_control_fac.setValue(dataJson.codigo_control);
+                            this.Cmp.monto_total_fac.setValue(dataJson.importe_doc);
+                            this.Cmp.iva.setValue(dataJson.importe_iva);
+
+
+
+                        } else {
+                            this.Cmp.id_doc_compra_venta.setValue('');
+                        }
+                        console.log('reg',reg)
+                    },
+                    failure: this.conexionFailure,
+                    timeout: this.timeout,
+                    scope: this
+                })
+
                 Ext.Ajax.request({
                     url: '../../sis_devoluciones/control/Liquidacion/listarFactucom',
                     params: {
@@ -3061,6 +3069,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 const tipoDoc = this.Cmp.id_tipo_doc_liquidacion.getRawValue();
                 if(tipoDoc === 'FACCOM') {
                     console.log('lanzara nuevo evento');
+                    this.obtenerDatosFacturaNueva({nroAut: nroAut, nroFac: nroFac});
+
                 } else {
                     this.obtenerDatosFactucom({nroAut: nroAut, nroFac: nroFac});
 
@@ -3073,7 +3083,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 const nroAut = this.Cmp.nro_aut.getValue();
                 const tipoDoc = this.Cmp.id_tipo_doc_liquidacion.getRawValue();
                 if(tipoDoc === 'FACCOM') {
-                    console.log('lanzara nuevo evento');
+                    this.obtenerDatosFacturaNueva({nroAut: nroAut, nroFac: nroFac});
                 } else {
                     this.obtenerDatosFactucom({nroAut: nroAut, nroFac: nroFac});
 
