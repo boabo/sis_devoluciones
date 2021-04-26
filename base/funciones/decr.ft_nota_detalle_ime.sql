@@ -46,7 +46,6 @@ BEGIN
     		--Sentencia de la consulta
 			v_consulta:='select
 						deno.id_nota_detalle,
-						deno.id_factura_detalle,
 						deno.id_nota,
 						deno.estado_reg,
 						deno.importe,
