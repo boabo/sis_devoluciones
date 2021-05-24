@@ -171,7 +171,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     allowBlank: false,
                     emptyText: 'Elija una opción...',
                     store: new Ext.data.JsonStore({
-                        url: '../../sis_ventas_facturacion/control/Servicios/listarServicios',
+                        url: '../../sis_devoluciones/control/Liquidacion/listarConcepto',
                         id: 'id_concepto_ingas',
                         root: 'datos',
                         sortInfo: {
@@ -179,9 +179,9 @@ header("content-type: text/javascript; charset=UTF-8");
                             direction: 'ASC'
                         },
                         totalProperty: 'total',
-                        fields: ['id_concepto_ingas', 'tipo','desc_moneda','id_moneda','desc_ingas','requiere_descripcion','precio','excento','contabilizable'],
+                        fields: ['id_concepto_ingas', 'desc_ingas','precio','contabilizable', 'tipo_descuento'],
                         remoteSort: true,
-                        baseParams: {par_filtro: 'ingas.desc_ingas',facturacion:'dev', emision:'DEVOLUCIONES'}
+                        baseParams: {par_filtro: 'tci.desc_ingas',facturacion:'dev', emision:'DEVOLUCIONES'}
                     }),
                     valueField: 'id_concepto_ingas',
                     displayField: 'desc_ingas',
@@ -206,16 +206,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'tipo',
                     fieldLabel: 'Tipo',
                     qtip: 'El tipo de descuento para aplicar a la liquidacion',
-                    allowBlank: true,
+                    allowBlank: false,
                     anchor: '85%',
                     gwidth: 120,
                     typeAhead: true,
                     triggerAction: 'all',
                     lazyRender: true,
                     mode: 'local',
-                    store: ['DESCUENTO', 'IMPUESTO NO REEMBOLSABLE', 'BO'],
-                    allowBlank: false,
-
+                    store: ['','FACTURABLE', 'NCD AGT', 'IMPUESTO', 'HAY NCD BOA', 'NO FACTURABLE'],
+                    disabled:true,
 
                 }),
                 'importe': new Ext.form.NumberField({
@@ -242,6 +241,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 console.log(dataJson)
                 console.log(dataJson.json.contabilizable)
                 this.megrid.initialConfig.columns[2].editor.setValue(dataJson.json.contabilizable);
+                this.megrid.initialConfig.columns[3].editor.setValue(dataJson.json.tipo_descuento);
 
             }, this);
 

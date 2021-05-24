@@ -181,10 +181,11 @@ BEGIN
                          GROUP BY tl.id_liquidacion, tdl.tipo
                      ),
                  t_descuentos AS (
-                     SELECT tci.codigo, tdl.id_liquidacion, tdl.id_concepto_ingas, tdl.importe, tci.desc_ingas, tdl.tipo
+                     SELECT tdl.id_descuento_liquidacion, tci.codigo, tdl.id_liquidacion, tdl.id_concepto_ingas, tdl.importe, tci.desc_ingas, tdl.tipo, tci_padre.desc_ingas desc_ingas_fk, tci.id_concepto_ingas_fk
                      FROM decr.tdescuento_liquidacion tdl
                               INNER JOIN param.tconcepto_ingas tci ON tci.id_concepto_ingas = tdl.id_concepto_ingas
                               inner join t_liqui tl on tl.id_liquidacion = tdl.id_liquidacion
+                              left join param.tconcepto_ingas tci_padre on tci_padre.id_concepto_ingas = tci.id_concepto_ingas_fk
                  ),
                  t_liqui_forma_pago AS (
                      SELECT tlfp.*, tmpw.name as desc_medio_pago_pw, tfpp.name as desc_forma_pago_pw

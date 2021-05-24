@@ -1750,14 +1750,24 @@ header("content-type: text/javascript; charset=UTF-8");
                     const conceptos = dataLiqui.descuentos.reduce((valorAnterior, valorActual, indice, vector)=> {
 
                         //tl.id_liquidacion, ci.id_concepto_ingas AS id_concepto, ci.desc_ingas, 1 AS cantidad, dl.importe as precio_unitario
-                        const object = {
-                            id_liquidacion: dataLiqui.id_liquidacion,
-                            id_concepto: valorActual.id_concepto_ingas,
-                            desc_ingas: valorActual.desc_ingas,
-                            cantidad: 1,
-                            precio_unitario: valorActual.importe,
-                        };
-                        valorAnterior.push(object);
+                        const findObjectIndex = valorAnterior.findIndex(key => key && valorActual.id_concepto_ingas_fk && valorActual.id_concepto_ingas_fk !== '' && key.id_concepto === valorActual.id_concepto_ingas_fk);
+                        if(findObjectIndex === -1) { //no existe entonces se le agrega al array
+                            if(valorActual.tipo === 'FACTURABLE') {
+                                const object = {
+                                    id_liquidacion: dataLiqui.id_liquidacion,
+                                    id_concepto: (valorActual.id_concepto_ingas_fk && valorActual.id_concepto_ingas_fk !== '') ? valorActual.id_concepto_ingas_fk : valorActual.id_concepto_ingas,
+                                    desc_ingas: (valorActual.id_concepto_ingas_fk && valorActual.id_concepto_ingas_fk !== '') ? valorActual.desc_ingas_fk : valorActual.desc_ingas ,
+                                    cantidad: 1,
+                                    precio_unitario: valorActual.importe,
+                                };
+                                valorAnterior.push(object);
+                            }
+                        } else { //existe y se le agrega al array
+                            valorAnterior[findObjectIndex] = {
+                                ...valorAnterior[findObjectIndex],
+                                precio_unitario: valorAnterior[findObjectIndex].precio_unitario + valorActual.importe
+                            }
+                        }
                         return valorAnterior;
 
                     }, []);
@@ -1817,7 +1827,30 @@ header("content-type: text/javascript; charset=UTF-8");
                 const {descuentos, descuentos_impuestos_no_reembolsable, notas, liqui_venta_detalle_seleccionados, sum_venta_seleccionados, liqui_forma_pago, sum_total_descuentos} = liquidacion;
 
                 console.log('liquidacion', liquidacion)
-                const descuentosPorTipo = descuentos.reduce((valorAnterior, valorActual, indice, vector) => {
+
+                const conceptosPorPadreHijo = descuentos.reduce((valorAnterior, valorActual, indice, vector)=> {
+
+                    const findObjectIndex = valorAnterior.findIndex(key =>  key
+                                                                            && valorActual.id_concepto_ingas_fk
+                                                                            && valorActual.id_concepto_ingas_fk !== ''
+                                                                            && key.id_concepto === valorActual.id_concepto_ingas_fk);
+                    if(findObjectIndex === -1) { //no existe entonces se le agrega al array
+                            valorAnterior.push({...valorActual,
+                                id_concepto: (valorActual.id_concepto_ingas_fk && valorActual.id_concepto_ingas_fk !== '') ? valorActual.id_concepto_ingas_fk : valorActual.id_concepto_ingas,
+                                desc_ingas: (valorActual.id_concepto_ingas_fk && valorActual.id_concepto_ingas_fk !== '') ? valorActual.desc_ingas_fk : valorActual.desc_ingas ,
+                            });
+                    } else { //existe y se le agrega al array
+                        valorAnterior[findObjectIndex] = {
+                            ...valorAnterior[findObjectIndex],
+                            importe: valorAnterior[findObjectIndex].importe + valorActual.importe
+                        }
+                    }
+                    return valorAnterior;
+
+                }, []);
+
+                console.log('conceptosPorPadreHijo',conceptosPorPadreHijo)
+                const descuentosPorTipo = conceptosPorPadreHijo.reduce((valorAnterior, valorActual, indice, vector) => {
                     console.log('valorAnterior',valorAnterior)
                     console.log('valorActual.tipo', valorActual.tipo)
                     console.log(valorActual.tipo in valorAnterior)

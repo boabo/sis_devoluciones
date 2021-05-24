@@ -1,40 +1,40 @@
-CREATE OR REPLACE FUNCTION "decr"."ft_liquidacion_ime" (	
-				p_administrador integer, p_id_usuario integer, p_tabla character varying, p_transaccion character varying)
+CREATE OR REPLACE FUNCTION "decr"."ft_liquidacion_ime" (    
+                p_administrador integer, p_id_usuario integer, p_tabla character varying, p_transaccion character varying)
 RETURNS character varying AS
 $BODY$
 
 /**************************************************************************
- SISTEMA:		devoluciones
- FUNCION: 		decr.ft_liquidacion_ime
+ SISTEMA:        devoluciones
+ FUNCION:         decr.ft_liquidacion_ime
  DESCRIPCION:   Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla 'decr.tliquidacion'
- AUTOR: 		 (admin)
- FECHA:	        17-04-2020 01:54:37
- COMENTARIOS:	
+ AUTOR:          (admin)
+ FECHA:            17-04-2020 01:54:37
+ COMENTARIOS:    
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
-#ISSUE				FECHA				AUTOR				DESCRIPCION
- #0				17-04-2020 01:54:37								Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla 'decr.tliquidacion'	
+#ISSUE                FECHA                AUTOR                DESCRIPCION
+ #0                17-04-2020 01:54:37                                Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla 'decr.tliquidacion'    
  #
  ***************************************************************************/
 
 DECLARE
 
-	v_nro_requerimiento    	integer;
-	v_parametros           	record;
-	v_id_requerimiento     	integer;
-	v_resp		            varchar;
-	v_nombre_funcion        text;
-	v_mensaje_error         text;
-	v_id_liquidacion	integer;
-    v_json	varchar;
+    v_nro_requerimiento        integer;
+    v_parametros               record;
+    v_id_requerimiento         integer;
+    v_resp                    varchar;
+    v_nombre_funcion        text;
+    v_mensaje_error         text;
+    v_id_liquidacion    integer;
+    v_json    varchar;
 
     v_id_concepto_ingas varchar[];
     v_i integer;
     v_tamano integer;
-    v_num_tramite  		varchar;
-    v_id_proceso_wf 	integer;
-    v_id_estado_wf 		integer;
-    v_codigo_estado 	varchar;
+    v_num_tramite          varchar;
+    v_id_proceso_wf     integer;
+    v_id_estado_wf         integer;
+    v_codigo_estado     varchar;
     v_rec                         RECORD;
     v_codigo_estado_siguiente     varchar;
     v_acceso_directo              varchar;
@@ -57,20 +57,22 @@ DECLARE
     v_importe_tramo_utilizado numeric(10,2);
     v_fecha_emision date;
     v_id_liqui_manual integer;
+    v_count_conceptos_hijos integer;
+    v_conceptos_hijos record;
 BEGIN
 
     v_nombre_funcion = 'decr.ft_liquidacion_ime';
     v_parametros = pxp.f_get_record(p_tabla);
 
-	/*********************************    
- 	#TRANSACCION:  'DECR_LIQUI_INS'
- 	#DESCRIPCION:	Insercion de registros
- 	#AUTOR:		admin	
- 	#FECHA:		17-04-2020 01:54:37
-	***********************************/
+    /*********************************    
+     #TRANSACCION:  'DECR_LIQUI_INS'
+     #DESCRIPCION:    Insercion de registros
+     #AUTOR:        admin    
+     #FECHA:        17-04-2020 01:54:37
+    ***********************************/
 
-	if(p_transaccion='DECR_LIQUI_INS')then
-					
+    if(p_transaccion='DECR_LIQUI_INS')then
+                    
         begin
 
 
@@ -120,97 +122,97 @@ BEGIN
 
 
             --Sentencia de la insercion
-        	insert into decr.tliquidacion(
-			estacion,
-			nro_liquidacion,
-			estado_reg,
-			tipo_de_cambio,
-			descripcion,
-			fecha_liqui,
-			tramo_devolucion,
-			util,
-			--fecha_pago,
-			id_tipo_doc_liquidacion,
-			pv_agt,
-			noiata,
-			id_tipo_liquidacion,
-			--id_forma_pago, se cambio por medio de pago
-			tramo,
-			nombre,
-			moneda_liq,
-			estado,
-			id_usuario_reg,
-			fecha_reg,
-			usuario_ai,
-			id_usuario_ai,
-			id_usuario_mod,
-			fecha_mod,
-        	                              id_boleto,
+            insert into decr.tliquidacion(
+            estacion,
+            nro_liquidacion,
+            estado_reg,
+            tipo_de_cambio,
+            descripcion,
+            fecha_liqui,
+            tramo_devolucion,
+            util,
+            --fecha_pago,
+            id_tipo_doc_liquidacion,
+            pv_agt,
+            noiata,
+            id_tipo_liquidacion,
+            --id_forma_pago, se cambio por medio de pago
+            tramo,
+            nombre,
+            moneda_liq,
+            estado,
+            id_usuario_reg,
+            fecha_reg,
+            usuario_ai,
+            id_usuario_ai,
+            id_usuario_mod,
+            fecha_mod,
+                                          id_boleto,
             punto_venta,
             moneda_emision,
             importe_neto,
             tasas,
             importe_total,
             id_punto_venta,
-        	                              id_estado_wf,
-        	                              id_proceso_wf,
-        	                              num_tramite,
-        	                              id_venta,
-        	                              exento,
-        	                              importe_tramo_utilizado,
-        	                              id_moneda,
-        	                              id_deposito,
-        	                              id_liquidacion_fk,
-        	                              id_factucom
+                                          id_estado_wf,
+                                          id_proceso_wf,
+                                          num_tramite,
+                                          id_venta,
+                                          exento,
+                                          importe_tramo_utilizado,
+                                          id_moneda,
+                                          id_deposito,
+                                          id_liquidacion_fk,
+                                          id_factucom
 
-          	) values(
-			v_parametros.estacion,
-			v_parametros.nro_liquidacion,
-			'activo',
-			v_parametros.tipo_de_cambio,
-			v_parametros.descripcion,
-			v_parametros.fecha_liqui,
-			v_parametros.tramo_devolucion,
-			v_parametros.util,
-			--v_parametros.fecha_pago,
-			v_parametros.id_tipo_doc_liquidacion,
-			v_parametros.pv_agt,
-			v_parametros.noiata,
-			v_parametros.id_tipo_liquidacion,
-			--v_parametros.id_forma_pago,
-			v_parametros.tramo,
-			v_parametros.nombre,
-			v_parametros.moneda_liq,
-			--v_parametros.estado,
+              ) values(
+            v_parametros.estacion,
+            v_parametros.nro_liquidacion,
+            'activo',
+            v_parametros.tipo_de_cambio,
+            v_parametros.descripcion,
+            v_parametros.fecha_liqui,
+            v_parametros.tramo_devolucion,
+            v_parametros.util,
+            --v_parametros.fecha_pago,
+            v_parametros.id_tipo_doc_liquidacion,
+            v_parametros.pv_agt,
+            v_parametros.noiata,
+            v_parametros.id_tipo_liquidacion,
+            --v_parametros.id_forma_pago,
+            v_parametros.tramo,
+            v_parametros.nombre,
+            v_parametros.moneda_liq,
+            --v_parametros.estado,
             v_codigo_estado,
-			p_id_usuario,
-			now(),
-			v_parametros._nombre_usuario_ai,
-			v_parametros._id_usuario_ai,
-			null,
-			null,
-          	         v_parametros.id_boleto,
-          	         v_parametros.punto_venta,
-          	         v_parametros.moneda_emision,
-          	         v_parametros.importe_neto,
-          	         v_parametros.tasas,
-          	         CASE WHEN v_tipo_documento = 'DEPOSITO' THEN v_parametros.importe_total_deposito ELSE v_parametros.importe_total END,
-          	         v_parametros.id_punto_venta,
+            p_id_usuario,
+            now(),
+            v_parametros._nombre_usuario_ai,
+            v_parametros._id_usuario_ai,
+            null,
+            null,
+                       v_parametros.id_boleto,
+                       v_parametros.punto_venta,
+                       v_parametros.moneda_emision,
+                       v_parametros.importe_neto,
+                       v_parametros.tasas,
+                       CASE WHEN v_tipo_documento = 'DEPOSITO' THEN v_parametros.importe_total_deposito ELSE v_parametros.importe_total END,
+                       v_parametros.id_punto_venta,
 
             v_id_estado_wf,
             v_id_proceso_wf,
             v_num_tramite,
-          	         v_parametros.id_venta,
-          	         v_parametros.exento,
-          	         v_parametros.importe_tramo_utilizado,
-          	         null,--v_parametros.id_moneda,
-          	         v_parametros.id_deposito,
-          	         v_parametros.id_liquidacion_fk,
-          	         v_parametros.id_factucom
+                       v_parametros.id_venta,
+                       v_parametros.exento,
+                       v_parametros.importe_tramo_utilizado,
+                       null,--v_parametros.id_moneda,
+                       v_parametros.id_deposito,
+                       v_parametros.id_liquidacion_fk,
+                       v_parametros.id_factucom
 
-			
-			
-			)RETURNING id_liquidacion into v_id_liquidacion;
+            
+            
+            )RETURNING id_liquidacion into v_id_liquidacion;
 
 
 
@@ -357,6 +359,16 @@ BEGIN
 
                 )
                 LOOP
+                -- necesitamos ver si el concepto es padre
+
+                select count(*)
+                into v_count_conceptos_hijos
+                from param.tconcepto_ingas
+                where id_concepto_ingas_fk = v_conceptos_json.id_concepto_ingas::integer;
+
+
+
+                if(v_count_conceptos_hijos = 0) then
 
                     insert into decr.tdescuento_liquidacion(
                         contabilizar,
@@ -373,8 +385,8 @@ BEGIN
                         id_usuario_mod,
                         tipo
                     ) values(
-                                                    v_conceptos_json.contabilizar,
-                                                    v_conceptos_json.importe::numeric, --todo
+                                v_conceptos_json.contabilizar,
+                                v_conceptos_json.importe::numeric, --todo
                                 'activo',
                                 v_conceptos_json.id_concepto_ingas::integer,
                                 v_id_liquidacion,
@@ -385,8 +397,67 @@ BEGIN
                                 v_parametros._id_usuario_ai,
                                 null,
                                 null,
-                                                    v_conceptos_json.tipo
+                                v_conceptos_json.tipo
                             );
+
+                    else
+
+
+                        --recorremos los conceptos hijos y miramos su configuracion de porcentaje sobre el monto enviado
+                        FOR v_conceptos_hijos
+                            IN (
+                                select id_concepto_ingas,
+                                       contabilizable as contabilizar,
+                                       precio as porcentaje --el precio para estos conceptos usados en devolucion son el porcentaje
+                                from param.tconcepto_ingas
+                                where id_concepto_ingas_fk = v_conceptos_json.id_concepto_ingas::integer
+                            )
+                            loop
+
+
+                            IF v_conceptos_hijos.porcentaje is null or v_conceptos_hijos.porcentaje = 0 then
+                                RAISE EXCEPTION '%','ERROR ALGUN CONCEPTO HIJO DE LO SELECCIONADO NO TIENE CONFIGURADO EL PORCENTAJE(PRECIO)';
+                            END IF;
+
+                                insert into decr.tdescuento_liquidacion(
+                                    contabilizar,
+                                    importe,
+                                    estado_reg,
+                                    id_concepto_ingas,
+                                    id_liquidacion,
+                                    sobre,
+                                    fecha_reg,
+                                    usuario_ai,
+                                    id_usuario_reg,
+                                    id_usuario_ai,
+                                    fecha_mod,
+                                    id_usuario_mod,
+                                    tipo
+                                ) values(
+                                            v_conceptos_hijos.contabilizar,
+                                            v_conceptos_json.importe::numeric * v_conceptos_hijos.porcentaje::numeric, --todo
+                                            'activo',
+                                            v_conceptos_hijos.id_concepto_ingas::integer,
+                                            v_id_liquidacion,
+                                            null,
+                                            now(),
+                                            v_parametros._nombre_usuario_ai,
+                                            p_id_usuario,
+                                            v_parametros._id_usuario_ai,
+                                            null,
+                                            null,
+                                            v_conceptos_json.tipo
+                                        );
+
+
+
+                            END LOOP;
+
+                END IF;
+
+
+
+
 
             END LOOP;
             --RAISE EXCEPTION '%', v_parametros.payment;
@@ -702,26 +773,26 @@ BEGIN
                             );
             END LOOP;*/
 
-			
-			--Definicion de la respuesta
-			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Liquidacion almacenado(a) con exito (id_liquidacion'||v_id_liquidacion||')'); 
+            
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Liquidacion almacenado(a) con exito (id_liquidacion'||v_id_liquidacion||')'); 
             v_resp = pxp.f_agrega_clave(v_resp,'id_liquidacion',v_id_liquidacion::varchar);
 
             --Devuelve la respuesta
             return v_resp;
 
-		end;
+        end;
 
-	/*********************************    
- 	#TRANSACCION:  'DECR_LIQUI_MOD'
- 	#DESCRIPCION:	Modificacion de registros
- 	#AUTOR:		admin	
- 	#FECHA:		17-04-2020 01:54:37
-	***********************************/
+    /*********************************    
+     #TRANSACCION:  'DECR_LIQUI_MOD'
+     #DESCRIPCION:    Modificacion de registros
+     #AUTOR:        admin    
+     #FECHA:        17-04-2020 01:54:37
+    ***********************************/
 
-	elsif(p_transaccion='DECR_LIQUI_MOD')then
+    elsif(p_transaccion='DECR_LIQUI_MOD')then
 
-		begin
+        begin
 
         select tdl.tipo_documento
         INTO v_tipo_documento
@@ -745,7 +816,7 @@ BEGIN
 
 
 
-		    update decr.tliquidacion SET
+            update decr.tliquidacion SET
          estacion  = v_parametros.estacion,
          nro_liquidacion = v_parametros.nro_liquidacion,
          tipo_de_cambio = v_parametros.tipo_de_cambio,
@@ -769,7 +840,7 @@ BEGIN
          tasas = v_parametros.tasas,
          importe_total = v_parametros.importe_total,
          id_venta = v_parametros.id_venta,
-		                                 exento = v_parametros.exento,
+                                         exento = v_parametros.exento,
          importe_tramo_utilizado = v_parametros.importe_tramo_utilizado,
          id_medio_pago = v_parametros.id_medio_pago,
          id_moneda = v_parametros.id_moneda
@@ -831,20 +902,20 @@ BEGIN
             --Devuelve la respuesta
             return v_resp;
             
-		end;
+        end;
 
-	/*********************************    
- 	#TRANSACCION:  'DECR_LIQUI_ELI'
- 	#DESCRIPCION:	Eliminacion de registros
- 	#AUTOR:		admin	
- 	#FECHA:		17-04-2020 01:54:37
-	***********************************/
+    /*********************************    
+     #TRANSACCION:  'DECR_LIQUI_ELI'
+     #DESCRIPCION:    Eliminacion de registros
+     #AUTOR:        admin    
+     #FECHA:        17-04-2020 01:54:37
+    ***********************************/
 
-	elsif(p_transaccion='DECR_LIQUI_ELI')then
+    elsif(p_transaccion='DECR_LIQUI_ELI')then
 
-		begin
-			--Sentencia de la eliminacion
-			delete from decr.tliquidacion
+        begin
+            --Sentencia de la eliminacion
+            delete from decr.tliquidacion
             where id_liquidacion=v_parametros.id_liquidacion;
                
             --Definicion de la respuesta
@@ -854,21 +925,21 @@ BEGIN
             --Devuelve la respuesta
             return v_resp;
 
-		end;
-	/*********************************
- 	#TRANSACCION:  'DECR_LIQUI_MON'
- 	#DESCRIPCION:	obtener datos de las monedas y cambios oficiales de bolivianos a las distintas monedas que se tiene para le fecha de ahora
- 	#AUTOR:		favio.figueroa
- 	#FECHA:		17-04-2020 01:54:37
-	***********************************/
+        end;
+    /*********************************
+     #TRANSACCION:  'DECR_LIQUI_MON'
+     #DESCRIPCION:    obtener datos de las monedas y cambios oficiales de bolivianos a las distintas monedas que se tiene para le fecha de ahora
+     #AUTOR:        favio.figueroa
+     #FECHA:        17-04-2020 01:54:37
+    ***********************************/
 
-	elsif(p_transaccion='DECR_LIQUI_MON')then
+    elsif(p_transaccion='DECR_LIQUI_MON')then
 
-		begin
+        begin
 
-		    IF (pxp.f_existe_parametro(p_tabla,'fecha_emision')) then
+            IF (pxp.f_existe_parametro(p_tabla,'fecha_emision')) then
                 v_fecha_emision:= v_parametros.fecha_emision::date;
-		        else
+                else
                     v_fecha_emision:= now();
             END IF;
 
@@ -895,19 +966,19 @@ BEGIN
             --Devuelve la respuesta
             return v_resp;
 
-		end;
+        end;
          
-	/*********************************
- 	#TRANSACCION:  'DECR_LIQUI_VERJSON'
- 	#DESCRIPCION:	Eliminacion de registros
- 	#AUTOR:		admin
- 	#FECHA:		17-04-2020 01:54:37
-	***********************************/
+    /*********************************
+     #TRANSACCION:  'DECR_LIQUI_VERJSON'
+     #DESCRIPCION:    Eliminacion de registros
+     #AUTOR:        admin
+     #FECHA:        17-04-2020 01:54:37
+    ***********************************/
 
-	elsif(p_transaccion='DECR_LIQUI_VERJSON')then
+    elsif(p_transaccion='DECR_LIQUI_VERJSON')then
 
-		begin
-			--Sentencia de la eliminacion
+        begin
+            --Sentencia de la eliminacion
 
             WITH t_liqui AS
                      (
@@ -1008,18 +1079,18 @@ BEGIN
             --Devuelve la respuesta
             return v_resp;
 
-		end;
+        end;
 
-	/*********************************
- 	#TRANSACCION:  'DECR_LIQUI_SIGWF'
- 	#DESCRIPCION:	ACTUALIZAR SIGUIENTE ESTADO WORKFLOW
- 	#AUTOR:		admin
- 	#FECHA:		17-04-2020 01:54:37
-	***********************************/
+    /*********************************
+     #TRANSACCION:  'DECR_LIQUI_SIGWF'
+     #DESCRIPCION:    ACTUALIZAR SIGUIENTE ESTADO WORKFLOW
+     #AUTOR:        admin
+     #FECHA:        17-04-2020 01:54:37
+    ***********************************/
 
-	elsif(p_transaccion='DECR_LIQUI_SIGWF')then
+    elsif(p_transaccion='DECR_LIQUI_SIGWF')then
 
-		begin
+        begin
 
             select
                 id_liquidacion
@@ -1076,13 +1147,13 @@ BEGIN
             --Devuelve la respuesta
             return v_resp;
 
-		end;
+        end;
 
      /*********************************
      #TRANSACCION:  'DECR_LIQUI_JSONPAGAR'
-     #DESCRIPCION:	Eliminacion de registros
-     #AUTOR:		admin
-     #FECHA:		17-04-2020 01:54:37
+     #DESCRIPCION:    Eliminacion de registros
+     #AUTOR:        admin
+     #FECHA:        17-04-2020 01:54:37
     ***********************************/
 
     elsif(p_transaccion='DECR_LIQUI_JSONPAGAR')then
@@ -1151,11 +1222,11 @@ BEGIN
 
 
         /*********************************
- 	#TRANSACCION:  'DECR_FACTURA_JSON'
- 	#DESCRIPCION:	Eliminacion de registros
- 	#AUTOR:		admin
- 	#FECHA:		26-04-2020 21:14:13
-	***********************************/
+     #TRANSACCION:  'DECR_FACTURA_JSON'
+     #DESCRIPCION:    Eliminacion de registros
+     #AUTOR:        admin
+     #FECHA:        26-04-2020 21:14:13
+    ***********************************/
 
     elsif(p_transaccion='DECR_FACTURA_JSON')then
 
@@ -1185,19 +1256,19 @@ BEGIN
 
     else
      
-    	raise exception 'Transaccion inexistente: %',p_transaccion;
+        raise exception 'Transaccion inexistente: %',p_transaccion;
 
-	end if;
+    end if;
 
 EXCEPTION
-				
-	WHEN OTHERS THEN
-		v_resp='';
-		v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
-		v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
-		v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
-		raise exception '%',v_resp;
-				        
+                
+    WHEN OTHERS THEN
+        v_resp='';
+        v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
+        v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
+        v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
+        raise exception '%',v_resp;
+                        
 END;
 $BODY$
 LANGUAGE 'plpgsql' VOLATILE
