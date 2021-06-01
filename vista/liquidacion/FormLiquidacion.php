@@ -181,7 +181,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         totalProperty: 'total',
                         fields: ['id_concepto_ingas', 'desc_ingas','precio','contabilizable', 'tipo_descuento'],
                         remoteSort: true,
-                        baseParams: {par_filtro: 'tci.desc_ingas',facturacion:'dev', emision:'DEVOLUCIONES'}
+                        baseParams: {par_filtro: 'tci.desc_ingas',facturacion:'descu', emision:'DEVOLUCIONES'}
                     }),
                     valueField: 'id_concepto_ingas',
                     displayField: 'desc_ingas',
