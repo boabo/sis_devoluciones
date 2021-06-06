@@ -1537,19 +1537,6 @@ header("content-type: text/javascript; charset=UTF-8");
         },
 
 
-        arrayStore: {
-            'Bien': [
-                ['bien', 'Bienes'],
-                //['inmueble','Inmuebles'],
-                //['vehiculo','Vehiculos']
-            ],
-            'Servicio': [
-                ['servicio', 'Servicios'],
-                ['consultoria_personal', 'Consultoria de Personas'],
-                ['consultoria_empresa', 'Consultoria de Empresas'],
-                //['alquiler_inmueble','Alquiler Inmuebles']
-            ]
-        },
         Atributos:[
             {
                 //configuracion del componente

@@ -629,6 +629,45 @@ class MODLiquidacion extends MODbase{
         //Devuelve la respuesta
         return $this->respuesta;
     }
+
+    function listarLiquidacionDocConceptosOriginales(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='decr.ft_liquidacion_json';
+        $this->transaccion='LIQ_GETCONORI_SEL';
+        $this->tipo_procedimiento='IME';
+
+        $this->setParametro('id_liquidacion','id_liquidacion','varchar');
+
+
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+
+    }
+    function insertarNotaDesdeLiquidacion(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='decr.ft_liquidacion_ime';
+        $this->transaccion='LIQ_GENNOTA_INS';
+        $this->tipo_procedimiento='IME';
+
+        $this->setParametro('params','params','text');
+        $this->setParametro('detail_json','detail_json','text');
+
+
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+
+    }
+
     
 
 }

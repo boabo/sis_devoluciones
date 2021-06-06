@@ -59,6 +59,9 @@ DECLARE
     v_id_liqui_manual integer;
     v_count_conceptos_hijos integer;
     v_conceptos_hijos record;
+    v_record record;
+    v_params json;
+    v_res_json json;
 BEGIN
 
     v_nombre_funcion = 'decr.ft_liquidacion_ime';
@@ -1243,6 +1246,33 @@ BEGIN
                        AND tv.nro_factura = v_parametros.nro_fac::integer
                      limit 1
                  ) venta;
+
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'json',v_json);
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje',v_json);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+        end;
+        /*********************************
+     #TRANSACCION:  'LIQ_GENNOTA_INS'
+     #DESCRIPCION:    INSERTAR NOTA DE CREDITO DESDE LA LIQUIDACION
+     #AUTOR:        admin
+     #FECHA:        26-04-2020 21:14:13
+    ***********************************/
+
+    elsif(p_transaccion='LIQ_GENNOTA_INS')then
+
+        begin
+
+            v_params := v_parametros.params::json;
+
+            --guardamos la nota
+            v_res_json:= decr.f_insert_nota_crdb(v_params);
+
+
+
 
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'json',v_json);

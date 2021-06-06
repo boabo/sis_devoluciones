@@ -443,6 +443,35 @@ class ACTLiquidacion extends ACTbase{
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
+    function listarLiquidacionDocConceptosOriginales() {
+        $this->objFunc=$this->create('MODLiquidacion');
+        $this->res=$this->objFunc->listarLiquidacionDocConceptosOriginales($this->objParam);
+
+
+        if ($this->res->getTipo() != 'EXITO') {
+
+            $this->res->imprimirRespuesta($this->res->generarJson());
+            exit;
+        }
+
+        $data = $this->res->getDatos();
+
+        $dataJson = json_decode($data["mensaje"]);
+
+        $send = array(
+            "total" => count($dataJson),
+            "datos"=>$dataJson != null ? $dataJson : []
+        );
+        $send = json_encode($send, true);
+        echo $send;
+
+    }
+
+    function insertarNotaDesdeLiquidacion() {
+        $this->objFunc=$this->create('MODLiquidacion');
+        $this->res=$this->objFunc->insertarNotaDesdeLiquidacion($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
 
 
 }

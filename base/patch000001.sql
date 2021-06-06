@@ -558,6 +558,7 @@ create type decr.json_type_liquidacion as (
                                          desc_tipo_documento varchar,
                                          desc_tipo_liquidacion varchar,
                                          desc_punto_venta varchar,
+                                         id_sucursal integer,
                                          nro_nota varchar,
                                          sum_total_descuentos numeric,
                                          descuentos json,
@@ -648,6 +649,10 @@ alter table decr.tnota_agencia alter column estado drop not null;
 
 alter table param.tconcepto_ingas
     add tipo_descuento varchar(255);
+
+
+alter table decr.tliqui_forma_pago
+    add nombre varchar(255);
 
 
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/

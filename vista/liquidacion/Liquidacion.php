@@ -71,6 +71,24 @@ header("content-type: text/javascript; charset=UTF-8");
         btestGroups: [0,1, 2],
         bexcelGroups: [0, 1, 2],
 
+        cmbRazonSocialParaNota: new Ext.form.TextField({
+            name: 'razon_social_para_nota',
+            msgTarget: 'title',
+            fieldLabel: 'Razon Social Para Nota ',
+            allowBlank: false,
+            maxLength: 200
+        }),
+        cmbImporteParaNota: new Ext.form.NumberField({
+            name: 'importe_para_nota',
+            msgTarget: 'title',
+            fieldLabel: 'Importe Para Nota ',
+            allowBlank: false,
+            maxLength: 200,
+            allowDecimals: true,
+            minValue: 1,
+            maxLength: 100000
+        }),
+
         cmbTipoAdministradora: new Ext.form.ComboBox({
 
             name: 'tipo_administradora',
@@ -111,6 +129,44 @@ header("content-type: text/javascript; charset=UTF-8");
                 Phx.vista.Liquidacion.superclass.constructor.call(this,config);
 
 
+                this.formNotaCreditoDebito = new Ext.Window(
+                    {
+                        layout: 'fit',
+                        width: 500,
+                        height: 250,
+                        modal: true,
+                        closeAction: 'hide',
+
+                        items: new Ext.FormPanel({
+                            labelWidth: 75, // label settings here cascade unless overridden
+
+                            frame: true,
+                            // title: 'Factura Manual Concepto',
+                            bodyStyle: 'padding:5px 5px 0',
+                            width: 339,
+                            defaults: {width: 191},
+                            // defaultType: 'textfield',
+
+                            items: [this.cmbRazonSocialParaNota, this.cmbImporteParaNota],
+
+                            buttons: [{
+                                text: 'Save',
+                                handler: () => {
+                                    var rec = this.sm.getSelected();
+                                    console.log('rec',rec)
+                                    const {id_liquidacion, desc_tipo_documento } = rec.json;
+
+                                    this.submitNota({id_liquidacion, desc_tipo_documento, razonSocialParaNota: this.cmbRazonSocialParaNota.getValue(), importeParaNota: this.cmbImporteParaNota.getValue()})
+                                },
+
+                                scope: this
+                            }, {
+                                text: 'Cancel',
+                                handler: ()=>{this.formNotaCreditoDebito.hide()}
+                            }]
+                        }),
+
+                    });
 
                 this.popUpByAdministradora = new Ext.Window(
                     {
@@ -1651,25 +1707,64 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             generarNotaCredito : function () {
                 var rec = this.sm.getSelected();
-                console.log('recccc',rec.json.boletos_recursivo)
-                const { id_liquidacion, boletos_recursivo } = rec.json;
-                const datosParaNotas = boletos_recursivo.filter((row) => row.tiene_nota === 'si'  );
+                console.log('rec',rec.json)
+                const { desc_tipo_documento } = rec.json;
+                switch (desc_tipo_documento) {
+                    case 'BOLEMD':
 
+                        console.log('recccc',rec.json.boletos_recursivo)
+                        const { id_liquidacion, boletos_recursivo } = rec.json;
+                        const datosParaNotas = boletos_recursivo.filter((row) => row.tiene_nota === 'si'  );
+
+                        Phx.CP.loadingShow();
+
+                        this.submitNota({id_liquidacion: rec.json.id_liquidacion, desc_tipo_documento: rec.json.desc_tipo_documento});
+
+
+                        break;
+                    case 'FACCOM':
+                        // 1 paso verificar si existe algun concepto que tenga el tipo de "HAY NOTA"
+                        const { descuentos } = rec.json;
+                        const hayNotaArray = descuentos.filter((concepto) => concepto.tipo_descuento === 'HAY NOTA');
+                        console.log('hayNota',hayNotaArray)
+
+                        if(hayNotaArray.length > 0) {
+
+                            Phx.CP.loadWindows('../../../sis_devoluciones/vista/liquidacion/FormGenerarNota.php',
+                                'Item',
+                                {
+                                    width:900,
+                                    height:400
+                                },rec.json,this.idContenedor,'FormGenerarNota')
+
+                            /*this.cmbRazonSocialParaNota.setValue(_a_nombre_de)
+                            this.cmbImporteParaNota.setValue(hayNotaArray.reduce((previus, data) => data.importe + previus, 0))
+                            this.formNotaCreditoDebito.show();*/
+                        }
+                        break;
+                    default:
+                        alert('no tenemos logica para hacer una nota para este tipo de documento de liquidacion')
+                }
+
+
+
+            },
+            submitNota: function (params) {
+
+                const {id_liquidacion, desc_tipo_documento , razonSocialParaNota = '', importeParaNota = 0 } = params;
                 Phx.CP.loadingShow();
-
-                var rec = this.sm.getSelected();
 
                 Ext.Ajax.request({
                     url: '../../sis_devoluciones/control/Nota/generarNotaDesdeLiquidacion',
-                    params: {'id_liquidacion': id_liquidacion},
+                    params: {id_liquidacion, desc_tipo_documento, razon_social_para_nota: razonSocialParaNota, importe_para_nota: importeParaNota},
                     success: this.successGenerarNota,
                     failure: this.conexionFailure,
                     timeout: this.timeout,
                     scope: this
                 });
-
-
             },
+
+
 
             successGenerarRepAdiministradora: function (resp) {
                 Phx.CP.loadingHide();
@@ -1824,11 +1919,11 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 const objRes = JSON.parse(resp.responseText);
                 const liquidacion = objRes.datos[0];
-                const {descuentos, descuentos_impuestos_no_reembolsable, notas, liqui_venta_detalle_seleccionados, sum_venta_seleccionados, liqui_forma_pago, sum_total_descuentos} = liquidacion;
+                const {descuentos, descuentos_impuestos_no_reembolsable, notas, _desc_liqui_det, sum_venta_seleccionados, liqui_forma_pago, sum_total_descuentos} = liquidacion;
 
                 console.log('liquidacion', liquidacion)
 
-                const conceptosPorPadreHijo = descuentos.reduce((valorAnterior, valorActual, indice, vector)=> {
+                const conceptosPorPadreHijo = descuentos.filter((row) => row.tipo_descuento !== 'HAY NOTA').reduce((valorAnterior, valorActual, indice, vector)=> {
 
                     const findObjectIndex = valorAnterior.findIndex(key =>  key
                                                                             && valorActual.id_concepto_ingas_fk
@@ -1974,7 +2069,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 <tr>
                     <td width="80%" colspan="2">
                         ${ liquidacion.desc_tipo_documento === 'BOLEMD' ? (`BOLETO: ${liquidacion.data_boleto.nro_boleto} ${liquidacion.data_boleto.fecha_emision}`) : `` }
-                        ${ liquidacion.desc_tipo_documento === 'FACCOM' ? (`FACTURA COMPUTARIZADA: ${liquidacion.nombre_factura} / ${liquidacion.nro_factura} / ${liquidacion.fecha_factura}`) : ``}
+                        ${ liquidacion.desc_tipo_documento === 'FACCOM' ? (`FACTURA COMPUTARIZADA: ${liquidacion.nombre_factura} / ${liquidacion.nro_factura} / ${liquidacion.fecha_doc_original}`) : ``}
                     </td>
                     <td width="10%"></td>
                     <td width="10%"></td>
@@ -2003,7 +2098,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     <td width="10%" align="right"></td>
                 </tr>`) : ``}
 
-                 ${ liquidacion.tipo_documento === 'FACCOM' ? (`
+                 ${ liquidacion.desc_tipo_documento === 'FACCOM' ? (`
                 <tr>
                     <td width="80%" colspan="2">
                     </td>
@@ -2017,7 +2112,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     <td width="10%" >Monto</td>
                     <td width="10%" align="right"></td>
                 </tr>
-                    ${liqui_venta_detalle_seleccionados.map((detalleSeleccionado)=> (`
+                    ${_desc_liqui_det.map((detalleSeleccionado)=> (`
                         <tr>
                             <td width="80%" colspan="2" align="left">${detalleSeleccionado.desc_ingas}</td>
                             <td width="10%" >${ String.format('{0}', Ext.util.Format.number(detalleSeleccionado.precio, '0,000.00'))}</td>
@@ -2026,7 +2121,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 <tr>
                     <td width="20%"></td>
-                    <td width="60%" align="right" style="letter-spacing: 3px;">TOTAL CONCEPTOS A DEVOLVER BOB:</td>
+                    <td width="60%" align="right" style="letter-spacing: 3px;">TOTAL CONCEPTOS A DEVOLVER DE LA FACTURA DETALLE BOB:</td>
                     <td width="10%"></td>
                     <td width="10%" align="right">${ String.format('{0}', Ext.util.Format.number(sum_venta_seleccionados, '0,000.00'))}</td>
                 </tr>

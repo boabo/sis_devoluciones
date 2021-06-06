@@ -1130,6 +1130,9 @@ class MODNota extends MODbase
         $this->tipo_procedimiento = 'IME';
 
         $this->setParametro('id_liquidacion','id_liquidacion','int4');
+        $this->setParametro('desc_tipo_documento','desc_tipo_documento','varchar');
+        $this->setParametro('razonSocialParaNota','razonSocialParaNota','varchar');
+        $this->setParametro('importeParaNota','importeParaNota','numeric');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
