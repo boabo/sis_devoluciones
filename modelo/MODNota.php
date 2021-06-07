@@ -22,13 +22,13 @@ class MODNota extends MODbase
     {
         parent::__construct($pParam);
 
-       /* $this->cone = new conexion();
+        $this->cone = new conexion();
         $this->informix = $this->cone->conectarPDOInformix();
         // conexion a informix
         $this->link = $this->cone->conectarpdo();
         //conexion a pxp(postgres)
 
-        $this->tabla_nota_informix = $_SESSION['tabla_nota_informix'];*/
+        $this->tabla_nota_informix = $_SESSION['tabla_nota_informix'];
     }
 
     function listarNota()
@@ -875,6 +875,8 @@ class MODNota extends MODbase
         $nota_informix = $this->aParam->getParametro('nota_informix');
         $nroaut = $this->aParam->getParametro('nroaut');
 
+
+
         if ($nro_liquidacion != '') { // esta nota tiene liquidacion ligada
 
             $sql = "select nota.nroliqui,liqui.estpago
@@ -885,6 +887,7 @@ class MODNota extends MODbase
             $info_nota = $this->informix->prepare($sql);
             $info_nota->execute();
             $results = $info_nota->fetchAll(PDO::FETCH_ASSOC);
+
 
             if ($results[0]['ESTPAGO'] == 'P') {
                 throw new Exception('NO SE PUEDE ANULAR, YA ESTA PAGADO');
@@ -916,7 +919,7 @@ class MODNota extends MODbase
             $this->informix->beginTransaction();
 
             $sql = "UPDATE decr.tnota SET estado = 9, total_devuelto = 0
-					,monto_total = 0, excento = 0, credfis = 0 WHERE id_nota ='$nota'";
+					,monto_total = 0, excento = 0, credfis = 0, id_usuario_mod = " . $_SESSION['ss_id_usuario'] . ", fecha_mod = now()   WHERE id_nota ='$nota'";
 
             $sql_conceptos = "update decr.tnota_detalle set importe = 0, exento =0,total_devuelto=0
 								where id_nota ='$nota' ";
