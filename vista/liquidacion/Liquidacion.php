@@ -1763,6 +1763,10 @@ header("content-type: text/javascript; charset=UTF-8");
                     scope: this
                 });
             },
+        successGenerarNotaDesdeLiquidacion: function (res) {
+              
+                console.log('despues de generar nottttta')
+            },
 
 
 

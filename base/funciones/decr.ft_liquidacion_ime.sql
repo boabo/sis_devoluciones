@@ -30,6 +30,8 @@ DECLARE
 
     v_id_concepto_ingas varchar[];
     v_i integer;
+    v_id_notas	integer[];
+
     v_tamano integer;
     v_num_tramite          varchar;
     v_id_proceso_wf     integer;
@@ -61,7 +63,7 @@ DECLARE
     v_conceptos_hijos record;
     v_record record;
     v_params json;
-    v_res_json json;
+    v_id_nota integer;
 BEGIN
 
     v_nombre_funcion = 'decr.ft_liquidacion_ime';
@@ -1269,14 +1271,16 @@ BEGIN
             v_params := v_parametros.params::json;
 
             --guardamos la nota
-            v_res_json:= decr.f_insert_nota_crdb(v_params);
+            v_id_nota:= decr.f_insert_nota_crdb(v_params, p_id_usuario, v_parametros._id_usuario_ai);
 
-
+            v_id_notas[1] := v_id_nota;
 
 
             --Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'json',v_json);
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje',v_json);
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje', array_to_string(v_id_notas, ',')::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'id_nota',array_to_string(v_id_notas, ',')::varchar);
+
 
             --Devuelve la respuesta
             return v_resp;

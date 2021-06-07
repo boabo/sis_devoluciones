@@ -281,7 +281,8 @@ BEGIN
                        liqui_tabla.nro_nota,
                        liqui_tabla.sum_total_descuentos,
                        liqui_tabla.descuentos,
-                       liqui_tabla.sum_descuentos
+                       liqui_tabla.sum_descuentos,
+                       liqui_tabla.notas
                 FROM decr.tliquidacion tl
                          INNER JOIN (SELECT * FROM json_populate_recordset(NULL::decr.json_type_liquidacion, v_liqui_json::json)
                 ) liqui_tabla ON liqui_tabla.id_liquidacion = tl.id_liquidacion
@@ -340,9 +341,7 @@ BEGIN
                 FROM t_liqui tl
                          INNER JOIN vef.tventa tv on tv.id_venta = tl.id_venta
                          inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
-
                          INNER JOIN t_venta_detalle tvd on tvd.id_venta = tv.id_venta
-
                          LEFT JOIN sum_descuentos sd ON sd.id_liquidacion = tl.id_liquidacion
             )
         SELECT TO_JSON(ROW_TO_JSON(jsonData) :: TEXT) #>> '{}' as json

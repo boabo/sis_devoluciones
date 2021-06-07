@@ -1,7 +1,7 @@
 CREATE OR REPLACE FUNCTION decr.f_insert_nota_crdb (
     p_params json, p_id_usuario integer, p_id_usuario_ai integer
 )
-    RETURNS json AS
+    RETURNS integer AS
 $body$
 /**************************************************************************
 
@@ -43,8 +43,6 @@ DECLARE
 BEGIN
 
 
-    RAISE EXCEPTION '%', p_params;
-
     v_nombre_funcion:='decr.f_get_liquidacion';
 
     -- obtenemos todos los datos de la liquidacion
@@ -52,12 +50,13 @@ BEGIN
     v_res_json:= decr.f_get_liquidacion(v_params_to_liq);
     v_liquidacion_json:= v_res_json#>'{datos,0}';
 
+    --RAISE EXCEPTION '%',v_liquidacion_json->>'id_sucursal';
     --obtenemos la dosificacion para generar la nota
     SELECT d.*
     INTO v_record_dosificacion
     FROM vef.tdosificacion d
     WHERE d.estado_reg = 'activo'
-      AND d.id_sucursal = v_liquidacion_json->>'id_sucursal'
+      AND d.id_sucursal = cast(v_liquidacion_json->>'id_sucursal' as integer)
       AND d.fecha_inicio_emi <= now()::date
       AND d.fecha_limite >= now()::date
       AND d.tipo = 'N'
@@ -75,7 +74,9 @@ BEGIN
 
 
     IF EXISTS (
-            select 1 from decr.tnota WHERE  nro_nota = v_nro_nota::varchar and id_dosificacion = v_record_dosificacion.id_dosificacion) THEN
+            select 1 from decr.tnota
+            WHERE  nro_nota = v_nro_nota::varchar
+              and id_dosificacion = v_record_dosificacion.id_dosificacion and fecha >= v_record_dosificacion.fecha_inicio_emi) THEN
         RAISE EXCEPTION 'El numero de Nota ya existe para esta dosificacion. Por favor comuniquese con el administrador del sistema, ....';
         -- do something
     END IF;
@@ -83,20 +84,17 @@ BEGIN
 
     FOR v_record IN (SELECT json_array_elements(p_params->'detail_json') obj)
         LOOP
-        --v_record.obj ->> '_id';
-        --v_record.obj ->> '_concepto';
-        --v_record.obj ->> '_importe';
-        --v_record.obj ->> 'exento';
-        --v_record.obj ->> 'importe_devolver';
+
             v_importe_total_devolver:= v_importe_total_devolver + cast(v_record.obj ->> 'importe_devolver' as numeric);
             v_exento_total:= v_exento_total + cast(v_record.obj ->> 'exento' as numeric);
         END LOOP;
+
 
     -- generar codigo de control para la nota
     v_codigo_control:= pxp.f_gen_cod_control(v_record_dosificacion.llave,
                                              v_record_dosificacion.nroaut,
                                              v_nro_nota::varchar,
-                                             cast(v_record.obj ->> 'nit' as varchar),
+                                             cast(p_params ->> 'nit' as varchar),
                                              to_char(now()::date,'YYYYMMDD')::varchar,
                                              round(v_importe_total_devolver::numeric,0));
 
@@ -144,7 +142,7 @@ BEGIN
             p_id_usuario_ai, -- este era el v_parametros._id_usuario_ai
             NULL,
             v_liquidacion_json->>'id_sucursal',
-            '1',
+            cast(v_liquidacion_json->>'id_sucursal' as integer),
             '1',
             v_nro_nota,
             now(),
@@ -162,7 +160,7 @@ BEGIN
             v_codigo_control,
             v_record_dosificacion.id_dosificacion,
             cast(v_liquidacion_json->>'_liqui_nro_doc_original' as bigint),
-            v_record_dosificacion.nroaut,
+            v_record_dosificacion.nroaut::bigint,
             cast(v_liquidacion_json->>'_liqui_fecha_doc_original' as date),
             'BOLETO',
             cast(v_liquidacion_json->>'_liqui_nro_aut_doc_original' as bigint),
@@ -178,8 +176,9 @@ BEGIN
         --v_record.obj ->> '_importe';
         --v_record.obj ->> 'exento';
         --v_record.obj ->> 'importe_devolver';
-            v_total_devuelto_por_concepto:= cast(v_record.obj ->> 'importe_devolver' as numeric) - cast(v_record.obj ->> 'exento' as numeric);
-            v_exento_total:= v_exento_total + cast(v_record.obj ->> 'exento' as numeric);
+            --v_total_devuelto_por_concepto:= cast(v_record.obj ->> '_importe' as numeric) - cast(v_record.obj ->> 'exento' as numeric);
+            --v_total_devuelto_por_concepto:= cast(v_record.obj ->> 'importe_devolver' as numeric);
+            --v_exento_total:= v_exento_total + cast(v_record.obj ->> 'exento' as numeric);
 
             INSERT INTO decr.tnota_detalle
             (id_usuario_reg,
@@ -194,12 +193,12 @@ BEGIN
             VALUES (p_id_usuario,
                     'activo',
                     v_id_nota,
-                    cast(v_record.obj ->> 'importe_devolver' AS numeric),
+                    cast(v_record.obj ->> '_importe' AS numeric),
                     1::integer,
                     cast(v_record.obj ->> 'concepto' AS varchar),
                     cast(v_record.obj ->> 'exento' AS numeric),
-                    v_total_devuelto_por_concepto::numeric,
-                    cast(v_record.obj ->> 'importe' AS numeric)
+                    cast(v_record.obj ->> 'importe_devolver' AS numeric),
+                    cast(v_record.obj ->> 'importe_devolver' AS numeric)
                     );
 
     END LOOP;
@@ -211,7 +210,7 @@ BEGIN
 
 
 
-    return v_json;
+    return v_id_nota;
 
 
 
