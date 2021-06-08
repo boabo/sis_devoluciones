@@ -472,7 +472,7 @@ header("content-type: text/javascript; charset=UTF-8");
             Phx.CP.loadingHide();
             var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
             console.log('obj desde form nota', objRes)
-            this.fireEvent('successGenerarNotaDesdeLiquidacion', this, objRes);
+            this.fireEvent('successSave', this, objRes);
 
         },
 

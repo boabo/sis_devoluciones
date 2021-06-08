@@ -234,7 +234,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.addButton('generarNotaCredito', {
                     argument: {imprimir: 'notaAgencia'},
                     text: '<i class="fa fa-file-text-o fa-2x"></i> <br>Generar Nota',/*iconCls:'' ,*/
-                    disabled: false,
+                    disabled: true,
                     handler: this.generarNotaCredito
                 });
                 this.addButton('Nota Agencia', {
@@ -410,7 +410,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             <span style="display: block;"><b>Desc Liqui:</b>${json._desc_liqui}</span>
                             <span style="display: block;"><b>Desc Det:</b>${typeof json._desc_liqui_det === 'object' ? liquiDet(json) : json._desc_liqui_det }</span>
                             <span style="display: block;"><b>A Nombre:</b>${json.nombre || json.nombre_factura }</span>
-                            <span style="display: block;"><b>Importe Original:</b>${json.importe_original}</span>
+                            <span style="display: block;"><b>Importe Original:</b>${json._liqui_importe_doc_original}</span>
                             <span style="display: block;"><b>Importe Total:</b>${json.importe_total || json.importe_devolver_sin_descuentos}</span>
                             ${json.util > 0 ? `<span style="display: block;"><b>Tramos Utilizados:</b>${json.util}</span>` : ''}
                             ${json.importe_tramo_utilizado > 0 ? `<span style="display: block;"><b>Importe Tramos Utilizados:</b>${json.importe_tramo_utilizado}</span>` : ''}
@@ -1735,7 +1735,15 @@ header("content-type: text/javascript; charset=UTF-8");
                                 {
                                     width:900,
                                     height:400
-                                },rec.json,this.idContenedor,'FormGenerarNota')
+                                },rec.json,this.idContenedor,'FormGenerarNota',
+                                {
+                                    config: [{
+                                        event: 'successsave',
+                                        delegate: this.onSavedGenerarNota,
+                                    }],
+                                    scope: this
+                                }
+                            )
 
                             /*this.cmbRazonSocialParaNota.setValue(_a_nombre_de)
                             this.cmbImporteParaNota.setValue(hayNotaArray.reduce((previus, data) => data.importe + previus, 0))
@@ -1747,6 +1755,13 @@ header("content-type: text/javascript; charset=UTF-8");
                 }
 
 
+
+            },
+            onSavedGenerarNota: function(form,  objRes){
+                var me = this;
+
+                form.panel.destroy()
+                me.reload();
 
             },
             submitNota: function (params) {

@@ -333,6 +333,7 @@ BEGIN
                                     FROM t_venta_detalle_original tvdo where tvdo.id_venta = tl.id_venta
                                 ) venta_detalle_original
                        ) AS _detalle_documento_original,
+                       tv.total_venta as _liqui_importe_doc_original,
                        tv.fecha as _liqui_fecha_doc_original,
                        tv.nro_factura as _liqui_nro_doc_original,
                        td.nroaut as _liqui_nro_aut_doc_original,

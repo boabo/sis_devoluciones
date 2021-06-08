@@ -606,7 +606,7 @@ monto_total from obingresos.tdeposito td
              tci.contabilizable
             from param.tconcepto_ingas tci
             where tci.id_concepto_ingas_fk is null
-            and (''dev'') = any (tci.sw_autorizacion)
+            and (''descu'') = any (tci.sw_autorizacion)
             and ';
             v_consulta:=v_consulta||v_parametros.filtro;
             v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
@@ -632,7 +632,7 @@ monto_total from obingresos.tdeposito td
             v_consulta:='select count(tci.id_concepto_ingas)
                         from param.tconcepto_ingas tci
             where tci.id_concepto_ingas_fk is null
-            and (''dev'') = any (tci.sw_autorizacion)
+            and (''descu'') = any (tci.sw_autorizacion)
             and ';
 
             --Definicion de la respuesta
