@@ -228,7 +228,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.addButton('verLiquidacion', {
                     argument: {imprimir: 'verLiquidacion'},
                     text: '<i class="fa fa-file-text-o fa-2x"></i> <br>Ver Liquidación',/*iconCls:'' ,*/
-                    disabled: false,
+                    disabled: true,
                     handler: this.verLiquidacion
                 });
                 this.addButton('generarNotaCredito', {
@@ -237,20 +237,20 @@ header("content-type: text/javascript; charset=UTF-8");
                     disabled: true,
                     handler: this.generarNotaCredito
                 });
-                this.addButton('Nota Agencia', {
+                this.addButton('notaAgencia', {
                     argument: {imprimir: 'notaAgencia'},
                     text: '<i class="fa fa-file-text-o fa-2x"></i> <br>Nota Agencia',/*iconCls:'' ,*/
-                    disabled: false,
+                    disabled: true,
                     handler: this.notaAgencia
                 });
 
-                this.addButton('Pagar(Facturacion)', {
+                this.addButton('pagarFacturacion', {
                     argument: {imprimir: 'pagarFacturacion'},
                     text: '<i class="fa fa-file-text-o fa-2x"></i><br> Pagar',/*iconCls:'' ,*/
-                    disabled: false,
+                    disabled: true,
                     handler: this.pagar
                 });
-                this.addButton('ReporteAdministradora', {
+                this.addButton('reporteAdministradora', {
                     argument: {imprimir: 'genPorAdministradora'},
                     text: '<i class="fa fa-file-text-o fa-2x"></i><br> Generar para Administradora',/*iconCls:'' ,*/
                     disabled: false,
@@ -270,24 +270,20 @@ header("content-type: text/javascript; charset=UTF-8");
                     });
                 }
 
-
-
-
-
-
-
-
-
-
-
             },
 
         getParametrosFiltro: function () {
+
             this.store.baseParams.tipo_tab_liqui = this.tipoTabLiqui;
         },
 
         actualizarSegunTab: function (name, indice) {
             console.log(name);
+
+            // solucionar error aca para poner disable el boton
+            // this.getBoton('verLiquidacion').disable();
+
+
 
             this.tipoTabLiqui = name;
             this.getParametrosFiltro();
@@ -1350,6 +1346,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     'DocumentoWf'
                 )
             },
+
+
+
             iniciarEventos : function () {
 
                 this.Cmp.tramo_devolucion.disable();
@@ -1515,20 +1514,27 @@ header("content-type: text/javascript; charset=UTF-8");
             preparaMenu:function(n){
                 var tb = Phx.vista.Liquidacion.superclass.preparaMenu.call(this);
                 var data = this.getSelectedData();
+                const dataSelected = this.sm.getSelected();
+
                 var tb = this.tbar;
 
+                /*
+                *
+                reporteAdministradora
+                * */
+                this.getBoton('verLiquidacion').enable();
+                this.getBoton('pagarFacturacion').enable();
 
-                //Enable/disable WF buttons by status
-                this.getBoton('ant_estado').enable();
-                this.getBoton('sig_estado').enable();
-                if(data.estado=='borrador'){
-                    this.getBoton('ant_estado').disable();
+
+                this.getBoton('generarNotaCredito').disable();
+                this.getBoton('notaAgencia').disable();
+
+
+
+                if(data.desc_tipo_documento === 'FACCOM' && dataSelected.json.descuentos.find((descuento)=> descuento.tipo_descuento === 'HAY NOTA')) {
+                    this.getBoton('generarNotaCredito').enable();
                 }
 
-                if(data.estado=='emitido'){
-                    this.getBoton('ant_estado').disable();
-                    this.getBoton('sig_estado').disable();
-                }
 
 
                 return tb;
