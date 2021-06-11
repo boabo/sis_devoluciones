@@ -1553,7 +1553,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 config: {
                     name: 'id_tipo_doc_liquidacion',
                     fieldLabel: 'Tipo doc Liqui',
-                    allowBlank: true,
+                    allowBlank: false,
                     emptyText: 'Elija una opción...',
                     store: new Ext.data.JsonStore({
                         url: '../../sis_devoluciones/control/TipoDocLiquidacion/listarTipoDocLiquidacion',
@@ -2346,6 +2346,22 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 type:'TextField',
                 filters:{pfiltro:'liqui.moneda_liq',type:'string'},
+                id_grupo:2,
+                grid:true,
+                form:true
+            },
+            {
+                config:{
+                    name: 'pagar_a_nombre',
+                    fieldLabel: 'Pagar a Nombre',
+                    allowBlank: true,
+                    anchor: '80%',
+                    gwidth: 100,
+                    maxLength:100,
+                    disabled: false,
+                },
+                type:'TextField',
+                filters:{pfiltro:'liqui.pagar_a_nombre',type:'string'},
                 id_grupo:2,
                 grid:true,
                 form:true
@@ -3271,74 +3287,84 @@ header("content-type: text/javascript; charset=UTF-8");
 
         onSubmit: function (o) {
 
-            if(this.data.tipo_form == 'new') {
 
-                //  validar formularios
-                var arra = [], i, me = this;
-                for (i = 0; i < me.megrid.store.getCount(); i++) {
-                    record = me.megrid.store.getAt(i);
-                    arra[i] = record.data;
+            //  validar formularios
+            var arra = [], i, me = this;
+            for (i = 0; i < me.megrid.store.getCount(); i++) {
+                record = me.megrid.store.getAt(i);
+                arra[i] = record.data;
 
-                }
+            }
+
+            if(this.form.getForm().isValid() && arra.length > 0) {
+
+                if (this.data.tipo_form == 'new') {
 
 
-                var arraParaNota = [], i2;
-                console.log('this.storeBoletosRecursivo',this.storeBoletosRecursivo)
-                if(this.storeBoletosRecursivo) {
-                    for (i2 = 0; i2 < this.storeBoletosRecursivo.getCount(); i2++) {
-                        record = this.storeBoletosRecursivo.getAt(i2);
-                        arraParaNota[i2] = record.data;
+
+
+                    var arraParaNota = [], i2;
+                    console.log('this.storeBoletosRecursivo', this.storeBoletosRecursivo)
+                    if (this.storeBoletosRecursivo) {
+                        for (i2 = 0; i2 < this.storeBoletosRecursivo.getCount(); i2++) {
+                            record = this.storeBoletosRecursivo.getAt(i2);
+                            arraParaNota[i2] = record.data;
+
+                        }
+                    }
+
+                    var arraParaLiquiManual = [], i3;
+                    if (this.mestoreLiquiManDetail) {
+                        for (i3 = 0; i3 < this.mestoreLiquiManDetail.getCount(); i3++) {
+                            record = this.mestoreLiquiManDetail.getAt(i3);
+                            arraParaLiquiManual[i3] = record.data;
+
+                        }
+                    }
+
+                    console.log('arraParaLiquiManual', arraParaLiquiManual);
+                    console.log('arraParaNota', arraParaNota);
+                    me.argumentExtraSubmit = {
+                        'json_new_records': JSON.stringify(arra, function replacer(key, value) {
+                            /*if (typeof value === 'string') {
+                             return String(value).replace(/&/g, "%26")
+                             }*/
+                            return value;
+                        }),
+                        'json_data_boletos_recursivo': JSON.stringify(arraParaNota, function replacer(key, value) {
+                            /*if (typeof value === 'string') {
+                             return String(value).replace(/&/g, "%26")
+                             }*/
+                            return value;
+                        }),
+                        'json_data_liqui_manual_det': JSON.stringify(arraParaLiquiManual, function replacer(key, value) {
+                            /*if (typeof value === 'string') {
+                             return String(value).replace(/&/g, "%26")
+                             }*/
+                            return value;
+                        })
+                    };
+
+                    /*if (i > 0 && !this.editorDetail.isVisible()) {
+
+                        Phx.vista.FormLiquidacion.superclass.onSubmit.call(this, o, undefined, true);
 
                     }
-                }
-
-                var arraParaLiquiManual = [], i3;
-                if(this.mestoreLiquiManDetail) {
-                    for (i3 = 0; i3 < this.mestoreLiquiManDetail.getCount(); i3++) {
-                        record = this.mestoreLiquiManDetail.getAt(i3);
-                        arraParaLiquiManual[i3] = record.data;
-
-                    }
-                }
-
-                console.log('arraParaLiquiManual',arraParaLiquiManual);
-                console.log('arraParaNota',arraParaNota);
-                me.argumentExtraSubmit = {
-                    'json_new_records': JSON.stringify(arra, function replacer(key, value) {
-                        /*if (typeof value === 'string') {
-                         return String(value).replace(/&/g, "%26")
-                         }*/
-                        return value;
-                    }),
-                    'json_data_boletos_recursivo': JSON.stringify(arraParaNota, function replacer(key, value) {
-                        /*if (typeof value === 'string') {
-                         return String(value).replace(/&/g, "%26")
-                         }*/
-                        return value;
-                    }),
-                    'json_data_liqui_manual_det': JSON.stringify(arraParaLiquiManual, function replacer(key, value) {
-                        /*if (typeof value === 'string') {
-                         return String(value).replace(/&/g, "%26")
-                         }*/
-                        return value;
-                    })
-                };
-
-                /*if (i > 0 && !this.editorDetail.isVisible()) {
+                    else {
+                        alert('no tiene ningun concepto  para comprar')
+                    }*/
 
                     Phx.vista.FormLiquidacion.superclass.onSubmit.call(this, o, undefined, true);
 
+
+                } else {
+                    this.argumentExtraSubmit = {'tipo_form': 'edit'};
+                    Phx.vista.FormLiquidacion.superclass.onSubmit.call(this, o, undefined, true);
                 }
-                else {
-                    alert('no tiene ningun concepto  para comprar')
-                }*/
-
-                Phx.vista.FormLiquidacion.superclass.onSubmit.call(this, o, undefined, true);
-                
-
             } else {
-                this.argumentExtraSubmit = {'tipo_form': 'edit'};
-                Phx.vista.FormLiquidacion.superclass.onSubmit.call(this, o, undefined, true);
+                if(arra.length === 0) {
+                    alert('necesitas agregar conceptos de devolucion')
+                }
             }
 
         },

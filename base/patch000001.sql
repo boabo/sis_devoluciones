@@ -655,6 +655,16 @@ alter table decr.tliqui_forma_pago
     add nombre varchar(255);
 
 
+
+
+alter table decr.tliquidacion
+    add pagar_a_nombre varchar(255);
+
+comment on column decr.tliquidacion.pagar_a_nombre is 'esta columna es  para ayudar a los registros de forma de pago y otros';
+
+
+
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
 

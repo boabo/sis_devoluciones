@@ -282,6 +282,7 @@ BEGIN
                        liqui_tabla.sum_total_descuentos,
                        liqui_tabla.descuentos,
                        liqui_tabla.sum_descuentos,
+                       liqui_tabla.liqui_forma_pago,
                        liqui_tabla.notas
                 FROM decr.tliquidacion tl
                          INNER JOIN (SELECT * FROM json_populate_recordset(NULL::decr.json_type_liquidacion, v_liqui_json::json)
@@ -309,7 +310,7 @@ BEGIN
             (
                 SELECT tl.*,
                        sd.sum_descuentos,
-                       tl.importe_total - sd.sum_descuentos as importe_devolver,
+                       tv.total_venta - sd.sum_descuentos as importe_devolver,
                        tv.nro_factura,
                        tv.nit,
                        tv.nombre_factura,
@@ -337,7 +338,7 @@ BEGIN
                        tv.fecha as _liqui_fecha_doc_original,
                        tv.nro_factura as _liqui_nro_doc_original,
                        td.nroaut as _liqui_nro_aut_doc_original,
-                       tv.nombre_factura as _a_nombre_de
+                       tv.nombre_factura as _liqui_nombre_doc_original
                        --tl.tramo_devolucion as _desc_liqui_det
                 FROM t_liqui tl
                          INNER JOIN vef.tventa tv on tv.id_venta = tl.id_venta

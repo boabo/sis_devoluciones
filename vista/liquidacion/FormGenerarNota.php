@@ -26,7 +26,7 @@ header("content-type: text/javascript; charset=UTF-8");
             console.log(config.id_liquidacion)
 
             this.id_liquidacion = config.id_liquidacion;
-            this._a_nombre_de = config._a_nombre_de;
+            this._liqui_nombre_doc_original = config._liqui_nombre_doc_original;
             this.nit = config.nit;
             this.buildComponentesDetalle();
             this.buildDetailGrid();
@@ -418,7 +418,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
             this.Cmp.id_liquidacion.setValue(this.id_liquidacion);
-            this.Cmp.razon_social.setValue(this._a_nombre_de);
+            this.Cmp.razon_social.setValue(this._liqui_nombre_doc_original);
             this.Cmp.nit.setValue(this.nit);
 
             this.detCmp.exento.on('blur', function () {
@@ -439,30 +439,34 @@ header("content-type: text/javascript; charset=UTF-8");
 
         onSubmit: function (o) {
 
-            //  validar formularios
-            var arra = [], i, me = this;
-            for (i = 0; i < me.megrid.store.getCount(); i++) {
-                record = me.megrid.store.getAt(i);
-                arra[i] = record.data;
+            
+            if(this.form.getForm().isValid() ) {
+                //  validar formularios
+                var arra = [], i, me = this;
+                for (i = 0; i < me.megrid.store.getCount(); i++) {
+                    record = me.megrid.store.getAt(i);
+                    arra[i] = record.data;
+
+                }
+                console.log('ne',me)
+                // creamos los parametros para enviar al backend todo en un json
+                const params = me.Componentes.reduce((previus, component) =>  { return {...previus, [component.name]: component.value}  } , { detail_json: arra });
+                console.log('params',params)
+
+                me.argumentExtraSubmit = {
+                    /*'detail_json': JSON.stringify(arra, function replacer(key, value) {
+                        /!*if (typeof value === 'string') {
+                         return String(value).replace(/&/g, "%26")
+                         }*!/
+                        return value;
+                    }),*/
+                    'params': JSON.stringify(params),
+                };
+
+
+                Phx.vista.FormGenerarNota.superclass.onSubmit.call(this, o, undefined, true);
 
             }
-            console.log('ne',me)
-            // creamos los parametros para enviar al backend todo en un json
-            const params = me.Componentes.reduce((previus, component) =>  { return {...previus, [component.name]: component.value}  } , { detail_json: arra });
-            console.log('params',params)
-
-            me.argumentExtraSubmit = {
-                /*'detail_json': JSON.stringify(arra, function replacer(key, value) {
-                    /!*if (typeof value === 'string') {
-                     return String(value).replace(/&/g, "%26")
-                     }*!/
-                    return value;
-                }),*/
-                'params': JSON.stringify(params),
-            };
-
-
-            Phx.vista.FormGenerarNota.superclass.onSubmit.call(this, o, undefined, true);
 
 
         },

@@ -71,24 +71,6 @@ header("content-type: text/javascript; charset=UTF-8");
         btestGroups: [0,1, 2],
         bexcelGroups: [0, 1, 2],
 
-        cmbRazonSocialParaNota: new Ext.form.TextField({
-            name: 'razon_social_para_nota',
-            msgTarget: 'title',
-            fieldLabel: 'Razon Social Para Nota ',
-            allowBlank: false,
-            maxLength: 200
-        }),
-        cmbImporteParaNota: new Ext.form.NumberField({
-            name: 'importe_para_nota',
-            msgTarget: 'title',
-            fieldLabel: 'Importe Para Nota ',
-            allowBlank: false,
-            maxLength: 200,
-            allowDecimals: true,
-            minValue: 1,
-            maxLength: 100000
-        }),
-
         cmbTipoAdministradora: new Ext.form.ComboBox({
 
             name: 'tipo_administradora',
@@ -129,44 +111,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 Phx.vista.Liquidacion.superclass.constructor.call(this,config);
 
 
-                this.formNotaCreditoDebito = new Ext.Window(
-                    {
-                        layout: 'fit',
-                        width: 500,
-                        height: 250,
-                        modal: true,
-                        closeAction: 'hide',
-
-                        items: new Ext.FormPanel({
-                            labelWidth: 75, // label settings here cascade unless overridden
-
-                            frame: true,
-                            // title: 'Factura Manual Concepto',
-                            bodyStyle: 'padding:5px 5px 0',
-                            width: 339,
-                            defaults: {width: 191},
-                            // defaultType: 'textfield',
-
-                            items: [this.cmbRazonSocialParaNota, this.cmbImporteParaNota],
-
-                            buttons: [{
-                                text: 'Save',
-                                handler: () => {
-                                    var rec = this.sm.getSelected();
-                                    console.log('rec',rec)
-                                    const {id_liquidacion, desc_tipo_documento } = rec.json;
-
-                                    this.submitNota({id_liquidacion, desc_tipo_documento, razonSocialParaNota: this.cmbRazonSocialParaNota.getValue(), importeParaNota: this.cmbImporteParaNota.getValue()})
-                                },
-
-                                scope: this
-                            }, {
-                                text: 'Cancel',
-                                handler: ()=>{this.formNotaCreditoDebito.hide()}
-                            }]
-                        }),
-
-                    });
 
                 this.popUpByAdministradora = new Ext.Window(
                     {
@@ -465,6 +409,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             ${json.importe_tramo_utilizado > 0 ? `<tr><td colspan="2"><b>Importe Tramos Utilizados:</b></td><td>-${json.importe_tramo_utilizado}</td></tr>` : ''}
 
                             <tr><td colspan="2"><b>Importe a Devolver:</b></td><td><b style="color: green">${json.importe_devolver ? json.importe_devolver :0}</b></td></tr>
+                            <tr><td colspan="2"><b>Pagar a Nombre de:</b></td><td><b style="color: green">${json.pagar_a_nombre}</b></td></tr>
                             </table>
                             </div>`;
 
@@ -1509,6 +1454,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 form.panel.destroy()
                 me.reload();
 
+
+
             },
 
             preparaMenu:function(n){
@@ -1523,7 +1470,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 reporteAdministradora
                 * */
                 this.getBoton('verLiquidacion').enable();
-                this.getBoton('pagarFacturacion').enable();
+                this.getBoton('pagarFacturacion').disable();
 
 
                 this.getBoton('generarNotaCredito').disable();
@@ -1531,11 +1478,25 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
 
-                if(data.desc_tipo_documento === 'FACCOM' && dataSelected.json.descuentos.find((descuento)=> descuento.tipo_descuento === 'HAY NOTA')) {
+                if(data.desc_tipo_documento === 'FACCOM' && dataSelected.json.estado === 'emitido' && dataSelected.json.descuentos.find((descuento)=> descuento.tipo_descuento === 'HAY NOTA')) {
                     this.getBoton('generarNotaCredito').enable();
+                }
+                if(dataSelected.json.estado === 'emitido') {
+                    this.getBoton('pagarFacturacion').enable();
                 }
 
 
+                //Enable/disable WF buttons by status
+                this.getBoton('ant_estado').enable();
+                this.getBoton('sig_estado').enable();
+                if(data.estado=='borrador'){
+                    this.getBoton('ant_estado').disable();
+                }
+
+                if(data.estado=='emitido'){
+                    this.getBoton('ant_estado').disable();
+                    this.getBoton('sig_estado').disable();
+                }
 
                 return tb;
             },
@@ -1690,7 +1651,7 @@ header("content-type: text/javascript; charset=UTF-8");
             successGenerarNota: function (resp) {
                 Phx.CP.loadingHide();
 
-                var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+                var objRes = (typeof resp === 'object') ? resp : Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
 
                 console.log('bjRes.ROOT.datos.id_nota',objRes.ROOT.datos.id_nota)
 
@@ -1751,9 +1712,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                 }
                             )
 
-                            /*this.cmbRazonSocialParaNota.setValue(_a_nombre_de)
-                            this.cmbImporteParaNota.setValue(hayNotaArray.reduce((previus, data) => data.importe + previus, 0))
-                            this.formNotaCreditoDebito.show();*/
+
                         }
                         break;
                     default:
@@ -1768,6 +1727,10 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 form.panel.destroy()
                 me.reload();
+
+                console.log('form', form)
+                console.log('objRes', objRes)
+                this.successGenerarNota(objRes);
 
             },
             submitNota: function (params) {
@@ -1822,22 +1785,35 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 var rec = this.sm.getSelected();
                 console.log('recccc',rec)
-                const find = rec.json.descuentos.find((resq) => resq.tipo === 'BO');
-                console.log('find',find);
-                if(find === undefined && (rec.json.id_nota != null || rec.json.id_nota != '')) {
-                    Phx.CP.loadingShow();
+
+                let validadoParaPagar = 'Y';
+                const hayDescuentoQueRequieraNota = rec.json.descuentos && rec.json.descuentos.find((descuento)=> descuento.tipo_descuento === 'HAY NOTA');
+                validadoParaPagar = (hayDescuentoQueRequieraNota && !Array.isArray(rec.json.notas) ) ? 'N' : 'Y';
+                console.log('hayDescuentoQueRequieraNota',hayDescuentoQueRequieraNota);
+                console.log('validadoParaPagar',validadoParaPagar);
+                if(rec.json.estado === 'emitido' &&  validadoParaPagar === 'Y') {
+
+                    const find = rec.json.descuentos.find((resq) => resq.tipo === 'BO'); // preguntar
+                    console.log('find',find);
+                    if(find && (rec.json.id_nota != null || rec.json.id_nota != '')) {
+                        Phx.CP.loadingShow();
 
 
-                    Ext.Ajax.request({
-                        url: '../../sis_devoluciones/control/Liquidacion/listarLiquidacionJson',
-                        params: {'id_liquidacion': rec.data['id_liquidacion']},
-                        success: this.successObtenerJsonPagar,
-                        failure: this.conexionFailure,
-                        timeout: this.timeout,
-                        scope: this
-                    });
+                        Ext.Ajax.request({
+                            url: '../../sis_devoluciones/control/Liquidacion/listarLiquidacionJson',
+                            params: {'id_liquidacion': rec.data['id_liquidacion']},
+                            success: this.successObtenerJsonPagar,
+                            failure: this.conexionFailure,
+                            timeout: this.timeout,
+                            scope: this
+                        });
 
+                    }
+
+                } else {
+                    alert('La liquidacion no esta validado para pagar podria ser que le falte nota, ')
                 }
+
 
 
             },
@@ -2031,7 +2007,7 @@ header("content-type: text/javascript; charset=UTF-8");
             <table width="100%">
                 <tr>
                     <td width="20%">Nombre o Razon Social: </td>
-                    <td>${liquidacion.nombre}</td>
+                    <td>${liquidacion._liqui_nombre_doc_original}</td>
                 </tr>
                 <tr align="left">
                     <td>P-Venta/Agencia: </td>
@@ -2058,7 +2034,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     <td align="center">Moneda</td>
                 </tr>
                 <tr>
-                    <td>${liquidacion.punto_venta}</td>
+                    <td align="center">${liquidacion.desc_punto_venta}</td>
                     <td align="center">6.9600</td>
                     <td align="center">${liquidacion.estacion}</td>
                     <td align="center">Bolivianos</td>

@@ -22,13 +22,16 @@ class MODNota extends MODbase
     {
         parent::__construct($pParam);
 
-        $this->cone = new conexion();
-        $this->informix = $this->cone->conectarPDOInformix();
-        // conexion a informix
-        $this->link = $this->cone->conectarpdo();
-        //conexion a pxp(postgres)
+        if($_SESSION['_ESTADO_SISTEMA'] === 'produccion') {
+            $this->cone = new conexion();
+            $this->informix = $this->cone->conectarPDOInformix();
+            // conexion a informix
+            $this->link = $this->cone->conectarpdo();
+            //conexion a pxp(postgres)
 
-        $this->tabla_nota_informix = $_SESSION['tabla_nota_informix'];
+            $this->tabla_nota_informix = $_SESSION['tabla_nota_informix'];
+        }
+
     }
 
     function listarNota()

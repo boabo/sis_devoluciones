@@ -168,7 +168,8 @@ BEGIN
                                           id_moneda,
                                           id_deposito,
                                           id_liquidacion_fk,
-                                          id_factucom
+                                          id_factucom,
+            pagar_a_nombre
 
               ) values(
             v_parametros.estacion,
@@ -213,7 +214,8 @@ BEGIN
                        null,--v_parametros.id_moneda,
                        v_parametros.id_deposito,
                        v_parametros.id_liquidacion_fk,
-                       v_parametros.id_factucom
+                       v_parametros.id_factucom,
+                       v_parametros.pagar_a_nombre
 
             
             
@@ -263,7 +265,7 @@ BEGIN
                 FROM vef.tventa_detalle tvd
                          inner JOIN decr.tliqui_venta_detalle lvd on lvd.id_venta_detalle = tvd.id_venta_detalle
                          inner join param.tconcepto_ingas tci on tci.id_concepto_ingas = tvd.id_producto
-                where lvd.id_liquidacion = v_id_liquidacion;
+                where lvd.id_liquidacion = v_id_liquidacion and tci.tipo_descuento NOT IN ('HAY NOTA');
                 --RAISE EXCEPTION '%','llega' ||v_sum_venta_seleccionados::varchar;
 
                 UPDATE decr.tliquidacion SET importe_total = v_sum_venta_seleccionados where id_liquidacion = v_id_liquidacion ;
