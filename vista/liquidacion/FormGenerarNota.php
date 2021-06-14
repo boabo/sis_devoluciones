@@ -110,7 +110,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'Importe Original',
                     allowBlank: false,
                     allowDecimals: true,
-                    minValue: 1,
+                    minValue: 0,
                     maxLength: 10
                 }),
                 'exento': new Ext.form.NumberField({
