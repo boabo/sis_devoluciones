@@ -119,7 +119,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     fieldLabel: 'exento',
                     allowBlank: false,
                     allowDecimals: true,
-                    minValue: 1,
+                    minValue: 0,
                     maxLength: 10
                 }),
                 'importe_devolver': new Ext.form.NumberField({
