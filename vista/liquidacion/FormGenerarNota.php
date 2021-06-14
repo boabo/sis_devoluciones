@@ -108,7 +108,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'importe_original',
                     msgTarget: 'title',
                     fieldLabel: 'Importe Original',
-                    allowBlank: false,
+                    allowBlank: true,
                     allowDecimals: true,
                     minValue: 0,
                     maxLength: 10
