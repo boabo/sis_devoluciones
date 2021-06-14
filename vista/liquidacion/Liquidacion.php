@@ -1793,7 +1793,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 console.log('validadoParaPagar',validadoParaPagar);
                 if(rec.json.estado === 'emitido' &&  validadoParaPagar === 'Y') {
 
-                    const find = rec.json.descuentos.find((resq) => resq.tipo === 'BO'); // preguntar
+                    const find = rec.json.descuentos.find((resq) => resq.tipo === 'FACTURABLE'); // preguntar
                     console.log('find',find);
                     if(find && (rec.json.id_nota != null || rec.json.id_nota != '')) {
                         Phx.CP.loadingShow();
