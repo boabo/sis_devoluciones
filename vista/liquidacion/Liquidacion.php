@@ -146,6 +146,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     });
 
 
+
+
                 this.init();
                 this.iniciarEventos();
 
@@ -199,6 +201,18 @@ header("content-type: text/javascript; charset=UTF-8");
                     text: '<i class="fa fa-file-text-o fa-2x"></i><br> Generar para Administradora',/*iconCls:'' ,*/
                     disabled: false,
                     handler: ()=> this.popUpByAdministradora.show()
+                });
+                this.addButton('anularLiquidacion', {
+                    argument: {imprimir: 'anularLiquidacion'},
+                    text: '<i class="fa fa-file-text-o fa-2x"></i><br> Anular Liquidacion',/*iconCls:'' ,*/
+                    disabled: true,
+                    handler: this.anularLiquidacion
+                });
+                this.addButton('verNotas', {
+                    argument: {imprimir: 'verNotas'},
+                    text: '<i class="fa fa-file-text-o fa-2x"></i><br> Ver Notas',/*iconCls:'' ,*/
+                    disabled: true,
+                    handler: this.verNotas
                 });
 
                 function diagramGantt(){
@@ -271,7 +285,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             <span style="display: block;"><b>Punto de Venta:</b>${json.desc_punto_venta}</span>
                             <span style="display: block;"><b>Tipo Liqui Doc:</b>${json.desc_tipo_documento}</span>
                             <span style="display: block;"><b>Estacion:</b>${json.estacion}</span>
-                            <span style="display: block;"><b>${json.notas ? `<i class="fa fa-file"></i>Nro Nota:${renderNotas}`: 'No tiene Nota'} - ${json.id_proceso_wf_factura ? `<i class="fa fa-file"></i>Nro Nota:${json.id_proceso_wf_factura}`: 'No tiene Factura'} </span>
+                            <span style="display: block;"><b>${json.notas ? `<i class="fa fa-file"></i>Nro Nota:${renderNotas}`: 'No tiene Nota'} - ${ json.factura_pagada ? `<i class="fa fa-file"></i>Nro Factura:${json.factura_pagada.nro_factura}`: 'No tiene Factura'} </span>
 
 
                             </div>`;
@@ -1251,9 +1265,9 @@ header("content-type: text/javascript; charset=UTF-8");
                 field: 'id_liquidacion',
                 direction: 'ASC'
             },
-            bdel:true,
+            bdel:false,
             bsave:true,
-            bedit:true,
+            bedit:false,
             tabsouth:
                 [{
                     url:'../../../sis_devoluciones/vista/descuento_liquidacion/DescuentoLiquidacion.php',
@@ -1497,6 +1511,11 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.getBoton('ant_estado').disable();
                     this.getBoton('sig_estado').disable();
                 }
+
+                this.getBoton('anularLiquidacion').enable();
+                this.getBoton('verNotas').enable();
+
+                
 
                 return tb;
             },
@@ -2250,6 +2269,80 @@ ${liqui_forma_pago && liqui_forma_pago.map((forma_pago) => {
 
 
             },
+
+            anularLiquidacion: function () {
+
+                var rec = this.sm.getSelected();
+                console.log('recccc',rec);
+                const that = this;
+                if(rec.json.estado === 'emitido' || rec.json.estado === 'borrador') {
+                    alert(rec.json.id_liquidacion);
+
+                    Phx.CP.loadingShow();
+                    Ext.Ajax.request({
+                        url: '../../sis_devoluciones/control/Liquidacion/anularLiquidacion',
+                        params: {'id_liquidacion': rec.json.id_liquidacion},
+                        success: () => {
+                            Phx.CP.loadingHide();
+                            alert('Liquidacion Anulada');
+                            that.reload();
+
+                        },
+                        failure: this.conexionFailure,
+                        timeout: this.timeout,
+                        scope: this
+                    });
+
+                } else {
+                    alert('NO puedes anular una liquidacion finalizada');
+                }
+            },
+
+            verNotas: function () {
+                var rec = this.sm.getSelected();
+                console.log('recccc',rec)
+                if(rec.json.notas  && Array.isArray(rec.json.notas)  ) {
+
+
+                    const panelResumenNotas = new Ext.Panel({html:`
+                    <table width="100%">
+                        <tr>
+                            <th>Autorizacion</th>
+                            <th>Nro Nota</th>
+                            <th>Acciones</th>
+                        </tr>
+                        ${rec.json.notas.map((nota) => {
+                           return `<tr>
+                                <td>${nota.nroaut}</td>
+                                <td>${nota.nro_nota}</td>
+                                <td><i class="fa fa-remove"></i></td>
+                            </tr>`
+                        }).join('')}
+
+                    </table>
+                    `});
+                    const windowNotas = new Ext.Window(
+                        {
+                            layout: 'fit',
+                            width: 500,
+                            height: 250,
+                            modal: true,
+                            closeAction: 'hide',
+                            items: panelResumenNotas,
+
+                        });
+
+                   /* console.log(this.idContenedor)
+                    const id = this.idContenedor;
+                    console.log('this.panelResumenNotas',this.panelResumenNotas)
+                    //Phx.CP.getPagina(id).panelResumenNotas.update('<div>favio figueroa</div>')
+                    this.panelResumenNotas.update(String.format('<div>favio figueroa</div>'))*/
+                    windowNotas.show();
+
+                }else {
+                    alert('no tiene notas relacionadas')
+                }
+            }
 
         }
     )

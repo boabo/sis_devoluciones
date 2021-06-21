@@ -564,7 +564,8 @@ create type decr.json_type_liquidacion as (
                                          descuentos json,
                                          sum_descuentos json,
                                          liqui_forma_pago json,
-                                         notas json
+                                         notas json,
+                                         factura_pagada json
                                      );
 
 

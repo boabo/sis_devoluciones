@@ -658,7 +658,21 @@ class MODLiquidacion extends MODbase{
         $this->setParametro('params','params','text');
         $this->setParametro('detail_json','detail_json','text');
 
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
 
+        //Devuelve la respuesta
+        return $this->respuesta;
+
+    }
+    function anularLiquidacion(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='decr.ft_liquidacion_ime';
+        $this->transaccion='LIQ_ANULAR_LI';
+        $this->tipo_procedimiento='IME';
+
+        $this->setParametro('id_liquidacion','id_liquidacion','int4');
 
         //Ejecuta la instruccion
         $this->armarConsulta();

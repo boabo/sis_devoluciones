@@ -34,10 +34,14 @@ select pxp.f_insert_tgui ('Descuento Liquidacion', 'Descuento Liquidacion', 'SCR
 SELECT param.f_import_tdocumento('insert', 'LIQCBBDEV', 'LIQCBBDEV', 'DECR', 'tabla', 'gestion', '',
                                  'CBB-DEVCBB-gestioncorrelativo');
 
+SELECT param.f_import_tdocumento('insert', 'LIQSRZDEV', 'LIQSRZDEV', 'DECR', 'tabla', 'gestion', '',
+                                 'SRZ-DEVSRZ-gestioncorrelativo');
+
 
 select param.f_import_tcatalogo_tipo ('insert','tliquidacion_estacion','DECR','tliquidacion');
 select param.f_import_tcatalogo ('insert','DECR','CBB','CBB','tliquidacion_estacion');
 select param.f_import_tcatalogo ('insert','DECR','LPB','LPB','tliquidacion_estacion');
+select param.f_import_tcatalogo ('insert','DECR','SRZ','SRZ','tliquidacion_estacion');
 
 
 select pxp.f_insert_tgui ('Generar Nota PXP2', 'Generar Nota PXP2', 'GN2', 'si', 1, 'sis_devoluciones/vista/nota/form_generar_nota.php', 2, '', 'FormNota', 'DECR');

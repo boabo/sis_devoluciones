@@ -472,6 +472,11 @@ class ACTLiquidacion extends ACTbase{
         $this->res=$this->objFunc->insertarNotaDesdeLiquidacion($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
+    function anularLiquidacion() {
+        $this->objFunc=$this->create('MODLiquidacion');
+        $this->res=$this->objFunc->anularLiquidacion($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
 
 
 }

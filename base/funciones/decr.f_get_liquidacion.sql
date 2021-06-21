@@ -96,6 +96,7 @@ BEGIN
                    ttl.tipo_liquidacion                 AS desc_tipo_liquidacion,
                    pv.nombre                            AS desc_punto_venta,
                    su.id_sucursal                       AS id_sucursal,
+                   tl.id_proceso_wf_factura            AS id_proceso_wf_factura,
                    tl.id_factucom -- solo para el tipo fac-antigua
             FROM decr.tliquidacion tl
                      INNER JOIN segu.tusuario usu1 ON usu1.id_usuario = tl.id_usuario_reg
@@ -141,6 +142,11 @@ BEGIN
              SELECT nota.*
              FROM decr.tnota nota
                       inner join t_liqui tl on tl.id_liquidacion::integer = nota.id_liquidacion::integer
+         ),
+         t_factura_pagada AS (
+             SELECT tv.nro_factura, tl.id_proceso_wf_factura
+             FROM vef.tventa tv
+                      inner join t_liqui tl on tl.id_proceso_wf_factura::integer = tv.id_proceso_wf::integer
          )
     SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(liqui)))
     INTO v_liqui_json
@@ -175,7 +181,14 @@ BEGIN
                                 SELECT *
                                 FROM t_nota tn WHERE tn.id_liquidacion::integer = tl.id_liquidacion::integer
                             ) nota
-                   ) AS notas
+                   ) AS notas,
+                   (
+                       SELECT TO_JSON(factura_pagada) -- solo json por que devolvera un objeto
+                       FROM (
+                                SELECT *
+                                FROM t_factura_pagada tf WHERE tf.id_proceso_wf_factura::integer = tl.id_proceso_wf_factura::integer
+                            ) factura_pagada
+                   ) AS factura_pagada
             FROM t_liqui tl
         ) liqui;
 
@@ -283,7 +296,8 @@ BEGIN
                        liqui_tabla.descuentos,
                        liqui_tabla.sum_descuentos,
                        liqui_tabla.liqui_forma_pago,
-                       liqui_tabla.notas
+                       liqui_tabla.notas,
+                       liqui_tabla.factura_pagada
                 FROM decr.tliquidacion tl
                          INNER JOIN (SELECT * FROM json_populate_recordset(NULL::decr.json_type_liquidacion, v_liqui_json::json)
                 ) liqui_tabla ON liqui_tabla.id_liquidacion = tl.id_liquidacion

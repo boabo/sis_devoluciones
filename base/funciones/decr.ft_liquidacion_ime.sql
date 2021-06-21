@@ -61,9 +61,13 @@ DECLARE
     v_id_liqui_manual integer;
     v_count_conceptos_hijos integer;
     v_conceptos_hijos record;
+    v_conceptos_notas record;
     v_record record;
     v_params json;
     v_id_nota integer;
+    v_estado varchar;
+    v_liquidacion record;
+    v_tabla_factura varchar;
 BEGIN
 
     v_nombre_funcion = 'decr.ft_liquidacion_ime';
@@ -1259,7 +1263,7 @@ BEGIN
             return v_resp;
 
         end;
-        /*********************************
+     /*********************************
      #TRANSACCION:  'LIQ_GENNOTA_INS'
      #DESCRIPCION:    INSERTAR NOTA DE CREDITO DESDE LA LIQUIDACION
      #AUTOR:        admin
@@ -1282,6 +1286,90 @@ BEGIN
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje', array_to_string(v_id_notas, ',')::varchar);
             v_resp = pxp.f_agrega_clave(v_resp,'id_nota',array_to_string(v_id_notas, ',')::varchar);
+
+
+            --Devuelve la respuesta
+            return v_resp;
+
+        end;
+
+/*********************************
+     #TRANSACCION:  'LIQ_ANULAR_LI'
+     #DESCRIPCION:    ANULAR LIQUIDACION
+     #AUTOR:        admin
+     #FECHA:        26-04-2021 21:14:13
+    ***********************************/
+
+    elsif(p_transaccion='LIQ_ANULAR_LI')then
+
+        begin
+
+
+            SELECT *
+            INTO v_liquidacion
+            FROM decr.tliquidacion
+            WHERE id_liquidacion = v_parametros.id_liquidacion;
+
+            IF v_liquidacion.estado = 'v_estado' THEN
+                RAISE EXCEPTION '%','esta liquidacion ya esta pagada no puedes anular';
+            END IF;
+
+            -- anulamos la liquidacion
+            update decr.tliquidacion set estado = 'anulado'
+            where id_liquidacion = v_parametros.id_liquidacion;
+
+
+
+            --verificamos si tiene nota
+            IF EXISTS (SELECT 1 FROM decr.tnota n WHERE n.id_liquidacion::integer = v_parametros.id_liquidacion and fecha_reg >= '2021-05-15'::date) THEN
+                -- si tiene necesitamos anular la nota primero
+
+                FOR v_conceptos_notas
+                    IN (
+                        SELECT *
+                        FROM decr.tnota n
+                        WHERE n.id_liquidacion::integer = v_parametros.id_liquidacion and fecha_reg >= '2021-05-15'::date
+                    )
+                    LOOP
+                        UPDATE decr.tnota SET estado = 9, total_devuelto = 0
+                                ,monto_total = 0, excento = 0,
+                                              credfis = 0, id_usuario_mod = id_usuario_mod, fecha_mod = now()
+                        WHERE id_nota = v_conceptos_notas.id_nota;
+
+                        UPDATE decr.tnota_detalle set importe = 0, exento =0,total_devuelto=0
+                        where id_nota = v_conceptos_notas.id_nota;
+
+                    END LOOP;
+            END IF;
+
+            --verificamos si tiene factura y debemos anular
+            if EXISTS(select 1 from vef.tventa where id_proceso_wf = v_liquidacion.id_proceso_wf_factura) then
+                v_tabla_factura =  pxp.f_crear_parametro(ARRAY[
+                                                     'id_proceso_wf'
+                                                     ],
+                                                 ARRAY[
+
+                                                     v_liquidacion.id_proceso_wf_factura::varchar
+                                                     ],
+                                                 ARRAY[
+                                                     'int4'
+                                                     ]
+                    );
+                --RAISE EXCEPTION '%', v_tabla_factura;
+
+
+                v_resp = vef.ft_facturacion_externa_ime(p_id_usuario,p_id_usuario,v_tabla_factura,'VEF_ANU_FAC_LIQ_EXT');
+            END IF;
+
+
+
+
+
+
+            --Definicion de la respuesta
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'Liquidacion anulada', v_parametros.id_liquidacion::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'id_liquidacion',v_parametros.id_liquidacion::varchar);
 
 
             --Devuelve la respuesta
