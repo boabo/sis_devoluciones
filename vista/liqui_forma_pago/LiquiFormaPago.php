@@ -18,6 +18,16 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
         Phx.vista.LiquiFormaPago.superclass.constructor.call(this,config);
         this.iniciarEventos();
         this.init();
+
+        var dataPadre = Phx.CP.getPagina(this.idContenedorPadre).getSelectedData()
+        if(dataPadre){
+            this.onEnablePanel(this, dataPadre);
+        }
+        else
+        {
+            this.bloquearMenus();
+        }
+
         //this.load({params:{start:0, limit:this.tam_pag}})
     },
     iniciarEventos: function () {
