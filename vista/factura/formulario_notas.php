@@ -11,7 +11,7 @@ header("content-type: text/javascript; charset=UTF-8");
 <script>
     Phx.vista.FormNota = Ext.extend(Phx.frmInterfaz, {
 
-            ActSave: '../../sis_devoluciones/control/Nota/saveForm',
+            ActSave: '../../sis_devoluciones_ingresos/control/Nota/saveForm',
             botones: false,
             ciudadOrigen: '',
             sucursalOrigen: '',
@@ -499,7 +499,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 this.mestore = new Ext.data.JsonStore({
 
-                    url: '../../sis_devoluciones/control/Liquidevolu/listarDetalle',
+                    url: '../../sis_devoluciones_ingresos/control/Liquidevolu/listarDetalle',
                     id: 'id_factura_detalle',
                     root: 'datos',
                     totalProperty: 'total',
@@ -1749,7 +1749,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                         emptyText: 'Liquidacion...',
                         store: new Ext.data.JsonStore({
-                            url: '../../sis_devoluciones/control/Liquidevolu/listarLiquidevolu',
+                            url: '../../sis_devoluciones_ingresos/control/Liquidevolu/listarLiquidevolu',
                             id: 'nroliqui',
                             root: 'datos',
 
@@ -2022,7 +2022,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
                 Ext.Ajax.request({
-                    url: '../../sis_devoluciones/control/Nota/generarNota',
+                    url: '../../sis_devoluciones_ingresos/control/Nota/generarNota',
                     params: {'notas': objRes.datos},
                     success: this.successExport,
                     failure: this.conexionFailure,
@@ -2335,7 +2335,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 Ext.Ajax.request({
 
 
-                    url: '../../sis_devoluciones/control/Liquidevolu/listarFacturaDevolucion',
+                    url: '../../sis_devoluciones_ingresos/control/Liquidevolu/listarFacturaDevolucion',
                     params: {
                         'nrofac': nro_factura,
                         'nroaut': autorizacion,
@@ -2485,7 +2485,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 Ext.Ajax.request({
 
 
-                    url: '../../sis_devoluciones/control/Liquidevolu/listarBoletosExistente',
+                    url: '../../sis_devoluciones_ingresos/control/Liquidevolu/listarBoletosExistente',
                     params: {
                         'billete': billete,
                         'datos_no_permitidos': Ext.encode(arra),
