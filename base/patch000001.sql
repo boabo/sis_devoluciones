@@ -266,6 +266,17 @@ ALTER TABLE decr.tsucursal ADD sucursal INTEGER  NULL;
 ALTER TABLE decr.tsucursal ALTER COLUMN telefono DROP NOT NULL;
 ALTER TABLE decr.tsucursal ALTER COLUMN alcaldia DROP NOT NULL;
 
+
+
+alter table decr.tsucursal
+    add id_sucursal_vef integer;
+
+
+-- data para el nuevo id_sucursal que esta en ventas
+UPDATE decr.tsucursal SET id_sucursal_vef = 13 where id_sucursal = 1;
+UPDATE decr.tsucursal SET id_sucursal_vef = 43 where id_sucursal = 2;
+UPDATE decr.tsucursal SET id_sucursal_vef = 20 where id_sucursal = 3;
+
 /*
 CREATE TYPE ven.sucursales_informix_importacion AS (
   sucursal INTEGER,

@@ -200,7 +200,8 @@ class MODNota extends MODbase
 
         $dosificacion = $this->generarDosificacion($item);
         if (count($dosificacion) > 0) {
-            $nro_siguiente = $this->generarNroSiguiente($dosificacion);
+            //$nro_siguiente = $this->generarNroSiguiente($dosificacion);
+            $nro_siguiente = $dosificacion[0]['nro_siguiente'];
             $codigo_control = $this->generarCodigoControl($item->nro_nit, $item->total_devuelto, $dosificacion, $nro_siguiente);
             $id_nota = $this->insertarNota($item, $codigo_control, $dosificacion, $nro_siguiente);
             $this->insertarNotaDetalle($item, $id_nota);
@@ -220,7 +221,8 @@ class MODNota extends MODbase
         if (count($dosificacion) > 0) {
 
             if ($item->total_devuelto != '') {
-                $nro_siguiente = $this->generarNroSiguiente($dosificacion);
+                //$nro_siguiente = $this->generarNroSiguiente($dosificacion);
+                $nro_siguiente = $dosificacion[0]['nro_siguiente'];
                 $codigo_control = $this->generarCodigoControl($item->nit, $item->total_devuelto, $dosificacion, $nro_siguiente);
                 $id_nota = $this->insertarNota($item, $codigo_control, $dosificacion, $nro_siguiente);
             } else {
@@ -234,16 +236,17 @@ class MODNota extends MODbase
         }
     }
 
-    function generarNroSiguiente($dosificacion)
+    /*function generarNroSiguiente($dosificacion)
     {
 
+        
         $arra_json = json_encode($dosificacion[0]);
         $nro_si = $this->link->prepare("select decr.f_dosi_siguiente('" . $arra_json . "')");
         $nro_si->execute();
         $nro_si_res = $nro_si->fetchAll(PDO::FETCH_ASSOC);
         return $nro_si_res[0]["f_dosi_siguiente"];
 
-    }
+    }*/
 
     function generarDosificacion($item)
     {
@@ -270,7 +273,8 @@ class MODNota extends MODbase
 						usudep.id_usuario,
 						usudep.cuenta,
 						person.nombre_completo1 as desc_usuario,
-						su.estacion as desc_sucursal
+						su.estacion as desc_sucursal,
+						su.id_sucursal_vef
 						from decr.tsucursal_usuario sucus
 						inner join segu.tusuario usudep on usudep.id_usuario=sucus.id_usuario
 			            inner join segu.vpersona person on person.id_persona=usudep.id_persona
@@ -288,6 +292,7 @@ class MODNota extends MODbase
         $liquidacion = $this->aParam->getParametro('liquidevolu');
 
         if (count($usuario_sucursal_result) == 1) {
+            $id_sucursal_vef = $usuario_sucursal_result[0]['id_sucursal_vef'];
 
             if ($liquidacion != '') {
                 //es por una devolucion liquidacion
@@ -296,13 +301,28 @@ class MODNota extends MODbase
                 if ($suc_de_liquidacion[0] == $usuario_sucursal_result[0]['desc_sucursal']) {
                     //misma sucursal y que el de la liquidacion y puede ser dosificado
 
-                    $sql_in = $this->informix->prepare("select dos.feciniemi,dos.feclimemi, dos.glosa_impuestos,dos.llave,dos.nroaut,dos.id_dosificacion,dos.sucursal,dos.inicial,dos.final,dos.estacion
+                   /* $sql_in = $this->informix->prepare("select dos.feciniemi,dos.feclimemi, dos.glosa_impuestos,dos.llave,dos.nroaut,dos.id_dosificacion,dos.sucursal,dos.inicial,dos.final,dos.estacion
 						from dosdoccom dos
 						where dos.estacion = '$sucursal'
 						and dos.nombre_sisfac = 'SISTEMA FACTURACION NCD'
 						AND dos.estado = 'activo'
 						and dos.feciniemi <= '" . $fecha_now->format('d-m-Y') . "'
-						and dos.feclimemi >= '" . $fecha_now->format('d-m-Y') . "' ");
+						and dos.feclimemi >= '" . $fecha_now->format('d-m-Y') . "' ");*/
+
+                    $sql_in = $this->link->prepare("
+                    SELECT d.*
+                    FROM vef.tdosificacion d
+                    WHERE d.estado_reg = 'activo'
+                      AND d.id_sucursal = $id_sucursal_vef
+                      AND d.fecha_inicio_emi <= now()::date
+                      AND d.fecha_limite >= now()::date
+                      AND d.tipo = 'N'
+                      AND d.tipo_generacion = 'computarizada'
+                      AND d.nombre_sistema = 'SISTEMA FACTURACION NCD'
+                      --d.id_activida_economica @> v_id_actividad_economica todo preguntar sobre esto
+                        FOR UPDATE
+                    ");
+
 
 
 
@@ -315,14 +335,32 @@ class MODNota extends MODbase
                 //es por una factura
 
 
-                $sql_in = $this->informix->prepare("select dos.feciniemi,dos.feclimemi,dos.glosa_impuestos,dos.llave,dos.nroaut,dos.id_dosificacion,dos.sucursal,dos.inicial,dos.final,dos.estacion
+                /*$sql_in = $this->informix->prepare("select dos.feciniemi,dos.feclimemi,dos.glosa_impuestos,dos.llave,dos.nroaut,dos.id_dosificacion,dos.sucursal,dos.inicial,dos.final,dos.estacion
 						from dosdoccom dos
 						where dos.estacion = '$sucursal'
 						and dos.nombre_sisfac = 'SISTEMA FACTURACION NCD'
 						AND dos.estado = 'activo'
 						and dos.feciniemi <= '" . $fecha_now->format('d-m-Y') . "'
-						and dos.feclimemi >= '" . $fecha_now->format('d-m-Y') . "' ");
+						and dos.feclimemi >= '" . $fecha_now->format('d-m-Y') . "' ");*/
+
+                $sql_in = $this->link->prepare("
+                    SELECT d.*
+                    FROM vef.tdosificacion d
+                    WHERE d.estado_reg = 'activo'
+                      AND d.id_sucursal = $id_sucursal_vef
+                      AND d.fecha_inicio_emi <= now()::date
+                      AND d.fecha_limite >= now()::date
+                      AND d.tipo = 'N'
+                      AND d.tipo_generacion = 'computarizada'
+                      AND d.nombre_sistema = 'SISTEMA FACTURACION NCD'
+                      --d.id_activida_economica @> v_id_actividad_economica todo preguntar sobre esto
+                        FOR UPDATE
+                    ");
+
             }
+
+
+
 
 
         } else {
@@ -334,6 +372,10 @@ class MODNota extends MODbase
 
         $sql_in->execute();
         $results = $sql_in->fetchAll(PDO::FETCH_ASSOC);
+
+
+        var_dump($sql_in); //verificar esto en prod cuando alguien genere una dosificacion en el antugo generardor de notas
+        exit;
 
         //si agarro mas de una dosificacion solo deberia agarrar una
         if(count($results) > 1){
@@ -442,7 +484,10 @@ class MODNota extends MODbase
 										  '" . $dosificacion[0]['feclimemi'] . "'
 										)RETURNING id_nota;");
 
-        $dosi_up = $this->link->prepare("update decr.tdosi_correlativo set nro_siguiente = (cast(nro_siguiente as int) + 1) where id_dosificacion = '$id_dosi'");
+        //$dosi_up = $this->link->prepare("update decr.tdosi_correlativo set nro_siguiente = (cast(nro_siguiente as int) + 1) where id_dosificacion = '$id_dosi'");
+        $dosi_up = $this->link->prepare("UPDATE vef.tdosificacion
+                                        SET nro_siguiente = nro_siguiente + 1
+                                        WHERE id_dosificacion = $id_dosi");
 
         $dosi_up->execute();
         $stmt->execute();
