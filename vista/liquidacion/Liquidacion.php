@@ -192,7 +192,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 this.addButton('pagarFacturacion', {
                     argument: {imprimir: 'pagarFacturacion'},
-                    text: '<i class="fa fa-file-text-o fa-2x"></i><br> Pagar',/*iconCls:'' ,*/
+                    text: '<i class="fa fa-file-text-o fa-2x"></i><br> Emitir Factura',/*iconCls:'' ,*/
                     disabled: true,
                     handler: this.pagar
                 });
@@ -1509,7 +1509,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 if(data.estado=='emitido'){
                     this.getBoton('ant_estado').disable();
-                    this.getBoton('sig_estado').disable();
+                    this.getBoton('sig_estado').enable();
                 }
 
                 this.getBoton('anularLiquidacion').enable();
@@ -2242,7 +2242,8 @@ ${notas && notas.map(function (nota) {
  <table width="100%" style="width: 100%;">
                 <tr><td align="center">Forma de Pago:</td></tr>
 ${liqui_forma_pago && liqui_forma_pago.map((forma_pago) => {
-                return `<tr><td align="center">${forma_pago.desc_forma_pago_pw === 'CREDIT CARD' ? `${forma_pago.desc_medio_pago_pw} / ${forma_pago.nro_tarjeta} / ${forma_pago.pais}` : `${forma_pago.desc_medio_pago_pw}/${forma_pago.nro_documento_pago}` }</td></tr>`
+    const formaPagoMostrar = forma_pago.desc_medio_pago_pw === 'CASH' ? 'CHEQUE' : forma_pago.desc_medio_pago_pw;
+                return `<tr><td align="center">${forma_pago.desc_forma_pago_pw === 'CREDIT CARD' ? `${forma_pago.desc_medio_pago_pw} / ${forma_pago.nro_tarjeta} / ${forma_pago.pais}` : `${formaPagoMostrar}/${forma_pago.nro_documento_pago}` }</td></tr>`
 
                 }).join("")}
             </table>
