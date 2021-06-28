@@ -374,8 +374,8 @@ class MODNota extends MODbase
         $results = $sql_in->fetchAll(PDO::FETCH_ASSOC);
 
 
-        var_dump($sql_in); //verificar esto en prod cuando alguien genere una dosificacion en el antugo generardor de notas
-        exit;
+        //var_dump($sql_in); //verificar esto en prod cuando alguien genere una dosificacion en el antugo generardor de notas
+        //exit;
 
         //si agarro mas de una dosificacion solo deberia agarrar una
         if(count($results) > 1){
