@@ -1990,7 +1990,7 @@ header("content-type: text/javascript; charset=UTF-8");
   <link rel="stylesheet" href="../../../sis_devoluciones/control/print.css" type="text/css" media="print" charset="utf-8">
 
 </head>
-<body  style="line-height: 18px; font-size: 14pt;">
+<body  style="line-height: 10px; font-size: 12pt;">
 <table width="100%" style=" font-size: 12px; letter-spacing: 1px;">
     <tr>
         <td>
