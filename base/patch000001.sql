@@ -558,6 +558,7 @@ create type decr.json_type_liquidacion as (
                                          desc_tipo_documento varchar,
                                          desc_tipo_liquidacion varchar,
                                          desc_punto_venta varchar,
+                                         codigo_punto_venta varchar,
                                          id_sucursal integer,
                                          nro_nota varchar,
                                          sum_total_descuentos numeric,
