@@ -2003,11 +2003,11 @@ header("content-type: text/javascript; charset=UTF-8");
                         <br>
                         COCHABAMBA-BOLIVIA
                     </td>
-                    <td align="center" width="60%" style="letter-spacing: 3px;">LIQUIDACION POR DEVOLUCION
+                    <td align="center" width="30%" style="letter-spacing: 3px;">LIQUIDACION POR DEVOLUCION
                         <br>
                         ****** ${liquidacion.estado.toUpperCase()} ******
                     </td>
-                    <td width="20%">
+                    <td width="30%">
                         Nro: ${liquidacion.nro_liquidacion}
                         <br>
                         Fecha: ${liquidacion.fecha_reg}
