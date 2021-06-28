@@ -2034,10 +2034,11 @@ header("content-type: text/javascript; charset=UTF-8");
                 </tr>
                 <tr align="left">
                     <td >AGT-NO-IATA</td>
-                    <td >${liquidacion.noiata}</td>
+                    <td >${liquidacion.noiata} Codigo: ${liquidacion.codigo_punto_venta}</td>
                 </tr>
                 <tr align="left">
-                    <td colspan="2">${liquidacion.descripcion}</td>
+                    <td >Glosa: </td>
+                    <td>${liquidacion.descripcion}</td>
                 </tr>
             </table>
         </td>
@@ -2140,8 +2141,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         </tr>`))};
 
                 <tr>
-                    <td width="20%"></td>
-                    <td width="60%" align="right" style="letter-spacing: 3px;">TOTAL CONCEPTOS A DEVOLVER DE LA FACTURA DETALLE BOB:</td>
+                    <td width="80%" colspan="2">TOTAL CONCEPTOS A DEVOLVER DE LA FACTURA DETALLE BOB:</td>
                     <td width="10%"></td>
                     <td width="10%" align="right">${ String.format('{0}', Ext.util.Format.number(sum_venta_seleccionados, '0,000.00'))}</td>
                 </tr>
@@ -2191,22 +2191,19 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
                 ${descuentos != null ? (`<tr>
-                    <td width="20%"></td>
-                    <td width="60%" style="letter-spacing: 3px;" align="right">TOTAL DECUENTOS:</td>
+                    <td width="80%" colspan="2" align="right">TOTAL DECUENTOS:</td>
                     <td width="10%"></td>
                     <td width="10%" align="right">${ String.format('{0}', Ext.util.Format.number(sum_total_descuentos, '0,000.00')) || 0} </td>
                 </tr>`) : ''}
 
 
                 <tr>
-                    <td width="20%"></td>
-                    <td width="60%"></td>
+                    <td width="80%" colspan="2">
                     <td width="10%"></td>
                     <td width="10%" align="right">================</td>
                 </tr>
                 <tr>
-                    <td width="20%"></td>
-                    <td width="60%" align="right" style="letter-spacing: 3px;">TOTAL REEMBOLSO BOB:</td>
+                    <td width="80%" colspan="2" align="right" style="letter-spacing: 3px;">TOTAL REEMBOLSO BOB:</td>
                     <td width="10%"></td>
                     <td width="10%" align="right">*****${String.format('{0}', Ext.util.Format.number(liquidacion.importe_devolver, '0,000.00')) || String.format('{0}', Ext.util.Format.number(liquidacion.importe_devolver_liquidacion, '0,000.00'))}</td>
                 </tr>
