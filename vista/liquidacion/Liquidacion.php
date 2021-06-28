@@ -1996,7 +1996,7 @@ header("content-type: text/javascript; charset=UTF-8");
         <td>
             <table width="100%" align="center" >
                 <tr>
-                    <td width="20%">
+                    <td width="30%">
                         BOLIVIANA DE AVIACION
 
                         (BOA)
@@ -2007,7 +2007,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         <br>
                         ****** ${liquidacion.estado.toUpperCase()} ******
                     </td>
-                    <td width="30%">
+                    <td width="40%">
                         Nro: ${liquidacion.nro_liquidacion}
                         <br>
                         Fecha: ${liquidacion.fecha_reg}
