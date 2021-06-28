@@ -418,7 +418,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
                             return `<div style="vertical-align:middle;"><table style="font-size: 11px;"><tr><th><b>Tipo</b></th><th><b>Desc.</b></th><th><b>Importe.</b></th></tr>${descuentosTemplate}
-                            <tr><td colspan="2"><b>Total Descuetos:</b></td><td>-${json.sum_total_descuentos}</td></tr>
+                            <tr><td colspan="2"><b>Total Descuetos:</b></td><td>-${json.sum_total_descuentos || 0}</td></tr>
                             <tr><td colspan="2"><b>Importe :</b></td><td>+${json.importe_total || json.importe_devolver_sin_descuentos}</td></tr>
                             ${json.importe_tramo_utilizado > 0 ? `<tr><td colspan="2"><b>Importe Tramos Utilizados:</b></td><td>-${json.importe_tramo_utilizado}</td></tr>` : ''}
 

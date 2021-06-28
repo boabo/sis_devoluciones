@@ -32,10 +32,13 @@ select pxp.f_insert_tgui ('Descuento Liquidacion', 'Descuento Liquidacion', 'SCR
 
 --configuracion para el documento para los autocorrelativos
 SELECT param.f_import_tdocumento('insert', 'LIQCBBDEV', 'LIQCBBDEV', 'DECR', 'tabla', 'gestion', '',
-                                 'CBB-DEVCBB-gestioncorrelativo');
+                                 'CBB-DEVOL-gestioncorrelativo');
 
 SELECT param.f_import_tdocumento('insert', 'LIQSRZDEV', 'LIQSRZDEV', 'DECR', 'tabla', 'gestion', '',
-                                 'SRZ-DEVSRZ-gestioncorrelativo');
+                                 'SRZ-DEVOL-gestioncorrelativo');
+
+SELECT param.f_import_tdocumento('insert', 'LIQLPBDEV', 'LIQLPBDEV', 'DECR', 'tabla', 'gestion', '',
+                                 'LPB-DEVOL-gestioncorrelativo');
 
 
 select param.f_import_tcatalogo_tipo ('insert','tliquidacion_estacion','DECR','tliquidacion');

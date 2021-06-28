@@ -324,7 +324,7 @@ BEGIN
             (
                 SELECT tl.*,
                        sd.sum_descuentos,
-                       tv.total_venta - sd.sum_descuentos as importe_devolver,
+                       tv.total_venta - (coalesce(sd.sum_descuentos, 0)) as importe_devolver,
                        tv.nro_factura,
                        tv.nit,
                        tv.nombre_factura,

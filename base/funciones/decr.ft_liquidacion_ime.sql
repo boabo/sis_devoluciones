@@ -269,8 +269,12 @@ BEGIN
                 FROM vef.tventa_detalle tvd
                          inner JOIN decr.tliqui_venta_detalle lvd on lvd.id_venta_detalle = tvd.id_venta_detalle
                          inner join param.tconcepto_ingas tci on tci.id_concepto_ingas = tvd.id_producto
-                where lvd.id_liquidacion = v_id_liquidacion and tci.tipo_descuento NOT IN ('HAY NOTA');
+                where lvd.id_liquidacion = v_id_liquidacion;
                 --RAISE EXCEPTION '%','llega' ||v_sum_venta_seleccionados::varchar;
+
+                IF v_sum_venta_seleccionados is NULL then
+                    RAISE EXCEPTION '%', 'por algun motivo es cero el importe total de la liquidacion en la faccom';
+                END IF;
 
                 UPDATE decr.tliquidacion SET importe_total = v_sum_venta_seleccionados where id_liquidacion = v_id_liquidacion ;
 
