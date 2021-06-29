@@ -353,8 +353,10 @@ header("content-type: text/javascript; charset=UTF-8");
                             const { json } = record;
                            const renderNotas = json.notas ? json.notas.reduce((valorAnterior, valorActual, indice, vector) => `${valorAnterior}, ${valorActual.nro_nota}`  ,'') : undefined;
 
+                           const fechaPago = json.fecha_pago ? moment(json.fecha_pago, 'YYYY-MM-DD').format('DD/MM/YYYY'): 'No tiene';
                             return  `<div style="vertical-align:middle;">
                             <span style="display: block;"><b>Estado:</b>${json.estado}</span>
+                            <span style="display: block;"><b>Fecha Pago:</b>${fechaPago}</span>
                             <span style="display: block;"><b>Nro Liquidacion:</b>${json.nro_liquidacion}</span>
                             <span style="display: block;"><b>Punto de Venta:</b>${json.desc_punto_venta}</span>
                             <span style="display: block;"><b>Tipo Liqui Doc:</b>${json.desc_tipo_documento}</span>
