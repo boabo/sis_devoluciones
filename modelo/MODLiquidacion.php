@@ -682,6 +682,23 @@ class MODLiquidacion extends MODbase{
         return $this->respuesta;
 
     }
+    function FechaPago(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='decr.ft_liquidacion_ime';
+        $this->transaccion='LIQ_FEPA_LI';
+        $this->tipo_procedimiento='IME';
+
+        $this->setParametro('id_liquidacion','id_liquidacion','int4');
+        $this->setParametro('fecha_pago','fecha_pago','date');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+
+    }
 
     
 

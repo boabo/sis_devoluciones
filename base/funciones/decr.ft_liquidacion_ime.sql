@@ -1382,6 +1382,36 @@ BEGIN
         end;
 
 
+/*********************************
+     #TRANSACCION:  'LIQ_FEPA_LI'
+     #DESCRIPCION:    FECHA PAGO
+     #AUTOR:        admin
+     #FECHA:        26-04-2021 21:14:13
+    ***********************************/
+
+    elsif(p_transaccion='LIQ_FEPA_LI')then
+
+        begin
+
+
+
+            UPDATE decr.tliquidacion
+            set fecha_pago = v_parametros.fecha_pago
+            where id_liquidacion = v_parametros.id_liquidacion;
+
+
+            --Definicion de la respuesta
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'Liquidacion Fecha pago', v_parametros.id_liquidacion::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'id_liquidacion',v_parametros.id_liquidacion::varchar);
+
+
+            --Devuelve la respuesta
+            return v_resp;
+
+        end;
+
+
     else
      
         raise exception 'Transaccion inexistente: %',p_transaccion;

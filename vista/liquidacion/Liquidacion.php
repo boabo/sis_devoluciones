@@ -104,6 +104,15 @@ header("content-type: text/javascript; charset=UTF-8");
             format: 'd/m/Y'
 
         }),
+        cmbFechaPago: new Ext.form.DateField({
+            name: 'fecha_pago',
+            fieldLabel: 'Fecha Pago',
+            allowBlank: false,
+            disabled: false,
+            width: 105,
+            format: 'd/m/Y'
+
+        }),
 
             constructor:function(config){
                 this.maestro=config.maestro;
@@ -111,6 +120,65 @@ header("content-type: text/javascript; charset=UTF-8");
                 Phx.vista.Liquidacion.superclass.constructor.call(this,config);
 
 
+
+                this.popUpFechaPago = new Ext.Window(
+                    {
+                        layout: 'fit',
+                        width: 500,
+                        height: 250,
+                        modal: true,
+                        closeAction: 'hide',
+
+                        items: new Ext.FormPanel({
+                            labelWidth: 75, // label settings here cascade unless overridden
+
+                            frame: true,
+                            // title: 'Factura Manual Concepto',
+                            bodyStyle: 'padding:5px 5px 0',
+                            width: 200,
+                            defaults: {width: 191},
+                            // defaultType: 'textfield',
+
+                            items: [this.cmbFechaPago],
+
+                            buttons: [{
+                                text: 'Save',
+                                handler: () => {
+
+                                    const fechaPago = this.cmbFechaPago.getValue();
+                                    if(fechaPago) {
+                                        const dataSelected = this.sm.getSelected();
+                                        console.log('dataSelected',dataSelected)
+                                        Phx.CP.loadingShow();
+                                        Ext.Ajax.request({
+                                            url:'../../sis_devoluciones/control/Liquidacion/FechaPago',
+                                            params:{'id_liquidacion':dataSelected.data.id_liquidacion, fecha_pago: fechaPago},
+                                            success:(resp)=>{
+                                                Phx.CP.loadingHide();
+                                                if(resp.statusText === 'ok') {
+                                                    this.popUpFechaPago.hide();
+                                                    this.reload();
+                                                }else {
+                                                    alert('algun error porfavor hablar con sistemas');
+                                                }
+                                            },
+                                            //success:this.successVistaPrevia,
+                                            failure: this.conexionFailure,
+                                            timeout:this.timeout,
+                                            scope:this
+                                        });
+                                    }
+                                    console.log('fechaPago',fechaPago)
+                                },
+
+                                scope: this
+                            }, {
+                                text: 'Cancel',
+                                handler: ()=>{this.popUpFechaPago.hide()}
+                            }]
+                        }),
+
+                    });
 
                 this.popUpByAdministradora = new Ext.Window(
                     {
@@ -195,6 +263,12 @@ header("content-type: text/javascript; charset=UTF-8");
                     text: '<i class="fa fa-file-text-o fa-2x"></i><br> Emitir Factura',/*iconCls:'' ,*/
                     disabled: true,
                     handler: this.pagar
+                });
+                this.addButton('fechaPago', {
+                    argument: {imprimir: 'fechaPago'},
+                    text: '<i class="fa fa-file-text-o fa-2x"></i><br> Fecha Pago',/*iconCls:'' ,*/
+                    disabled: false,
+                    handler: () => this.popUpFechaPago.show()
                 });
                 this.addButton('reporteAdministradora', {
                     argument: {imprimir: 'genPorAdministradora'},
@@ -1507,9 +1581,14 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.getBoton('ant_estado').disable();
                 }
 
-                if(data.estado=='emitido'){
+                if(data.estado=='emitido' && data.fecha_pago !== null){
                     this.getBoton('ant_estado').disable();
                     this.getBoton('sig_estado').enable();
+                }
+                if(data.estado=='emitido' ){
+                    this.getBoton('fechaPago').enable();
+                } else {
+                    this.getBoton('fechaPago').disable();
                 }
 
                 this.getBoton('anularLiquidacion').enable();
