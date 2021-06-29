@@ -1652,7 +1652,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         totalProperty: 'total',
                         fields: ['id_punto_venta', 'id_sucursal','nombre', 'codigo','habilitar_comisiones','formato_comprobante'],
                         remoteSort: true,
-                        baseParams: {tipo_usuario: 'cajero',par_filtro: 'puve.nombre#puve.codigo', tipo_factura: this.tipo_factura}
+                        baseParams: {tipo_usuario: 'finanzas',par_filtro: 'puve.nombre#puve.codigo', tipo_factura: this.tipo_factura}
                     }),
                     tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Codigo:</b> {codigo}</p><p><b>Nombre:</b> {nombre}</p></div></tpl>',
                     valueField: 'id_punto_venta',
