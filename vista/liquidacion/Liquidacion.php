@@ -2062,7 +2062,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 let sum_descuentos_impuestos_no_reembolsable = 0;
                 let sum_descuentos = 0;
                 const fechaPago = liquidacion.fecha_pago ? moment(liquidacion.fecha_pago, 'YYYY-MM-DD').format('DD/MM/YYYY'): '';
-                const fechaReg = liquidacion.liquidacion.fecha_reg ? moment(liquidacion.liquidacion.fecha_reg, 'YYYY-MM-DD').format('DD/MM/YYYY'): '';
+                const fechaReg = liquidacion.fecha_reg ? moment(liquidacion.fecha_reg, 'YYYY-MM-DD').format('DD/MM/YYYY'): '';
 
 
                 const htmlPreview = `
