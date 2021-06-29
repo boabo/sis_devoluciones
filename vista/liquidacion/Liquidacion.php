@@ -2061,6 +2061,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 console.log('descuentosPorTipo', descuentosPorTipo)
                 let sum_descuentos_impuestos_no_reembolsable = 0;
                 let sum_descuentos = 0;
+                const fechaPago = liquidacion.fecha_pago ? moment(liquidacion.fecha_pago, 'YYYY-MM-DD').format('DD/MM/YYYY'): '';
 
 
                 const htmlPreview = `
@@ -2093,9 +2094,9 @@ header("content-type: text/javascript; charset=UTF-8");
                         <br>
                         Fecha: ${liquidacion.fecha_reg}
                         <br>
-                        Fecha-Aprob:
+                        Fecha-Aprob: ${fechaPago}
                         <br>
-                        Fecha-Pago:
+                        Fecha-Pago: ${fechaPago}
                     </td>
                 </tr>
             </table>
