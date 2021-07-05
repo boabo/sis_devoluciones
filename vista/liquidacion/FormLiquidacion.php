@@ -2658,7 +2658,7 @@ header("content-type: text/javascript; charset=UTF-8");
         liquidacionPorBoleto: function () {
             this.ocultarGrupo(3);
             this.mostrarGrupo(1);
-            this.mostrarGrupo(4);
+            this.ocultarGrupo(4);
 
 
         },
