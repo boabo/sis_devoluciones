@@ -2655,6 +2655,13 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.id_venta.modificado = true;
 
         },
+        liquidacionPorBoleto: function () {
+            this.ocultarGrupo(3);
+            this.mostrarGrupo(1);
+            this.mostrarGrupo(4);
+
+
+        },
         liquidacionPorFactura: function () {
 
 
@@ -3007,9 +3014,8 @@ header("content-type: text/javascript; charset=UTF-8");
 
                         break;
                     case 'BOLEMD':
-                        this.ocultarGrupo(3);
-                        this.mostrarGrupo(1);
 
+                        this.liquidacionPorBoleto();
 
                         break;
                     case 'FAC-ANTIGUAS':

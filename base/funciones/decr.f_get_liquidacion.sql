@@ -30,7 +30,7 @@ DECLARE
 
     v_id_liquidacion integer DEFAULT p_params->>'id_liquidacion';
     v_tipo_tab_liqui varchar DEFAULT p_params->>'tipo_tab_liqui';
-    v_filtro_value varchar DEFAULT p_params->>'filtro_value';
+    v_filtro_value varchar DEFAULT UPPER(p_params->>'filtro_value');
     v_query_value varchar DEFAULT p_params->>'query_value';
 
 
@@ -81,7 +81,9 @@ BEGIN
          --LEFT JOIN decr.tnota nota ON nota.id_liquidacion::integer = tl.id_liquidacion
     WHERE (CASE WHEN v_id_liquidacion IS NOT NULL THEN tl.id_liquidacion = v_id_liquidacion ELSE 1 = 1 END)
     AND (CASE WHEN v_tipo_tab_liqui IS NOT NULL THEN ttdl.tipo_documento = v_tipo_tab_liqui ELSE 1 = 1 END)
-    AND (CASE WHEN v_filtro_value IS NOT NULL THEN tl.nro_liquidacion LIKE '%' || v_filtro_value || '%' ELSE 1 = 1 END)
+    AND (CASE WHEN v_filtro_value IS NOT NULL THEN UPPER(tl.nro_liquidacion) LIKE '%' || v_filtro_value || '%'
+                                                       or UPPER(tl.pagar_a_nombre) LIKE '%' || v_filtro_value || '%'
+        ELSE 1 = 1 END)
     AND (CASE WHEN v_query_value IS NOT NULL THEN tl.nro_liquidacion LIKE '%' || v_query_value || '%' ELSE 1 = 1 END)
     AND (CASE WHEN v_id_liquidacion_array IS NOT NULL THEN tl.id_liquidacion = ANY (v_id_liquidacion_array) ELSE 1 = 1 END);
 
@@ -109,7 +111,9 @@ BEGIN
                  --LEFT JOIN decr.tnota nota ON nota.id_liquidacion::integer = tl.id_liquidacion
             WHERE (case when v_id_liquidacion is not null then tl.id_liquidacion = v_id_liquidacion else 1=1 end)
               AND (case when v_tipo_tab_liqui is not null then ttdl.tipo_documento = v_tipo_tab_liqui else 1=1 end)
-              AND (CASE WHEN v_filtro_value is not null then tl.nro_liquidacion like '%' ||v_filtro_value|| '%' else 1=1 end)
+              AND (CASE WHEN v_filtro_value IS NOT NULL THEN tl.nro_liquidacion LIKE '%' || v_filtro_value || '%'
+                                                        or upper(tl.pagar_a_nombre) LIKE '%' || upper(v_filtro_value) || '%'
+                  ELSE 1 = 1 END)
               AND (CASE WHEN v_query_value is not null then tl.nro_liquidacion like '%' ||v_query_value|| '%' else 1=1 end)
               AND (CASE WHEN v_id_liquidacion_array is not null then tl.id_liquidacion = any (v_id_liquidacion_array) else 1=1 end)
             order by tl.id_liquidacion DESC
@@ -207,13 +211,15 @@ BEGIN
                        liqui_tabla.desc_tipo_documento,
                        liqui_tabla.desc_tipo_liquidacion,
                        liqui_tabla.desc_punto_venta,
+                       liqui_tabla.codigo_punto_venta,
+                       liqui_tabla.id_sucursal,
                        liqui_tabla.nro_nota,
                        liqui_tabla.sum_total_descuentos,
                        liqui_tabla.descuentos,
                        liqui_tabla.sum_descuentos,
                        liqui_tabla.liqui_forma_pago,
                        liqui_tabla.notas,
-                       'otro campo' as otr_campo
+                       liqui_tabla.factura_pagada
                 FROM decr.tliquidacion tl
                          INNER JOIN (SELECT * FROM json_populate_recordset(NULL::decr.json_type_liquidacion, v_liqui_json::json)
                 ) liqui_tabla ON liqui_tabla.id_liquidacion = tl.id_liquidacion
@@ -242,8 +248,7 @@ BEGIN
                        tb.id_boleto as id,
                        1::integer as cantidad,
                        --data para boleto tienen
-                       tb.nro_boleto as _desc_liqui,
-                       tl.tramo_devolucion as _desc_liqui_det,
+
                        (
                            SELECT TO_JSON(boleto) -- solo json por que devolvera un objeto
                            FROM (
@@ -258,7 +263,16 @@ BEGIN
                                    select * from t_liqui_boleto_recursivo t_lbr
                                    where t_lbr.id_liquidacion = tl.id_liquidacion
                                ) liqui_boleto_recursivo
-                       ) as boletos_recursivo
+                       ) as boletos_recursivo,
+
+                       tb.nro_boleto as _desc_liqui,
+                       tl.tramo_devolucion as _desc_liqui_det,
+                       tl.tramo AS _detalle_documento_original,
+                       tb.total as _liqui_importe_doc_original,
+                       tb.fecha_emision as _liqui_fecha_doc_original,
+                       tb.nro_boleto as _liqui_nro_doc_original,
+                       1 as _liqui_nro_aut_doc_original,
+                       tb.razon as _liqui_nombre_doc_original
 
                 FROM t_liqui tl
                          INNER JOIN obingresos.tboleto tb on tb.id_boleto = tl.id_boleto
