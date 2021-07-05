@@ -807,9 +807,11 @@ header("content-type: text/javascript; charset=UTF-8");
             this.storeBoletosRecursivo.baseParams.billete = billete;
             this.storeBoletosRecursivo.load({
                 params: {start: 0, limit: 100},
-                callback: function (e,d) {
+                callback: function (e,d,a) {
                     let total = 0;
                     console.log('e',e)
+                    console.log('d',d)
+                    console.log('a',a)
                     e.forEach((data)=> {
                         console.log(data)
                         total = total + data.data.monto;
@@ -1295,7 +1297,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.CmpLiquiManDet.administradora.setDisabled(true);
                     this.CmpLiquiManDet.lote.setDisabled(true);
                     this.CmpLiquiManDet.comprobante.setDisabled(true);
-                    this.CmpLiquiManDet.fecha.setDisabled(true);
+                    this.CmpLiquiManDet.fecha.setDisabled(false);
                     this.CmpLiquiManDet.nro_tarjeta.setDisabled(true);
 
                 }
@@ -2577,7 +2579,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     triggerAction: 'all',
                     lazyRender: true,
                     mode: 'local',
-                    store: ['ERRORES TARJETA', 'BOLETOS INEXISTENTE', 'RO MANUAL'],
+                    store: ['ERRORES TARJETA', 'BOLETOS INEXISTENTE', 'RO MANUAL', 'DEPOSITO MANUAL'],
                     width: 200
                 },
                 type: 'ComboBox',
@@ -2744,7 +2746,7 @@ header("content-type: text/javascript; charset=UTF-8");
         liquidacionManual: function () {
 
             this.ocultarGrupo(1);
-            this.ocultarGrupo(2);
+            this.mostrarGrupo(2);
             this.ocultarGrupo(3);
             this.mostrarGrupo(4);
 
@@ -2939,7 +2941,26 @@ header("content-type: text/javascript; charset=UTF-8");
                 console.log(this.cmpNroBoleto.getValue());
                 Phx.CP.loadingShow();
 
-                Ext.Ajax.request({
+                //obtenemos datos de tipo de cambio para la fecha de emision del boleto
+                const that = this;
+                /*this.obtenerTipoDeCambioConFecha(reg.datos[0].fecha_emision, () => {
+                    Phx.CP.loadingShow();
+                    that.crearStoreBoletosRecursivo(nro_boleto);
+
+                });*/
+
+                Phx.CP.loadingShow();
+
+                that.crearStoreBoletosRecursivo(nro_boleto);
+
+
+                this.cmpTramo_devolucion.store.setBaseParam('billete', nro_boleto);
+                this.cmpTramo_devolucion.enable();
+                this.cmpTramo_devolucion.reset();
+                this.cmpTramo_devolucion.store.baseParams.billete = nro_boleto;
+                this.cmpTramo_devolucion.modificado = true;
+
+                /*Ext.Ajax.request({
                     url: '../../sis_devoluciones/control/Liquidacion/listarBoleto',
                     params: {
                         'nro_boleto': this.cmpNroBoleto.getValue(),
@@ -2956,29 +2977,14 @@ header("content-type: text/javascript; charset=UTF-8");
                         this.cmpIdBoleto.setValue(reg.datos[0].id_boleto);
                         if(reg.datos.length > 0) {
                             
-                            //obtenemos datos de tipo de cambio para la fecha de emision del boleto
-                            const that = this;
-                            this.obtenerTipoDeCambioConFecha(reg.datos[0].fecha_emision, () => {
-                                that.crearStoreBoletosRecursivo(nro_boleto);
 
-                            });
-
-                            this.cmpTramo_devolucion.store.setBaseParam('billete', nro_boleto);
-
-
-
-
-                            this.cmpTramo_devolucion.enable();
-                            this.cmpTramo_devolucion.reset();
-                            this.cmpTramo_devolucion.store.baseParams.billete = nro_boleto;
-                            this.cmpTramo_devolucion.modificado = true;
                         }
                         console.log('reg',reg)
                     },
                     failure: this.conexionFailure,
                     timeout: this.timeout,
                     scope: this
-                })
+                })*/
 
 
 

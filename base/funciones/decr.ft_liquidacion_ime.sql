@@ -659,6 +659,7 @@ BEGIN
                     LOOP
 
 
+                    --RAISE EXCEPTION '%', CASE WHEN v_liquiman_det_json.id_medio_pago is NOT null and v_liquiman_det_json.id_medio_pago != '' then v_liquiman_det_json.id_medio_pago else null END;
                         insert into decr.tliqui_manual_detalle(
                             estado_reg,
                             id_liqui_manual,
@@ -682,17 +683,17 @@ BEGIN
                         ) values(
                                     'activo',
                                     v_id_liqui_manual,
-                                    v_liquiman_det_json.id_medio_pago::integer,
-                                    v_liquiman_det_json.administradora,
-                                    v_liquiman_det_json.lote,
-                                    v_liquiman_det_json.comprobante,
-                                    v_liquiman_det_json.fecha,
-                                    v_liquiman_det_json.nro_tarjeta,
-                                    v_liquiman_det_json.concepto_original,
-                                    v_liquiman_det_json.concepto_devolver,
-                                    v_liquiman_det_json.importe_original::numeric,
-                                    v_liquiman_det_json.importe_devolver::numeric,
-                                    v_liquiman_det_json.descripcion,
+                                    CASE WHEN v_liquiman_det_json.id_medio_pago is NOT null and v_liquiman_det_json.id_medio_pago != '' then v_liquiman_det_json.id_medio_pago::integer else null END,
+                                    CASE WHEN v_liquiman_det_json.administradora is NOT null and v_liquiman_det_json.administradora != '' then v_liquiman_det_json.administradora else null END,
+                                    CASE WHEN v_liquiman_det_json.lote is NOT null and v_liquiman_det_json.lote != '' then v_liquiman_det_json.lote else null END,
+                                    CASE WHEN v_liquiman_det_json.comprobante is NOT null and v_liquiman_det_json.comprobante != '' then v_liquiman_det_json.comprobante else null END,
+                                    CASE WHEN v_liquiman_det_json.fecha is NOT null and v_liquiman_det_json.fecha != '' then v_liquiman_det_json.fecha else null END,
+                                    CASE WHEN v_liquiman_det_json.nro_tarjeta is NOT null and v_liquiman_det_json.nro_tarjeta != '' then v_liquiman_det_json.nro_tarjeta::integer else null END,
+                                    CASE WHEN v_liquiman_det_json.concepto_original is NOT null and v_liquiman_det_json.concepto_original != '' then v_liquiman_det_json.concepto_original else null END,
+                                    CASE WHEN v_liquiman_det_json.concepto_devolver is NOT null and v_liquiman_det_json.concepto_devolver != '' then v_liquiman_det_json.concepto_devolver else null END,
+                                    CASE WHEN v_liquiman_det_json.importe_original is NOT null and v_liquiman_det_json.importe_original != '' then v_liquiman_det_json.importe_original::numeric else null END,
+                                    CASE WHEN v_liquiman_det_json.importe_devolver is NOT null and v_liquiman_det_json.importe_devolver != '' then v_liquiman_det_json.importe_devolver::numeric else null END,
+                                    CASE WHEN v_liquiman_det_json.descripcion is NOT null and v_liquiman_det_json.descripcion != '' then v_liquiman_det_json.descripcion else null END,
                                     p_id_usuario,
                                     now(),
                                     v_parametros._id_usuario_ai,
@@ -703,6 +704,8 @@ BEGIN
                                 );
 
 
+                    if v_parametros.tipo_manual not in ('DEPOSITO MANUAL', 'RO MANUAL')
+                    THEN
                         insert into decr.tliqui_forma_pago(
                             estado_reg,
                             id_liquidacion,
@@ -741,10 +744,9 @@ BEGIN
                                     v_parametros._nombre_usuario_ai,
                                     null,
                                     null
-
-
-
                                 );
+                    END IF;
+
 
 
 

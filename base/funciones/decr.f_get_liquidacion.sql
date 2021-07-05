@@ -122,12 +122,12 @@ BEGIN
         ),
          t_sum_descuentos as
              (
-                 SELECT tl.id_liquidacion, tdl.tipo, sum(tdl.importe) as sum_total_por_tipo
+                 SELECT tl.id_liquidacion, tdl.tipo, sum(tdl.importe) as sum_total_por_tipo, tci.tipo_descuento
                  FROM decr.tdescuento_liquidacion tdl
                           inner JOIN param.tconcepto_ingas tci on tci.id_concepto_ingas = tdl.id_concepto_ingas
-                     and tci.tipo_descuento != 'HAY NOTA'
+                     and (tci.tipo_descuento != 'HAY NOTA' or tci.tipo_descuento is null)
                           INNER JOIN t_liqui tl ON tl.id_liquidacion = tdl.id_liquidacion
-                 GROUP BY tl.id_liquidacion, tdl.tipo
+                 GROUP BY tl.id_liquidacion, tdl.tipo, tci.tipo_descuento
              ),
          t_descuentos AS (
              SELECT tci.tipo_descuento, tdl.id_descuento_liquidacion, tci.codigo, tdl.id_liquidacion, tdl.id_concepto_ingas, tdl.importe, tci.desc_ingas, tdl.tipo, tci_padre.desc_ingas desc_ingas_fk, tci.id_concepto_ingas_fk
@@ -158,7 +158,12 @@ BEGIN
     FROM
         (
             SELECT *,
-                   (select sum(importe) from t_descuentos td2  where td2.id_liquidacion = tl.id_liquidacion and td2.tipo_descuento != 'HAY NOTA') as sum_total_descuentos,
+                   (
+                       select sum(importe)
+                       from t_descuentos td2
+                       where td2.id_liquidacion = tl.id_liquidacion
+                         and (td2.tipo_descuento != 'HAY NOTA' or td2.tipo_descuento is null)
+                    ) as sum_total_descuentos,
                    (
                        SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(descuentos)))
                        FROM (
@@ -676,12 +681,15 @@ BEGIN
                             liqui_tabla.desc_tipo_documento,
                             liqui_tabla.desc_tipo_liquidacion,
                             liqui_tabla.desc_punto_venta,
+                            liqui_tabla.codigo_punto_venta,
+                            liqui_tabla.id_sucursal,
                             liqui_tabla.nro_nota,
                             liqui_tabla.sum_total_descuentos,
                             liqui_tabla.descuentos,
                             liqui_tabla.sum_descuentos,
                             liqui_tabla.liqui_forma_pago,
-                            liqui_tabla.notas
+                            liqui_tabla.notas,
+                            liqui_tabla.factura_pagada
                      FROM decr.tliquidacion tl
                               INNER JOIN (SELECT * FROM json_populate_recordset(NULL::decr.json_type_liquidacion, v_liqui_json::json)
                      ) liqui_tabla ON liqui_tabla.id_liquidacion = tl.id_liquidacion
@@ -712,7 +720,15 @@ BEGIN
                                           SELECT *
                                           FROM t_liquiman_detalle tld where tld.id_liqui_manual = tl.id_liqui_manual
                                       ) liquiman_detalle
-                             ) AS _desc_liqui_det
+                             ) AS _desc_liqui_det,
+                             null as _detalle_documento_original,
+
+                             null AS _detalle_documento_original,
+                             null as _liqui_importe_doc_original,
+                             null as _liqui_fecha_doc_original,
+                             null as _liqui_nro_doc_original,
+                             null as _liqui_nro_aut_doc_original,
+                             null as _liqui_nombre_doc_original
                      FROM t_liqui tl
                               INNER JOIN decr.tliqui_manual tlm on tlm.id_liqui_manual = tl.id_liqui_manual
                               INNER JOIN t_sum_totales_manual tstm on tstm.id_liqui_manual = tlm.id_liqui_manual

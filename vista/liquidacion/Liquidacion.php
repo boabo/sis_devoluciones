@@ -406,7 +406,14 @@ header("content-type: text/javascript; charset=UTF-8");
                                        break;
                                    case 'BOLETOS INEXISTENTE':
                                    case 'RO MANUAL':
-                                       res = 'no hay logica aun';
+                                       res = _desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
+                                           return `${valorAnterior} <br> <b>Con. Org:</b>${valorActual.concepto_original}<b>Imp. Org:</b>${valorActual.importe_original}<b>Imp Dev:</b> ${valorActual.importe_devolver}`;
+                                       },'');
+                                       break
+                                   case 'DEPOSITO MANUAL':
+                                       res = _desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
+                                           return `${valorAnterior} <br> <b>Con. Org:</b>${valorActual.concepto_original}<b>Imp. Org:</b>${valorActual.importe_original}<b>Imp Dev:</b> ${valorActual.importe_devolver}`;
+                                       },'');
                                        break;
                                    default:
                                        console.log('Lo lamentamos, por el momento no disponemos de ' + expr + '.');
@@ -2064,6 +2071,9 @@ header("content-type: text/javascript; charset=UTF-8");
                 const fechaPago = liquidacion.fecha_pago ? moment(liquidacion.fecha_pago, 'YYYY-MM-DD').format('DD/MM/YYYY'): '';
                 const fechaReg = liquidacion.fecha_reg ? moment(liquidacion.fecha_reg, 'YYYY-MM-DD').format('DD/MM/YYYY'): '';
 
+                const liquiManDetalle = liquidacion._desc_liqui_det ? liquidacion._desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
+                    return `${valorAnterior} <br> <b>Con. Org:</b>${valorActual.concepto_original}<b>Imp. Org:</b>${valorActual.importe_original}<b>Imp Dev:</b> ${valorActual.importe_devolver}`;
+                },'') : '';
 
                 const htmlPreview = `
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -2229,6 +2239,22 @@ header("content-type: text/javascript; charset=UTF-8");
                     <td width="10%" align="right">${ String.format('{0}', Ext.util.Format.number(sum_venta_seleccionados, '0,000.00'))}</td>
                 </tr>
                `) : ''}
+
+            ${ liquidacion.desc_tipo_documento === 'LIQUIMAN'
+                &&  (liquidacion._desc_liqui_det[0].tipo_manual === 'RO MANUAL'
+                ||  liquidacion._desc_liqui_det[0].tipo_manual === 'DEPOSITO MANUAL') ? (`
+                <tr>
+                    <td width="100%">
+${liquiManDetalle}
+                    </td>
+                </tr>
+                <tr>
+                    <td width="60%"></td>
+                    <td width="20%">TOTAL A DEVOLVER</td>
+                    <td width="10%" ></td>
+                    <td width="10%" align="right">${ String.format('{0}', Ext.util.Format.number(liquidacion.importe_devolver_sin_descuentos, '0,000.00'))}</td>
+                </tr>
+                `) : ``}
 
 
 
