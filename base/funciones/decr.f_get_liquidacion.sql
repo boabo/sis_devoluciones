@@ -277,7 +277,8 @@ BEGIN
                        tlb.data_stage->>'issueDate' as _liqui_fecha_doc_original,
                        tlb.data_stage->>'ticketNumber' as _liqui_nro_doc_original,
                        1 as _liqui_nro_aut_doc_original,
-                       tlb.data_stage->>'passengerName' as _liqui_nombre_doc_original
+                       tlb.data_stage->>'passengerName' as _liqui_nombre_doc_original,
+                       tlb.data_stage
 
                 FROM t_liqui tl
                          INNER JOIN decr.tliqui_boleto tlb on tlb.id_liquidacion = tl.id_liquidacion
