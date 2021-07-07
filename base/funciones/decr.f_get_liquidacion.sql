@@ -239,18 +239,18 @@ BEGIN
                 SELECT tl.*,
                        tl.importe_total - tl.importe_tramo_utilizado as importe_devolver_sin_descuentos,
                        tl.importe_total - tl.importe_tramo_utilizado - tl.sum_total_descuentos as importe_devolver,
-                       tb.nro_boleto as desc_nro_boleto,
-                       tb.nit::varchar as nro_nit,
-                       tb.razon,
-                       tb.fecha_emision as fecha_fac,
-                       tb.total,
+                       tlb.data_stage->>'ticketNumber' as desc_nro_boleto,
+                       tlb.data_stage->>'FOID'::varchar as nro_nit,
+                       tlb.data_stage->>'FOID' AS razon,
+                       tlb.data_stage->>'issueDate' as fecha_fac,
+                       tlb.data_stage->>'totalAmount' as total,
                        1 as nro_aut,
-                       tb.nro_boleto as nro_fac,
-                       concat(tb.nro_boleto,'/',tl.tramo_devolucion):: varchar as concepto,
+                       tlb.data_stage->>'ticketNumber' as nro_fac,
+                       concat(tlb.data_stage->>'ticketNumber','/',tl.tramo_devolucion):: varchar as concepto,
                        'BOLETO'::VARCHAR AS tipo,
-                       tb.total AS precio_unitario,
-                       tb.total AS importe_original,
-                       tb.id_boleto as id,
+                       tlb.data_stage->>'totalAmount' AS precio_unitario,
+                       tlb.data_stage->>'totalAmount' AS importe_original,
+                       tlb.data_stage->>'ticketNumber' as id, -- esto antes era el id_boleto
                        1::integer as cantidad,
                        --data para boleto tienen
 
@@ -270,17 +270,17 @@ BEGIN
                                ) liqui_boleto_recursivo
                        ) as boletos_recursivo,
 
-                       tb.nro_boleto as _desc_liqui,
+                       tlb.data_stage->>'ticketNumber' as _desc_liqui,
                        tl.tramo_devolucion as _desc_liqui_det,
                        tl.tramo AS _detalle_documento_original,
-                       tb.total as _liqui_importe_doc_original,
-                       tb.fecha_emision as _liqui_fecha_doc_original,
-                       tb.nro_boleto as _liqui_nro_doc_original,
+                       tlb.data_stage->>'ticketNumber' as _liqui_importe_doc_original,
+                       tlb.data_stage->>'issueDate' as _liqui_fecha_doc_original,
+                       tlb.data_stage->>'ticketNumber' as _liqui_nro_doc_original,
                        1 as _liqui_nro_aut_doc_original,
-                       tb.razon as _liqui_nombre_doc_original
+                       tlb.data_stage->>'passengerName' as _liqui_nombre_doc_original
 
                 FROM t_liqui tl
-                         INNER JOIN obingresos.tboleto tb on tb.id_boleto = tl.id_boleto
+                         INNER JOIN decr.tliqui_boleto tlb on tlb.id_liquidacion = tl.id_liquidacion
 
             )
         SELECT TO_JSON(ROW_TO_JSON(jsonData) :: TEXT) #>> '{}' as json

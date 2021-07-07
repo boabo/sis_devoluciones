@@ -267,6 +267,7 @@ class MODLiquidacion extends MODbase{
         $this->setParametro('id_factucomcon','id_factucomcon','varchar');
         $this->setParametro('tipo_manual','tipo_manual','varchar');
         $this->setParametro('pagar_a_nombre','pagar_a_nombre','varchar');
+        $this->setParametro('json_data_boleto_stage','json_data_boleto_stage','text');
 
 
         //Ejecuta la instruccion

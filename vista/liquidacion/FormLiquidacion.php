@@ -19,6 +19,7 @@ header("content-type: text/javascript; charset=UTF-8");
         labelSubmit: '<i class="fa fa-check"></i> Siguiente',
         storeBoletosRecursivo : false,
         storeDatosIniciales: {},
+        dataStage: null,
 
 
        
@@ -807,15 +808,20 @@ header("content-type: text/javascript; charset=UTF-8");
             this.storeBoletosRecursivo.baseParams.billete = billete;
             this.storeBoletosRecursivo.load({
                 params: {start: 0, limit: 100},
-                callback: function (e,d,a) {
+                callback: function (e,d,a,i,o,u) {
                     let total = 0;
                     console.log('e',e)
                     console.log('d',d)
                     console.log('a',a)
+                    console.log('i',i)
+                    console.log('o',o)
+                    console.log('u',u)
                     e.forEach((data)=> {
                         console.log(data)
                         total = total + data.data.monto;
                     });
+                    that.dataStage = e[0].json.dataStage;
+                    console.log('that.dataStage',that.dataStage)
 
                     const { currency } = e[0].json;
 
@@ -1306,7 +1312,7 @@ header("content-type: text/javascript; charset=UTF-8");
             }
         },
         onDatosBoleto : function () {
-            if (!this.Cmp.id_boleto.getValue() && !this.Cmp.id_boleto.getValue()) {
+            if (!this.dataStage) {
                 Ext.Msg.alert('ATENCION', 'Debe seleccionar un boleto');
             } else {
 
@@ -3350,6 +3356,12 @@ header("content-type: text/javascript; charset=UTF-8");
                             return value;
                         }),
                         'json_data_liqui_manual_det': JSON.stringify(arraParaLiquiManual, function replacer(key, value) {
+                            /*if (typeof value === 'string') {
+                             return String(value).replace(/&/g, "%26")
+                             }*/
+                            return value;
+                        }),
+                        'json_data_boleto_stage': JSON.stringify(me.dataStage, function replacer(key, value) {
                             /*if (typeof value === 'string') {
                              return String(value).replace(/&/g, "%26")
                              }*/

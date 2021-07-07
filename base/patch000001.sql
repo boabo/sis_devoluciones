@@ -667,6 +667,17 @@ comment on column decr.tliquidacion.pagar_a_nombre is 'esta columna es  para ayu
 
 
 
+
+
+CREATE TABLE decr.tliqui_boleto (
+                                            id_liqui_boleto SERIAL,
+                                            id_liquidacion INTEGER,
+                                            data_stage json,
+                                            CONSTRAINT pk_tliqui_boleto__id_liqui_boleto PRIMARY KEY(id_liqui_boleto)
+) INHERITS (pxp.tbase)
+  WITHOUT OIDS;
+
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
 

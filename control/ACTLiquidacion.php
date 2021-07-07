@@ -250,6 +250,7 @@ class ACTLiquidacion extends ACTbase{
                 'foid'=> trim($data["FOID"]),
                 'fecha_emision'=> trim($data["issueDate"]),
                 'concilliation' => $data["concilliation"],
+                'dataStage' => $data
 
             ));
 
@@ -285,7 +286,8 @@ class ACTLiquidacion extends ACTbase{
                     'concepto_para_nota'=> trim($OriginalTicket["ticketNumber"]).'/'.trim($OriginalTicket["itinerary"]),
                     'foid'=> trim($OriginalTicket["FOID"]),
                     'fecha_emision'=> trim($OriginalTicket["issueDate"]),
-                    'concilliation' => $OriginalTicket["concilliation"]
+                    'concilliation' => $OriginalTicket["concilliation"],
+                    'dataStage' => $data
 
                 ));
 

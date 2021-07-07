@@ -480,6 +480,12 @@ BEGIN
             IF v_tipo_documento = 'BOLEMD' THEN
 
 
+                INSERT INTO decr.tliqui_boleto (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg,
+                                                id_usuario_ai, usuario_ai, id_liquidacion, data_stage)
+                VALUES (p_id_usuario, null, now(), null, 'activo', v_parametros._id_usuario_ai, v_parametros._nombre_usuario_ai,
+                        v_id_liquidacion, v_parametros.json_data_boleto_stage::json);
+
+
                 --guardar los boletos recursivos
 
                 FOR v_boletos_recursivo_json
