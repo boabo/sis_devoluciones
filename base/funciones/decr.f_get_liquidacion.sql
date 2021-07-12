@@ -53,17 +53,19 @@ BEGIN
 
     if(p_params->>'administradora' is not null and p_params->>'fecha_ini' is not null and p_params->>'fecha_fin' is not null) then
 
+        --raise EXCEPTION '%',p_params->'fecha_ini';
         --obtenemos todas las liquidaciones que tengan forma de pago con tarjeta de credito y ademas entre un
         -- determinado rango de fechas y con el tipo de administradora
         SELECT array_agg(tl.id_liquidacion)
         into v_id_liquidacion_array
         FROM decr.tliquidacion tl
                  inner join decr.tliqui_forma_pago tlfp on tlfp.id_liquidacion = tl.id_liquidacion
-        where tlfp.administradora = p_params->'administradora'
-          AND tl.fecha_reg::date BETWEEN p_params->'fecha_ini'::date and p_params->'fecha_fin'::date;
+        where tlfp.administradora = p_params->>'administradora'::varchar
+          AND tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date);
 
+        --RAISE EXCEPTION '%',v_id_liquidacion_array;
         IF v_id_liquidacion_array is null then
-            raise EXCEPTION '%', 'NO EXISTE DATOS PARA ESTOS PARAMETROS DE BUSQUEDA';
+            RAISE EXCEPTION '%', 'NO EXISTE DATOS PARA ESTOS PARAMETROS DE BUSQUEDA';
         END IF;
 
     END IF;
@@ -729,7 +731,7 @@ BEGIN
                              null as _liqui_fecha_doc_original,
                              null as _liqui_nro_doc_original,
                              null as _liqui_nro_aut_doc_original,
-                             null as _liqui_nombre_doc_original
+                             tlm.razon_nombre_doc_org as _liqui_nombre_doc_original
                      FROM t_liqui tl
                               INNER JOIN decr.tliqui_manual tlm on tlm.id_liqui_manual = tl.id_liqui_manual
                               INNER JOIN t_sum_totales_manual tstm on tstm.id_liqui_manual = tlm.id_liqui_manual

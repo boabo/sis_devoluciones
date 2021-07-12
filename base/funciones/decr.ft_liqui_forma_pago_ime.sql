@@ -63,7 +63,8 @@ BEGIN
             id_usuario_mod,
             fecha_mod,
                                                nro_documento_pago,
-            nombre
+            nombre,
+                                               administradora
               ) values(
             'activo',
             v_parametros.id_liquidacion,
@@ -84,7 +85,8 @@ BEGIN
             null,
             null,
                        v_parametros.nro_documento_pago,
-                       v_parametros.nombre
+                       v_parametros.nombre,
+                       v_parametros.administradora
 
 
 
@@ -127,7 +129,8 @@ BEGIN
             id_usuario_ai = v_parametros._id_usuario_ai,
             usuario_ai = v_parametros._nombre_usuario_ai,
             nro_documento_pago = v_parametros.nro_documento_pago,
-            nombre = v_parametros.nombre
+            nombre = v_parametros.nombre,
+                                              administradora = v_parametros.administradora
             where id_liqui_forma_pago=v_parametros.id_liqui_forma_pago;
                
             --Definicion de la respuesta

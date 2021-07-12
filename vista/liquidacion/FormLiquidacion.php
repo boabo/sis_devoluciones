@@ -810,12 +810,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 params: {start: 0, limit: 100},
                 callback: function (e,d,a,i,o,u) {
                     let total = 0;
-                    console.log('e',e)
-                    console.log('d',d)
-                    console.log('a',a)
-                    console.log('i',i)
-                    console.log('o',o)
-                    console.log('u',u)
                     e.forEach((data)=> {
                         console.log(data)
                         total = total + data.data.monto;
@@ -845,8 +839,12 @@ header("content-type: text/javascript; charset=UTF-8");
                     //debemos recorrer todos payments por si hay de un exchange
                     const allPayments = e.reduce((valorAnterior, valorActual) => {
                         const { payment, concilliation } =  valorActual.json;
+                        console.log('concilliation',concilliation)
+
                         let payments = [...valorAnterior]
                         payment.forEach((p)=> {
+                            console.log('p.paymentDescription', p.paymentDescription)
+                            console.log('concilliation.length',concilliation.length)
                             payments = [...payments,
                                 {
                                     code : p.paymentCode,
@@ -854,10 +852,11 @@ header("content-type: text/javascript; charset=UTF-8");
                                     amount: that.convertirImportePorMoneda(p.paymentAmount, currency),
                                     method_code: p.paymentMethodCode,
                                     reference: p.reference,
-                                    ...(p.paymentDescription === 'CREDIT CARD' && concilliation.lenght > 0 ? { administradora: concilliation[0].Formato, comprobante: concilliation[0].AuthorizationCode, lote: concilliation[0].LotNumber, cod_est: concilliation[0].EstablishmentCode } : { administradora:'',comprobante:'' ,lote: '', cod_est: '' } )
+                                    ...(p.paymentDescription === 'CREDIT CARD' && concilliation.length > 0 ? { administradora: concilliation[0].Formato, comprobante: concilliation[0].AuthorizationCode, lote: concilliation[0].LotNumber, cod_est: concilliation[0].EstablishmentCode, credit_card_number: p.creditCardNumber } : { administradora:'',comprobante:'' ,lote: '', cod_est: '', credit_card_number: '' } )
                                 }
                             ]
                         })
+
 
                         return payments;
                     }, []);
@@ -1079,6 +1078,47 @@ header("content-type: text/javascript; charset=UTF-8");
                     disabled: false
                 }),
 
+                'id_cuenta_bancaria': new Ext.form.ComboBox({
+                    name: 'id_cuenta_bancaria',
+                    fieldLabel: 'Cuenta Bancaria TESORERIA',
+                    allowBlank: true,
+                    emptyText: 'Elija una opción...',
+                    store: new Ext.data.JsonStore({
+                        url: '../../sis_tesoreria/control/CuentaBancaria/listarCuentaBancaria',
+                        id: 'id_cuenta_bancaria',
+                        root: 'datos',
+                        sortInfo: {
+                            field: 'id_cuenta_bancaria',
+                            direction: 'ASC'
+
+                        },
+                        totalProperty: 'total',
+                        fields: ['id_cuenta_bancaria', 'denominacion', 'nro_cuenta','nombre_institucion','doc_id'],
+                        remoteSort: true,
+                        baseParams: {par_filtro: 'ctaban.denominacion#ctaban.nro_cuenta'}
+                    }),
+                    valueField: 'id_cuenta_bancaria',
+                    displayField: 'denominacion',
+                    gdisplayField: 'desc_cuenta_bancaria',
+                    tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{denominacion}</b></p><p>Nro Cuenta: {nro_cuenta} </p> <p>Institucion: {nombre_institucion} </p><p>nit Institucion: {doc_id} </p></div></tpl>',
+
+
+                    hiddenName: 'id_cuenta_bancaria',
+                    forceSelection: true,
+                    typeAhead: true,
+                    triggerAction: 'all',
+                    lazyRender: true,
+                    mode: 'remote',
+                    pageSize: 15,
+                    queryDelay: 1000,
+                    anchor: '90%',
+                    gwidth: 150,
+                    minChars: 2,
+                    renderer : function(value, p, record) {
+                        return String.format('{0}', record.data['desc_cuenta_bancaria']);
+                    }
+                }),
+
                 'importe_original': new Ext.form.NumberField({
                     name: 'importe_original',
                     msgTarget: 'title',
@@ -1097,6 +1137,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     minValue: 1,
                     maxLength: 10
                 }),
+
+
+
 
             }
 
@@ -1154,6 +1197,13 @@ header("content-type: text/javascript; charset=UTF-8");
                         width: 200,
                         sortable: false,
                         editor: this.CmpLiquiManDet.id_medio_pago
+                    },
+                    {
+                        header: 'Cuenta Bancaria',
+                        dataIndex: 'id_cuenta_bancaria',
+                        width: 200,
+                        sortable: false,
+                        editor: this.CmpLiquiManDet.id_cuenta_bancaria
                     },
                     {
                         header: 'administradora',
@@ -2609,6 +2659,24 @@ header("content-type: text/javascript; charset=UTF-8");
                 grid:true,
                 form:true
             },
+
+            {
+                config:{
+                    name: 'razon_nombre_liquiman',
+                    fieldLabel: 'Razon/Nombre Doc Org.',
+                    allowBlank: true,
+                    width: 200,
+                    gwidth: 100,
+                    maxLength:255,
+                    //disabled: true,
+                },
+                type:'TextField',
+                filters:{pfiltro:'liqui.importe_total',type:'string'},
+                id_grupo:4,
+                grid:false,
+                form:true
+            },
+
 
 
 

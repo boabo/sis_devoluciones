@@ -551,7 +551,7 @@ BEGIN
                                  (
                                   code varchar, description varchar, amount varchar, method_code varchar,
                                   reference varchar, administradora varchar, comprobante varchar, lote varchar,
-                                  cod_est varchar
+                                  cod_est varchar, credit_card_number varchar
                                      )
 
                     )
@@ -592,7 +592,7 @@ BEGIN
                                         v_payments_json.lote,
                                         v_payments_json.comprobante,
                                         RIGHT(v_payments_json.reference, 4),
-                                        LEFT(v_payments_json.reference,-6),
+                                        v_payments_json.credit_card_number,
                                         v_payments_json.amount::numeric,
                                         p_id_usuario,
                                         now(),
@@ -625,7 +625,8 @@ BEGIN
                     id_usuario_ai,
                     usuario_ai,
                     id_usuario_mod,
-                    fecha_mod
+                    fecha_mod,
+                                               razon_nombre_doc_org
                 ) values(
                             'activo',
                             v_id_liquidacion,
@@ -635,7 +636,8 @@ BEGIN
                             v_parametros._id_usuario_ai,
                             v_parametros._nombre_usuario_ai,
                             null,
-                            null
+                            null,
+                         v_parametros.razon_nombre_liquiman
                         )RETURNING id_liqui_manual into v_id_liqui_manual;
 
                 --actualizamos la liquidacion para agregarle este id_liqui_manual
@@ -649,6 +651,7 @@ BEGIN
                                  AS
                                  (
                                         id_medio_pago varchar,
+                                        id_cuenta_bancaria varchar,
                                         administradora varchar,
                                         lote varchar,
                                         comprobante varchar,
@@ -670,6 +673,7 @@ BEGIN
                             estado_reg,
                             id_liqui_manual,
                             id_medio_pago,
+                            id_cuenta_bancaria,
                             administradora,
                             lote,
                             comprobante,
@@ -690,6 +694,7 @@ BEGIN
                                     'activo',
                                     v_id_liqui_manual,
                                     CASE WHEN v_liquiman_det_json.id_medio_pago is NOT null and v_liquiman_det_json.id_medio_pago != '' then v_liquiman_det_json.id_medio_pago::integer else null END,
+                                    CASE WHEN v_liquiman_det_json.id_cuenta_bancaria is NOT null and v_liquiman_det_json.id_cuenta_bancaria != '' then v_liquiman_det_json.id_cuenta_bancaria::integer else null END,
                                     CASE WHEN v_liquiman_det_json.administradora is NOT null and v_liquiman_det_json.administradora != '' then v_liquiman_det_json.administradora else null END,
                                     CASE WHEN v_liquiman_det_json.lote is NOT null and v_liquiman_det_json.lote != '' then v_liquiman_det_json.lote else null END,
                                     CASE WHEN v_liquiman_det_json.comprobante is NOT null and v_liquiman_det_json.comprobante != '' then v_liquiman_det_json.comprobante else null END,

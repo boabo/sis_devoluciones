@@ -678,6 +678,15 @@ CREATE TABLE decr.tliqui_boleto (
   WITHOUT OIDS;
 
 
+
+alter table decr.tliqui_manual_detalle
+    add id_cuenta_bancaria integer;
+
+
+alter table decr.tliqui_manual
+    add razon_nombre_doc_org varchar(255);
+
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
 

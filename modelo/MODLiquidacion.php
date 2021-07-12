@@ -268,6 +268,7 @@ class MODLiquidacion extends MODbase{
         $this->setParametro('tipo_manual','tipo_manual','varchar');
         $this->setParametro('pagar_a_nombre','pagar_a_nombre','varchar');
         $this->setParametro('json_data_boleto_stage','json_data_boleto_stage','text');
+        $this->setParametro('razon_nombre_liquiman','razon_nombre_liquiman','varchar');
 
 
         //Ejecuta la instruccion

@@ -44,6 +44,7 @@ class MODLiquiFormaPago extends MODbase{
         $this->captura('desc_medio_pago','varchar');
         $this->captura('nro_documento_pago','varchar');
         $this->captura('nombre','varchar');
+        $this->captura('administradora','varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
@@ -74,6 +75,7 @@ class MODLiquiFormaPago extends MODbase{
         $this->setParametro('importe','importe','numeric');
         $this->setParametro('nro_documento_pago','nro_documento_pago','varchar');
         $this->setParametro('nombre','nombre','varchar');
+        $this->setParametro('administradora','administradora','varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
@@ -105,6 +107,7 @@ class MODLiquiFormaPago extends MODbase{
         $this->setParametro('importe','importe','numeric');
         $this->setParametro('nro_documento_pago','nro_documento_pago','varchar');
         $this->setParametro('nombre','nombre','varchar');
+        $this->setParametro('administradora','administradora','varchar');
 
 
         //Ejecuta la instruccion

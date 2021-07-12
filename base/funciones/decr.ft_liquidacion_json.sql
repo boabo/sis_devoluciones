@@ -100,6 +100,7 @@ BEGIN
             END IF;
 
 
+
             if(pxp.f_existe_parametro(p_tabla, 'fecha_ini' )) then
                 if(v_parametros.fecha_ini is not null) then
                     v_fecha_ini := v_parametros.fecha_ini;

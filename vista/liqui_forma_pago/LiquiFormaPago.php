@@ -160,6 +160,25 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
             grid: true,
             form: true
         },
+
+            {
+                config: {
+                    name: 'administradora',
+                    fieldLabel: 'administradora',
+                    allowBlank: true,
+                    emptyText: 'administradora...',
+                    typeAhead: true,
+                    triggerAction: 'all',
+                    lazyRender: true,
+                    mode: 'local',
+                    store: ['LINKSER', 'ATC', 'CYBER SOURCE'],
+                    width: 200
+                },
+                type: 'ComboBox',
+                id_grupo: 4,
+                form: true
+            },
+
         {
             config:{
                 name: 'pais',
@@ -451,6 +470,7 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
         {name:'desc_medio_pago', type: 'string'},
         {name:'nro_documento_pago', type: 'string'},
         {name:'nombre', type: 'string'},
+        {name:'administradora', type: 'string'},
 
     ],
     sortInfo:{
