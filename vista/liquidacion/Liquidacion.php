@@ -213,6 +213,39 @@ header("content-type: text/javascript; charset=UTF-8");
 
                     });
 
+                this.popUpReporteLiqPagadas = new Ext.Window(
+                    {
+                        layout: 'fit',
+                        width: 500,
+                        height: 250,
+                        modal: true,
+                        closeAction: 'hide',
+
+                        items: new Ext.FormPanel({
+                            labelWidth: 75, // label settings here cascade unless overridden
+
+                            frame: true,
+                            // title: 'Factura Manual Concepto',
+                            bodyStyle: 'padding:5px 5px 0',
+                            width: 339,
+                            defaults: {width: 191},
+                            // defaultType: 'textfield',
+
+                            items: [ this.cmbFecha_ini, this.cmbFecha_fin],
+
+                            buttons: [{
+                                text: 'Save',
+                                handler: this.genLiquidacionesPagadas,
+
+                                scope: this
+                            }, {
+                                text: 'Cancel',
+                                handler: ()=>{this.popUpReporteLiqPagadas.hide()}
+                            }]
+                        }),
+
+                    });
+
 
 
 
@@ -275,6 +308,12 @@ header("content-type: text/javascript; charset=UTF-8");
                     text: '<i class="fa fa-file-text-o fa-2x"></i><br> Generar para Administradora',/*iconCls:'' ,*/
                     disabled: false,
                     handler: ()=> this.popUpByAdministradora.show()
+                });
+                this.addButton('reporteLiquidacionesPagadas', {
+                    argument: {imprimir: 'genLiquidacionesPagadas'},
+                    text: '<i class="fa fa-file-text-o fa-2x"></i><br> Liquidaciones Pagadas',/*iconCls:'' ,*/
+                    disabled: false,
+                    handler: ()=> this.popUpReporteLiqPagadas.show()
                 });
                 this.addButton('anularLiquidacion', {
                     argument: {imprimir: 'anularLiquidacion'},
@@ -1881,6 +1920,26 @@ header("content-type: text/javascript; charset=UTF-8");
                     url: '../../sis_devoluciones/control/Liquidacion/listarLiquidacionJson',
                     params: {'administradora': this.cmbTipoAdministradora.getValue(), fecha_ini: this.cmbFecha_ini.getValue(), fecha_fin: this.cmbFecha_fin.getValue()},
                     success: this.successGenerarRepAdiministradora,
+                    failure: this.conexionFailure,
+                    timeout: this.timeout,
+                    scope: this
+                });
+            },
+        successGenerarLiquidacionesPagadas: function (resp) {
+            Phx.CP.loadingHide();
+            const objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+            console.log('objRes',objRes)
+            const archivoGenerado = objRes.ROOT.detalle.archivo_generado;
+            window.open(`../../../lib/lib_control/Intermediario.php?r=${archivoGenerado}&t=${new Date().toLocaleTimeString()}`)
+
+        },
+              genLiquidacionesPagadas: function () {
+                Phx.CP.loadingShow();
+
+                Ext.Ajax.request({
+                    url: '../../sis_devoluciones/control/Liquidacion/generarReporteLiquidacionesPagadas',
+                    params: {fecha_ini: this.cmbFecha_ini.getValue(), fecha_fin: this.cmbFecha_fin.getValue()},
+                    success: this.successGenerarLiquidacionesPagadas,
                     failure: this.conexionFailure,
                     timeout: this.timeout,
                     scope: this

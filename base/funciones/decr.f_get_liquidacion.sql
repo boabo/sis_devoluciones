@@ -69,6 +69,23 @@ BEGIN
         END IF;
 
     END IF;
+    if(p_params->>'estado' is not null and p_params->>'fecha_ini' is not null and p_params->>'fecha_fin' is not null) then
+
+        --raise EXCEPTION '%',p_params->'fecha_ini';
+        --obtenemos todas las liquidaciones que tengan forma de pago con tarjeta de credito y ademas entre un
+        -- determinado rango de fechas y con el tipo de administradora
+        SELECT array_agg(tl.id_liquidacion)
+        into v_id_liquidacion_array
+        FROM decr.tliquidacion tl
+        where tl.estado = p_params->>'estado'::varchar
+          AND tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date);
+
+        --RAISE EXCEPTION '%',v_id_liquidacion_array;
+        IF v_id_liquidacion_array is null then
+            RAISE EXCEPTION '%', 'NO EXISTE DATOS PARA ESTOS PARAMETROS DE BUSQUEDA CON ESTADO';
+        END IF;
+
+    END IF;
 
 
     SELECT count(tl.id_liquidacion)
@@ -280,6 +297,8 @@ BEGIN
                        tlb.data_stage->>'ticketNumber' as _liqui_nro_doc_original,
                        1 as _liqui_nro_aut_doc_original,
                        tlb.data_stage->>'passengerName' as _liqui_nombre_doc_original,
+                       tlb.data_stage->>'reservepointOfSale' as _liqui_oficina_emisora_original,
+                       tlb.data_stage->>'issueAgencyCode' as _liqui_codigo_agencia_doc_original,
                        tlb.data_stage
 
                 FROM t_liqui tl
@@ -376,10 +395,15 @@ BEGIN
                        tv.fecha as _liqui_fecha_doc_original,
                        tv.nro_factura as _liqui_nro_doc_original,
                        td.nroaut as _liqui_nro_aut_doc_original,
-                       tv.nombre_factura as _liqui_nombre_doc_original
+                       tv.nombre_factura as _liqui_nombre_doc_original,
+                       concat(ts.nombre, '(', tpv.nombre, ')') as _liqui_oficina_emisora_original,
+                       tpv.codigo as _liqui_codigo_agencia_doc_original
+
                        --tl.tramo_devolucion as _desc_liqui_det
                 FROM t_liqui tl
                          INNER JOIN vef.tventa tv on tv.id_venta = tl.id_venta
+                    INNER JOIN vef.tpunto_venta tpv on tpv.id_punto_venta = tv.id_punto_venta
+                    INNER JOIN vef.tsucursal ts on ts.id_sucursal = tpv.id_sucursal
                          inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
                          INNER JOIN t_venta_detalle tvd on tvd.id_venta = tv.id_venta
                          LEFT JOIN sum_descuentos sd ON sd.id_liquidacion = tl.id_liquidacion

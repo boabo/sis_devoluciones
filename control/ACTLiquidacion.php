@@ -15,7 +15,7 @@ HISTORIAL DE MODIFICACIONES:
 ini_set('display_errors', 'On');*/
 
 include_once(dirname(__FILE__).'/../../lib/lib_modelo/ConexionSqlServer.php');
-
+require_once(dirname(__FILE__).'/../reporte/RLiquidacionesPagadasXls.php');
 class ACTLiquidacion extends ACTbase{
 
     function listarLiquidacion(){
@@ -75,6 +75,55 @@ class ACTLiquidacion extends ACTbase{
         $this->objFunc=$this->create('MODLiquidacion');
         if($this->objParam->insertar('id_liquidacion')){
             $this->res=$this->objFunc->insertarLiquidacion($this->objParam);
+
+            if ($this->res->getTipo() != 'EXITO') {
+
+                $this->res->imprimirRespuesta($this->res->generarJson());
+                exit;
+            }
+            $data = $this->res->getDatos();
+            if($data['tipo'] === 'BOLEMD') {
+                //si es boleto necesitamos hacer un servicio
+                $nroTicket = $this->objParam->getParametro('nro_boleto');
+
+                $curl = curl_init();
+
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => $_SESSION['_PXP_ND_URL'].'/api/boa-stage-nd/Ticket/refundFactCoupons',
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'POST',
+                    CURLOPT_POSTFIELDS =>'{
+                "ticketNumber": '.$nroTicket.'
+            }
+            ',
+                    CURLOPT_HTTPHEADER => array(
+                        'Authorization: ' . $_SESSION['_PXP_ND_TOKEN'],
+                        'Content-Type: application/json'
+                    ),
+                ));
+
+                $response = curl_exec($curl);
+
+                curl_close($curl);
+
+                $data_json = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $response), true);
+
+                $data['mensaje_stage_cupones'] = $data_json;
+                $this->res->setDatos($data);
+
+            }
+
+
+            /*if($this->objParam->getParametro('tipo') != '') {
+                $this->objParam->addFiltro("tp.id_marca= ".$this->objParam->getParametro('id_marca'));
+            }*/
+
+
         } else{
             $this->res=$this->objFunc->modificarLiquidacion($this->objParam);
         }
@@ -483,6 +532,124 @@ class ACTLiquidacion extends ACTbase{
         $this->objFunc=$this->create('MODLiquidacion');
         $this->res=$this->objFunc->FechaPago($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
+    function getLiquidacionDinamica () {
+
+
+        $this->objParam->defecto('dir_ordenacion', 'ASC');
+        $this->objParam->parametros_consulta['ordenacion'] = 'id_tipo_doc_liquidacion';
+        $this->objParam->defecto('dir_ordenacion', 'ASC');
+        $this->objParam->parametros_consulta['ordenacion'] = 'id_tipo_doc_liquidacion';
+        $this->objParam->parametros_consulta['cantidad'] = '10000'; // traer todos los tipos doc
+        $this->objParam->parametros_consulta['puntero'] = '0';
+        $this->objParam->parametros_consulta['filtro'] = ' 0 = 0 ';
+
+        $this->objFunc=$this->create('MODTipoDocLiquidacion');
+        $this->res=$this->objFunc->listarTipoDocLiquidacion($this->objParam);
+
+        if ($this->res->getTipo() != 'EXITO') {
+
+            $this->res->imprimirRespuesta($this->res->generarJson());
+            exit;
+        }
+
+        $data = $this->res->getDatos();
+
+        $this->objParam->addParametro('estado', 'pagado');
+
+        $dataDinamico = array();
+        foreach ($data as $rowTipoDoc) {
+            $this->objParam->addParametro('tipo_tab_liqui', $rowTipoDoc['tipo_documento']);
+            $this->objFunc=$this->create('MODLiquidacion');
+            $this->res=$this->objFunc->listarLiquidacionJson($this->objParam);
+            if ($this->res->getTipo() != 'EXITO') {
+                $this->res->imprimirRespuesta($this->res->generarJson());
+                exit;
+            }
+
+
+            $data = $this->res->getDatos();
+
+            $dataJson = json_decode($data["mensaje"]);
+            $send = array(
+                "total" => $dataJson->count,
+                "datos"=> $dataJson->datos != null ? $dataJson->datos : []
+            );
+
+
+            foreach ($send["datos"] as $row) {
+
+                $liquiDetData = '';
+                if(is_array($row->_desc_liqui_det)) {
+                    foreach ($row->_desc_liqui_det as $liquiDet) {
+                        $liquiDetData .= $liquiDet->_concepto .', ';
+                    }
+                } else {
+                    $liquiDetData = $row->_desc_liqui_det;
+                }
+
+                $nroCheque = '';
+                $nombreCheque = '';
+                if(is_array($row->liqui_forma_pago)) {
+                    foreach ($row->liqui_forma_pago as $liqui_forma_pago) {
+                        $nroCheque .= 'Nro: '. $liqui_forma_pago->nro_documento_pago. ' ,';
+                        $nombreCheque .= $liqui_forma_pago->nombre. ' ,';
+                    }
+                }
+
+                array_push($dataDinamico, array(
+                    "desc_tipo_documento" => $row->desc_tipo_documento,
+                    "codigo_punto_venta" => $row->codigo_punto_venta,
+                    "fecha_pago" => $row->fecha_pago,
+                    "_liqui_nro_doc_original" => $row->_liqui_nro_doc_original,
+                    "_liqui_nombre_doc_original" => $row->_liqui_nombre_doc_original,
+                    "_desc_liqui_det" => $liquiDetData,
+                    "nombreCheque" => $nombreCheque,
+                    "importe_devolver" => $row->importe_devolver,
+                    "nroCheque" => $nroCheque,
+                    "_liqui_codigo_agencia_doc_original" => $row->_liqui_codigo_agencia_doc_original,
+                    "_liqui_oficina_emisora_original" => $row->_liqui_oficina_emisora_original,
+                ));
+
+
+            }
+
+
+        }
+
+        return $dataDinamico;
+
+
+
+    }
+    function generarReporteLiquidacionesPagadas() {
+        $nombreArchivo = uniqid('liquidacionesPagadasXLS_'.md5(session_id())).'.xls';
+
+
+        $dataForReport = $this->getLiquidacionDinamica();
+
+
+
+        //Parametros básicos
+        $tamano = 'LETTER';
+        $orientacion = 'L';
+        $titulo = 'Detalle Dep.';
+
+        $this->objParam->addParametro('orientacion',$orientacion);
+        $this->objParam->addParametro('tamano',$tamano);
+        $this->objParam->addParametro('titulo_archivo',$titulo);
+        $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+
+        $reporte = new RLiquidacionesPagadasXls($this->objParam);
+        $reporte->setMaster($dataForReport);
+        $reporte->setData($dataForReport);
+        $reporte->generarReporte();
+
+        $this->mensajeExito=new Mensaje();
+        $this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
+        $this->mensajeExito->setArchivoGenerado($nombreArchivo);
+        $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
     }
 
 
