@@ -41,10 +41,15 @@ SELECT param.f_import_tdocumento('insert', 'LIQLPBDEV', 'LIQLPBDEV', 'DECR', 'ta
                                  'LPB-DEVOL-gestioncorrelativo');
 
 
+SELECT param.f_import_tdocumento('insert', 'LIQCBBWEBDEV', 'LIQCBBWEBDEV', 'DECR', 'tabla', 'gestion', '',
+                                 'CBB-DEVOLWEB-gestioncorrelativo');
+
+
 select param.f_import_tcatalogo_tipo ('insert','tliquidacion_estacion','DECR','tliquidacion');
 select param.f_import_tcatalogo ('insert','DECR','CBB','CBB','tliquidacion_estacion');
 select param.f_import_tcatalogo ('insert','DECR','LPB','LPB','tliquidacion_estacion');
 select param.f_import_tcatalogo ('insert','DECR','SRZ','SRZ','tliquidacion_estacion');
+select param.f_import_tcatalogo ('insert','DECR','CBBWEB','CBBWEB','tliquidacion_estacion');
 
 
 select pxp.f_insert_tgui ('Generar Nota PXP2', 'Generar Nota PXP2', 'GN2', 'si', 1, 'sis_devoluciones/vista/nota/form_generar_nota.php', 2, '', 'FormNota', 'DECR');
