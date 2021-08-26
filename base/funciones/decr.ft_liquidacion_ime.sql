@@ -1281,6 +1281,37 @@ BEGIN
             return v_resp;
 
         end;
+
+        /*********************************
+     #TRANSACCION:  'DECR_RECIBO_JSON'
+     #DESCRIPCION:    obteiene datos del recibo
+     #AUTOR:        admin
+     #FECHA:        26-04-2020 21:14:13
+    ***********************************/
+
+    elsif(p_transaccion='DECR_RECIBO_JSON')then
+
+        begin
+
+
+            SELECT TO_JSON(venta)::text
+            into v_json
+            from (
+                     select tv.id_venta
+                     FROM vef.tventa tv
+                     where tv.fecha::date = v_parametros.fecha_recibo::date
+                       AND tv.nro_factura = v_parametros.nro_recibo::integer
+                     limit 1
+                 ) venta;
+
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'json',v_json);
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje',v_json);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+        end;
      /*********************************
      #TRANSACCION:  'LIQ_GENNOTA_INS'
      #DESCRIPCION:    INSERTAR NOTA DE CREDITO DESDE LA LIQUIDACION

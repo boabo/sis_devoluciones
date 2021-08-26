@@ -836,30 +836,34 @@ header("content-type: text/javascript; charset=UTF-8");
                     puntoVenta.setValue(e[0].json.issueOfficeID);
                     pvAgt.setValue(e[0].json.issueOfficeID);
                     noiata.setValue(e[0].json.issueAgencyCode);
-                    //debemos recorrer todos payments por si hay de un exchange
-                    const allPayments = e.reduce((valorAnterior, valorActual) => {
-                        const { payment, concilliation } =  valorActual.json;
-                        console.log('concilliation',concilliation)
 
-                        let payments = [...valorAnterior]
+                    const createPaymentsForErp = (dataTicket) => {
+                        console.log('dataTicket',dataTicket)
+                        const { payment, OriginalTicket } =  dataTicket;
+
+                        let paymentsData = [...( OriginalTicket !== null ? createPaymentsForErp(OriginalTicket) : [])];
                         payment.forEach((p)=> {
-                            console.log('p.paymentDescription', p.paymentDescription)
-                            console.log('concilliation.length',concilliation.length)
-                            payments = [...payments,
-                                {
+                            if(p.paymentCode === 'CC') {
+                                paymentsData.push({
                                     code : p.paymentCode,
                                     description: p.paymentDescription,
                                     amount: that.convertirImportePorMoneda(p.paymentAmount, currency),
                                     method_code: p.paymentMethodCode,
                                     reference: p.reference,
-                                    ...(p.paymentDescription === 'CREDIT CARD' && concilliation.length > 0 ? { administradora: concilliation[0].Formato, comprobante: concilliation[0].AuthorizationCode, lote: concilliation[0].LotNumber, cod_est: concilliation[0].EstablishmentCode, credit_card_number: p.creditCardNumber } : { administradora:'',comprobante:'' ,lote: '', cod_est: '', credit_card_number: '' } )
-                                }
-                            ]
+                                    administradora:'',
+                                    comprobante:'',
+                                    lote: '',
+                                    cod_est: '',
+                                    credit_card_number: p.creditCardNumber
+                                })
+                            }
+
                         })
 
-
-                        return payments;
-                    }, []);
+                        return paymentsData;
+                    }
+                    //debemos recorrer todos payments por si hay de un exchange
+                    let allPayments = [...createPaymentsForErp(that.dataStage)];
                     console.log('allPayments', allPayments)
 
 /*
@@ -2462,6 +2466,41 @@ header("content-type: text/javascript; charset=UTF-8");
                 grid:false,
                 form:true
             },
+
+            {
+                config:{
+                    name: 'fecha_recibo',
+                    fieldLabel: 'Fecha Recibo',
+                    allowBlank: true,
+                    width:200,
+                    gwidth: 100,
+                    format: 'd/m/Y',
+                    renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''},
+                    disabled: false,
+                    defaultValue: new Date(),
+                },
+                type:'DateField',
+                filters:{pfiltro:'liqui.fecha_recibo',type:'date'},
+                id_grupo:3,
+                grid:true,
+                form:true
+            },
+            {
+                config:{
+                    name: 'nro_recibo',
+                    fieldLabel: 'Nro Recibo',
+                    allowBlank: true,
+                    width: 200,
+                    gwidth: 100,
+                    maxLength:255,
+                    //disabled: true,
+                },
+                type:'TextField',
+                filters:{pfiltro:'liqui.importe_total',type:'string'},
+                id_grupo:3,
+                grid:false,
+                form:true
+            },
             {
                 config:{
                     name: 'id_factucom',
@@ -2756,6 +2795,10 @@ header("content-type: text/javascript; charset=UTF-8");
             this.ocultarComponente(this.Cmp.id_factucom);
             this.ocultarComponente(this.Cmp.id_factucomcon);
 
+            this.ocultarComponente(this.Cmp.fecha_recibo);
+            this.ocultarComponente(this.Cmp.nro_recibo);
+
+
             this.Cmp.id_venta.reset();
             this.Cmp.id_venta.store.baseParams.tipo_factura = 'computarizada';
             this.Cmp.id_venta.modificado = true;
@@ -2777,9 +2820,9 @@ header("content-type: text/javascript; charset=UTF-8");
             this.ocultarComponente(this.Cmp.id_factucom);
             this.ocultarComponente(this.Cmp.id_factucomcon);
 
-            this.Cmp.id_venta.reset();
+          /*  this.Cmp.id_venta.reset();
             this.Cmp.id_venta.store.baseParams.tipo_factura = 'recibo';
-            this.Cmp.id_venta.modificado = true;
+            this.Cmp.id_venta.modificado = true;*/
         },
         liquidacionPorLiquidacion: function () {
 
@@ -2837,6 +2880,54 @@ header("content-type: text/javascript; charset=UTF-8");
                     params: {
                         'nro_aut': nroAut,
                         'nro_fac': nroFac,
+                    },
+                    success: function (resp) {
+
+                        console.log(resp)
+
+                        Phx.CP.loadingHide();
+
+                        var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+
+                        const dataJson = JSON.parse(reg.ROOT.datos.mensaje);
+                        console.log('dataJson',dataJson)
+                        //this.cmpIdBoleto.setValue(reg.datos[0].id_boleto);
+                        if(typeof dataJson === 'object') {
+
+                            this.Cmp.id_venta.setValue(dataJson.id_venta);
+                            this.Cmp.id_venta.setDisabled(false);
+
+                            this.Cmp.id_venta_detalle.reset();
+                            this.Cmp.id_venta_detalle.store.baseParams.id_venta = dataJson.id_venta;
+                            this.Cmp.id_venta_detalle.modificado = true;
+
+
+
+                        } else {
+                            this.Cmp.id_venta.setValue('');
+
+                            this.Cmp.id_venta_detalle.setDisabled(true);
+                            this.Cmp.id_venta_detalle.reset();
+                            this.Cmp.id_venta_detalle.store.baseParams.id_venta = '';
+                            this.Cmp.id_venta_detalle.modificado = true;
+                        }
+
+                    },
+                    failure: this.conexionFailure,
+                    timeout: this.timeout,
+                    scope: this
+                })
+            }
+
+        },
+        obtenerDatosRecibo: function ({fechaRecibo, nroRecibo}) {
+
+            if(fechaRecibo !== '' && nroRecibo !== '') {
+                Ext.Ajax.request({
+                    url: '../../sis_devoluciones/control/Liquidacion/listarRecibo',
+                    params: {
+                        'fecha_recibo': fechaRecibo,
+                        'nro_recibo': nroRecibo,
                     },
                     success: function (resp) {
 
@@ -3177,6 +3268,19 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.obtenerDatosFactucom({nroAut: nroAut, nroFac: nroFac});
 
                 }
+            }, this);
+
+            //eventos para recibo
+            this.Cmp.fecha_recibo.on('blur', function () {
+                const fechaRecibo = this.Cmp.fecha_recibo.getValue();
+                const nroRecibo = this.Cmp.nro_recibo.getValue();
+                this.obtenerDatosRecibo({fechaRecibo: fechaRecibo, nroRecibo: nroRecibo});
+
+            }, this);
+            this.Cmp.nro_recibo.on('blur', function () {
+                const fechaRecibo = this.Cmp.fecha_recibo.getValue();
+                const nroRecibo = this.Cmp.nro_recibo.getValue();
+                this.obtenerDatosRecibo({fechaRecibo: fechaRecibo, nroRecibo: nroRecibo});
             }, this);
 
           /*  this.cmpEstacion.on('select', function (rec, d) {

@@ -610,6 +610,22 @@ class MODLiquidacion extends MODbase{
         //Devuelve la respuesta
         return $this->respuesta;
     }
+    function listarRecibo(){
+        $this->procedimiento='decr.ft_liquidacion_ime';
+        $this->transaccion='DECR_RECIBO_JSON';
+        $this->tipo_procedimiento='IME';//tipo de transaccion
+
+        $this->setParametro('fecha_recibo','fecha_recibo','date');
+        $this->setParametro('nro_recibo','nro_recibo','numeric');
+
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
     function listarConcepto(){
         $this->procedimiento='decr.ft_liquidacion_sel';
         $this->transaccion='DECR_CONCEPTOS_SEL';
