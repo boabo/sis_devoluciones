@@ -86,6 +86,24 @@ header("content-type: text/javascript; charset=UTF-8");
             type: 'ComboBox',
 
         }),
+        cmbFecha_ini_reporte_administradora: new Ext.form.DateField({
+            name: 'fecha_ini_reporte_administradora',
+            fieldLabel: 'Fecha',
+            allowBlank: false,
+            disabled: false,
+            width: 105,
+            format: 'd/m/Y'
+
+        }),
+        cmbFecha_fin_reporte_administradora: new Ext.form.DateField({
+            name: 'fecha_fin_reporte_administradora',
+            fieldLabel: 'Fecha fin',
+            allowBlank: true,
+            disabled: false,
+            width: 105,
+            format: 'd/m/Y'
+
+        }),
         cmbFecha_ini: new Ext.form.DateField({
             name: 'fecha_ini',
             fieldLabel: 'Fecha',
@@ -198,7 +216,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             defaults: {width: 191},
                             // defaultType: 'textfield',
 
-                            items: [this.cmbTipoAdministradora, this.cmbFecha_ini, this.cmbFecha_fin],
+                            items: [this.cmbTipoAdministradora, this.cmbFecha_ini_reporte_administradora, this.cmbFecha_fin_reporte_administradora],
 
                             buttons: [{
                                 text: 'Save',
@@ -1917,15 +1935,15 @@ header("content-type: text/javascript; charset=UTF-8");
                 Phx.CP.loadingShow();
 
                 Ext.Ajax.request({
-                    url: '../../sis_devoluciones/control/Liquidacion/listarLiquidacionJson',
-                    params: {'administradora': this.cmbTipoAdministradora.getValue(), fecha_ini: this.cmbFecha_ini.getValue(), fecha_fin: this.cmbFecha_fin.getValue()},
-                    success: this.successGenerarRepAdiministradora,
+                    url: '../../sis_devoluciones/control/Liquidacion/genReportePorAdministradora',
+                    params: {'administradora': this.cmbTipoAdministradora.getValue(), fecha_ini: this.cmbFecha_ini_reporte_administradora.getValue(), fecha_fin: this.cmbFecha_fin_reporte_administradora.getValue()},
+                    success: this.successGenerarReporteXls,
                     failure: this.conexionFailure,
                     timeout: this.timeout,
                     scope: this
                 });
             },
-        successGenerarLiquidacionesPagadas: function (resp) {
+        successGenerarReporteXls: function (resp) {
             Phx.CP.loadingHide();
             const objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
             console.log('objRes',objRes)
@@ -1939,7 +1957,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 Ext.Ajax.request({
                     url: '../../sis_devoluciones/control/Liquidacion/generarReporteLiquidacionesPagadas',
                     params: {fecha_ini: this.cmbFecha_ini.getValue(), fecha_fin: this.cmbFecha_fin.getValue()},
-                    success: this.successGenerarLiquidacionesPagadas,
+                    success: this.successGenerarReporteXls,
                     failure: this.conexionFailure,
                     timeout: this.timeout,
                     scope: this

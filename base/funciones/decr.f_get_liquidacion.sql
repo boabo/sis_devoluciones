@@ -645,26 +645,35 @@ BEGIN
                        liqui_tabla.desc_tipo_documento,
                        liqui_tabla.desc_tipo_liquidacion,
                        liqui_tabla.desc_punto_venta,
+                       liqui_tabla.codigo_punto_venta,
+                       liqui_tabla.id_sucursal,
                        liqui_tabla.nro_nota,
                        liqui_tabla.sum_total_descuentos,
                        liqui_tabla.descuentos,
-                       liqui_tabla.sum_descuentos
+                       liqui_tabla.sum_descuentos,
+                       liqui_tabla.liqui_forma_pago,
+                       liqui_tabla.notas,
+                       liqui_tabla.factura_pagada
 
                 FROM decr.tliquidacion tl
                          INNER JOIN (SELECT * FROM json_populate_recordset(NULL::decr.json_type_liquidacion, v_liqui_json::json)
                 ) liqui_tabla ON liqui_tabla.id_liquidacion = tl.id_liquidacion
-            ),t_venta_detalle AS
+            ),t_venta_detalle_original AS
             (
-                SELECT string_agg(tvd.id_venta_detalle::text, ',')::varchar as id_venta_detalle, tv.id_venta
+                SELECT tvd.*, tci.codigo as desc_codigo, tci.desc_ingas, tci.desc_ingas as _concepto, 1 as _cantidad, tvd.precio as _importe, tvd.id_venta_detalle as _id
                 from vef.tventa_detalle tvd
                          inner join vef.tventa tv on tv.id_venta = tvd.id_venta
-                         INNER JOIN t_liqui tl on tl.id_venta = tv.id_venta
-                GROUP BY tv.id_venta
+                         inner join param.tconcepto_ingas tci on tci.id_concepto_ingas = tvd.id_producto
+            ),t_venta_detalle AS
+            (
+                SELECT tvdo.*
+                from t_venta_detalle_original tvdo
+                         INNER JOIN t_liqui tl on tl.id_venta = tvdo.id_venta
             ), sum_descuentos as
             (
                 SELECT tl.id_liquidacion, sum(tdl.importe) as sum_descuentos
                 FROM decr.tdescuento_liquidacion tdl
-                         inner JOIN param.tconcepto_ingas tci on tci.id_concepto_ingas = tdl.id_concepto_ingas
+                         inner JOIN param.tconcepto_ingas tci on tci.id_concepto_ingas = tdl.id_concepto_ingas AND tci.tipo_descuento != 'HAY NOTA'
                          INNER JOIN t_liqui tl ON tl.id_liquidacion = tdl.id_liquidacion
                 GROUP BY tl.id_liquidacion
             )
@@ -672,12 +681,43 @@ BEGIN
             (
                 SELECT tl.*,
                        sd.sum_descuentos,
-                       tl.importe_total - sd.sum_descuentos as importe_devolver,
+                       tv.total_venta - (coalesce(sd.sum_descuentos, 0)) as importe_devolver,
                        tv.nro_factura,
+                       tv.nit,
                        tv.nombre_factura,
-                       tvd.id_venta_detalle
+                       tv.fecha as fecha_doc_original, -- este campo deberia ser la fecha del documento vinculado a la liquidacion en este caso la venta (factura)
+                       --tvd.id_venta_detalle,
+                       (select  string_agg(tvd2.id_venta_detalle::text, ',')::varchar as id_venta_detalle from t_venta_detalle tvd2 where tvd2.id_venta = tl.id_venta  GROUP BY tvd2.id_venta ) as id_venta_detalle,
+                       (select  sum(tvd3.precio) from t_venta_detalle tvd3 where tvd3.id_venta = tl.id_venta  GROUP BY tvd3.id_venta ) as sum_venta_seleccionados,
+                       --data para boleto tienen
+                       tv.nro_factura as _desc_liqui,
+                       (
+                           SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(venta_detalle)))
+                           FROM (
+                                    SELECT *
+                                    FROM t_venta_detalle tvd3 where tvd3.id_venta = tl.id_venta
+                                ) venta_detalle
+                       ) AS _desc_liqui_det,
+                       (
+                           SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(venta_detalle_original)))
+                           FROM (
+                                    SELECT *
+                                    FROM t_venta_detalle_original tvdo where tvdo.id_venta = tl.id_venta
+                                ) venta_detalle_original
+                       ) AS _detalle_documento_original,
+                       tv.total_venta as _liqui_importe_doc_original,
+                       tv.fecha as _liqui_fecha_doc_original,
+                       tv.nro_factura as _liqui_nro_doc_original,
+                       0 as _liqui_nro_aut_doc_original,
+                       tv.nombre_factura as _liqui_nombre_doc_original,
+                       concat(ts.nombre, '(', tpv.nombre, ')') as _liqui_oficina_emisora_original,
+                       tpv.codigo as _liqui_codigo_agencia_doc_original
+
+                       --tl.tramo_devolucion as _desc_liqui_det
                 FROM t_liqui tl
                          INNER JOIN vef.tventa tv on tv.id_venta = tl.id_venta
+                         INNER JOIN vef.tpunto_venta tpv on tpv.id_punto_venta = tv.id_punto_venta
+                         INNER JOIN vef.tsucursal ts on ts.id_sucursal = tpv.id_sucursal
                          INNER JOIN t_venta_detalle tvd on tvd.id_venta = tv.id_venta
                          LEFT JOIN sum_descuentos sd ON sd.id_liquidacion = tl.id_liquidacion
             )

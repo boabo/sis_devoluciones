@@ -16,6 +16,7 @@ ini_set('display_errors', 'On');*/
 
 include_once(dirname(__FILE__).'/../../lib/lib_modelo/ConexionSqlServer.php');
 require_once(dirname(__FILE__).'/../reporte/RLiquidacionesPagadasXls.php');
+require_once(dirname(__FILE__).'/../reporte/RPorAdministradoraXls.php');
 class ACTLiquidacion extends ACTbase{
 
     function listarLiquidacion(){
@@ -539,7 +540,8 @@ class ACTLiquidacion extends ACTbase{
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
-    function getLiquidacionDinamica () {
+    function getLiquidacionDinamica ($tipo) {
+
 
 
         $this->objParam->defecto('dir_ordenacion', 'ASC');
@@ -561,7 +563,13 @@ class ACTLiquidacion extends ACTbase{
 
         $data = $this->res->getDatos();
 
-        $this->objParam->addParametro('estado', 'pagado');
+        if($tipo === 'pagadas') {
+            $this->objParam->addParametro('estado', 'pagado');
+        } elseif($tipo === 'administradora') {
+           //no necesitamos agregar nada por que ya tenemos la logica para eso en la vista estamos enviando los parametros
+
+
+        }
 
         $dataDinamico = array();
         foreach ($data as $rowTipoDoc) {
@@ -603,25 +611,57 @@ class ACTLiquidacion extends ACTbase{
                     }
                 }
 
-                array_push($dataDinamico, array(
-                    "desc_tipo_documento" => $row->desc_tipo_documento,
-                    "codigo_punto_venta" => $row->codigo_punto_venta,
-                    "fecha_pago" => $row->fecha_pago,
-                    "_liqui_nro_doc_original" => $row->_liqui_nro_doc_original,
-                    "_liqui_nombre_doc_original" => $row->_liqui_nombre_doc_original,
-                    "_desc_liqui_det" => $liquiDetData,
-                    "nombreCheque" => $nombreCheque,
-                    "importe_devolver" => $row->importe_devolver,
-                    "nroCheque" => $nroCheque,
-                    "_liqui_codigo_agencia_doc_original" => $row->_liqui_codigo_agencia_doc_original,
-                    "_liqui_oficina_emisora_original" => $row->_liqui_oficina_emisora_original,
-                ));
+                if($tipo === 'pagadas') {
+                    array_push($dataDinamico, array(
+                        "desc_tipo_documento" => $row->desc_tipo_documento,
+                        "codigo_punto_venta" => $row->codigo_punto_venta,
+                        "fecha_pago" => $row->fecha_pago,
+                        "_liqui_nro_doc_original" => $row->_liqui_nro_doc_original,
+                        "_liqui_nombre_doc_original" => $row->_liqui_nombre_doc_original,
+                        "_desc_liqui_det" => $liquiDetData,
+                        "nombreCheque" => $nombreCheque,
+                        "importe_devolver" => $row->importe_devolver,
+                        "nroCheque" => $nroCheque,
+                        "_liqui_codigo_agencia_doc_original" => $row->_liqui_codigo_agencia_doc_original,
+                        "_liqui_oficina_emisora_original" => $row->_liqui_oficina_emisora_original,
+                    ));
+                } elseif($tipo === 'administradora') {
+
+                    if(is_array($row->liqui_forma_pago)) {
+                        foreach ($row->liqui_forma_pago as $liqui_forma_pago) {
+                            array_push($dataDinamico, array(
+                                "codigo_punto_venta" => $row->codigo_punto_venta,
+                                "estacion" => $row->estacion,
+                                "nro_liquidacion" => $row->nro_liquidacion,
+                                "pagar_a_nombre" => $row->pagar_a_nombre,
+                                "_liqui_codigo_agencia_doc_original" => $row->_liqui_codigo_agencia_doc_original,
+                                "_liqui_oficina_emisora_original" => $row->_liqui_oficina_emisora_original,
+                                "nro_tarjeta" => $liqui_forma_pago->nro_tarjeta,
+                                "fecha_tarjeta" => $liqui_forma_pago->fecha_tarjeta,
+                                "fecha_origen" => $liqui_forma_pago->fecha_tarjeta,
+                                "importe_devolver" => $liqui_forma_pago->importe,
+                                "lote" => $liqui_forma_pago->lote,
+                                "comprobante" => $liqui_forma_pago->comprobante,
+                                "codigo_autorizacion" => '',
+                                "_liqui_nro_doc_original" => $row->_liqui_nro_doc_original,
+                            ));
+                        }
+                    }
+
+
+
+                }
+
 
 
             }
 
 
         }
+
+
+
+
 
         return $dataDinamico;
 
@@ -632,7 +672,7 @@ class ACTLiquidacion extends ACTbase{
         $nombreArchivo = uniqid('liquidacionesPagadasXLS_'.md5(session_id())).'.xls';
 
 
-        $dataForReport = $this->getLiquidacionDinamica();
+        $dataForReport = $this->getLiquidacionDinamica('pagadas');
 
 
 
@@ -647,6 +687,36 @@ class ACTLiquidacion extends ACTbase{
         $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
 
         $reporte = new RLiquidacionesPagadasXls($this->objParam);
+        $reporte->setMaster($dataForReport);
+        $reporte->setData($dataForReport);
+        $reporte->generarReporte();
+
+        $this->mensajeExito=new Mensaje();
+        $this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
+        $this->mensajeExito->setArchivoGenerado($nombreArchivo);
+        $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+    }
+
+    function genReportePorAdministradora() {
+        $nombreArchivo = uniqid('administradoraXLS_'.md5(session_id())).'.xls';
+
+
+        $dataForReport = $this->getLiquidacionDinamica('administradora');
+
+      
+
+
+        //Parametros básicos
+        $tamano = 'LETTER';
+        $orientacion = 'L';
+        $titulo = 'Detalle Dep.';
+
+        $this->objParam->addParametro('orientacion',$orientacion);
+        $this->objParam->addParametro('tamano',$tamano);
+        $this->objParam->addParametro('titulo_archivo',$titulo);
+        $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+
+        $reporte = new RPorAdministradoraXls($this->objParam);
         $reporte->setMaster($dataForReport);
         $reporte->setData($dataForReport);
         $reporte->generarReporte();
