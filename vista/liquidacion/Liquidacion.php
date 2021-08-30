@@ -2261,6 +2261,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     <td width="80%" colspan="2">
                         ${ liquidacion.desc_tipo_documento === 'BOLEMD' ? (`BOLETO: ${liquidacion.data_boleto.nro_boleto} ${liquidacion.data_boleto.fecha_emision}`) : `` }
                         ${ liquidacion.desc_tipo_documento === 'FACCOM' ? (`FACTURA COMPUTARIZADA: ${liquidacion._liqui_nombre_doc_original} / ${liquidacion.nro_factura} / ${liquidacion._liqui_nro_aut_doc_original} / ${liquidacion._liqui_fecha_doc_original}`) : ``}
+                        ${ liquidacion.desc_tipo_documento === 'RO' ? (`RECIBO COMPUTARIZADA: ${liquidacion._liqui_nombre_doc_original} / ${liquidacion.nro_factura}  / ${liquidacion._liqui_fecha_doc_original}`) : ``}
                     </td>
                     <td width="10%"></td>
                     <td width="10%"></td>
@@ -2289,7 +2290,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     <td width="10%" align="right"></td>
                 </tr>`) : ``}
 
-                 ${ liquidacion.desc_tipo_documento === 'FACCOM' ? (`
+                 ${ liquidacion.desc_tipo_documento === 'FACCOM' || liquidacion.desc_tipo_documento === 'RO' ? (`
                 <tr>
                     <td width="80%" colspan="2">
                     </td>
