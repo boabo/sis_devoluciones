@@ -2427,7 +2427,7 @@ ${notas && notas.map(function (nota) {
                 <tr><td align="center">Forma de Pago:</td></tr>
 ${liqui_forma_pago && liqui_forma_pago.map((forma_pago) => {
     const formaPagoMostrar = forma_pago.desc_medio_pago_pw === 'CASH' ? 'CHEQUE' : forma_pago.desc_medio_pago_pw;
-                return `<tr><td align="center">${forma_pago.desc_forma_pago_pw === 'CREDIT CARD' ? `${forma_pago.desc_medio_pago_pw} / ${forma_pago.nro_tarjeta} / ${forma_pago.pais}` : `${formaPagoMostrar}/A Nombre de:${forma_pago.nombre}/ Nro Cheque: ${forma_pago.nro_documento_pago}` }</td></tr>`
+                return `<tr><td align="center">${forma_pago.desc_forma_pago_pw === 'CREDIT CARD' ? `${forma_pago.administradora} / ${forma_pago.desc_medio_pago_pw} / ${forma_pago.nro_tarjeta} / ${forma_pago.pais}` : `${formaPagoMostrar}/A Nombre de:${forma_pago.nombre}/ Nro Cheque: ${forma_pago.nro_documento_pago}` }</td></tr>`
 
                 }).join("")}
             </table>
