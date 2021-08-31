@@ -2018,8 +2018,10 @@ header("content-type: text/javascript; charset=UTF-8");
                     objectToSend = {
                         id_liquidacion: dataLiqui.id_liquidacion,
                         punto_venta: dataLiqui.desc_punto_venta,
-                        nit_cliente: dataLiqui.nit,
-                        razon_social: dataLiqui.nombre_factura,
+                        //nit_cliente: dataLiqui.nit,
+                        nit_cliente: '5496472019',
+                        //razon_social: dataLiqui.nombre_factura,
+                        razon_social: 'Ximena Torres',
                         moneda_boleto: dataLiqui.moneda_liq,
                         moneda: dataLiqui.moneda_liq,
                         tipo_cambio: dataLiqui.tipo_de_cambio,
