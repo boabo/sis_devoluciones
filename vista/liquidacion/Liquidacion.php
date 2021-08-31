@@ -2148,7 +2148,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 const fechaPago = liquidacion.fecha_pago ? moment(liquidacion.fecha_pago, 'YYYY-MM-DD').format('DD/MM/YYYY'): '';
                 const fechaReg = liquidacion.fecha_reg ? moment(liquidacion.fecha_reg, 'YYYY-MM-DD').format('DD/MM/YYYY'): '';
 
-                const liquiManDetalle = liquidacion._desc_liqui_det ? liquidacion._desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
+                const liquiManDetalle = liquidacion._desc_liqui_det && typeof liquidacion._desc_liqui_det === 'function' ? liquidacion._desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
                     return `${valorAnterior} <br> <b>Con. Org:</b>${valorActual.concepto_original}<b>Imp. Org:</b>${valorActual.importe_original}<b>Imp Dev:</b> ${valorActual.importe_devolver}`;
                 },'') : '';
 
