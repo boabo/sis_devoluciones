@@ -2421,7 +2421,7 @@ ${liquiManDetalle}
 ${boletos_recursivo && typeof boletos_recursivo === 'object' && boletos_recursivo.map(function (bolRecursivo) {
                     console.log('bolRecursivo',bolRecursivo)
                     return ''
-                        +'<span>Nro Nota : '+nota.nro_nota+',</span>'
+                        +'<span>Nro ticket : '+bolRecursivo.billete+',</span>'
                         +'';
                 }).join("")}
 </td>
