@@ -2018,10 +2018,10 @@ header("content-type: text/javascript; charset=UTF-8");
                     objectToSend = {
                         id_liquidacion: dataLiqui.id_liquidacion,
                         punto_venta: dataLiqui.desc_punto_venta,
-                        //nit_cliente: dataLiqui.nit,
-                        nit_cliente: '5496472019',
-                        //razon_social: dataLiqui.nombre_factura,
-                        razon_social: 'Ximena Torres',
+                        nit_cliente: dataLiqui.nit,
+                        //nit_cliente: '5496472019',
+                        razon_social: dataLiqui.nombre_factura,
+                        //razon_social: 'Ximena Torres',
                         moneda_boleto: dataLiqui.moneda_liq,
                         moneda: dataLiqui.moneda_liq,
                         tipo_cambio: dataLiqui.tipo_de_cambio,
@@ -2106,7 +2106,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 const objRes = JSON.parse(resp.responseText);
                 const liquidacion = objRes.datos[0];
-                const {descuentos, descuentos_impuestos_no_reembolsable, notas, _desc_liqui_det, sum_venta_seleccionados, liqui_forma_pago, sum_total_descuentos} = liquidacion;
+                const {descuentos, descuentos_impuestos_no_reembolsable, notas, _desc_liqui_det, sum_venta_seleccionados, liqui_forma_pago, sum_total_descuentos, boletos_recursivo} = liquidacion;
 
                 console.log('liquidacion', liquidacion)
 
@@ -2416,6 +2416,20 @@ ${liquiManDetalle}
            --
         </td>
     </tr>
+<tr>
+<td>
+${boletos_recursivo && typeof boletos_recursivo === 'object' && boletos_recursivo.map(function (bolRecursivo) {
+                    console.log('bolRecursivo',bolRecursivo)
+                    return ''
+                        +'<span>Nro Nota : '+nota.nro_nota+',</span>'
+                        +'';
+                }).join("")}
+</td>
+</tr>
+
+    <tr>
+<td>
+ <table width="100%" style="width: 100%;">
 ${notas && notas.map(function (nota) {
                     console.log('nota',nota)
                     return '<tr>'
@@ -2423,9 +2437,6 @@ ${notas && notas.map(function (nota) {
                         +'</tr>';
                 }).join("")}
 
-    <tr>
-<td>
- <table width="100%" style="width: 100%;">
                 <tr><td align="center">Forma de Pago:</td></tr>
 ${liqui_forma_pago && liqui_forma_pago.map((forma_pago) => {
     const formaPagoMostrar = forma_pago.desc_medio_pago_pw === 'CASH' ? 'CHEQUE' : forma_pago.desc_medio_pago_pw;
