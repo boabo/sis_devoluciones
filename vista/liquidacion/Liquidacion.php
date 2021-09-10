@@ -2106,7 +2106,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 const objRes = JSON.parse(resp.responseText);
                 const liquidacion = objRes.datos[0];
-                const {descuentos, descuentos_impuestos_no_reembolsable, notas, _desc_liqui_det, sum_venta_seleccionados, liqui_forma_pago, sum_total_descuentos, boletos_recursivo} = liquidacion;
+                const {descuentos, descuentos_impuestos_no_reembolsable, notas, _desc_liqui_det, sum_venta_seleccionados, liqui_forma_pago, sum_total_descuentos, boletos_recursivo, factura_pagada} = liquidacion;
 
                 console.log('liquidacion', liquidacion)
 
@@ -2417,6 +2417,9 @@ ${liquiManDetalle}
         </td>
     </tr>
 <tr>
+<td>
+${factura_pagada && typeof factura_pagada === 'object' && '<span>Factura Pagada: '+factura_pagada.nro_factura+' Nro Aut:'+factura_pagada.nroaut+'</span>'}
+</td>
 <td>
 ${boletos_recursivo && typeof boletos_recursivo === 'object' && boletos_recursivo.map(function (bolRecursivo) {
                     console.log('bolRecursivo',bolRecursivo)

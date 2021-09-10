@@ -168,9 +168,10 @@ BEGIN
                       inner join t_liqui tl on tl.id_liquidacion::integer = nota.id_liquidacion::integer
          ),
          t_factura_pagada AS (
-             SELECT tv.nro_factura, tl.id_proceso_wf_factura
+             SELECT tv.nro_factura, td.nroaut, tv.fecha, tl.id_proceso_wf_factura
              FROM vef.tventa tv
                       inner join t_liqui tl on tl.id_proceso_wf_factura::integer = tv.id_proceso_wf::integer
+             inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
          )
     SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(liqui)))
     INTO v_liqui_json
