@@ -2416,10 +2416,14 @@ ${liquiManDetalle}
            --
         </td>
     </tr>
+
 <tr>
 <td>
 ${factura_pagada && typeof factura_pagada === 'object' && '<span>Factura Pagada: '+factura_pagada.nro_factura+' Nro Aut:'+factura_pagada.nroaut+'</span>'}
 </td>
+</tr>
+
+<tr>
 <td>
 ${boletos_recursivo && typeof boletos_recursivo === 'object' && boletos_recursivo.map(function (bolRecursivo) {
                     console.log('bolRecursivo',bolRecursivo)
