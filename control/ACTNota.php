@@ -584,6 +584,7 @@ window.onload=function(){self.print();}
         }
 
         $data = $this->res->getDatos();
+     
         $mensaje = $data["mensaje"];
         $array = json_decode($mensaje);
         $notas = $array->notas;

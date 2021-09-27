@@ -481,7 +481,7 @@ BEGIN
 
                 ),
                 t_por_boleto AS (
-                    SELECT tb.nro_boleto as concepto,
+                    /*SELECT tb.nro_boleto as concepto,
                            tb.nro_boleto as concepto_original,
                            tb.total as precio_unitario,
                            tb.total as importe_original,
@@ -490,7 +490,19 @@ BEGIN
                            tl.tramo
                     FROM t_nota tn
                              INNER JOIN obingresos.tboleto tb ON tb.id_boleto = tn.id_boleto
+                             INNER JOIN decr.tliquidacion tl on tl.id_liquidacion = tn.id_liquidacion*/
+                    select tlb.data_stage->>'ticketNumber' as concepto,
+                           tlb.data_stage->>'ticketNumber' as concepto_original,
+                           tlb.data_stage->>'totalAmount' as precio_unitario,
+                           tlb.data_stage->>'totalAmount' as importe_original,
+                           tlb.data_stage->>'totalAmount' as liquido,
+                           1 AS cantidad,
+                           tlb.data_stage->>'itinerary' as tramo
+
+
+                    from t_nota tn
                              INNER JOIN decr.tliquidacion tl on tl.id_liquidacion = tn.id_liquidacion
+                             INNER JOIN decr.tliqui_boleto tlb on tlb.id_liquidacion = tl.id_liquidacion
                 ),
                 t_por_factura_com AS (
                     SELECT tci.desc_ingas::varchar AS concepto,
@@ -530,7 +542,7 @@ BEGIN
                                                     FROM (
                                                              SELECT *
                                                              FROM t_por_boleto
-                                                             WHERE id_boleto = tn.id_boleto
+                                                             --WHERE id_boleto = tn.id_boleto
                                                          ) por_boleto
                                                 ) AS por_boleto,
 
@@ -594,6 +606,7 @@ BEGIN
 
 
 
+
             SELECT liqui.*, su.id_sucursal, ttdl.tipo_documento
             INTO v_record_liquidacion
             FROM decr.tliquidacion liqui
@@ -634,15 +647,15 @@ BEGIN
 
                         IF EXISTS (
                                 select 1 from decr.tnota WHERE  nro_nota = v_nro_nota::varchar and id_dosificacion = v_record_dosificacion.id_dosificacion) THEN
-                            RAISE EXCEPTION 'El numero de Nota ya existe para esta dosificacion. Por favor comuniquese con el administrador del sistema, ....';
+                            --RAISE EXCEPTION 'El numero de Nota ya existe para esta dosificacion. Por favor comuniquese con el administrador del sistema, ....';
                             -- do something
                         END IF;
 
 
 
                         -- el numero nit es el primero row del detalle del servicio de devolucion tomar en cuenta eso
-                        v_nro_nit = split_part(v_registros_json.foid, '/', 1);
-                        v_razon_social = split_part(v_registros_json.foid, '/', 2);
+                        v_nro_nit = v_liquidacion_json->>'nro_nit';
+                        v_razon_social = v_liquidacion_json->>'razon_social';
 
                         v_importe_total_devolver := v_registros_json.monto - v_registros_json.exento - v_registros_json.iva_contabiliza_no_liquida;
 
@@ -713,7 +726,7 @@ BEGIN
                                 v_record_liquidacion.id_liquidacion,
                                 v_record_liquidacion.nro_liquidacion,
                                 1,
-                                v_importe_total_devolver,
+                                v_registros_json.monto,
                                 v_registros_json.exento::numeric,
                                 v_importe_total_devolver, -- aclarar con shirley
                                 v_credfis,

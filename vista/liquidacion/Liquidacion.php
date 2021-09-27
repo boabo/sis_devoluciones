@@ -1632,12 +1632,14 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
 
-                if(data.desc_tipo_documento === 'FACCOM' && dataSelected.json.estado === 'emitido' && dataSelected.json.descuentos.find((descuento)=> descuento.tipo_descuento === 'HAY NOTA')) {
+                if((data.desc_tipo_documento === 'FACCOM' || data.desc_tipo_documento === 'BOLEMD') && dataSelected.json.estado === 'emitido' && dataSelected.json.descuentos.find((descuento)=> descuento.tipo_descuento === 'HAY NOTA')) {
                     this.getBoton('generarNotaCredito').enable();
                 }
                 if(dataSelected.json.estado === 'emitido') {
                     this.getBoton('pagarFacturacion').enable();
                 }
+
+                this.getBoton('generarNotaCredito').enable(); // SOLO DESARROLLO
 
 
                 //Enable/disable WF buttons by status
@@ -1815,7 +1817,7 @@ header("content-type: text/javascript; charset=UTF-8");
             successGenerarNota: function (resp) {
                 Phx.CP.loadingHide();
 
-                var objRes = (typeof resp === 'object') ? resp : Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+                var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
 
                 console.log('bjRes.ROOT.datos.id_nota',objRes.ROOT.datos.id_nota)
 
