@@ -166,6 +166,7 @@ BEGIN
              SELECT nota.*
              FROM decr.tnota nota
                       inner join t_liqui tl on tl.id_liquidacion::integer = nota.id_liquidacion::integer
+             where nota.estado::integer = 1::integer
          ),
          t_factura_pagada AS (
              SELECT tv.nro_factura, td.nroaut, tv.fecha, tl.id_proceso_wf_factura

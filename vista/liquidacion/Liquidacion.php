@@ -2026,7 +2026,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         moneda: dataLiqui.moneda_liq,
                         tipo_cambio: dataLiqui.tipo_de_cambio,
                         exento: 0,
-                        observaciones: '',
+                        observaciones: dataLiqui.nro_liquidacion,
                         //conceptos: dataLiqui.descuentos,
                     }
                     const conceptos = dataLiqui.descuentos.reduce((valorAnterior, valorActual, indice, vector)=> {
