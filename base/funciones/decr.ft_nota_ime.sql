@@ -657,7 +657,8 @@ BEGIN
                         v_nro_nit = v_liquidacion_json->>'nro_nit';
                         v_razon_social = v_liquidacion_json->>'razon_social';
 
-                        v_importe_total_devolver := v_registros_json.monto - v_registros_json.exento - v_registros_json.iva_contabiliza_no_liquida;
+                        --v_importe_total_devolver := v_registros_json.monto - v_registros_json.exento - v_registros_json.iva_contabiliza_no_liquida;
+                        v_importe_total_devolver := v_registros_json.monto - v_registros_json.exento;
 
 
                         --todo
@@ -757,12 +758,12 @@ BEGIN
                         VALUES (p_id_usuario,
                                 'activo',
                                 v_id_nota,
-                                v_importe_total_devolver::numeric,
+                                v_registros_json.monto::numeric,
                                 1::integer,
                                 v_registros_json.concepto_para_nota,
                                 v_registros_json.exento::numeric,
                                 v_importe_total_devolver::numeric,
-                                v_importe_total_devolver::numeric);
+                                v_registros_json.monto::numeric);
 
 
                         -- actualizamos la dosificacion para aumentar el numero siguiente

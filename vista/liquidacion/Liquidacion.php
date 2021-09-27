@@ -2020,7 +2020,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     objectToSend = {
                         id_liquidacion: dataLiqui.id_liquidacion,
                         punto_venta: dataLiqui.desc_punto_venta,
-                        nit_cliente: dataLiqui.nit,
+                        nit_cliente: dataLiqui.nro_nit,
                         razon_social: dataLiqui.razon_social,
                         moneda_boleto: dataLiqui.moneda_liq,
                         moneda: dataLiqui.moneda_liq,
