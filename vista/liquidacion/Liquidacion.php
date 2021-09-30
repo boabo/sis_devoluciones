@@ -1775,14 +1775,42 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 var rec = this.sm.getSelected();
 
-                Ext.Ajax.request({
-                    url: '../../sis_devoluciones/control/Liquidacion/listarLiquidacionJson',
-                    params: {'id_liquidacion': rec.data['id_liquidacion']},
-                    success: this.successVistaPrevia,
-                    failure: this.conexionFailure,
-                    timeout: this.timeout,
-                    scope: this
-                });
+                if(rec.data['desc_tipo_documento'] === 'BOLEMD') {
+                    Ext.Ajax.request({
+                        url: '../../sis_devoluciones/control/Liquidacion/ViewLiquiPdf',
+                        //params: {'id_liquidacion': rec.data['id_liquidacion']},
+                        params: {'id_liquidacion': 24},
+                        success: (resp) => {
+                            var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+
+                            console.log('resp',objRes)
+                            var out = objRes.pdf;
+                            console.log('out',out)
+                            var url = 'data:application/pdf;base64,' + btoa(out);
+
+                            var iframe = "<iframe width='100%' height='100%' src='" + url + "'></iframe>"
+                            var x = window.open();
+                            x.document.open();
+                            x.document.write(iframe);
+                            x.document.close();
+
+                            document.location.href = url;
+                        },
+                        failure: this.conexionFailure,
+                        timeout: this.timeout,
+                        scope: this
+                    });
+                } else {
+                    Ext.Ajax.request({
+                        url: '../../sis_devoluciones/control/Liquidacion/listarLiquidacionJson',
+                        params: {'id_liquidacion': rec.data['id_liquidacion']},
+                        success: this.successVistaPrevia,
+                        failure: this.conexionFailure,
+                        timeout: this.timeout,
+                        scope: this
+                    });
+                }
+
             },
 
 

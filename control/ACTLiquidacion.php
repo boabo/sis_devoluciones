@@ -726,6 +726,46 @@ class ACTLiquidacion extends ACTbase{
         $this->mensajeExito->setArchivoGenerado($nombreArchivo);
         $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
     }
+    
+    function ViewLiquiPdf() {
+        $id_liquidacion = $this->objParam->getParametro('id_liquidacion');
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $_SESSION['_PXP_ND_URL'].'/api/boa-liqui-nd/LiquiReport/ViewLiquiPdf',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS =>'{
+                "id_liquidacion": '.$id_liquidacion.'
+            }
+            ',
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: ' . $_SESSION['_PXP_ND_TOKEN'],
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        $data_json = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $response), true);
+
+        echo $response;
+        exit;
+
+      /*  var_dump($data_json);
+        exit;*/
+        $this->res->setDatos($data_json);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+
+    }
 
 
 }
