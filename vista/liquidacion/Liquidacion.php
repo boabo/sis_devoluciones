@@ -1778,8 +1778,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 if(rec.data['desc_tipo_documento'] === 'BOLEMD') {
                     Ext.Ajax.request({
                         url: '../../sis_devoluciones/control/Liquidacion/ViewLiquiPdf',
-                        //params: {'id_liquidacion': rec.data['id_liquidacion']},
-                        params: {'id_liquidacion': 24},
+                        params: {'id_liquidacion': rec.data['id_liquidacion']},
+                        //params: {'id_liquidacion': 24},
                         success: (resp) => {
                             var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
 
