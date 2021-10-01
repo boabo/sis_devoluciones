@@ -2000,33 +2000,39 @@ header("content-type: text/javascript; charset=UTF-8");
                 var rec = this.sm.getSelected();
                 console.log('recccc',rec)
 
-                let validadoParaPagar = 'Y';
-                const hayDescuentoQueRequieraNota = rec.json.descuentos && rec.json.descuentos.find((descuento)=> descuento.tipo_descuento === 'HAY NOTA');
-                validadoParaPagar = (hayDescuentoQueRequieraNota && !Array.isArray(rec.json.notas) ) ? 'N' : 'Y';
-                console.log('hayDescuentoQueRequieraNota',hayDescuentoQueRequieraNota);
-                console.log('validadoParaPagar',validadoParaPagar);
-                if(rec.json.estado === 'emitido' &&  validadoParaPagar === 'Y') {
-
-                    const find = rec.json.descuentos.find((resq) => resq.tipo === 'FACTURABLE'); // preguntar
-                    console.log('find',find);
-                    if(find && (rec.json.id_nota != null || rec.json.id_nota != '')) {
-                        Phx.CP.loadingShow();
-
-
-                        Ext.Ajax.request({
-                            url: '../../sis_devoluciones/control/Liquidacion/listarLiquidacionJson',
-                            params: {'id_liquidacion': rec.data['id_liquidacion']},
-                            success: this.successObtenerJsonPagar,
-                            failure: this.conexionFailure,
-                            timeout: this.timeout,
-                            scope: this
-                        });
-
-                    }
-
+                if(rec.json.factura_pagada && typeof rec.json.factura_pagada === 'object') {
+                    alert('no puedes generar una factura por que ya tiene una factura relacionada esta liquidacion')
                 } else {
-                    alert('La liquidacion no esta validado para pagar podria ser que le falte nota, ')
+                    console.log('validado para generar factura inicial')
+                    let validadoParaPagar = 'Y';
+                    const hayDescuentoQueRequieraNota = rec.json.descuentos && rec.json.descuentos.find((descuento)=> descuento.tipo_descuento === 'HAY NOTA');
+                    validadoParaPagar = (hayDescuentoQueRequieraNota && !Array.isArray(rec.json.notas) ) ? 'N' : 'Y';
+                    console.log('hayDescuentoQueRequieraNota',hayDescuentoQueRequieraNota);
+                    console.log('validadoParaPagar',validadoParaPagar);
+                    if(rec.json.estado === 'emitido' &&  validadoParaPagar === 'Y') {
+
+                        const find = rec.json.descuentos.find((resq) => resq.tipo === 'FACTURABLE'); // preguntar
+                        console.log('find',find);
+                        if(find && (rec.json.id_nota != null || rec.json.id_nota != '')) {
+                            Phx.CP.loadingShow();
+
+
+                            Ext.Ajax.request({
+                                url: '../../sis_devoluciones/control/Liquidacion/listarLiquidacionJson',
+                                params: {'id_liquidacion': rec.data['id_liquidacion']},
+                                success: this.successObtenerJsonPagar,
+                                failure: this.conexionFailure,
+                                timeout: this.timeout,
+                                scope: this
+                            });
+
+                        }
+
+                    } else {
+                        alert('La liquidacion no esta validado para pagar podria ser que le falte nota, ')
+                    }
                 }
+
 
 
 
