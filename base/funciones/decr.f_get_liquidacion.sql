@@ -31,7 +31,7 @@ DECLARE
     v_id_liquidacion integer DEFAULT p_params->>'id_liquidacion';
     v_tipo_tab_liqui varchar DEFAULT p_params->>'tipo_tab_liqui';
     v_filtro_value varchar DEFAULT UPPER(p_params->>'filtro_value');
-    v_query_value varchar DEFAULT p_params->>'query_value';
+    v_query_value varchar DEFAULT UPPER(p_params->>'query_value');
 
 
 BEGIN
@@ -100,10 +100,10 @@ BEGIN
          --LEFT JOIN decr.tnota nota ON nota.id_liquidacion::integer = tl.id_liquidacion
     WHERE (CASE WHEN v_id_liquidacion IS NOT NULL THEN tl.id_liquidacion = v_id_liquidacion ELSE 1 = 1 END)
     AND (CASE WHEN v_tipo_tab_liqui IS NOT NULL THEN ttdl.tipo_documento = v_tipo_tab_liqui ELSE 1 = 1 END)
-    AND (CASE WHEN v_filtro_value IS NOT NULL THEN UPPER(tl.nro_liquidacion) LIKE '%' || v_filtro_value || '%'
-                                                       or UPPER(tl.pagar_a_nombre) LIKE '%' || v_filtro_value || '%'
-        ELSE 1 = 1 END)
-    AND (CASE WHEN v_query_value IS NOT NULL THEN tl.nro_liquidacion LIKE '%' || v_query_value || '%' ELSE 1 = 1 END)
+        /*AND (CASE WHEN v_filtro_value IS NOT NULL THEN UPPER(tl.nro_liquidacion) LIKE '%' || v_filtro_value || '%'
+                                                           or UPPER(tl.pagar_a_nombre) LIKE '%' || v_filtro_value || '%'
+            ELSE 1 = 1 END)
+        AND (CASE WHEN v_query_value IS NOT NULL THEN tl.nro_liquidacion LIKE '%' || v_query_value || '%' ELSE 1 = 1 END)*/
     AND (CASE WHEN v_id_liquidacion_array IS NOT NULL THEN tl.id_liquidacion = ANY (v_id_liquidacion_array) ELSE 1 = 1 END);
 
 
@@ -130,10 +130,10 @@ BEGIN
                  --LEFT JOIN decr.tnota nota ON nota.id_liquidacion::integer = tl.id_liquidacion
             WHERE (case when v_id_liquidacion is not null then tl.id_liquidacion = v_id_liquidacion else 1=1 end)
               AND (case when v_tipo_tab_liqui is not null then ttdl.tipo_documento = v_tipo_tab_liqui else 1=1 end)
-              AND (CASE WHEN v_filtro_value IS NOT NULL THEN tl.nro_liquidacion LIKE '%' || v_filtro_value || '%'
+              /*AND (CASE WHEN v_filtro_value IS NOT NULL THEN tl.nro_liquidacion LIKE '%' || v_filtro_value || '%'
                                                         or upper(tl.pagar_a_nombre) LIKE '%' || upper(v_filtro_value) || '%'
                   ELSE 1 = 1 END)
-              AND (CASE WHEN v_query_value is not null then tl.nro_liquidacion like '%' ||v_query_value|| '%' else 1=1 end)
+              AND (CASE WHEN v_query_value is not null then tl.nro_liquidacion like '%' ||v_query_value|| '%' else 1=1 end)*/
               AND (CASE WHEN v_id_liquidacion_array is not null then tl.id_liquidacion = any (v_id_liquidacion_array) else 1=1 end)
             order by tl.id_liquidacion DESC
             LIMIT cast(p_params->>'cantidad' as integer) OFFSET cast(p_params->>'puntero' as integer)
@@ -173,6 +173,7 @@ BEGIN
              FROM vef.tventa tv
                       inner join t_liqui tl on tl.id_proceso_wf_factura::integer = tv.id_proceso_wf::integer
              inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
+             where estado != 'anulado'
          )
     SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(liqui)))
     INTO v_liqui_json
@@ -305,7 +306,28 @@ BEGIN
                        tlb.data_stage
 
                 FROM t_liqui tl
-                         INNER JOIN decr.tliqui_boleto tlb on tlb.id_liquidacion = tl.id_liquidacion
+                INNER JOIN decr.tliqui_boleto tlb on tlb.id_liquidacion = tl.id_liquidacion
+                WHERE (
+                    CASE WHEN v_filtro_value IS NOT NULL
+                        THEN UPPER(tl.nro_liquidacion) LIKE '%' || v_filtro_value || '%'
+                            or UPPER(tl.pagar_a_nombre) LIKE '%' || v_filtro_value || '%'
+                            or upper(cast(tlb.data_stage->>'ticketNumber' as varchar)) like '%' || v_filtro_value || '%'
+                            or upper(cast(tlb.data_stage->>'FOID' as varchar)) like '%' || v_filtro_value || '%'
+                            or upper(cast(tlb.data_stage->>'bussinesName' as varchar)) like '%' || v_filtro_value || '%'
+                            or upper(cast(tlb.data_stage->>'nit' as varchar)) like '%' || v_filtro_value || '%'
+                        ELSE 1 = 1 END
+                    )
+                  AND (
+                      CASE WHEN v_query_value IS NOT NULL
+                      THEN tl.nro_liquidacion LIKE '%' || v_query_value || '%'
+                              or UPPER(tl.pagar_a_nombre) LIKE '%' || v_query_value || '%'
+                              or upper(cast(tlb.data_stage->>'ticketNumber' as varchar)) like '%' || v_query_value || '%'
+                              or upper(cast(tlb.data_stage->>'FOID' as varchar)) like '%' || v_query_value || '%'
+                              or upper(cast(tlb.data_stage->>'bussinesName' as varchar)) like '%' || v_query_value || '%'
+                              or upper(cast(tlb.data_stage->>'nit' as varchar)) like '%' || v_query_value || '%'
+                      ELSE 1 = 1 END
+
+                      )
 
             )
         SELECT TO_JSON(ROW_TO_JSON(jsonData) :: TEXT) #>> '{}' as json

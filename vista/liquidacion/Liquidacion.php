@@ -1776,6 +1776,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 var rec = this.sm.getSelected();
 
                 if(rec.data['desc_tipo_documento'] === 'BOLEMD') {
+                    
                     Ext.Ajax.request({
                         url: '../../sis_devoluciones/control/Liquidacion/ViewLiquiPdf',
                         params: {'id_liquidacion': rec.data['id_liquidacion']},
