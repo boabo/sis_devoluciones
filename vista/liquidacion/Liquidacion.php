@@ -2051,59 +2051,66 @@ header("content-type: text/javascript; charset=UTF-8");
                 let objectToSend;
                 if(objetoDatos.length > 0) {
                     const dataLiqui = objetoDatos[0];
-                    //crear objecto para enviar a pagar
-                    objectToSend = {
-                        id_liquidacion: dataLiqui.id_liquidacion,
-                        punto_venta: dataLiqui.desc_punto_venta,
-                        nit_cliente: dataLiqui.nro_nit,
-                        razon_social: dataLiqui.razon_social,
-                        moneda_boleto: dataLiqui.moneda_liq,
-                        moneda: dataLiqui.moneda_liq,
-                        tipo_cambio: dataLiqui.tipo_de_cambio,
-                        exento: 0,
-                        observaciones: dataLiqui.nro_liquidacion,
-                        //conceptos: dataLiqui.descuentos,
-                    }
-                    const conceptos = dataLiqui.descuentos.reduce((valorAnterior, valorActual, indice, vector)=> {
+                    if(!dataLiqui.nro_nit || !dataLiqui.razon_social || dataLiqui.nro_nit == '' || dataLiqui.razon_social == ''|| dataLiqui.nro_nit == null || dataLiqui.razon_social == null) {
+                        alert('no se puede generar factura por que nit y razon social pueden que esten vacios');
+                    } else {
 
-                        //tl.id_liquidacion, ci.id_concepto_ingas AS id_concepto, ci.desc_ingas, 1 AS cantidad, dl.importe as precio_unitario
-                        const findObjectIndex = valorAnterior.findIndex(key => key && valorActual.id_concepto_ingas_fk && valorActual.id_concepto_ingas_fk !== '' && key.id_concepto === valorActual.id_concepto_ingas_fk);
-                        if(findObjectIndex === -1) { //no existe entonces se le agrega al array
-                            if(valorActual.tipo === 'FACTURABLE') {
-                                const object = {
-                                    id_liquidacion: dataLiqui.id_liquidacion,
-                                    id_concepto: (valorActual.id_concepto_ingas_fk && valorActual.id_concepto_ingas_fk !== '') ? valorActual.id_concepto_ingas_fk : valorActual.id_concepto_ingas,
-                                    desc_ingas: (valorActual.id_concepto_ingas_fk && valorActual.id_concepto_ingas_fk !== '') ? valorActual.desc_ingas_fk : valorActual.desc_ingas ,
-                                    cantidad: 1,
-                                    precio_unitario: valorActual.importe,
-                                };
-                                valorAnterior.push(object);
-                            }
-                        } else { //existe y se le agrega al array
-                            valorAnterior[findObjectIndex] = {
-                                ...valorAnterior[findObjectIndex],
-                                precio_unitario: valorAnterior[findObjectIndex].precio_unitario + valorActual.importe
-                            }
+                        //crear objecto para enviar a pagar
+                        objectToSend = {
+                            id_liquidacion: dataLiqui.id_liquidacion,
+                            punto_venta: dataLiqui.desc_punto_venta,
+                            nit_cliente: dataLiqui.nro_nit,
+                            razon_social: dataLiqui.razon_social,
+                            moneda_boleto: dataLiqui.moneda_liq,
+                            moneda: dataLiqui.moneda_liq,
+                            tipo_cambio: dataLiqui.tipo_de_cambio,
+                            exento: 0,
+                            observaciones: dataLiqui.nro_liquidacion,
+                            //conceptos: dataLiqui.descuentos,
                         }
-                        return valorAnterior;
+                        const conceptos = dataLiqui.descuentos.reduce((valorAnterior, valorActual, indice, vector)=> {
 
-                    }, []);
-                    console.log('conceptos', conceptos)
+                            //tl.id_liquidacion, ci.id_concepto_ingas AS id_concepto, ci.desc_ingas, 1 AS cantidad, dl.importe as precio_unitario
+                            const findObjectIndex = valorAnterior.findIndex(key => key && valorActual.id_concepto_ingas_fk && valorActual.id_concepto_ingas_fk !== '' && key.id_concepto === valorActual.id_concepto_ingas_fk);
+                            if(findObjectIndex === -1) { //no existe entonces se le agrega al array
+                                if(valorActual.tipo === 'FACTURABLE') {
+                                    const object = {
+                                        id_liquidacion: dataLiqui.id_liquidacion,
+                                        id_concepto: (valorActual.id_concepto_ingas_fk && valorActual.id_concepto_ingas_fk !== '') ? valorActual.id_concepto_ingas_fk : valorActual.id_concepto_ingas,
+                                        desc_ingas: (valorActual.id_concepto_ingas_fk && valorActual.id_concepto_ingas_fk !== '') ? valorActual.desc_ingas_fk : valorActual.desc_ingas ,
+                                        cantidad: 1,
+                                        precio_unitario: valorActual.importe,
+                                    };
+                                    valorAnterior.push(object);
+                                }
+                            } else { //existe y se le agrega al array
+                                valorAnterior[findObjectIndex] = {
+                                    ...valorAnterior[findObjectIndex],
+                                    precio_unitario: valorAnterior[findObjectIndex].precio_unitario + valorActual.importe
+                                }
+                            }
+                            return valorAnterior;
 
-                    Ext.Ajax.request({
-                        url: '../../sis_ventas_facturacion/control/FacturacionExterna/insertarVentaFactura',
-                        params: {
-                            ...objectToSend,
-                            json_venta_detalle: JSON.stringify(conceptos)
-                        },
-                        success: this.successPagar,
-                        failure: this.conexionFailure,
-                        timeout: this.timeout,
-                        scope: this
-                    });
+                        }, []);
+                        console.log('conceptos', conceptos)
+
+                        Ext.Ajax.request({
+                            url: '../../sis_ventas_facturacion/control/FacturacionExterna/insertarVentaFactura',
+                            params: {
+                                ...objectToSend,
+                                json_venta_detalle: JSON.stringify(conceptos)
+                            },
+                            success: this.successPagar,
+                            failure: this.conexionFailure,
+                            timeout: this.timeout,
+                            scope: this
+                        });
+                        console.log('objectToSend',objectToSend)
+
+                    }
+
 
                 }
-                console.log('objectToSend',objectToSend)
 
 
 
