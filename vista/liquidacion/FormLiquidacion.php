@@ -819,9 +819,10 @@ header("content-type: text/javascript; charset=UTF-8");
 
                     const { currency } = e[0].json;
 
-                    total = that.convertirImportePorMoneda(total, currency)
+                    //total = that.convertirImportePorMoneda(total, currency)
                     importeTotalComponente.setValue(total);
-                    const netAmount = that.convertirImportePorMoneda(e[0].json.netAmount, currency);
+                    //const netAmount = that.convertirImportePorMoneda(e[0].json.netAmount, currency);
+                    const netAmount = e[0].json.netAmount;
                     const tasasConvertido = total - netAmount;
                     tramoComponente.setValue(e[0].json.itinerary);
 
@@ -830,7 +831,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     importeNeto.setValue(netAmount);
 
                     tasas.setValue(tasasConvertido);
-                    exento.setValue(that.convertirImportePorMoneda(parseFloat(e[0].json.exento), currency));
+                    //exento.setValue(that.convertirImportePorMoneda(parseFloat(e[0].json.exento), currency));
+                    exento.setValue(parseFloat(e[0].json.exento));
                     nombre.setValue(e[0].json.passengerName);
                     monedaEmision.setValue(e[0].json.currency);
                     puntoVenta.setValue(e[0].json.issueOfficeID);
@@ -847,7 +849,8 @@ header("content-type: text/javascript; charset=UTF-8");
                                 paymentsData.push({
                                     code : p.paymentCode,
                                     description: p.paymentDescription,
-                                    amount: that.convertirImportePorMoneda(p.paymentAmount, currency),
+                                    //amount: that.convertirImportePorMoneda(p.paymentAmount, currency),
+                                    amount: p.paymentAmount,
                                     method_code: p.paymentMethodCode,
                                     reference: p.reference,
                                     administradora:'',
