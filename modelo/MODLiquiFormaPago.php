@@ -45,6 +45,7 @@ class MODLiquiFormaPago extends MODbase{
         $this->captura('nro_documento_pago','varchar');
         $this->captura('nombre','varchar');
         $this->captura('administradora','varchar');
+        $this->captura('desc_nombre_auxiliar','varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
@@ -64,6 +65,7 @@ class MODLiquiFormaPago extends MODbase{
         $this->setParametro('estado_reg','estado_reg','varchar');
         $this->setParametro('id_liquidacion','id_liquidacion','int4');
         $this->setParametro('id_medio_pago','id_medio_pago','int4');
+        $this->setParametro('id_auxiliar','id_auxiliar','int4');
         $this->setParametro('pais','pais','varchar');
         $this->setParametro('ciudad','ciudad','varchar');
         $this->setParametro('fac_reporte','fac_reporte','varchar');
@@ -96,6 +98,7 @@ class MODLiquiFormaPago extends MODbase{
         $this->setParametro('estado_reg','estado_reg','varchar');
         $this->setParametro('id_liquidacion','id_liquidacion','int4');
         $this->setParametro('id_medio_pago','id_medio_pago','int4');
+        $this->setParametro('id_auxiliar','id_auxiliar','int4');
         $this->setParametro('pais','pais','varchar');
         $this->setParametro('ciudad','ciudad','varchar');
         $this->setParametro('fac_reporte','fac_reporte','varchar');

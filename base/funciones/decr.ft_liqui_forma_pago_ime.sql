@@ -64,7 +64,8 @@ BEGIN
             fecha_mod,
                                                nro_documento_pago,
             nombre,
-                                               administradora
+                                               administradora,
+            id_auxiliar
               ) values(
             'activo',
             v_parametros.id_liquidacion,
@@ -86,7 +87,8 @@ BEGIN
             null,
                        v_parametros.nro_documento_pago,
                        v_parametros.nombre,
-                       v_parametros.administradora
+                       v_parametros.administradora,
+                       v_parametros.id_auxiliar
 
 
 
@@ -130,9 +132,10 @@ BEGIN
             usuario_ai = v_parametros._nombre_usuario_ai,
             nro_documento_pago = v_parametros.nro_documento_pago,
             nombre = v_parametros.nombre,
-                                              administradora = v_parametros.administradora
+                                              administradora = v_parametros.administradora,
+            id_auxiliar = v_parametros.id_auxiliar
             where id_liqui_forma_pago=v_parametros.id_liqui_forma_pago;
-               
+
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','liqui forma pago modificado(a)'); 
             v_resp = pxp.f_agrega_clave(v_resp,'id_liqui_forma_pago',v_parametros.id_liqui_forma_pago::varchar);

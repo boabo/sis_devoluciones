@@ -64,11 +64,13 @@ BEGIN
                             tmpp.name::varchar as desc_medio_pago,
                             tlp.nro_documento_pago,
                             tlp.nombre,
-                            tlp.administradora
+                            tlp.administradora,
+                            ta.nombre_auxiliar as desc_nombre_auxiliar
                         from decr.tliqui_forma_pago tlp
                         inner join segu.tusuario usu1 on usu1.id_usuario = tlp.id_usuario_reg
                         left join segu.tusuario usu2 on usu2.id_usuario = tlp.id_usuario_mod
                         inner join obingresos.tmedio_pago_pw tmpp on tmpp.id_medio_pago_pw = tlp.id_medio_pago
+                        left join conta.tauxiliar ta on ta.id_auxiliar = tlp.id_auxiliar
                         where  ';
             
             --Definicion de la respuesta
@@ -97,6 +99,7 @@ BEGIN
                         inner join segu.tusuario usu1 on usu1.id_usuario = tlp.id_usuario_reg
                         left join segu.tusuario usu2 on usu2.id_usuario = tlp.id_usuario_mod
                         inner join obingresos.tmedio_pago_pw tmpp on tmpp.id_medio_pago_pw = tlp.id_medio_pago
+                        left join conta.tauxiliar ta on ta.id_auxiliar = tlp.id_auxiliar
                         where ';
             
             --Definicion de la respuesta            
