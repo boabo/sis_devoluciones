@@ -226,7 +226,8 @@ class ACTLiquidacion extends ACTbase{
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS =>'{
                 "ticketNumber": '.$billete.',
-                "recursive": true
+                "recursive": true,
+                "convertTo": "BO"
             }
             ',
             CURLOPT_HTTPHEADER => array(

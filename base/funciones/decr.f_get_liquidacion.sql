@@ -156,11 +156,13 @@ BEGIN
                       left join param.tconcepto_ingas tci_padre on tci_padre.id_concepto_ingas = tci.id_concepto_ingas_fk
          ),
          t_liqui_forma_pago AS (
-             SELECT tlfp.*, tmpw.name as desc_medio_pago_pw, tfpp.name as desc_forma_pago_pw
+             SELECT tlfp.*, tmpw.name as desc_medio_pago_pw, tfpp.name as desc_forma_pago_pw,
+                    ta.nombre_auxiliar, ta.codigo_auxiliar
              FROM decr.tliqui_forma_pago tlfp
                       inner join t_liqui tl on tl.id_liquidacion = tlfp.id_liquidacion
                       inner join obingresos.tmedio_pago_pw tmpw on tmpw.id_medio_pago_pw = tlfp.id_medio_pago
                       inner join obingresos.tforma_pago_pw tfpp on tfpp.id_forma_pago_pw = tmpw.forma_pago_id
+                      left join conta.tauxiliar ta on ta.id_auxiliar = tlfp.id_auxiliar
          ),
          t_nota AS (
              SELECT nota.*
