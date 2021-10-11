@@ -66,7 +66,7 @@ class RLiquidacionesPagadasXls
         $sheet->mergeCells('A1:W1');
 
         //Título 1
-        $titulo1 = "(PAGADAS CON CHEQUE)";
+        $titulo1 = "(DINAMICA)";
         $this->cell($sheet,$titulo1,'A2',0,2,"center",true,$this->tam_letra_titulo,'Arial'); //#55
         $sheet->mergeCells('A2:W2');
 
