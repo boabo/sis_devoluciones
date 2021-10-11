@@ -134,6 +134,45 @@ header("content-type: text/javascript; charset=UTF-8");
             type: 'ComboBox',
 
         }),
+        cmbIdMedioPago: new Ext.form.ComboBox({
+            name: 'id_medio_pago',
+            fieldLabel: 'Medio de Pago',
+            allowBlank: false,
+            width:150,
+            id: 'testeoColor',
+            emptyText: 'Medio de pago...',
+            store: new Ext.data.JsonStore({
+                url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
+                id: 'id_medio_pago',
+                root: 'datos',
+                sortInfo: {
+                    field: 'name',
+                    direction: 'ASC'
+                },
+                totalProperty: 'total',
+                fields: ['id_medio_pago_pw', 'name', 'fop_code'],
+                remoteSort: true,
+                baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'dev', regional: 'BOL'}
+            }),
+            valueField: 'id_medio_pago_pw',
+            displayField: 'name',
+            gdisplayField: 'desc_medio_pago',
+            hiddenName: 'id_medio_pago_pw',
+            tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Medio de Pago: <font color="Blue">{name}</font></b></p><b><p>Codigo: <font color="red">{fop_code}</font></b></p></div></tpl>',
+            forceSelection: true,
+            typeAhead: false,
+            triggerAction: 'all',
+            lazyRender: true,
+            mode: 'remote',
+            pageSize: 15,
+            queryDelay: 1000,
+            // gwidth: 150,
+            listWidth:250,
+            resizable:true,
+            minChars: 2,
+            disabled:false
+        }),
+
         cmbFecha_ini: new Ext.form.DateField({
             name: 'fecha_ini',
             fieldLabel: 'Fecha',
@@ -279,7 +318,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             defaults: {width: 191},
                             // defaultType: 'textfield',
 
-                            items: [ this.cmbEstado, this.cmbEstacion, this.cmbFecha_ini, this.cmbFecha_fin],
+                            items: [ this.cmbEstado, this.cmbEstacion, this.cmbIdMedioPago, this.cmbFecha_ini, this.cmbFecha_fin],
 
                             buttons: [{
                                 text: 'Save',
@@ -2017,7 +2056,13 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 Ext.Ajax.request({
                     url: '../../sis_devoluciones/control/Liquidacion/generarReporteLiquidacionesPagadas',
-                    params: {estado: this.cmbEstado.getValue(),estacion: this.cmbEstacion.getValue(), fecha_ini: this.cmbFecha_ini.getValue(), fecha_fin: this.cmbFecha_fin.getValue()},
+                    params: {
+                        estado: this.cmbEstado.getValue(),
+                        estacion: this.cmbEstacion.getValue(),
+                        id_medio_pago: this.cmbIdMedioPago.getValue(),
+                        fecha_ini: this.cmbFecha_ini.getValue(),
+                        fecha_fin: this.cmbFecha_fin.getValue()
+                    },
                     success: this.successGenerarReporteXls,
                     failure: this.conexionFailure,
                     timeout: this.timeout,

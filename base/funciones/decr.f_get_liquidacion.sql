@@ -69,14 +69,17 @@ BEGIN
         END IF;
 
     END IF;
-    if(p_params->>'estacion' is not null and p_params->>'estado' is not null and p_params->>'fecha_ini' is not null and p_params->>'fecha_fin' is not null) then
 
-        --raise EXCEPTION '%',p_params->'fecha_ini';
+    if(p_params->'id_medio_pago' is not null and p_params->>'estado' is not null and p_params->>'fecha_ini' is not null and p_params->>'fecha_fin' is not null) then
+
+        --raise EXCEPTION '%',p_params->'id_medio_pago';
         -- determinado rango de fechas y con el tipo de administradora
         SELECT array_agg(tl.id_liquidacion)
         into v_id_liquidacion_array
         FROM decr.tliquidacion tl
-        where tl.estacion = p_params->>'estacion'::varchar
+        inner join decr.tliqui_forma_pago tlfp on tlfp.id_liquidacion = tl.id_liquidacion
+        where tlfp.id_medio_pago = cast(p_params->>'id_medio_pago' as integer)
+        and tl.estacion = p_params->>'estacion'::varchar
         and tl.estado = p_params->>'estado'::varchar
           AND tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date);
 

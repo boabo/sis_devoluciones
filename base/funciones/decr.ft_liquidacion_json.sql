@@ -39,6 +39,7 @@ DECLARE
     v_administradora varchar;
     v_estado varchar;
     v_estacion varchar;
+    v_id_medio_pago integer;
     v_fecha_ini date;
     v_fecha_fin date;
     v_id_liquidacion_array int[];
@@ -111,6 +112,10 @@ BEGIN
                     v_estacion := v_parametros.estacion;
                 END IF;
             END IF;
+            --RAISE EXCEPTION '%',v_parametros.id_medio_pago;
+            if(pxp.f_existe_parametro(p_tabla, 'id_medio_pago' )) then
+                v_id_medio_pago := v_parametros.id_medio_pago;
+            END IF;
 
 
 
@@ -139,6 +144,7 @@ BEGIN
                                                       'administradora', v_administradora,
                                                       'estado', v_estado,
                                                       'estacion', v_estacion,
+                                                      'id_medio_pago', v_id_medio_pago,
                                                       'fecha_ini', v_fecha_ini,
                                                       'fecha_fin', v_fecha_fin))
             into v_params;
