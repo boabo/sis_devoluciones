@@ -104,6 +104,36 @@ header("content-type: text/javascript; charset=UTF-8");
             format: 'd/m/Y'
 
         }),
+        cmbEstado: new Ext.form.ComboBox({
+
+            name: 'estado',
+            fieldLabel: 'estado',
+            allowBlank: true,
+            emptyText: 'estado...',
+            typeAhead: true,
+            triggerAction: 'all',
+            lazyRender: true,
+            mode: 'local',
+            store: ['emitido', 'borrador', 'pagado', 'anulado'],
+            width: 200,
+            type: 'ComboBox',
+
+        }),
+        cmbEstacion: new Ext.form.ComboBox({
+
+            name: 'estacion',
+            fieldLabel: 'Estacion',
+            allowBlank: true,
+            emptyText: 'estacion...',
+            typeAhead: true,
+            triggerAction: 'all',
+            lazyRender: true,
+            mode: 'local',
+            store: ['CBB', 'SRZ', 'LPB', 'CBBWEB'],
+            width: 200,
+            type: 'ComboBox',
+
+        }),
         cmbFecha_ini: new Ext.form.DateField({
             name: 'fecha_ini',
             fieldLabel: 'Fecha',
@@ -249,7 +279,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             defaults: {width: 191},
                             // defaultType: 'textfield',
 
-                            items: [ this.cmbFecha_ini, this.cmbFecha_fin],
+                            items: [ this.cmbEstado, this.cmbEstacion, this.cmbFecha_ini, this.cmbFecha_fin],
 
                             buttons: [{
                                 text: 'Save',
@@ -1987,7 +2017,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 Ext.Ajax.request({
                     url: '../../sis_devoluciones/control/Liquidacion/generarReporteLiquidacionesPagadas',
-                    params: {fecha_ini: this.cmbFecha_ini.getValue(), fecha_fin: this.cmbFecha_fin.getValue()},
+                    params: {estado: this.cmbEstado.getValue(),estacion: this.cmbEstacion.getValue(), fecha_ini: this.cmbFecha_ini.getValue(), fecha_fin: this.cmbFecha_fin.getValue()},
                     success: this.successGenerarReporteXls,
                     failure: this.conexionFailure,
                     timeout: this.timeout,

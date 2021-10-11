@@ -51,7 +51,7 @@ BEGIN
     END IF;
 
 
-    if(p_params->>'administradora' is not null and p_params->>'fecha_ini' is not null and p_params->>'fecha_fin' is not null) then
+    if(p_params->>'estacion' is not null and p_params->>'administradora' is not null and p_params->>'fecha_ini' is not null and p_params->>'fecha_fin' is not null) then
 
         --raise EXCEPTION '%',p_params->'fecha_ini';
         --obtenemos todas las liquidaciones que tengan forma de pago con tarjeta de credito y ademas entre un
@@ -69,15 +69,15 @@ BEGIN
         END IF;
 
     END IF;
-    if(p_params->>'estado' is not null and p_params->>'fecha_ini' is not null and p_params->>'fecha_fin' is not null) then
+    if(p_params->>'estacion' is not null and p_params->>'estado' is not null and p_params->>'fecha_ini' is not null and p_params->>'fecha_fin' is not null) then
 
         --raise EXCEPTION '%',p_params->'fecha_ini';
-        --obtenemos todas las liquidaciones que tengan forma de pago con tarjeta de credito y ademas entre un
         -- determinado rango de fechas y con el tipo de administradora
         SELECT array_agg(tl.id_liquidacion)
         into v_id_liquidacion_array
         FROM decr.tliquidacion tl
-        where tl.estado = p_params->>'estado'::varchar
+        where tl.estacion = p_params->>'estacion'::varchar
+        and tl.estado = p_params->>'estado'::varchar
           AND tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date);
 
         --RAISE EXCEPTION '%',v_id_liquidacion_array;

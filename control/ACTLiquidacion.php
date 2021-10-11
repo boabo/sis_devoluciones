@@ -670,7 +670,11 @@ class ACTLiquidacion extends ACTbase{
 
     }
     function generarReporteLiquidacionesPagadas() {
-        $nombreArchivo = uniqid('liquidacionesPagadasXLS_'.md5(session_id())).'.xls';
+
+        $estacion = $this->objParam->addParametro('estacion');
+        $estado = $this->objParam->addParametro('estado');
+
+        $nombreArchivo = uniqid('liq_'+$estacion+'_'+$estado+'_XLS_'.md5(session_id())).'.xls';
 
 
         $dataForReport = $this->getLiquidacionDinamica('pagadas');
