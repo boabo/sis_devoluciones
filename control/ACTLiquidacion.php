@@ -564,8 +564,8 @@ class ACTLiquidacion extends ACTbase{
 
         $data = $this->res->getDatos();
 
-        if($tipo === 'pagadas') {
-            $this->objParam->addParametro('estado', 'pagado');
+        if($tipo === 'dinamica') {
+            //$this->objParam->addParametro('estado', 'pagado');
         } elseif($tipo === 'administradora') {
            //no necesitamos agregar nada por que ya tenemos la logica para eso en la vista estamos enviando los parametros
 
@@ -612,7 +612,7 @@ class ACTLiquidacion extends ACTbase{
                     }
                 }
 
-                if($tipo === 'pagadas') {
+                if($tipo === 'dinamica') {
                     array_push($dataDinamico, array(
                         "desc_tipo_documento" => $row->desc_tipo_documento,
                         "codigo_punto_venta" => $row->codigo_punto_venta,
@@ -671,13 +671,13 @@ class ACTLiquidacion extends ACTbase{
     }
     function generarReporteLiquidacionesPagadas() {
 
-        $estacion = $this->objParam->addParametro('estacion');
-        $estado = $this->objParam->addParametro('estado');
+        $estacion = $this->objParam->getParametro('estacion');
+        $estado = $this->objParam->getParametro('estado');
 
         $nombreArchivo = uniqid('liq_'+$estacion+'_'+$estado+'_XLS_'.md5(session_id())).'.xls';
 
 
-        $dataForReport = $this->getLiquidacionDinamica('pagadas');
+        $dataForReport = $this->getLiquidacionDinamica('dinamica');
 
 
 

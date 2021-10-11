@@ -38,6 +38,7 @@ DECLARE
     v_ids_factucom varchar;
     v_administradora varchar;
     v_estado varchar;
+    v_estacion varchar;
     v_fecha_ini date;
     v_fecha_fin date;
     v_id_liquidacion_array int[];
@@ -105,6 +106,11 @@ BEGIN
                     v_estado := v_parametros.estado;
                 END IF;
             END IF;
+            if(pxp.f_existe_parametro(p_tabla, 'estacion' )) then
+                if(v_parametros.estacion != '') then
+                    v_estacion := v_parametros.estacion;
+                END IF;
+            END IF;
 
 
 
@@ -132,6 +138,7 @@ BEGIN
                                                       'ids_factucom', v_ids_factucom,
                                                       'administradora', v_administradora,
                                                       'estado', v_estado,
+                                                      'estacion', v_estacion,
                                                       'fecha_ini', v_fecha_ini,
                                                       'fecha_fin', v_fecha_fin))
             into v_params;

@@ -121,6 +121,7 @@ class MODLiquidacion extends MODbase{
         $this->setParametro('estado','estado','varchar');
         $this->setParametro('fecha_ini','fecha_ini','date');
         $this->setParametro('fecha_fin','fecha_fin','date');
+        $this->setParametro('estacion','estacion','varchar');
 
 
         //Ejecuta la instruccion
