@@ -398,7 +398,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 });
                 this.addButton('reporteLiquidacionesPagadas', {
                     argument: {imprimir: 'genLiquidacionesPagadas'},
-                    text: '<i class="fa fa-file-text-o fa-2x"></i><br> Liquidaciones Pagadas',/*iconCls:'' ,*/
+                    text: '<i class="fa fa-file-text-o fa-2x"></i><br> Reporte Dinamico',/*iconCls:'' ,*/
                     disabled: false,
                     handler: ()=> this.popUpReporteLiqPagadas.show()
                 });
