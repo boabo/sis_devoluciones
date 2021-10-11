@@ -608,8 +608,8 @@ class ACTLiquidacion extends ACTbase{
                 if(is_array($row->liqui_forma_pago)) {
                     foreach ($row->liqui_forma_pago as $liqui_forma_pago) {
                         if($liqui_forma_pago->desc_forma_pago_pw == 'CREDIT CARD') {
-                            $nroCheque = $liqui_forma_pago->nombre;
-                            $nombreCheque = $liqui_forma_pago->nro_tarjeta;
+                            $nroCheque = $liqui_forma_pago->administradora .' / '. $liqui_forma_pago->nro_tarjeta;
+                            $nombreCheque = $liqui_forma_pago->nombre;
                         } else if($liqui_forma_pago->desc_forma_pago_pw == 'CUENTA CORRIENTE') {
                             $nroCheque = $liqui_forma_pago->codigo_auxiliar;
                             $nombreCheque = $liqui_forma_pago->nombre_auxiliar;
