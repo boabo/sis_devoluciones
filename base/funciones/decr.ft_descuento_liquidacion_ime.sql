@@ -26,7 +26,9 @@ DECLARE
 	v_nombre_funcion        text;
 	v_mensaje_error         text;
 	v_id_descuento_liquidacion	integer;
-			    
+    v_count_conceptos_hijos integer;
+    v_conceptos_hijos record;
+
 BEGIN
 
     v_nombre_funcion = 'decr.ft_descuento_liquidacion_ime';
@@ -42,41 +44,107 @@ BEGIN
 	if(p_transaccion='DECR_DESLIQUI_INS')then
 					
         begin
-        	--Sentencia de la insercion
-        	insert into decr.tdescuento_liquidacion(
-			contabilizar,
-			importe,
-			estado_reg,
-			id_concepto_ingas,
-			id_liquidacion,
-			sobre,
-			fecha_reg,
-			usuario_ai,
-			id_usuario_reg,
-			id_usuario_ai,
-			fecha_mod,
-			id_usuario_mod
-          	) values(
-			v_parametros.contabilizar,
-			v_parametros.importe,
-			'activo',
-			v_parametros.id_concepto_ingas,
-			v_parametros.id_liquidacion,
-			v_parametros.sobre,
-			now(),
-			v_parametros._nombre_usuario_ai,
-			p_id_usuario,
-			v_parametros._id_usuario_ai,
-			null,
-			null
-							
-			
-			
-			)RETURNING id_descuento_liquidacion into v_id_descuento_liquidacion;
+
+
+
+            select count(*)
+            into v_count_conceptos_hijos
+            from param.tconcepto_ingas
+            where id_concepto_ingas_fk = v_parametros.id_concepto_ingas::integer;
+
+
+
+            if(v_count_conceptos_hijos = 0) then
+
+                insert into decr.tdescuento_liquidacion(
+                    contabilizar,
+                    importe,
+                    estado_reg,
+                    id_concepto_ingas,
+                    id_liquidacion,
+                    sobre,
+                    fecha_reg,
+                    usuario_ai,
+                    id_usuario_reg,
+                    id_usuario_ai,
+                    fecha_mod,
+                    id_usuario_mod,
+                    tipo
+                ) values(
+                            v_parametros.contabilizar,
+                            v_parametros.importe::numeric, --todo
+                            'activo',
+                            v_parametros.id_concepto_ingas::integer,
+                            v_parametros.id_liquidacion,
+                            null,
+                            now(),
+                            v_parametros._nombre_usuario_ai,
+                            p_id_usuario,
+                            v_parametros._id_usuario_ai,
+                            null,
+                            null,
+                            v_parametros.tipo
+                        );
+
+            else
+
+
+                --recorremos los conceptos hijos y miramos su configuracion de porcentaje sobre el monto enviado
+                FOR v_conceptos_hijos
+                    IN (
+                        select id_concepto_ingas,
+                               contabilizable as contabilizar,
+                               precio as porcentaje --el precio para estos conceptos usados en devolucion son el porcentaje
+                        from param.tconcepto_ingas
+                        where id_concepto_ingas_fk = v_parametros.id_concepto_ingas::integer
+                    )
+                    loop
+
+
+                        IF v_conceptos_hijos.porcentaje is null or v_conceptos_hijos.porcentaje = 0 then
+                            RAISE EXCEPTION '%','ERROR ALGUN CONCEPTO HIJO DE LO SELECCIONADO NO TIENE CONFIGURADO EL PORCENTAJE(PRECIO)';
+                        END IF;
+
+                        insert into decr.tdescuento_liquidacion(
+                            contabilizar,
+                            importe,
+                            estado_reg,
+                            id_concepto_ingas,
+                            id_liquidacion,
+                            sobre,
+                            fecha_reg,
+                            usuario_ai,
+                            id_usuario_reg,
+                            id_usuario_ai,
+                            fecha_mod,
+                            id_usuario_mod,
+                            tipo
+                        ) values(
+                                    v_conceptos_hijos.contabilizar,
+                                    v_parametros.importe::numeric * v_conceptos_hijos.porcentaje::numeric, --todo
+                                    'activo',
+                                    v_conceptos_hijos.id_concepto_ingas::integer,
+                                    v_parametros.id_liquidacion,
+                                    null,
+                                    now(),
+                                    v_parametros._nombre_usuario_ai,
+                                    p_id_usuario,
+                                    v_parametros._id_usuario_ai,
+                                    null,
+                                    null,
+                                    v_parametros.tipo
+                                );
+
+
+
+                    END LOOP;
+
+            END IF;
+
 			
 			--Definicion de la respuesta
-			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Descuento Liquidacion almacenado(a) con exito (id_descuento_liquidacion'||v_id_descuento_liquidacion||')'); 
-            v_resp = pxp.f_agrega_clave(v_resp,'id_descuento_liquidacion',v_id_descuento_liquidacion::varchar);
+			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Descuento Liquidacion almacenado(a) con exito (id_descuento_liquidacion'||v_id_descuento_liquidacion||')');
+            v_resp = pxp.f_agrega_clave(v_resp,'id_liquidacion',v_parametros.id_liquidacion::varchar);
 
             --Devuelve la respuesta
             return v_resp;

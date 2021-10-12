@@ -61,6 +61,7 @@ class MODDescuentoLiquidacion extends MODbase{
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('id_concepto_ingas','id_concepto_ingas','int4');
 		$this->setParametro('id_liquidacion','id_liquidacion','int4');
+		$this->setParametro('tipo','tipo','varchar');
 		$this->setParametro('sobre','sobre','varchar');
 
 		//Ejecuta la instruccion

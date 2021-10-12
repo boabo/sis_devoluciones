@@ -92,7 +92,7 @@ Phx.vista.DescuentoLiquidacion=Ext.extend(Phx.gridInterfaz,{
                 }),
                 valueField: 'id_concepto_ingas',
                 displayField: 'desc_ingas',
-                gdisplayField: 'desc_ingas',
+                gdisplayField: 'desc_desc_ingas',
                 hiddenName: 'id_concepto_ingas',
                 forceSelection: true,
                 typeAhead: false,
@@ -105,7 +105,7 @@ Phx.vista.DescuentoLiquidacion=Ext.extend(Phx.gridInterfaz,{
                 gwidth: 150,
                 minChars: 2,
                 renderer : function(value, p, record) {
-                    return String.format('{0}', record.data['desc_ingas']);
+                    return String.format('{0}', record.data['desc_desc_ingas']);
                 }
 			},
 			type: 'ComboBox',
@@ -306,6 +306,7 @@ Phx.vista.DescuentoLiquidacion=Ext.extend(Phx.gridInterfaz,{
 	},
 	bdel:true,
 	bsave:true,
+    bedit: false,
     onReloadPage:function(m){
         this.maestro=m;
         this.store.baseParams={id_liquidacion:this.maestro.id_liquidacion};
