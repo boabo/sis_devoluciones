@@ -21,8 +21,16 @@ Phx.vista.DescuentoLiquidacion=Ext.extend(Phx.gridInterfaz,{
     	//llama al constructor de la clase padre
 		Phx.vista.DescuentoLiquidacion.superclass.constructor.call(this,config);
 		this.init();
+		this.iniciarEventos();
 		//this.load({params:{start:0, limit:this.tam_pag}})
 	},
+    iniciarEventos: function () {
+        this.Cmp.id_concepto_ingas.on('select', function (rec, d) {
+            console.log(d.json)
+            this.Cmp.contabilizar.setValue(d.json.contabilizable);
+            this.Cmp.tipo.setValue(d.json.tipo_descuento);
+        }, this);
+    },
 			
 	Atributos:[
 		{
@@ -45,37 +53,8 @@ Phx.vista.DescuentoLiquidacion=Ext.extend(Phx.gridInterfaz,{
             type:'Field',
             form:true
         },
-		{
-			config:{
-				name: 'contabilizar',
-				fieldLabel: 'contabilizar',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:2
-			},
-				type:'TextField',
-				filters:{pfiltro:'desliqui.contabilizar',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
 
-		{
-			config:{
-				name: 'importe',
-				fieldLabel: 'importe',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:655362
-			},
-				type:'NumberField',
-				filters:{pfiltro:'desliqui.importe',type:'numeric'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
+
 		{
 			config:{
 				name: 'estado_reg',
@@ -93,40 +72,41 @@ Phx.vista.DescuentoLiquidacion=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config: {
-				name: 'id_concepto_ingas',
-				fieldLabel: 'id_concepto_ingas',
-				allowBlank: true,
-				emptyText: 'Elija una opción...',
-				store: new Ext.data.JsonStore({
-					url: '../../sis_parametros/control/ConceptoIngas/listarConceptoIngasMasPartida',
-					id: 'id_concepto_ingas',
-					root: 'datos',
-					sortInfo: {
-						field: 'desc_ingas',
-						direction: 'ASC'
-					},
-					totalProperty: 'total',
-					fields: ['id_concepto_ingas', 'desc_ingas'],
-					remoteSort: true,
-					baseParams: {par_filtro: 'conig.id_concepto_ingas#conig.desc_ingas'}
-				}),
-				valueField: 'id_concepto_ingas',
-				displayField: 'desc_ingas',
-				gdisplayField: 'desc_desc_ingas',
-				hiddenName: 'id_concepto_ingas',
-				forceSelection: true,
-				typeAhead: false,
-				triggerAction: 'all',
-				lazyRender: true,
-				mode: 'remote',
-				pageSize: 15,
-				queryDelay: 1000,
-				anchor: '100%',
-				gwidth: 150,
-				minChars: 2,
-				renderer : function(value, p, record) {
-					return String.format('{0}', record.data['desc_desc_ingas']);
-				}
+                name: 'id_concepto_ingas',
+                msgTarget: 'title',
+                fieldLabel: 'Concepto',
+                allowBlank: false,
+                emptyText: 'Elija una opción...',
+                store: new Ext.data.JsonStore({
+                    url: '../../sis_devoluciones/control/Liquidacion/listarConcepto',
+                    id: 'id_concepto_ingas',
+                    root: 'datos',
+                    sortInfo: {
+                        field: 'desc_ingas',
+                        direction: 'ASC'
+                    },
+                    totalProperty: 'total',
+                    fields: ['id_concepto_ingas', 'desc_ingas','precio','contabilizable', 'tipo_descuento'],
+                    remoteSort: true,
+                    baseParams: {par_filtro: 'tci.desc_ingas',facturacion:'descu', emision:'DEVOLUCIONES'}
+                }),
+                valueField: 'id_concepto_ingas',
+                displayField: 'desc_ingas',
+                gdisplayField: 'desc_ingas',
+                hiddenName: 'id_concepto_ingas',
+                forceSelection: true,
+                typeAhead: false,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'remote',
+                pageSize: 15,
+                queryDelay: 1000,
+                anchor: '100%',
+                gwidth: 150,
+                minChars: 2,
+                renderer : function(value, p, record) {
+                    return String.format('{0}', record.data['desc_ingas']);
+                }
 			},
 			type: 'ComboBox',
 			id_grupo: 0,
@@ -134,6 +114,59 @@ Phx.vista.DescuentoLiquidacion=Ext.extend(Phx.gridInterfaz,{
 			grid: true,
 			form: true
 		},
+
+        {
+            config: {
+                name: 'tipo',
+                fieldLabel: 'tipo',
+                allowBlank: true,
+                emptyText: 'tipo...',
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'local',
+                store: ['','FACTURABLE', 'NCD AGT', 'IMPUESTO', 'HAY NCD BOA', 'NO FACTURABLE'],
+                width: 200
+            },
+            type: 'ComboBox',
+            id_grupo: 4,
+            form: true
+        },
+        {
+            config: {
+                name: 'contabilizar',
+                fieldLabel: 'contabilizar',
+                allowBlank: true,
+                emptyText: 'contabilizar...',
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'local',
+                store: ['si','no'],
+                width: 200
+            },
+            type: 'ComboBox',
+            filters:{pfiltro:'desliqui.contabilizar',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
+        {
+            config:{
+                name: 'importe',
+                fieldLabel: 'importe',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:655362
+            },
+            type:'NumberField',
+            filters:{pfiltro:'desliqui.importe',type:'numeric'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
+
 		{
 			config:{
 				name: 'sobre',
@@ -147,7 +180,7 @@ Phx.vista.DescuentoLiquidacion=Ext.extend(Phx.gridInterfaz,{
 				filters:{pfiltro:'desliqui.sobre',type:'string'},
 				id_grupo:1,
 				grid:true,
-				form:true
+				form:false
 		},
 		{
 			config:{

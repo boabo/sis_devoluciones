@@ -265,7 +265,7 @@ BEGIN
             (
                 SELECT tl.*,
                        tl.importe_total - tl.importe_tramo_utilizado as importe_devolver_sin_descuentos,
-                       tl.importe_total - tl.importe_tramo_utilizado - tl.sum_total_descuentos as importe_devolver,
+                       tl.importe_total - tl.importe_tramo_utilizado - COALESCE(tl.sum_total_descuentos,0) as importe_devolver,
                        tlb.data_stage->>'ticketNumber' as desc_nro_boleto,
                        tlb.data_stage->>'nit'::varchar as nro_nit,
                        tlb.data_stage->>'bussinesName' AS razon,
