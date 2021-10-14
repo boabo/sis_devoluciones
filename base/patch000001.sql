@@ -687,6 +687,13 @@ alter table decr.tliqui_manual
     add razon_nombre_doc_org varchar(255);
 
 
+alter table decr.tliqui_forma_pago
+    add autorizacion varchar(255);
+
+alter table decr.tliqui_forma_pago
+    add fecha_cierre date;
+
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
 
