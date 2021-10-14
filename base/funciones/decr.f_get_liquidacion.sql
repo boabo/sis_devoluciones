@@ -400,6 +400,7 @@ BEGIN
                        tv.total_venta - (coalesce(sd.sum_descuentos, 0)) as importe_devolver,
                        tv.nro_factura,
                        tv.nit,
+                       tv.nit AS nro_nit,
                        tv.nombre_factura,
                        tv.nombre_factura as razon_social,
                        tv.fecha as fecha_doc_original, -- este campo deberia ser la fecha del documento vinculado a la liquidacion en este caso la venta (factura)
