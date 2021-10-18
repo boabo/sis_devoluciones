@@ -1559,6 +1559,7 @@ header("content-type: text/javascript; charset=UTF-8");
                              this.storeBoletosRecursivo.commitChanges();
                              var validado = true;
 
+                             const billetesSeleccionadosParaLiqui = [];
 
                              let total = 0;
                              for(var i = 0; i < this.storeBoletosRecursivo.getTotalCount() ;i++) {
@@ -1567,6 +1568,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                      console.log('fp.data.currency', fp.data.currency)
                                      total = total + fp.data.monto;
                                      console.log('siiii')
+                                     billetesSeleccionadosParaLiqui.push(fp.data.billete);
                                  } else {
                                      console.log('nooo')
 

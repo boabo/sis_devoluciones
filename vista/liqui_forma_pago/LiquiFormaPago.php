@@ -317,6 +317,21 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
         },
         {
             config:{
+                name: 'autorizacion',
+                fieldLabel: 'autorizacion',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:255
+            },
+                type:'TextField',
+                filters:{pfiltro:'tlp.autorizacion',type:'string'},
+                id_grupo:1,
+                grid:true,
+                form:true
+        },
+        {
+            config:{
                 name: 'fecha_tarjeta',
                 fieldLabel: 'fecha_tarjeta',
                 allowBlank: true,
@@ -327,6 +342,22 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
             },
                 type:'DateField',
                 filters:{pfiltro:'tlp.fecha_tarjeta',type:'date'},
+                id_grupo:1,
+                grid:true,
+                form:true
+        },
+        {
+            config:{
+                name: 'fecha_cierre',
+                fieldLabel: 'fecha_cierre',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                            format: 'd/m/Y',
+                            renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
+            },
+                type:'DateField',
+                filters:{pfiltro:'tlp.fecha_cierre',type:'date'},
                 id_grupo:1,
                 grid:true,
                 form:true
@@ -518,6 +549,9 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
         {name:'nombre', type: 'string'},
         {name:'administradora', type: 'string'},
         {name:'desc_nombre_auxiliar', type: 'string'},
+        {name:'autorizacion', type: 'string'},
+        {name:'fecha_cierre', type: 'date',dateFormat:'Y-m-d'},
+
 
     ],
     sortInfo:{

@@ -65,7 +65,9 @@ BEGIN
                             tlp.nro_documento_pago,
                             tlp.nombre,
                             tlp.administradora,
-                            ta.nombre_auxiliar as desc_nombre_auxiliar
+                            ta.nombre_auxiliar as desc_nombre_auxiliar,
+                            tlp.autorizacion,
+                            tlp.fecha_cierre
                         from decr.tliqui_forma_pago tlp
                         inner join segu.tusuario usu1 on usu1.id_usuario = tlp.id_usuario_reg
                         left join segu.tusuario usu2 on usu2.id_usuario = tlp.id_usuario_mod
