@@ -681,7 +681,7 @@ class ACTLiquidacion extends ACTbase{
                                 "estacion" => $row->estacion,
                                 "nro_liquidacion" => $row->nro_liquidacion,
                                 "pagar_a_nombre" => $row->nombre,
-                                "_liqui_codigo_agencia_doc_original" => $row->cod_est,
+                                "_liqui_codigo_agencia_doc_original" => $liqui_forma_pago->cod_est,
                                 "_liqui_oficina_emisora_original" => $liqui_forma_pago->nro_terminal,
                                 "nro_tarjeta" => $liqui_forma_pago->nro_tarjeta,
                                 "fecha_tarjeta" => $liqui_forma_pago->fecha_tarjeta,
