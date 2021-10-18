@@ -333,7 +333,7 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
         {
             config:{
                 name: 'nro_terminal',
-                fieldLabel: 'Nro Terminal',
+                fieldLabel: 'Nro Terminal o Comercio',
                 allowBlank: true,
                 anchor: '80%',
                 gwidth: 100,
