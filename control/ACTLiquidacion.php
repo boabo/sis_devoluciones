@@ -689,7 +689,7 @@ class ACTLiquidacion extends ACTbase{
                                 "importe_devolver" => $liqui_forma_pago->importe,
                                 "lote" => $liqui_forma_pago->lote,
                                 "comprobante" => $liqui_forma_pago->comprobante,
-                                "codigo_autorizacion" => '',
+                                "codigo_autorizacion" => $liqui_forma_pago->autorizacion,
                                 "_liqui_nro_doc_original" => $row->_liqui_nro_doc_original,
                             ));
                         }

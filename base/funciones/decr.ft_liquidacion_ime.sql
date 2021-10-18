@@ -173,7 +173,8 @@ BEGIN
                                           id_deposito,
                                           id_liquidacion_fk,
                                           id_factucom,
-            pagar_a_nombre
+            pagar_a_nombre,
+            billetes_seleccionados
 
               ) values(
             v_parametros.estacion,
@@ -219,7 +220,8 @@ BEGIN
                        v_parametros.id_deposito,
                        v_parametros.id_liquidacion_fk,
                        v_parametros.id_factucom,
-                       v_parametros.pagar_a_nombre
+                       v_parametros.pagar_a_nombre,
+                       v_parametros.billetes_seleccionados
 
             
             

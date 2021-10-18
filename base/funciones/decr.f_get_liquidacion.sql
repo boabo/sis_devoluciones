@@ -60,7 +60,7 @@ BEGIN
         into v_id_liquidacion_array
         FROM decr.tliquidacion tl
                  inner join decr.tliqui_forma_pago tlfp on tlfp.id_liquidacion = tl.id_liquidacion
-        where tl.estado === 'pagado'
+        where tl.estado = 'emitido'
           and tlfp.administradora = p_params->>'administradora'::varchar
           AND tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date);
 

@@ -693,6 +693,9 @@ alter table decr.tliqui_forma_pago
 alter table decr.tliqui_forma_pago
     add fecha_cierre date;
 
+alter table decr.tliquidacion
+    add billetes_seleccionados varchar(255);
+
 
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
