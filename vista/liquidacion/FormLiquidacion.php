@@ -770,6 +770,8 @@ header("content-type: text/javascript; charset=UTF-8");
             const tramoComponente = this.getComponente('tramo');
             const importeNeto = this.getComponente('importe_neto');
             const importeTotalComponente = this.getComponente('importe_total');
+            const billetesSeleccionados = this.getComponente('billetes_seleccionados');
+
             const tasas = this.getComponente('tasas');
             const exento = this.getComponente('exento');
             const nombre = this.getComponente('nombre');
@@ -810,9 +812,11 @@ header("content-type: text/javascript; charset=UTF-8");
                 params: {start: 0, limit: 100},
                 callback: function (e,d,a,i,o,u) {
                     let total = 0;
+                    const billetesSeleccionadosArray = [];
                     e.forEach((data)=> {
                         console.log(data)
                         total = total + data.data.monto;
+                        billetesSeleccionadosArray.push(data.data.billete)
                     });
                     that.dataStage = e[0].json.dataStage;
                     console.log('that.dataStage',that.dataStage)
@@ -821,6 +825,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                     //total = that.convertirImportePorMoneda(total, currency)
                     importeTotalComponente.setValue(total);
+                    billetesSeleccionados.setValue(billetesSeleccionadosArray.join(','));
                     //const netAmount = that.convertirImportePorMoneda(e[0].json.netAmount, currency);
                     const netAmount = e[0].json.netAmount;
                     const tasasConvertido = total - netAmount;
@@ -1575,6 +1580,7 @@ header("content-type: text/javascript; charset=UTF-8");
                                  }
                              }
                              this.cmpImporte_total.setValue(total);
+                             this.cmpBilletesSeleccionados.setValue(billetesSeleccionadosParaLiqui.join(','));
                              console.log(total)
                              win.close();
 
@@ -1839,6 +1845,25 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 type:'TextField',
                 filters:{pfiltro:'liqui.nro_liquidacion',type:'string'},
+                id_grupo:1,
+                grid:true,
+                form:true,
+                bottom_filter : true
+
+            },
+            {
+                config:{
+                    name: 'billetes_seleccionados',
+                    fieldLabel: 'Billetes Seleccionados',
+                    allowBlank: false,
+                    width:200,
+                    gwidth: 100,
+                    maxLength:255,
+                    disabled: true,
+
+                },
+                type:'TextField',
+                filters:{pfiltro:'liqui.billetes_seleccionados',type:'string'},
                 id_grupo:1,
                 grid:true,
                 form:true,
@@ -3084,6 +3109,7 @@ header("content-type: text/javascript; charset=UTF-8");
             this.cmpIdTipoDocLiquidacion = this.getComponente('id_tipo_doc_liquidacion');
             this.cmpNroBoleto = this.getComponente('nro_boleto');
             this.cmpIdBoleto = this.getComponente('id_boleto');
+            this.cmpBilletesSeleccionados = this.getComponente('billetes_seleccionados');
             this.cmpIdVenta = this.getComponente('id_venta');
             this.cmpIdVentaDetalle = this.getComponente('id_venta_detalle');
             this.cmpTramo_devolucion = this.getComponente('tramo_devolucion');
