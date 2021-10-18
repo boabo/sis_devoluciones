@@ -67,7 +67,9 @@ BEGIN
                                                administradora,
             id_auxiliar,
             autorizacion,
-                fecha_cierre
+                fecha_cierre,
+            nro_terminal,
+                nombre_comercio
               ) values(
             'activo',
             v_parametros.id_liquidacion,
@@ -92,7 +94,9 @@ BEGIN
                        v_parametros.administradora,
                        v_parametros.id_auxiliar,
                        v_parametros.autorizacion,
-                       v_parametros.fecha_cierre
+                       v_parametros.fecha_cierre,
+            v_parametros.nro_terminal,
+            v_parametros.nombre_comercio
 
 
 
@@ -139,7 +143,9 @@ BEGIN
                                               administradora = v_parametros.administradora,
             id_auxiliar = v_parametros.id_auxiliar,
             autorizacion = v_parametros.autorizacion,
-            fecha_cierre = v_parametros.fecha_cierre
+            fecha_cierre = v_parametros.fecha_cierre,
+            nro_terminal = v_parametros.nro_terminal,
+            nombre_comercio = v_parametros.nombre_comercio
             where id_liqui_forma_pago=v_parametros.id_liqui_forma_pago;
 
             --Definicion de la respuesta

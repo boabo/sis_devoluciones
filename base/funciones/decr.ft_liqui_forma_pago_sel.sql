@@ -67,7 +67,9 @@ BEGIN
                             tlp.administradora,
                             ta.nombre_auxiliar as desc_nombre_auxiliar,
                             tlp.autorizacion,
-                            tlp.fecha_cierre
+                            tlp.fecha_cierre,
+                            tlp.nro_terminal,
+                            tlp.nombre_comercio
                         from decr.tliqui_forma_pago tlp
                         inner join segu.tusuario usu1 on usu1.id_usuario = tlp.id_usuario_reg
                         left join segu.tusuario usu2 on usu2.id_usuario = tlp.id_usuario_mod
