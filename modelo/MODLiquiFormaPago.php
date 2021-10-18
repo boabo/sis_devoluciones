@@ -47,7 +47,7 @@ class MODLiquiFormaPago extends MODbase{
         $this->captura('administradora','varchar');
         $this->captura('desc_nombre_auxiliar','varchar');
         $this->captura('autorizacion','varchar');
-        $this->captura('fecha_cierre','varchar');
+        $this->captura('fecha_cierre','date');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
