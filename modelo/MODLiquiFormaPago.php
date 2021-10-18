@@ -84,6 +84,8 @@ class MODLiquiFormaPago extends MODbase{
         $this->setParametro('administradora','administradora','varchar');
         $this->setParametro('autorizacion','autorizacion','varchar');
         $this->setParametro('fecha_cierre','fecha_cierre','date');
+        $this->setParametro('nro_terminal','nro_terminal','varchar');
+        $this->setParametro('nombre_comercio','nombre_comercio','varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
@@ -120,6 +122,8 @@ class MODLiquiFormaPago extends MODbase{
 
         $this->setParametro('autorizacion','autorizacion','varchar');
         $this->setParametro('fecha_cierre','fecha_cierre','date');
+        $this->setParametro('nro_terminal','nro_terminal','varchar');
+        $this->setParametro('nombre_comercio','nombre_comercio','varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
