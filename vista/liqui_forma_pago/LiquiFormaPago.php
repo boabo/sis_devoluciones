@@ -332,6 +332,36 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
         },
         {
             config:{
+                name: 'nro_terminal',
+                fieldLabel: 'Nro Terminal',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:255
+            },
+                type:'TextField',
+                filters:{pfiltro:'tlp.nro_terminal',type:'string'},
+                id_grupo:1,
+                grid:true,
+                form:true
+        },
+        {
+            config:{
+                name: 'nombre_comercio',
+                fieldLabel: 'Nombre Comercio',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:255
+            },
+                type:'TextField',
+                filters:{pfiltro:'tlp.nombre_comercio',type:'string'},
+                id_grupo:1,
+                grid:true,
+                form:true
+        },
+        {
+            config:{
                 name: 'fecha_tarjeta',
                 fieldLabel: 'fecha_tarjeta',
                 allowBlank: true,
@@ -551,6 +581,8 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
         {name:'desc_nombre_auxiliar', type: 'string'},
         {name:'autorizacion', type: 'string'},
         {name:'fecha_cierre', type: 'date',dateFormat:'Y-m-d'},
+        'nro_terminal',
+        'nombre_comercio'
 
 
     ],
