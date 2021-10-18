@@ -1776,7 +1776,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 const {liqui_forma_pago, importe_devolver} = rec.json;
                 const sumFormaPago = liqui_forma_pago.reduce((sum, fp) => sum + parseFloat(fp.importe) , 0);
                 console.log('sumFormaPago',sumFormaPago)
-                if(importe_devolver === sumFormaPago) {
+                if(parseFloat(importe_devolver).toFixed(2) === parseFloat(sumFormaPago).toFixed(2)) {
                     this.objWizard = Phx.CP.loadWindows('../../../sis_workflow/vista/estado_wf/FormEstadoWf.php',
                         'Estado de Wf',
                         {

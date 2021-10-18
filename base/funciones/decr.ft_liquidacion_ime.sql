@@ -805,6 +805,7 @@ BEGIN
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Liquidacion almacenado(a) con exito (id_liquidacion'||v_id_liquidacion||')');
             v_resp = pxp.f_agrega_clave(v_resp,'id_liquidacion',v_id_liquidacion::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'id_usuario',p_id_usuario::varchar);
             v_resp = pxp.f_agrega_clave(v_resp,'tipo',v_tipo_documento::varchar);
 
             --Devuelve la respuesta

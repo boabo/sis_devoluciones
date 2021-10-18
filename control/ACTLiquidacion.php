@@ -72,6 +72,39 @@ class ACTLiquidacion extends ACTbase{
 
     }
 
+    function insertarFormasDePagoPxpNd($id_liquidacion, $id_usuario) {
+        $nroTicket = $this->objParam->getParametro('nro_boleto');
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $_SESSION['_PXP_ND_URL'].'/api/boa-liqui-nd/Liquidacion/addPaymentMethod',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS =>'{
+                "ticketNumber": '.$nroTicket.',
+                "id_liquidacion": '.$id_liquidacion.',
+                "ticketNumber": '.$id_usuario.'
+            }
+            ',
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: ' . $_SESSION['_PXP_ND_TOKEN'],
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+        $data_json = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $response), true);
+
+        return $data_json;
+    }
+
     function insertarLiquidacion(){
         $this->objFunc=$this->create('MODLiquidacion');
         if($this->objParam->insertar('id_liquidacion')){
@@ -83,6 +116,9 @@ class ACTLiquidacion extends ACTbase{
                 exit;
             }
             $data = $this->res->getDatos();
+            //enviarmos a pxp nd para insertar las formas de pago dinamicamente
+            $this->insertarFormasDePagoPxpNd($data['id_liquidacion'], $data['id_usuario']);
+
             if($data['tipo'] === 'BOLEMD') {
                 //si es boleto necesitamos hacer un servicio
                 $nroTicket = $this->objParam->getParametro('nro_boleto');
