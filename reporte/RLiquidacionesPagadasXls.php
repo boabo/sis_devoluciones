@@ -150,16 +150,17 @@ class RLiquidacionesPagadasXls
         //Cabecera caja
         $f = $this->fila;
         $this->cell($sheet,'LIQUI DOC.'						,"A$f" ,0, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'Cod AGT/OF.'						,"B$f" ,1, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'FECHA DE PAGO'						,"C$f" ,2, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'BOLETO O DOCUMENTO BOA'					,"D$f" ,3, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'NOMBRE PAX'				,"E$f" ,4, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'RUTA.'				,"F$f" ,5, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'NOMBRE DE CHEQUE'					,"G$f" ,6, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'IMPORTE LIQ'			,"H$f" ,7, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'NRO CHEQUE'			,"I$f" ,8, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'COD IATA'					,"J$f" ,9, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'OFICINA EMISORA TKT'						,"K$f" ,10, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'NRO LIQUI.'						,"B$f" ,1, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'Cod AGT/OF.'						,"C$f" ,2, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'FECHA DE PAGO'						,"D$f" ,3, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'BOLETO O DOCUMENTO BOA'					,"E$f" ,4, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'NOMBRE PAX'				,"F$f" ,5, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'RUTA.'				,"G$f" ,6, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'NOMBRE DE CHEQUE'					,"H$f" ,7, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'IMPORTE LIQ'			,"I$f" ,8, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'NRO CHEQUE'			,"J$f" ,9, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'COD IATA'					,"K$f" ,10, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'OFICINA EMISORA TKT'						,"L$f" ,11, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
 
 
         $this->fila++;

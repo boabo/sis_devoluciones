@@ -660,6 +660,7 @@ class ACTLiquidacion extends ACTbase{
                 if($tipo === 'dinamica') {
                     array_push($dataDinamico, array(
                         "desc_tipo_documento" => $row->desc_tipo_documento,
+                        "nro_liquidacion" => $row->nro_liquidacion,
                         "codigo_punto_venta" => $row->codigo_punto_venta,
                         "fecha_pago" => $row->fecha_pago,
                         "_liqui_nro_doc_original" => $row->_liqui_nro_doc_original,
