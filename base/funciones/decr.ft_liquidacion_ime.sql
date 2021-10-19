@@ -68,6 +68,8 @@ DECLARE
     v_estado varchar;
     v_liquidacion record;
     v_tabla_factura varchar;
+    v_boleto_seleccionado record;
+    v_nro_liquidacion_validado varchar;
 BEGIN
 
     v_nombre_funcion = 'decr.ft_liquidacion_ime';
@@ -226,6 +228,7 @@ BEGIN
             
             
             )RETURNING id_liquidacion into v_id_liquidacion;
+
 
 
 
@@ -480,6 +483,33 @@ BEGIN
             --RAISE EXCEPTION '%', v_parametros.payment;
 
             IF v_tipo_documento = 'BOLEMD' THEN
+
+                -- INSERTAR BILLETES SELECCIONADOS A DEVOLVER
+                FOR v_boleto_seleccionado
+                    IN (SELECT unnest(string_to_array(v_parametros.billetes_seleccionados::varchar, ',')) as boleto
+                    )
+                    loop
+
+
+                    -- validar si existe en alguna liquidacion este boleto
+                    select tl.nro_liquidacion
+                    into v_nro_liquidacion_validado
+                    from decr.tliqui_boleto_seleccionado tbs
+                    inner join decr.tliquidacion tl on tl.id_liquidacion = tbs.id_liquidacion
+                    where tbs.boleto = v_boleto_seleccionado.boleto;
+
+                    IF v_nro_liquidacion_validado IS NOT NULL THEN
+                         RAISE EXCEPTION 'ERROR BOLETO YA SE ENCUENTRA EN UNA LIQUIDACION %', v_nro_liquidacion_validado;
+                    END IF;
+
+
+                        INSERT INTO decr.tliqui_boleto_seleccionado (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg,
+                                                                     id_usuario_ai, usuario_ai, id_liquidacion, boleto)
+                        VALUES (p_id_usuario, null, now(), null, 'activo', v_parametros._id_usuario_ai, v_parametros._nombre_usuario_ai,
+                                v_id_liquidacion, v_boleto_seleccionado.boleto);
+
+                    END LOOP;
+                -------
 
 
                 INSERT INTO decr.tliqui_boleto (id_usuario_reg, id_usuario_mod, fecha_reg, fecha_mod, estado_reg,

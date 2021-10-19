@@ -697,6 +697,20 @@ alter table decr.tliquidacion
     add billetes_seleccionados varchar(255);
 
 
+alter table decr.tliqui_forma_pago
+    add nro_terminal varchar(255);
+
+alter table decr.tliqui_forma_pago
+    add nombre_comercio varchar(255);
+
+CREATE TABLE decr.tliqui_boleto_seleccionado (
+                                    id_liqui_boleto_seleccionado SERIAL,
+                                    id_liquidacion INTEGER,
+                                    boleto varchar,
+                                    CONSTRAINT pk_tliqui_boleto_seleccionado__id_liqui_boleto_seleccionado PRIMARY KEY(id_liqui_boleto_seleccionado)
+) INHERITS (pxp.tbase)
+  WITHOUT OIDS;
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
 
