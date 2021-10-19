@@ -448,6 +448,7 @@ BEGIN
                            td.glosa_empresa,
                            td.glosa_impuestos,
                            td.fecha_limite,
+                           td.nroaut as nroaut_dosificacion,
                            tae.nombre      AS actividad_economica,
                            tae.descripcion AS desc_actividad_economica,
                            ts.nombre       AS desc_sucursal,

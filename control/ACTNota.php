@@ -662,7 +662,7 @@ window.onload=function(){self.print();}
 						<td  colspan="1" align="right">N&#176; NOTA FISCAL:&nbsp;&nbsp;&nbsp;</td><td colspan="1" align="left">' . $nota->nro_nota . '</td>
 						</tr>
 						<tr>
-						<td  colspan="1" align="right"> N&#176; AUTORIZACION:</td><td colspan="1" align="left">' . $nota->nroaut . '</td>
+						<td  colspan="1" align="right"> N&#176; AUTORIZACION:</td><td colspan="1" align="left">' . $nota->nroaut_dosificacion . '</td>
 						</tr>
 
 						<tr>
