@@ -17,189 +17,189 @@ header("content-type: text/javascript; charset=UTF-8");
 <script>
     Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
 
-        tipoTabLiqui: 'BOLEMD',
-        vista_transferencia:'mandar',
-        gruposBarraTareas: [
-            {
-                name: 'BOLEMD',
-                title: '<H1 align="center"><i class="fa fa-file"></i> Boleto</h1>',
-                grupo: 0,
-                height: 0
-            },
-            {
-                name: 'LIQUIMAN',
-                title: '<H1 align="center"><i class="fa fa-file"></i> Liqui Man</h1>',
-                grupo: 0,
-                height: 0
-            },
-            {
-                name: 'FACCOM',
-                title: '<H1 align="center"><i class="fa fa-file"></i> Factura Com</h1>',
-                grupo: 0,
-                height: 0
-            },
-            {
-                name: 'FAC-ANTIGUAS',
-                title: '<H1 align="center"><i class="fa fa-file"></i> Facturas Antigua</h1>',
-                grupo: 0,
-                height: 0
-            },
-            {
-                name: 'PORLIQUI',
-                title: '<H1 align="center"><i class="fa fa-file"></i> LIQUI X LIQUI</h1>',
-                grupo: 0,
-                height: 0
-            },
-            {
-                name: 'DEPOSITO',
-                title: '<H1 align="center"><i class="fa fa-file"></i> Deposito</h1>',
-                grupo: 0,
-                height: 0
-            },
-            {
-                name: 'RO',
-                title: '<H1 align="center"><i class="fa fa-file"></i> RO</h1>',
-                grupo: 0,
-                height: 0
-            }
-
-        ],
-
-
-        beditGroups: [0, 1, 2],
-        bactGroups: [0, 1, 2],
-        btestGroups: [0,1, 2],
-        bexcelGroups: [0, 1, 2],
-
-        cmbTipoAdministradora: new Ext.form.ComboBox({
-
-            name: 'tipo_administradora',
-            fieldLabel: 'Tipo Administradora',
-            allowBlank: true,
-            emptyText: 'tipo_administradora...',
-            typeAhead: true,
-            triggerAction: 'all',
-            lazyRender: true,
-            mode: 'local',
-            store: ['LINKSER', 'ATC', 'WORLDPAY'],
-            width: 200,
-            type: 'ComboBox',
-
-        }),
-        cmbFecha_ini_reporte_administradora: new Ext.form.DateField({
-            name: 'fecha_ini_reporte_administradora',
-            fieldLabel: 'Fecha',
-            allowBlank: false,
-            disabled: false,
-            width: 105,
-            format: 'd/m/Y'
-
-        }),
-        cmbFecha_fin_reporte_administradora: new Ext.form.DateField({
-            name: 'fecha_fin_reporte_administradora',
-            fieldLabel: 'Fecha fin',
-            allowBlank: true,
-            disabled: false,
-            width: 105,
-            format: 'd/m/Y'
-
-        }),
-        cmbEstado: new Ext.form.ComboBox({
-
-            name: 'estado',
-            fieldLabel: 'estado',
-            allowBlank: true,
-            emptyText: 'estado...',
-            typeAhead: true,
-            triggerAction: 'all',
-            lazyRender: true,
-            mode: 'local',
-            store: ['emitido', 'borrador', 'pagado', 'anulado'],
-            width: 200,
-            type: 'ComboBox',
-
-        }),
-        cmbEstacion: new Ext.form.ComboBox({
-
-            name: 'estacion',
-            fieldLabel: 'Estacion',
-            allowBlank: true,
-            emptyText: 'estacion...',
-            typeAhead: true,
-            triggerAction: 'all',
-            lazyRender: true,
-            mode: 'local',
-            store: ['CBB', 'SRZ', 'LPB', 'CBBWEB'],
-            width: 200,
-            type: 'ComboBox',
-
-        }),
-        cmbIdMedioPago: new Ext.form.ComboBox({
-            name: 'id_medio_pago',
-            fieldLabel: 'Medio de Pago',
-            allowBlank: false,
-            width:150,
-            id: 'testeoColor',
-            emptyText: 'Medio de pago...',
-            store: new Ext.data.JsonStore({
-                url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
-                id: 'id_medio_pago',
-                root: 'datos',
-                sortInfo: {
-                    field: 'name',
-                    direction: 'ASC'
+            tipoTabLiqui: 'BOLEMD',
+            vista_transferencia:'mandar',
+            gruposBarraTareas: [
+                {
+                    name: 'BOLEMD',
+                    title: '<H1 align="center"><i class="fa fa-file"></i> Boleto</h1>',
+                    grupo: 0,
+                    height: 0
                 },
-                totalProperty: 'total',
-                fields: ['id_medio_pago_pw', 'name', 'fop_code'],
-                remoteSort: true,
-                baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'dev', regional: 'BOL'}
+                {
+                    name: 'LIQUIMAN',
+                    title: '<H1 align="center"><i class="fa fa-file"></i> Liqui Man</h1>',
+                    grupo: 0,
+                    height: 0
+                },
+                {
+                    name: 'FACCOM',
+                    title: '<H1 align="center"><i class="fa fa-file"></i> Factura Com</h1>',
+                    grupo: 0,
+                    height: 0
+                },
+                {
+                    name: 'FAC-ANTIGUAS',
+                    title: '<H1 align="center"><i class="fa fa-file"></i> Facturas Antigua</h1>',
+                    grupo: 0,
+                    height: 0
+                },
+                {
+                    name: 'PORLIQUI',
+                    title: '<H1 align="center"><i class="fa fa-file"></i> LIQUI X LIQUI</h1>',
+                    grupo: 0,
+                    height: 0
+                },
+                {
+                    name: 'DEPOSITO',
+                    title: '<H1 align="center"><i class="fa fa-file"></i> Deposito</h1>',
+                    grupo: 0,
+                    height: 0
+                },
+                {
+                    name: 'RO',
+                    title: '<H1 align="center"><i class="fa fa-file"></i> RO</h1>',
+                    grupo: 0,
+                    height: 0
+                }
+
+            ],
+
+
+            beditGroups: [0, 1, 2],
+            bactGroups: [0, 1, 2],
+            btestGroups: [0,1, 2],
+            bexcelGroups: [0, 1, 2],
+
+            cmbTipoAdministradora: new Ext.form.ComboBox({
+
+                name: 'tipo_administradora',
+                fieldLabel: 'Tipo Administradora',
+                allowBlank: true,
+                emptyText: 'tipo_administradora...',
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'local',
+                store: ['LINKSER', 'ATC', 'WORLDPAY'],
+                width: 200,
+                type: 'ComboBox',
+
             }),
-            valueField: 'id_medio_pago_pw',
-            displayField: 'name',
-            gdisplayField: 'desc_medio_pago',
-            hiddenName: 'id_medio_pago_pw',
-            tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Medio de Pago: <font color="Blue">{name}</font></b></p><b><p>Codigo: <font color="red">{fop_code}</font></b></p></div></tpl>',
-            forceSelection: true,
-            typeAhead: false,
-            triggerAction: 'all',
-            lazyRender: true,
-            mode: 'remote',
-            pageSize: 15,
-            queryDelay: 1000,
-            // gwidth: 150,
-            listWidth:250,
-            resizable:true,
-            minChars: 2,
-            disabled:false
-        }),
+            cmbFecha_ini_reporte_administradora: new Ext.form.DateField({
+                name: 'fecha_ini_reporte_administradora',
+                fieldLabel: 'Fecha',
+                allowBlank: false,
+                disabled: false,
+                width: 105,
+                format: 'd/m/Y'
 
-        cmbFecha_ini: new Ext.form.DateField({
-            name: 'fecha_ini',
-            fieldLabel: 'Fecha',
-            allowBlank: false,
-            disabled: false,
-            width: 105,
-            format: 'd/m/Y'
+            }),
+            cmbFecha_fin_reporte_administradora: new Ext.form.DateField({
+                name: 'fecha_fin_reporte_administradora',
+                fieldLabel: 'Fecha fin',
+                allowBlank: true,
+                disabled: false,
+                width: 105,
+                format: 'd/m/Y'
 
-        }),
-        cmbFecha_fin: new Ext.form.DateField({
-            name: 'fecha_fim',
-            fieldLabel: 'Fecha fin',
-            allowBlank: true,
-            disabled: false,
-            width: 105,
-            format: 'd/m/Y'
+            }),
+            cmbEstado: new Ext.form.ComboBox({
 
-        }),
-        cmbFechaPago: new Ext.form.DateField({
-            name: 'fecha_pago',
-            fieldLabel: 'Fecha Pago',
-            allowBlank: false,
-            disabled: false,
-            width: 105,
-            format: 'd/m/Y'
+                name: 'estado',
+                fieldLabel: 'estado',
+                allowBlank: true,
+                emptyText: 'estado...',
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'local',
+                store: ['emitido', 'borrador', 'pagado', 'anulado'],
+                width: 200,
+                type: 'ComboBox',
 
-        }),
+            }),
+            cmbEstacion: new Ext.form.ComboBox({
+
+                name: 'estacion',
+                fieldLabel: 'Estacion',
+                allowBlank: true,
+                emptyText: 'estacion...',
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'local',
+                store: ['CBB', 'SRZ', 'LPB', 'CBBWEB'],
+                width: 200,
+                type: 'ComboBox',
+
+            }),
+            cmbIdMedioPago: new Ext.form.ComboBox({
+                name: 'id_medio_pago',
+                fieldLabel: 'Medio de Pago',
+                allowBlank: false,
+                width:150,
+                id: 'testeoColor',
+                emptyText: 'Medio de pago...',
+                store: new Ext.data.JsonStore({
+                    url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
+                    id: 'id_medio_pago',
+                    root: 'datos',
+                    sortInfo: {
+                        field: 'name',
+                        direction: 'ASC'
+                    },
+                    totalProperty: 'total',
+                    fields: ['id_medio_pago_pw', 'name', 'fop_code'],
+                    remoteSort: true,
+                    baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'dev', regional: 'BOL'}
+                }),
+                valueField: 'id_medio_pago_pw',
+                displayField: 'name',
+                gdisplayField: 'desc_medio_pago',
+                hiddenName: 'id_medio_pago_pw',
+                tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>Medio de Pago: <font color="Blue">{name}</font></b></p><b><p>Codigo: <font color="red">{fop_code}</font></b></p></div></tpl>',
+                forceSelection: true,
+                typeAhead: false,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'remote',
+                pageSize: 15,
+                queryDelay: 1000,
+                // gwidth: 150,
+                listWidth:250,
+                resizable:true,
+                minChars: 2,
+                disabled:false
+            }),
+
+            cmbFecha_ini: new Ext.form.DateField({
+                name: 'fecha_ini',
+                fieldLabel: 'Fecha',
+                allowBlank: false,
+                disabled: false,
+                width: 105,
+                format: 'd/m/Y'
+
+            }),
+            cmbFecha_fin: new Ext.form.DateField({
+                name: 'fecha_fim',
+                fieldLabel: 'Fecha fin',
+                allowBlank: true,
+                disabled: false,
+                width: 105,
+                format: 'd/m/Y'
+
+            }),
+            cmbFechaPago: new Ext.form.DateField({
+                name: 'fecha_pago',
+                fieldLabel: 'Fecha Pago',
+                allowBlank: false,
+                disabled: false,
+                width: 105,
+                format: 'd/m/Y'
+
+            }),
 
             constructor:function(config){
                 this.maestro=config.maestro;
@@ -430,26 +430,26 @@ header("content-type: text/javascript; charset=UTF-8");
 
             },
 
-        getParametrosFiltro: function () {
+            getParametrosFiltro: function () {
 
-            this.store.baseParams.tipo_tab_liqui = this.tipoTabLiqui;
-        },
+                this.store.baseParams.tipo_tab_liqui = this.tipoTabLiqui;
+            },
 
-        actualizarSegunTab: function (name, indice) {
-            console.log(name);
+            actualizarSegunTab: function (name, indice) {
+                console.log(name);
 
-            // solucionar error aca para poner disable el boton
-            // this.getBoton('verLiquidacion').disable();
-
-
-
-            this.tipoTabLiqui = name;
-            this.getParametrosFiltro();
-            this.load({params:{start:0, limit:this.tam_pag}});
-            //Phx.vista.Liquidacion.superclass.onButtonAct.call(this);
+                // solucionar error aca para poner disable el boton
+                // this.getBoton('verLiquidacion').disable();
 
 
-        },
+
+                this.tipoTabLiqui = name;
+                this.getParametrosFiltro();
+                this.load({params:{start:0, limit:this.tam_pag}});
+                //Phx.vista.Liquidacion.superclass.onButtonAct.call(this);
+
+
+            },
 
 
             Atributos:[
@@ -473,13 +473,13 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength:255,
                         renderer: function (value, p, record, rowIndex, colIndex){
 
-                           console.log(value)
-                           console.log(p)
-                           console.log(record)
+                            console.log(value)
+                            console.log(p)
+                            console.log(record)
                             const { json } = record;
-                           const renderNotas = json.notas ? json.notas.reduce((valorAnterior, valorActual, indice, vector) => `${valorAnterior}, ${valorActual.nro_nota}`  ,'') : undefined;
+                            const renderNotas = json.notas ? json.notas.reduce((valorAnterior, valorActual, indice, vector) => `${valorAnterior}, ${valorActual.nro_nota}`  ,'') : undefined;
 
-                           const fechaPago = json.fecha_pago ? moment(json.fecha_pago, 'YYYY-MM-DD').format('DD/MM/YYYY'): 'No tiene';
+                            const fechaPago = json.fecha_pago ? moment(json.fecha_pago, 'YYYY-MM-DD').format('DD/MM/YYYY'): 'No tiene';
                             return  `<div style="vertical-align:middle;">
                             <span style="display: block;"><b>Estado:</b>${json.estado}</span>
                             <span style="display: block;"><b>Fecha Pago:</b>${fechaPago}</span>
@@ -510,65 +510,65 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength:255,
                         renderer: function (value, p, record, rowIndex, colIndex){
 
-                           console.log(value)
-                           console.log(p)
-                           console.log(record)
+                            console.log(value)
+                            console.log(p)
+                            console.log(record)
                             const { json } = record;
 
-                           const renderLiquiDetalle = ({desc_tipo_documento, _desc_liqui_det}) => {
-                               const res = _desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
-                                   return `${valorAnterior} <br> cant:${valorActual.cantidad }/${valorActual.desc_ingas }/${valorActual.precio || valorActual.importe }`;
-                               },'');
-                               return res;
-                           }
-                           const renderLiquiManDet = ({tipo_manual, desc_tipo_documento, _desc_liqui_det}) => {
+                            const renderLiquiDetalle = ({desc_tipo_documento, _desc_liqui_det}) => {
+                                const res = _desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
+                                    return `${valorAnterior} <br> cant:${valorActual.cantidad }/${valorActual.desc_ingas }/${valorActual.precio || valorActual.importe }`;
+                                },'');
+                                return res;
+                            }
+                            const renderLiquiManDet = ({tipo_manual, desc_tipo_documento, _desc_liqui_det}) => {
 
-                               let res;
-                               switch (tipo_manual) {
-                                   case 'ERRORES TARJETA':
-                                       res = _desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
-                                           return `${valorAnterior} <br> ${valorActual.administradora }/${valorActual.comprobante}/${valorActual.lote}/${valorActual.nro_tarjeta}/<b>Imp Error:</b>${valorActual.importe_original}/<b>Imp Dev:</b> ${valorActual.importe_devolver}`;
-                                       },'');
-                                       break;
-                                   case 'BOLETOS INEXISTENTE':
-                                   case 'RO MANUAL':
-                                       res = _desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
-                                           return `${valorAnterior} <br> <b>Con. Org:</b>${valorActual.concepto_original}<b>Imp. Org:</b>${valorActual.importe_original}<b>Imp Dev:</b> ${valorActual.importe_devolver}`;
-                                       },'');
-                                       break
-                                   case 'DEPOSITO MANUAL':
-                                       res = _desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
-                                           return `${valorAnterior} <br> <b>Con. Org:</b>${valorActual.concepto_original}<b>Imp. Org:</b>${valorActual.importe_original}<b>Imp Dev:</b> ${valorActual.importe_devolver}`;
-                                       },'');
-                                       break;
-                                   default:
-                                       console.log('Lo lamentamos, por el momento no disponemos de ' + expr + '.');
-                               }
-
-
-                               return res;
-                           }
-                           const liquiDet = ({tipo_manual, desc_tipo_documento, _desc_liqui_det}) => {
-
-                               let res;
-                               switch (desc_tipo_documento) {
-                                   case 'LIQUIMAN':
-                                       res = renderLiquiManDet({tipo_manual, desc_tipo_documento,_desc_liqui_det});
-                                       break;
-                                   case 'FACCOM':
-                                   case 'FAC-ANTIGUAS':
-                                   case 'PORLIQUI':
-                                   case 'DEPOSITO':
-                                   case 'RO':
-                                       res = renderLiquiDetalle({desc_tipo_documento,_desc_liqui_det});
-                                       break;
-                                   default:
-                                       console.log('Lo lamentamos, por el momento no disponemos de ' + expr + '.');
-                               }
-                               return res;
+                                let res;
+                                switch (tipo_manual) {
+                                    case 'ERRORES TARJETA':
+                                        res = _desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
+                                            return `${valorAnterior} <br> ${valorActual.administradora }/${valorActual.comprobante}/${valorActual.lote}/${valorActual.nro_tarjeta}/<b>Imp Error:</b>${valorActual.importe_original}/<b>Imp Dev:</b> ${valorActual.importe_devolver}`;
+                                        },'');
+                                        break;
+                                    case 'BOLETOS INEXISTENTE':
+                                    case 'RO MANUAL':
+                                        res = _desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
+                                            return `${valorAnterior} <br> <b>Con. Org:</b>${valorActual.concepto_original}<b>Imp. Org:</b>${valorActual.importe_original}<b>Imp Dev:</b> ${valorActual.importe_devolver}`;
+                                        },'');
+                                        break
+                                    case 'DEPOSITO MANUAL':
+                                        res = _desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
+                                            return `${valorAnterior} <br> <b>Con. Org:</b>${valorActual.concepto_original}<b>Imp. Org:</b>${valorActual.importe_original}<b>Imp Dev:</b> ${valorActual.importe_devolver}`;
+                                        },'');
+                                        break;
+                                    default:
+                                        console.log('Lo lamentamos, por el momento no disponemos de ' + expr + '.');
+                                }
 
 
-                           }
+                                return res;
+                            }
+                            const liquiDet = ({tipo_manual, desc_tipo_documento, _desc_liqui_det}) => {
+
+                                let res;
+                                switch (desc_tipo_documento) {
+                                    case 'LIQUIMAN':
+                                        res = renderLiquiManDet({tipo_manual, desc_tipo_documento,_desc_liqui_det});
+                                        break;
+                                    case 'FACCOM':
+                                    case 'FAC-ANTIGUAS':
+                                    case 'PORLIQUI':
+                                    case 'DEPOSITO':
+                                    case 'RO':
+                                        res = renderLiquiDetalle({desc_tipo_documento,_desc_liqui_det});
+                                        break;
+                                    default:
+                                        console.log('Lo lamentamos, por el momento no disponemos de ' + expr + '.');
+                                }
+                                return res;
+
+
+                            }
                             return  `<div style="vertical-align:middle;">
                             <span style="display: block;"><b>Desc Liqui:</b>${json._desc_liqui}</span>
                             <span style="display: block;"><b>Desc Det:</b>${typeof json._desc_liqui_det === 'object' ? liquiDet(json) : json._desc_liqui_det }</span>
@@ -602,28 +602,28 @@ header("content-type: text/javascript; charset=UTF-8");
                         maxLength:255,
                         renderer: function (value, p, record, rowIndex, colIndex){
 
-                           console.log(value);
-                           console.log(p);
-                           console.log(record);
+                            console.log(value);
+                            console.log(p);
+                            console.log(record);
                             const { json } = record;
 
 
-                          /* const descuentos = (descuentos) => {
-                               console.log('descuentosss',descuentos)
-                               if(descuentos && typeof descuentos == 'object') {
-                                   const output = descuentos.map((i) => {
-                                       return `<tr><td>${i.tipo}</td><td>${i.desc_ingas}</td><td>${i.importe}</td></tr>`;
-                                   });
-                                   return output;
-                               } else {
-                                   return '';
-                               }
+                            /* const descuentos = (descuentos) => {
+                                 console.log('descuentosss',descuentos)
+                                 if(descuentos && typeof descuentos == 'object') {
+                                     const output = descuentos.map((i) => {
+                                         return `<tr><td>${i.tipo}</td><td>${i.desc_ingas}</td><td>${i.importe}</td></tr>`;
+                                     });
+                                     return output;
+                                 } else {
+                                     return '';
+                                 }
 
-                           }*/
-                           let descuentosTemplate = '';
+                             }*/
+                            let descuentosTemplate = '';
                             json.descuentos && typeof json.descuentos == 'object' && json.descuentos.forEach((i) => {
-                               descuentosTemplate += `<tr><td>${i.tipo}</td><td>${i.desc_ingas}</td><td>${i.importe}</td></tr>`;
-                           })
+                                descuentosTemplate += `<tr><td>${i.tipo}</td><td>${i.desc_ingas}</td><td>${i.importe}</td></tr>`;
+                            })
 
 
                             return `<div style="vertical-align:middle;"><table style="font-size: 11px;"><tr><th><b>Tipo</b></th><th><b>Desc.</b></th><th><b>Importe.</b></th></tr>${descuentosTemplate}
@@ -1437,7 +1437,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {name:'pv_agt', type: 'string'},
                 {name:'noiata', type: 'string'},
                 {name:'id_tipo_liquidacion', type: 'numeric'},
-              
+
                 {name:'tramo', type: 'string'},
                 {name:'nombre', type: 'string'},
                 {name:'moneda_liq', type: 'string'},
@@ -1484,12 +1484,12 @@ header("content-type: text/javascript; charset=UTF-8");
                     height:'50%',
                     cls:'DescuentoLiquidacion'
                 },
-                {
-                    url:'../../../sis_devoluciones/vista/liqui_forma_pago/LiquiFormaPago.php',
-                    title:'Forma de Pago',
-                    height:'50%',
-                    cls:'LiquiFormaPago'
-                }],
+                    {
+                        url:'../../../sis_devoluciones/vista/liqui_forma_pago/LiquiFormaPago.php',
+                        title:'Forma de Pago',
+                        height:'50%',
+                        cls:'LiquiFormaPago'
+                    }],
             /*tabeast:[
                 {
                     url:'../../../sis_devoluciones/vista/descuento_liquidacion/DescuentoLiquidacion.php',
@@ -1731,7 +1731,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.getBoton('anularLiquidacion').enable();
                 this.getBoton('verNotas').enable();
 
-                
+
 
                 return tb;
             },
@@ -1845,7 +1845,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 var rec = this.sm.getSelected();
 
                 if(rec.data['desc_tipo_documento'] === 'BOLEMD') {
-                    
+
                     Ext.Ajax.request({
                         url: '../../sis_devoluciones/control/Liquidacion/ViewLiquiPdf',
                         params: {'id_liquidacion': rec.data['id_liquidacion']},
@@ -1944,12 +1944,38 @@ header("content-type: text/javascript; charset=UTF-8");
                     case 'BOLEMD':
 
                         console.log('recccc',rec.json.boletos_recursivo)
-                        const { id_liquidacion, boletos_recursivo } = rec.json;
+                        const { id_liquidacion, boletos_recursivo, notas } = rec.json;
                         const datosParaNotas = boletos_recursivo.filter((row) => row.tiene_nota === 'si'  );
 
                         Phx.CP.loadingShow();
 
-                        this.submitNota({id_liquidacion: rec.json.id_liquidacion, desc_tipo_documento: rec.json.desc_tipo_documento});
+                        if(typeof notas === 'object' && Object.values(notas).length > 0) {
+                            //si tiene notas solo se imprimi las notas
+
+                            alert('esta liquidaciones ya tiene notas generadas va a reimprimir')
+                            //console.log('notas',notas)
+                            //console.log('notas',Object.values(notas).map((n) => n.id_nota).join(','))
+                            Phx.CP.loadingShow();
+
+                            Object.values(notas).forEach((n) => {
+
+                                Ext.Ajax.request({
+                                    url: '../../sis_devoluciones/control/Nota/verNota',
+                                    params: {'notas': n.id_nota, 'version': '2'}, // cambiar esto en la bd para que podamos enviar varios si se desea
+                                    success: this.successVistaPreviaNota,
+                                    failure: this.conexionFailure,
+                                    timeout: this.timeout,
+                                    scope: this
+                                });
+                            })
+
+
+
+                        } else {
+                            alert('esta liquidaciones no tiene notas y va a generar nuevas')
+                            this.submitNota({id_liquidacion: rec.json.id_liquidacion, desc_tipo_documento: rec.json.desc_tipo_documento});
+
+                        }
 
 
                         break;
@@ -2011,8 +2037,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     scope: this
                 });
             },
-        successGenerarNotaDesdeLiquidacion: function (res) {
-              
+            successGenerarNotaDesdeLiquidacion: function (res) {
+
                 console.log('despues de generar nottttta')
             },
 
@@ -2043,15 +2069,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     scope: this
                 });
             },
-        successGenerarReporteXls: function (resp) {
-            Phx.CP.loadingHide();
-            const objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-            console.log('objRes',objRes)
-            const archivoGenerado = objRes.ROOT.detalle.archivo_generado;
-            window.open(`../../../lib/lib_control/Intermediario.php?r=${archivoGenerado}&t=${new Date().toLocaleTimeString()}`)
+            successGenerarReporteXls: function (resp) {
+                Phx.CP.loadingHide();
+                const objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+                console.log('objRes',objRes)
+                const archivoGenerado = objRes.ROOT.detalle.archivo_generado;
+                window.open(`../../../lib/lib_control/Intermediario.php?r=${archivoGenerado}&t=${new Date().toLocaleTimeString()}`)
 
-        },
-              genLiquidacionesPagadas: function () {
+            },
+            genLiquidacionesPagadas: function () {
                 Phx.CP.loadingShow();
 
                 Ext.Ajax.request({
@@ -2211,12 +2237,12 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 Phx.CP.loadingHide();
             },
-        successExportHtmlFactura: function (resp) {
-            var objRes = resp.responseText;
-            var wnd = window.open("about:blank", "", "_blank");
-            wnd.document.write(objRes);
+            successExportHtmlFactura: function (resp) {
+                var objRes = resp.responseText;
+                var wnd = window.open("about:blank", "", "_blank");
+                wnd.document.write(objRes);
 
-        },
+            },
 
 
             successVistaPrevia: function (resp) {
@@ -2230,14 +2256,14 @@ header("content-type: text/javascript; charset=UTF-8");
                 const conceptosPorPadreHijo = descuentos.filter((row) => row.tipo_descuento !== 'HAY NOTA').reduce((valorAnterior, valorActual, indice, vector)=> {
 
                     const findObjectIndex = valorAnterior.findIndex(key =>  key
-                                                                            && valorActual.id_concepto_ingas_fk
-                                                                            && valorActual.id_concepto_ingas_fk !== ''
-                                                                            && key.id_concepto === valorActual.id_concepto_ingas_fk);
+                        && valorActual.id_concepto_ingas_fk
+                        && valorActual.id_concepto_ingas_fk !== ''
+                        && key.id_concepto === valorActual.id_concepto_ingas_fk);
                     if(findObjectIndex === -1) { //no existe entonces se le agrega al array
-                            valorAnterior.push({...valorActual,
-                                id_concepto: (valorActual.id_concepto_ingas_fk && valorActual.id_concepto_ingas_fk !== '') ? valorActual.id_concepto_ingas_fk : valorActual.id_concepto_ingas,
-                                desc_ingas: (valorActual.id_concepto_ingas_fk && valorActual.id_concepto_ingas_fk !== '') ? valorActual.desc_ingas_fk : valorActual.desc_ingas ,
-                            });
+                        valorAnterior.push({...valorActual,
+                            id_concepto: (valorActual.id_concepto_ingas_fk && valorActual.id_concepto_ingas_fk !== '') ? valorActual.id_concepto_ingas_fk : valorActual.id_concepto_ingas,
+                            desc_ingas: (valorActual.id_concepto_ingas_fk && valorActual.id_concepto_ingas_fk !== '') ? valorActual.desc_ingas_fk : valorActual.desc_ingas ,
+                        });
                     } else { //existe y se le agrega al array
                         valorAnterior[findObjectIndex] = {
                             ...valorAnterior[findObjectIndex],
@@ -2439,7 +2465,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
             ${ liquidacion.desc_tipo_documento === 'LIQUIMAN'
                 &&  (liquidacion._desc_liqui_det[0].tipo_manual === 'RO MANUAL'
-                ||  liquidacion._desc_liqui_det[0].tipo_manual === 'DEPOSITO MANUAL') ? (`
+                    ||  liquidacion._desc_liqui_det[0].tipo_manual === 'DEPOSITO MANUAL') ? (`
                 <tr>
                     <td width="100%">
 ${liquiManDetalle}
@@ -2477,13 +2503,13 @@ ${liquiManDetalle}
                                 <td width="10%"></td>
                             </tr>
                             ${values.map((des)=> {
-                                return '<tr>'
-                                    +'<td width="20%">'+des.codigo+'</td>'
-                                    +'<td width="60%">'+des.desc_ingas+'</td>'
-                                    +'<td width="10%">'+String.format('{0}', Ext.util.Format.number(des.importe, '0,000.00'))+'</td>'
-                                    +'<td width="10%"></td>'
-                                    +'</tr>';
-                            })}
+                            return '<tr>'
+                                +'<td width="20%">'+des.codigo+'</td>'
+                                +'<td width="60%">'+des.desc_ingas+'</td>'
+                                +'<td width="10%">'+String.format('{0}', Ext.util.Format.number(des.importe, '0,000.00'))+'</td>'
+                                +'<td width="10%"></td>'
+                                +'</tr>';
+                        })}
 <tr>
                                 <td width="20%"></td>
                                 <td width="60%" style="letter-spacing: 3px;">-----------------</td>
@@ -2563,8 +2589,8 @@ ${notas && notas.map(function (nota) {
 
                 <tr><td align="center">Forma de Pago:</td></tr>
 ${liqui_forma_pago && liqui_forma_pago.map((forma_pago) => {
-    const formaPagoMostrar = forma_pago.desc_medio_pago_pw === 'CASH' ? 'CHEQUE' : forma_pago.desc_medio_pago_pw;
-                return `<tr><td align="center">${forma_pago.desc_forma_pago_pw === 'CREDIT CARD' ? `${forma_pago.administradora} / ${forma_pago.desc_medio_pago_pw} / ${forma_pago.nro_tarjeta} / ${forma_pago.pais}` : `${formaPagoMostrar}/A Nombre de:${forma_pago.nombre}/ Nro Cheque: ${forma_pago.nro_documento_pago}` }</td></tr>`
+                    const formaPagoMostrar = forma_pago.desc_medio_pago_pw === 'CASH' ? 'CHEQUE' : forma_pago.desc_medio_pago_pw;
+                    return `<tr><td align="center">${forma_pago.desc_forma_pago_pw === 'CREDIT CARD' ? `${forma_pago.administradora} / ${forma_pago.desc_medio_pago_pw} / ${forma_pago.nro_tarjeta} / ${forma_pago.pais}` : `${formaPagoMostrar}/A Nombre de:${forma_pago.nombre}/ Nro Cheque: ${forma_pago.nro_documento_pago}` }</td></tr>`
 
                 }).join("")}
             </table>
@@ -2634,7 +2660,7 @@ ${liqui_forma_pago && liqui_forma_pago.map((forma_pago) => {
                             <th>Acciones</th>
                         </tr>
                         ${rec.json.notas.map((nota) => {
-                           return `<tr>
+                            return `<tr>
                                 <td>${nota.nroaut}</td>
                                 <td>${nota.nro_nota}</td>
                                 <td><i class="fa fa-remove"></i></td>
@@ -2654,11 +2680,11 @@ ${liqui_forma_pago && liqui_forma_pago.map((forma_pago) => {
 
                         });
 
-                   /* console.log(this.idContenedor)
-                    const id = this.idContenedor;
-                    console.log('this.panelResumenNotas',this.panelResumenNotas)
-                    //Phx.CP.getPagina(id).panelResumenNotas.update('<div>favio figueroa</div>')
-                    this.panelResumenNotas.update(String.format('<div>favio figueroa</div>'))*/
+                    /* console.log(this.idContenedor)
+                     const id = this.idContenedor;
+                     console.log('this.panelResumenNotas',this.panelResumenNotas)
+                     //Phx.CP.getPagina(id).panelResumenNotas.update('<div>favio figueroa</div>')
+                     this.panelResumenNotas.update(String.format('<div>favio figueroa</div>'))*/
                     windowNotas.show();
 
                 }else {
@@ -2669,5 +2695,3 @@ ${liqui_forma_pago && liqui_forma_pago.map((forma_pago) => {
         }
     )
 </script>
-
-		

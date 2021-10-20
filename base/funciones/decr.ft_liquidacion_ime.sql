@@ -496,7 +496,7 @@ BEGIN
                     into v_nro_liquidacion_validado
                     from decr.tliqui_boleto_seleccionado tbs
                     inner join decr.tliquidacion tl on tl.id_liquidacion = tbs.id_liquidacion
-                    where tbs.boleto = v_boleto_seleccionado.boleto;
+                    where tbs.boleto = v_boleto_seleccionado.boleto and tl.estado != 'anulado';
 
                     IF v_nro_liquidacion_validado IS NOT NULL THEN
                          RAISE EXCEPTION 'ERROR BOLETO YA SE ENCUENTRA EN UNA LIQUIDACION %', v_nro_liquidacion_validado;
