@@ -736,7 +736,7 @@ BEGIN
                                 v_codigo_control,
                                 v_record_dosificacion.id_dosificacion,
                                 v_registros_json.billete::bigint,
-                                1,
+                                v_record_dosificacion.nroaut,
                                 v_registros_json.fecha_emision::date,
                                 'BOLETO',
                                 1,

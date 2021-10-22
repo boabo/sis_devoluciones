@@ -71,6 +71,22 @@ header("content-type: text/javascript; charset=UTF-8");
             btestGroups: [0,1, 2],
             bexcelGroups: [0, 1, 2],
 
+            cmbRazonSocialParaFactura: new Ext.form.TextField({
+
+                enableKeyEvents: true,
+                name: 'razon_social',
+                id: 'input_razon_social',
+                allowBlank: false,
+                fieldLabel: 'Razon Social',
+            }),
+            cmbNitParaFactura: new Ext.form.TextField({
+
+                enableKeyEvents: true,
+                name: 'nit',
+                id: 'input_nit',
+                allowBlank: false,
+                fieldLabel: 'Nit',
+            }),
             cmbTipoAdministradora: new Ext.form.ComboBox({
 
                 name: 'tipo_administradora',
@@ -335,6 +351,52 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
 
+                this.popUpGenerarFactura = new Ext.Window(
+                    {
+                        layout: 'fit',
+                        width: 500,
+                        height: 250,
+                        modal: true,
+                        closeAction: 'hide',
+
+                        items: new Ext.FormPanel({
+                            labelWidth: 75, // label settings here cascade unless overridden
+
+                            frame: true,
+                            // title: 'Factura Manual Concepto',
+                            bodyStyle: 'padding:5px 5px 0',
+                            width: 339,
+                            defaults: {width: 191},
+                            // defaultType: 'textfield',
+
+                            items: [this.cmbNitParaFactura, this.cmbRazonSocialParaFactura],
+
+                            buttons: [{
+                                text: 'Save',
+                                handler: () => {
+                                    if(this.cmbNitParaFactura.getValue() && this.cmbRazonSocialParaFactura.getValue()) {
+                                        this.popUpGenerarFactura.hide();
+                                        this.pagar();
+
+                                    } else {
+                                        alert('debes llenar razon social y nit')
+
+                                    }
+
+
+                                },
+
+                                scope: this
+                            }, {
+                                text: 'Cancel',
+                                handler: ()=>{this.popUpGenerarFactura.hide()}
+                            }]
+                        }),
+
+                    });
+
+
+
 
                 this.init();
                 this.iniciarEventos();
@@ -382,7 +444,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     argument: {imprimir: 'pagarFacturacion'},
                     text: '<i class="fa fa-file-text-o fa-2x"></i><br> Emitir Factura',/*iconCls:'' ,*/
                     disabled: true,
-                    handler: this.pagar
+                    handler: this.abrirFormPagarParaFacturar
                 });
                 this.addButton('fechaPago', {
                     argument: {imprimir: 'fechaPago'},
@@ -2096,6 +2158,13 @@ header("content-type: text/javascript; charset=UTF-8");
                 });
             },
 
+            abrirFormPagarParaFacturar : function () {
+                var rec = this.sm.getSelected();
+                this.cmbNitParaFactura.setValue(rec.json.nro_nit);
+                this.cmbRazonSocialParaFactura.setValue(rec.json.razon_social);
+                this.popUpGenerarFactura.show();
+
+            },
             pagar : function () {
 
 
@@ -2115,6 +2184,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                         const find = rec.json.descuentos.find((resq) => resq.tipo === 'FACTURABLE'); // preguntar
                         console.log('find',find);
+                        
                         if(find && (rec.json.id_nota != null || rec.json.id_nota != '')) {
                             Phx.CP.loadingShow();
 
@@ -2152,7 +2222,11 @@ header("content-type: text/javascript; charset=UTF-8");
                 let objectToSend;
                 if(objetoDatos.length > 0) {
                     const dataLiqui = objetoDatos[0];
-                    if(!dataLiqui.nro_nit || !dataLiqui.razon_social || dataLiqui.nro_nit == '' || dataLiqui.razon_social == ''|| dataLiqui.nro_nit == null || dataLiqui.razon_social == null) {
+
+                    const nitParaFactura = this.cmbNitParaFactura.getValue();
+                    const razonSocialParaFactura = this.cmbRazonSocialParaFactura.getValue();
+
+                    if(!nitParaFactura || !razonSocialParaFactura || nitParaFactura == '' || razonSocialParaFactura == ''|| nitParaFactura == null || razonSocialParaFactura == null) {
                         alert('no se puede generar factura por que nit y razon social pueden que esten vacios');
                     } else {
 
@@ -2160,8 +2234,8 @@ header("content-type: text/javascript; charset=UTF-8");
                         objectToSend = {
                             id_liquidacion: dataLiqui.id_liquidacion,
                             punto_venta: dataLiqui.desc_punto_venta,
-                            nit_cliente: dataLiqui.nro_nit,
-                            razon_social: dataLiqui.razon_social,
+                            nit_cliente: nitParaFactura,
+                            razon_social: razonSocialParaFactura,
                             moneda_boleto: dataLiqui.moneda_liq,
                             moneda: dataLiqui.moneda_liq,
                             tipo_cambio: dataLiqui.tipo_de_cambio,
