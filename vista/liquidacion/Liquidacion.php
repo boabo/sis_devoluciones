@@ -2035,7 +2035,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                         } else {
                             alert('esta liquidaciones no tiene notas y va a generar nuevas')
-                            //this.submitNota({id_liquidacion: rec.json.id_liquidacion, desc_tipo_documento: rec.json.desc_tipo_documento});
+                            this.submitNota({id_liquidacion: rec.json.id_liquidacion, desc_tipo_documento: rec.json.desc_tipo_documento});
 
                         }
 
