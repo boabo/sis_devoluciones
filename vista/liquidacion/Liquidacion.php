@@ -2011,7 +2011,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                         Phx.CP.loadingShow();
 
-                        if(typeof notas === 'object' && Object.values(notas).length > 0) {
+                        if(notas && typeof notas === 'object' && Object.values(notas).length > 0) {
                             //si tiene notas solo se imprimi las notas
 
                             alert('esta liquidaciones ya tiene notas generadas va a reimprimir')
@@ -2035,7 +2035,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                         } else {
                             alert('esta liquidaciones no tiene notas y va a generar nuevas')
-                            this.submitNota({id_liquidacion: rec.json.id_liquidacion, desc_tipo_documento: rec.json.desc_tipo_documento});
+                            //this.submitNota({id_liquidacion: rec.json.id_liquidacion, desc_tipo_documento: rec.json.desc_tipo_documento});
 
                         }
 
