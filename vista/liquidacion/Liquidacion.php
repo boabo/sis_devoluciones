@@ -1977,6 +1977,10 @@ header("content-type: text/javascript; charset=UTF-8");
             successGenerarNota: function (resp) {
                 Phx.CP.loadingHide();
 
+                var me = this;
+                me.reload();
+
+
                 var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
 
                 console.log('bjRes.ROOT.datos.id_nota',objRes.ROOT.datos.id_nota)
