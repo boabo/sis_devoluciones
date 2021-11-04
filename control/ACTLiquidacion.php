@@ -89,7 +89,7 @@ class ACTLiquidacion extends ACTbase{
             CURLOPT_POSTFIELDS =>'{
                 "ticketNumber": '.$nroTicket.',
                 "id_liquidacion": '.$id_liquidacion.',
-                "ticketNumber": '.$id_usuario.'
+                "id_usuario": '.$id_usuario.'
             }
             ',
             CURLOPT_HTTPHEADER => array(
