@@ -102,6 +102,21 @@ header("content-type: text/javascript; charset=UTF-8");
                 type: 'ComboBox',
 
             }),
+            cmbEstadoAdministradora: new Ext.form.ComboBox({
+
+                name: 'estado_administradora',
+                fieldLabel: 'Estado Administradora',
+                allowBlank: true,
+                emptyText: 'estado_administradora...',
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'local',
+                store: ['pagado', 'emitido'],
+                width: 200,
+                type: 'ComboBox',
+
+            }),
             cmbFecha_ini_reporte_administradora: new Ext.form.DateField({
                 name: 'fecha_ini_reporte_administradora',
                 fieldLabel: 'Fecha',
@@ -301,7 +316,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             defaults: {width: 191},
                             // defaultType: 'textfield',
 
-                            items: [this.cmbTipoAdministradora, this.cmbFecha_ini_reporte_administradora, this.cmbFecha_fin_reporte_administradora],
+                            items: [this.cmbTipoAdministradora,this.cmbEstadoAdministradora, this.cmbFecha_ini_reporte_administradora, this.cmbFecha_fin_reporte_administradora],
 
                             buttons: [{
                                 text: 'Save',
@@ -2128,7 +2143,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 Ext.Ajax.request({
                     url: '../../sis_devoluciones/control/Liquidacion/genReportePorAdministradora',
-                    params: {'administradora': this.cmbTipoAdministradora.getValue(), fecha_ini: this.cmbFecha_ini_reporte_administradora.getValue(), fecha_fin: this.cmbFecha_fin_reporte_administradora.getValue()},
+                    params: {'administradora': this.cmbTipoAdministradora.getValue(),'estado': this.cmbEstadoAdministradora.getValue(), fecha_ini: this.cmbFecha_ini_reporte_administradora.getValue(), fecha_fin: this.cmbFecha_fin_reporte_administradora.getValue()},
                     success: this.successGenerarReporteXls,
                     failure: this.conexionFailure,
                     timeout: this.timeout,
