@@ -97,7 +97,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 triggerAction: 'all',
                 lazyRender: true,
                 mode: 'local',
-                store: ['LINKSER', 'ATC', 'WORLDPAY'],
+                store: ['LINKSER', 'ATC', 'WORLDPAY', 'CYBER SOURCE', 'AMEX'],
                 width: 200,
                 type: 'ComboBox',
 
