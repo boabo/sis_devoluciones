@@ -26,6 +26,7 @@ DECLARE
     v_nombre_funcion        text;
     v_mensaje_error         text;
     v_id_liquidacion    integer;
+    v_billete    text;
     v_json    varchar;
 
     v_id_concepto_ingas varchar[];
@@ -1155,11 +1156,12 @@ BEGIN
         begin
 
             select
-                id_liquidacion
+                tl.id_liquidacion, ttdl.tipo_documento
             into
-                v_id_liquidacion
-            from decr.tliquidacion mov
-            where id_proceso_wf = v_parametros.id_proceso_wf_act;
+                v_id_liquidacion, v_tipo_documento
+            from decr.tliquidacion tl
+            inner join decr.ttipo_doc_liquidacion ttdl on ttdl.id_tipo_doc_liquidacion = tl.id_tipo_doc_liquidacion
+            where tl.id_proceso_wf = v_parametros.id_proceso_wf_act;
 
             select
                 codigo
@@ -1201,10 +1203,23 @@ BEGIN
             where id_liquidacion = v_id_liquidacion;
 
 
+            -- si es boleto la logica debe obtener los boletos relacionados a esta liquidacion
+            if v_tipo_documento = 'BOLEMD' then
+                select tlb.data_stage->>'ticketNumber' as desc_nro_boleto
+                into v_billete
+                from decr.tliquidacion tl
+                inner join decr.tliqui_boleto tlb on tlb.id_liquidacion = tl.id_liquidacion
+                where tl.id_liquidacion = v_id_liquidacion;
+            END IF;
+
+
 
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','estado cambiado');
             v_resp = pxp.f_agrega_clave(v_resp,'id_liquidacion',v_id_liquidacion::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'estado_actual',v_codigo_estado_siguiente::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'tipo_documento',v_tipo_documento::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp, 'billete', v_billete::varchar);
 
             --Devuelve la respuesta
             return v_resp;

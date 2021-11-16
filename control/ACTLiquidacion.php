@@ -119,41 +119,6 @@ class ACTLiquidacion extends ACTbase{
             //enviarmos a pxp nd para insertar las formas de pago dinamicamente
             $this->insertarFormasDePagoPxpNd($data['id_liquidacion'], $data['id_usuario']);
 
-            if($data['tipo'] === 'BOLEMD') {
-                //si es boleto necesitamos hacer un servicio
-                $nroTicket = $this->objParam->getParametro('nro_boleto');
-
-                $curl = curl_init();
-
-                curl_setopt_array($curl, array(
-                    CURLOPT_URL => $_SESSION['_PXP_ND_URL'].'/api/boa-stage-nd/Ticket/refundFactCoupons',
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_ENCODING => '',
-                    CURLOPT_MAXREDIRS => 10,
-                    CURLOPT_TIMEOUT => 0,
-                    CURLOPT_FOLLOWLOCATION => true,
-                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                    CURLOPT_CUSTOMREQUEST => 'POST',
-                    CURLOPT_POSTFIELDS =>'{
-                "ticketNumber": '.$nroTicket.'
-            }
-            ',
-                    CURLOPT_HTTPHEADER => array(
-                        'Authorization: ' . $_SESSION['_PXP_ND_TOKEN'],
-                        'Content-Type: application/json'
-                    ),
-                ));
-
-                $response = curl_exec($curl);
-
-                curl_close($curl);
-
-                $data_json = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $response), true);
-
-                $data['mensaje_stage_cupones'] = $data_json;
-                $this->res->setDatos($data);
-
-            }
 
 
             /*if($this->objParam->getParametro('tipo') != '') {
@@ -448,6 +413,55 @@ class ACTLiquidacion extends ACTbase{
     function siguienteEstadoLiquidacion() {
         $this->objFunc=$this->create('MODLiquidacion');
         $this->res=$this->objFunc->siguienteEstadoLiquidacion($this->objParam);
+        // mirar el estado_actual para disparar una peticion a pxp-nd
+
+        if ($this->res->getTipo() != 'EXITO') {
+
+            $this->res->imprimirRespuesta($this->res->generarJson());
+            exit;
+        }
+        $data = $this->res->getDatos();
+        $estado_actual = $data['estado_actual'];
+        $tipo_documento = $data['tipo_documento'];
+        $id_liquidacion = $data['id_liquidacion'];
+        $billete = $data['billete'];
+
+        if($estado_actual === 'pagado' && $tipo_documento === 'BOLEMD') {
+
+            /*$curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => $_SESSION['_PXP_ND_URL'].'/api/boa-stage-nd/Ticket/refundFactCoupons',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS =>'{
+                "ticketNumber": '.$billete.'
+            }
+            ',
+                CURLOPT_HTTPHEADER => array(
+                    'Authorization: ' . $_SESSION['_PXP_ND_TOKEN'],
+                    'Content-Type: application/json'
+                ),
+            ));
+
+            $response = curl_exec($curl);
+
+            curl_close($curl);
+
+            $data_json = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $response), true);
+
+            $data['mensaje_stage_cupones'] = $data_json;*/
+            $data['mensaje_stage_cupones'] = 'llleggga';
+            $this->res->setDatos($data);
+
+        }
+
+
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 

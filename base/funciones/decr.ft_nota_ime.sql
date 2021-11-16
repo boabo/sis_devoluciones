@@ -618,164 +618,175 @@ BEGIN
 
             if v_liquidacion_json->>'desc_tipo_documento' = 'BOLEMD' THEN
                 v_i := 1;
-                --obtenemos los datos para generar notas
-                FOR v_registros_json IN (
-                    select * from decr.tliqui_boleto_recursivo where id_liquidacion = v_parametros.id_liquidacion and tiene_nota = 'si'
-                )
-                    LOOP
 
-                        --obtenemos la dosificacion para generar la nota
-                        SELECT d.*
-                        INTO v_record_dosificacion
-                        FROM vef.tdosificacion d
-                        WHERE d.estado_reg = 'activo'
-                          AND d.id_sucursal = v_record_liquidacion.id_sucursal
-                          AND d.fecha_inicio_emi <= now()::date
-                          AND d.fecha_limite >= now()::date
-                          AND d.tipo = 'N'
-                          AND d.tipo_generacion = 'computarizada'
-                          AND d.nombre_sistema = 'SISTEMA FACTURACION NCD'
-                          --d.id_activida_economica @> v_id_actividad_economica todo preguntar sobre esto
-                            FOR UPDATE;
+                --validamos si se tiene configurado la liquidacion para sacar nota de credito debito
 
 
-                        IF (v_record_dosificacion IS NULL) THEN
-                            RAISE EXCEPTION 'No existe una dosificacion activa para emitir la Nota';
-                        END IF;
+                IF EXISTS (select 1 from decr.tliqui_boleto_recursivo
+                           where id_liquidacion = v_parametros.id_liquidacion and tiene_nota = 'si') THEN
+                    --obtenemos los datos para generar notas
+                    FOR v_registros_json IN (
+                        select * from decr.tliqui_boleto_recursivo where id_liquidacion = v_parametros.id_liquidacion and tiene_nota = 'si'
+                    )
+                        LOOP
 
-                        v_nro_nota = v_record_dosificacion.nro_siguiente;
+                            --obtenemos la dosificacion para generar la nota
+                            SELECT d.*
+                            INTO v_record_dosificacion
+                            FROM vef.tdosificacion d
+                            WHERE d.estado_reg = 'activo'
+                              AND d.id_sucursal = v_record_liquidacion.id_sucursal
+                              AND d.fecha_inicio_emi <= now()::date
+                              AND d.fecha_limite >= now()::date
+                              AND d.tipo = 'N'
+                              AND d.tipo_generacion = 'computarizada'
+                              AND d.nombre_sistema = 'SISTEMA FACTURACION NCD'
+                              --d.id_activida_economica @> v_id_actividad_economica todo preguntar sobre esto
+                                FOR UPDATE;
 
 
-                        IF EXISTS (
-                                select 1 from decr.tnota WHERE  nro_nota = v_nro_nota::varchar and id_dosificacion = v_record_dosificacion.id_dosificacion) THEN
-                            RAISE EXCEPTION 'El numero de Nota ya existe para esta dosificacion. Por favor comuniquese con el administrador del sistema, ....';
-                            -- do something
-                        END IF;
+                            IF (v_record_dosificacion IS NULL) THEN
+                                RAISE EXCEPTION 'No existe una dosificacion activa para emitir la Nota';
+                            END IF;
+
+                            v_nro_nota = v_record_dosificacion.nro_siguiente;
 
 
-
-                        -- el numero nit es el primero row del detalle del servicio de devolucion tomar en cuenta eso
-                        v_nro_nit = v_liquidacion_json->>'nro_nit';
-                        v_razon_social = v_liquidacion_json->>'razon_social';
-
-                        --v_importe_total_devolver := v_registros_json.monto - v_registros_json.exento - v_registros_json.iva_contabiliza_no_liquida;
-                        v_importe_total_devolver := v_registros_json.monto - v_registros_json.exento;
-
-
-                        --todo
-                        -- generar codigo de control para la nota
-                        v_codigo_control:= pxp.f_gen_cod_control(v_record_dosificacion.llave,
-                                                                 v_record_dosificacion.nroaut,
-                                                                 v_nro_nota::varchar,
-                                                                 v_nro_nit::varchar,
-                                                                 to_char(now()::date,'YYYYMMDD')::varchar,
-                                                                 round(v_importe_total_devolver::numeric,0));
+                            IF EXISTS (
+                                    select 1 from decr.tnota WHERE  nro_nota = v_nro_nota::varchar and id_dosificacion = v_record_dosificacion.id_dosificacion) THEN
+                                RAISE EXCEPTION 'El numero de Nota ya existe para esta dosificacion. Por favor comuniquese con el administrador del sistema, ....';
+                                -- do something
+                            END IF;
 
 
 
+                            -- el numero nit es el primero row del detalle del servicio de devolucion tomar en cuenta eso
+                            v_nro_nit = v_liquidacion_json->>'nro_nit';
+                            v_razon_social = v_liquidacion_json->>'razon_social';
 
-                        v_credfis = v_importe_total_devolver * 0.13;
-
-                        --insertar la nota
-                        INSERT INTO decr.tnota
-                        (id_usuario_reg,
-                         id_usuario_mod,
-                         fecha_reg,
-                         fecha_mod,
-                         estado_reg,
-                         id_usuario_ai,
-                         usuario_ai,
-                         estacion,
-                         id_sucursal,
-                         estado,
-                         nro_nota,
-                         fecha,
-                         razon,
-                         tcambio,
-                         nit,
-                         id_liquidacion,
-                         nro_liquidacion,
-                         id_moneda,
-                         monto_total,
-                         excento,
-                         total_devuelto,
-                         credfis,
-                         billete,
-                         codigo_control,
-                         id_dosificacion,
-                         nrofac,
-                         nroaut,
-                         fecha_fac,
-                         tipo,
-                         nroaut_anterior,
-                         fecha_limite)
-
-                        VALUES (p_id_usuario,
-                                NULL,
-                                now(),
-                                NULL,
-                                'activo',
-                                v_parametros._id_usuario_ai,
-                                NULL,
-                                v_record_liquidacion.id_sucursal,
-                                '1',
-                                '1',
-                                v_nro_nota,
-                                now(),
-                                v_razon_social,
-                                '6.9',
-                                v_nro_nit,
-                                v_record_liquidacion.id_liquidacion,
-                                v_record_liquidacion.nro_liquidacion,
-                                1,
-                                v_registros_json.monto,
-                                v_registros_json.exento::numeric,
-                                v_importe_total_devolver, -- aclarar con shirley
-                                v_credfis,
-                                v_registros_json.billete::numeric, --  esto puede ser el numero de boleto
-                                v_codigo_control,
-                                v_record_dosificacion.id_dosificacion,
-                                v_registros_json.billete::bigint,
-                                v_record_dosificacion.nroaut::bigint,
-                                v_registros_json.fecha_emision::date,
-                                'BOLETO',
-                                1,
-                                v_record_dosificacion.fecha_limite)
-                        RETURNING id_nota INTO v_id_nota;
-
-                        v_id_notas[v_i] := v_id_nota;
-                        v_i := v_i + 1;
-
-                        INSERT INTO decr.tnota_detalle
-                        (id_usuario_reg,
-                         estado_reg,
-                         id_nota,
-                         importe,
-                         cantidad,
-                         concepto,
-                         exento,
-                         total_devuelto,
-                         precio_unitario)
-                        VALUES (p_id_usuario,
-                                'activo',
-                                v_id_nota,
-                                v_registros_json.monto::numeric,
-                                1::integer,
-                                v_registros_json.concepto_para_nota,
-                                v_registros_json.exento::numeric,
-                                v_importe_total_devolver::numeric,
-                                v_registros_json.monto::numeric);
+                            --v_importe_total_devolver := v_registros_json.monto - v_registros_json.exento - v_registros_json.iva_contabiliza_no_liquida;
+                            v_importe_total_devolver := v_registros_json.monto - v_registros_json.exento;
 
 
-                        -- actualizamos la dosificacion para aumentar el numero siguiente
-                        UPDATE vef.tdosificacion
-                        SET nro_siguiente = nro_siguiente + 1
-                        WHERE id_dosificacion = v_record_dosificacion.id_dosificacion;
+                            --todo
+                            -- generar codigo de control para la nota
+                            v_codigo_control:= pxp.f_gen_cod_control(v_record_dosificacion.llave,
+                                                                     v_record_dosificacion.nroaut,
+                                                                     v_nro_nota::varchar,
+                                                                     v_nro_nit::varchar,
+                                                                     to_char(now()::date,'YYYYMMDD')::varchar,
+                                                                     round(v_importe_total_devolver::numeric,0));
 
 
 
 
-                    END LOOP;
+                            v_credfis = v_importe_total_devolver * 0.13;
+
+                            --insertar la nota
+                            INSERT INTO decr.tnota
+                            (id_usuario_reg,
+                             id_usuario_mod,
+                             fecha_reg,
+                             fecha_mod,
+                             estado_reg,
+                             id_usuario_ai,
+                             usuario_ai,
+                             estacion,
+                             id_sucursal,
+                             estado,
+                             nro_nota,
+                             fecha,
+                             razon,
+                             tcambio,
+                             nit,
+                             id_liquidacion,
+                             nro_liquidacion,
+                             id_moneda,
+                             monto_total,
+                             excento,
+                             total_devuelto,
+                             credfis,
+                             billete,
+                             codigo_control,
+                             id_dosificacion,
+                             nrofac,
+                             nroaut,
+                             fecha_fac,
+                             tipo,
+                             nroaut_anterior,
+                             fecha_limite)
+
+                            VALUES (p_id_usuario,
+                                    NULL,
+                                    now(),
+                                    NULL,
+                                    'activo',
+                                    v_parametros._id_usuario_ai,
+                                    NULL,
+                                    v_record_liquidacion.id_sucursal,
+                                    '1',
+                                    '1',
+                                    v_nro_nota,
+                                    now(),
+                                    v_razon_social,
+                                    '6.9',
+                                    v_nro_nit,
+                                    v_record_liquidacion.id_liquidacion,
+                                    v_record_liquidacion.nro_liquidacion,
+                                    1,
+                                    v_registros_json.monto,
+                                    v_registros_json.exento::numeric,
+                                    v_importe_total_devolver, -- aclarar con shirley
+                                    v_credfis,
+                                    v_registros_json.billete::numeric, --  esto puede ser el numero de boleto
+                                    v_codigo_control,
+                                    v_record_dosificacion.id_dosificacion,
+                                    v_registros_json.billete::bigint,
+                                    v_record_dosificacion.nroaut::bigint,
+                                    v_registros_json.fecha_emision::date,
+                                    'BOLETO',
+                                    1,
+                                    v_record_dosificacion.fecha_limite)
+                            RETURNING id_nota INTO v_id_nota;
+
+                            v_id_notas[v_i] := v_id_nota;
+                            v_i := v_i + 1;
+
+                            INSERT INTO decr.tnota_detalle
+                            (id_usuario_reg,
+                             estado_reg,
+                             id_nota,
+                             importe,
+                             cantidad,
+                             concepto,
+                             exento,
+                             total_devuelto,
+                             precio_unitario)
+                            VALUES (p_id_usuario,
+                                    'activo',
+                                    v_id_nota,
+                                    v_registros_json.monto::numeric,
+                                    1::integer,
+                                    v_registros_json.concepto_para_nota,
+                                    v_registros_json.exento::numeric,
+                                    v_importe_total_devolver::numeric,
+                                    v_registros_json.monto::numeric);
+
+
+                            -- actualizamos la dosificacion para aumentar el numero siguiente
+                            UPDATE vef.tdosificacion
+                            SET nro_siguiente = nro_siguiente + 1
+                            WHERE id_dosificacion = v_record_dosificacion.id_dosificacion;
+
+
+
+
+                        END LOOP;
+                ELSE
+                    RAISE EXCEPTION '%', 'NO SE HA CONFIGURADO PREVIAMENTE PARA QUE ESTA LIQUIDACION PUEDA TENER UNA NOTA';
+                END IF;
+
+
 
 
             END IF;
