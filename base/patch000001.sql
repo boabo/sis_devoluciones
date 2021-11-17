@@ -711,6 +711,12 @@ CREATE TABLE decr.tliqui_boleto_seleccionado (
 ) INHERITS (pxp.tbase)
   WITHOUT OIDS;
 
+
+alter table decr.tliqui_manual_detalle
+    add nro_aut varchar(255);
+
+
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
 

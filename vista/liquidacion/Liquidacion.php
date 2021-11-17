@@ -2203,7 +2203,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                         const find = rec.json.descuentos.find((resq) => resq.tipo === 'FACTURABLE'); // preguntar
                         console.log('find',find);
-                        
+
                         if(find && (rec.json.id_nota != null || rec.json.id_nota != '')) {
                             Phx.CP.loadingShow();
 
@@ -2386,9 +2386,21 @@ header("content-type: text/javascript; charset=UTF-8");
                 const fechaPago = liquidacion.fecha_pago ? moment(liquidacion.fecha_pago, 'YYYY-MM-DD').format('DD/MM/YYYY'): '';
                 const fechaReg = liquidacion.fecha_reg ? moment(liquidacion.fecha_reg, 'YYYY-MM-DD').format('DD/MM/YYYY'): '';
 
-                const liquiManDetalle = liquidacion._desc_liqui_det && typeof liquidacion._desc_liqui_det === 'function' ? liquidacion._desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
+                console.log('liquidacion._desc_liqui_det',liquidacion._desc_liqui_det)
+                console.log('typeof liquidacion._desc_liqui_det',typeof liquidacion._desc_liqui_det)
+                const liquiManDetalle = liquidacion._desc_liqui_det && typeof liquidacion._desc_liqui_det === 'object' ? liquidacion._desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
                     if(valorActual.tipo_manual === 'ERRORES TARJETA') {
-                        return `${valorAnterior} <br> <b>Administradora:</b>${valorActual.administradora} <b>Lote:</b>${valorActual.lote} <b>comprobante:</b>${valorActual.comprobante} <b>fecha:</b>${valorActual.fecha} <b>Nro Tarjeta:</b>${valorActual.nro_tarjeta}<b>Imp. Org:</b>${valorActual.importe_original}<b>Imp Dev:</b> ${valorActual.importe_devolver}`;
+                        return `${valorAnterior} <tr>
+<td>${valorActual.administradora}</td>
+<td>${valorActual.lote}</td>
+<td>${valorActual.comprobante}</td>
+<td>${valorActual.fecha}</td>
+<td>${valorActual.nro_tarjeta}</td>
+<td>${valorActual.nro_aut}</td>
+<td>${valorActual.importe_original}</td>
+<td>${valorActual.importe_devolver}</td>
+
+</tr>`;
 
                     } else {
                         return `${valorAnterior} <br> <b>Con. Org:</b>${valorActual.concepto_original}<b>Imp. Org:</b>${valorActual.importe_original}<b>Imp Dev:</b> ${valorActual.importe_devolver}`;
@@ -2396,6 +2408,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     }
                 },'') : '';
 
+                console.log('liquiManDetalle',liquiManDetalle)
                 const htmlPreview = `
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -2566,8 +2579,24 @@ header("content-type: text/javascript; charset=UTF-8");
                 &&  (liquidacion._desc_liqui_det[0].tipo_manual === 'RO MANUAL'
                     ||  liquidacion._desc_liqui_det[0].tipo_manual === 'DEPOSITO MANUAL' ||  liquidacion._desc_liqui_det[0].tipo_manual === 'ERRORES TARJETA') ? (`
                 <tr>
-                    <td width="100%">
-${liquiManDetalle}
+                    <td width="100%" colspan="4">
+                    ${liquidacion._desc_liqui_det[0].tipo_manual === 'ERRORES TARJETA' ?  (
+                    `<table width="100%" style="    border-collapse: collapse;">
+                    <tr style="border-bottom: 1pt solid black !important;border: 1px solid #111;font-weight: bold;">
+                    <td>Administradora</td>
+                    <td>Lote</td>
+                    <td>Comprobante</td>
+                    <td>Fecha</td>
+                    <td>Nro Tarjeta</td>
+                    <td>Nro Aut</td>
+                    <td>Imp Org</td>
+                <td>Imp Devolver</td>
+
+                </tr>
+                ${liquiManDetalle}
+                </table>`
+                ) : liquiManDetalle}
+
                     </td>
                 </tr>
                 <tr>
@@ -2661,37 +2690,37 @@ ${liquiManDetalle}
 
 <tr>
 <td>
-${factura_pagada && typeof factura_pagada === 'object' && '<span>Factura Pagada: '+factura_pagada.nro_factura+' Nro Aut:'+factura_pagada.nroaut+'</span>'}
+${factura_pagada && typeof factura_pagada === 'object' ? '<span>Factura Pagada: '+factura_pagada.nro_factura+' Nro Aut:'+factura_pagada.nroaut+'</span>' : ""}
 </td>
 </tr>
 
 <tr>
 <td>
-${boletos_recursivo && typeof boletos_recursivo === 'object' && boletos_recursivo.map(function (bolRecursivo) {
+${boletos_recursivo && typeof boletos_recursivo === 'object' ? boletos_recursivo.map(function (bolRecursivo) {
                     console.log('bolRecursivo',bolRecursivo)
                     return ''
                         +'<span>Nro ticket : '+bolRecursivo.billete+',</span>'
                         +'';
-                }).join("")}
+                }).join("") : ""}
 </td>
 </tr>
 
     <tr>
 <td>
  <table width="100%" style="width: 100%;">
-${notas && notas.map(function (nota) {
+${notas ? notas.map(function (nota) {
                     console.log('nota',nota)
                     return '<tr>'
                         +'<td>Nro Nota : '+nota.nro_nota+'</td>'
                         +'</tr>';
-                }).join("")}
+                }).join(""): ""}
 
                 <tr><td align="center">Forma de Pago:</td></tr>
-${liqui_forma_pago && liqui_forma_pago.map((forma_pago) => {
+${liqui_forma_pago ? liqui_forma_pago.map((forma_pago) => {
                     const formaPagoMostrar = forma_pago.desc_medio_pago_pw === 'CASH' ? 'CHEQUE' : forma_pago.desc_medio_pago_pw;
                     return `<tr><td align="center">${forma_pago.desc_forma_pago_pw === 'CREDIT CARD' ? `${forma_pago.administradora} / ${forma_pago.desc_medio_pago_pw} / ${forma_pago.nro_tarjeta} / ${forma_pago.pais}` : `${formaPagoMostrar}/A Nombre de:${forma_pago.nombre}/ Nro Cheque: ${forma_pago.nro_documento_pago}` }</td></tr>`
 
-                }).join("")}
+                }).join(""): ""}
             </table>
 </td>
 </tr>
