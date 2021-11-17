@@ -2632,7 +2632,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             </tr>
                             ${values.map((des)=> {
                             return '<tr>'
-                                +'<td width="20%">'+des.codigo+'</td>'
+                                +'<td width="20%">'+(des.codigo) ? des.codigo : " "+'</td>'
                                 +'<td width="60%">'+des.desc_ingas+'</td>'
                                 +'<td width="10%">'+String.format('{0}', Ext.util.Format.number(des.importe, '0,000.00'))+'</td>'
                                 +'<td width="10%"></td>'
