@@ -2387,7 +2387,13 @@ header("content-type: text/javascript; charset=UTF-8");
                 const fechaReg = liquidacion.fecha_reg ? moment(liquidacion.fecha_reg, 'YYYY-MM-DD').format('DD/MM/YYYY'): '';
 
                 const liquiManDetalle = liquidacion._desc_liqui_det && typeof liquidacion._desc_liqui_det === 'function' ? liquidacion._desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
-                    return `${valorAnterior} <br> <b>Con. Org:</b>${valorActual.concepto_original}<b>Imp. Org:</b>${valorActual.importe_original}<b>Imp Dev:</b> ${valorActual.importe_devolver}`;
+                    if(valorActual.tipo_manual === 'ERRORES TARJETA') {
+                        return `${valorAnterior} <br> <b>Administradora:</b>${valorActual.administradora} <b>Lote:</b>${valorActual.lote} <b>comprobante:</b>${valorActual.comprobante} <b>fecha:</b>${valorActual.fecha} <b>Nro Tarjeta:</b>${valorActual.nro_tarjeta}<b>Imp. Org:</b>${valorActual.importe_original}<b>Imp Dev:</b> ${valorActual.importe_devolver}`;
+
+                    } else {
+                        return `${valorAnterior} <br> <b>Con. Org:</b>${valorActual.concepto_original}<b>Imp. Org:</b>${valorActual.importe_original}<b>Imp Dev:</b> ${valorActual.importe_devolver}`;
+
+                    }
                 },'') : '';
 
                 const htmlPreview = `
@@ -2558,7 +2564,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
             ${ liquidacion.desc_tipo_documento === 'LIQUIMAN'
                 &&  (liquidacion._desc_liqui_det[0].tipo_manual === 'RO MANUAL'
-                    ||  liquidacion._desc_liqui_det[0].tipo_manual === 'DEPOSITO MANUAL') ? (`
+                    ||  liquidacion._desc_liqui_det[0].tipo_manual === 'DEPOSITO MANUAL' ||  liquidacion._desc_liqui_det[0].tipo_manual === 'ERRORES TARJETA') ? (`
                 <tr>
                     <td width="100%">
 ${liquiManDetalle}

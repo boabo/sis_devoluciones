@@ -732,7 +732,7 @@ BEGIN
                                     CASE WHEN v_liquiman_det_json.lote is NOT null and v_liquiman_det_json.lote != '' then v_liquiman_det_json.lote else null END,
                                     CASE WHEN v_liquiman_det_json.comprobante is NOT null and v_liquiman_det_json.comprobante != '' then v_liquiman_det_json.comprobante else null END,
                                     CASE WHEN v_liquiman_det_json.fecha is NOT null and v_liquiman_det_json.fecha != '' then v_liquiman_det_json.fecha else null END,
-                                    CASE WHEN v_liquiman_det_json.nro_tarjeta is NOT null and v_liquiman_det_json.nro_tarjeta != '' then v_liquiman_det_json.nro_tarjeta::integer else null END,
+                                    CASE WHEN v_liquiman_det_json.nro_tarjeta is NOT null and v_liquiman_det_json.nro_tarjeta != '' then v_liquiman_det_json.nro_tarjeta::varchar else null END,
                                     CASE WHEN v_liquiman_det_json.concepto_original is NOT null and v_liquiman_det_json.concepto_original != '' then v_liquiman_det_json.concepto_original else null END,
                                     CASE WHEN v_liquiman_det_json.concepto_devolver is NOT null and v_liquiman_det_json.concepto_devolver != '' then v_liquiman_det_json.concepto_devolver else null END,
                                     CASE WHEN v_liquiman_det_json.importe_original is NOT null and v_liquiman_det_json.importe_original != '' then v_liquiman_det_json.importe_original::numeric else null END,
