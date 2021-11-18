@@ -721,6 +721,22 @@ class MODLiquidacion extends MODbase{
         return $this->respuesta;
 
     }
+    function verificarSiExisteBoletoYaDevuelto(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='decr.ft_liquidacion_ime';
+        $this->transaccion='LIQ_VBD_LI';
+        $this->tipo_procedimiento='IME';
+
+        $this->setParametro('billete','billete','varchar');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+
+    }
 
     
 

@@ -71,6 +71,7 @@ DECLARE
     v_tabla_factura varchar;
     v_boleto_seleccionado record;
     v_nro_liquidacion_validado varchar;
+    v_nro_liquidacion varchar;
 BEGIN
 
     v_nombre_funcion = 'decr.ft_liquidacion_ime';
@@ -1497,6 +1498,39 @@ BEGIN
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'Liquidacion Fecha pago', v_parametros.id_liquidacion::varchar);
             v_resp = pxp.f_agrega_clave(v_resp,'id_liquidacion',v_parametros.id_liquidacion::varchar);
+
+
+            --Devuelve la respuesta
+            return v_resp;
+
+        end;
+
+
+/*********************************
+     #TRANSACCION:  'LIQ_VBD_LI'
+     #DESCRIPCION:    VERIFICAR SI EL BOLETO YA SE DEVOLVIO
+     #AUTOR:        admin
+     #FECHA:        26-04-2021 21:14:13
+    ***********************************/
+
+    elsif(p_transaccion='LIQ_VBD_LI')then
+
+        begin
+
+            SELECT tl.nro_liquidacion
+            into v_nro_liquidacion
+            FROM decr.tliqui_boleto_recursivo tlbr
+            inner join decr.tliquidacion tl on tl.id_liquidacion = tlbr.id_liquidacion
+            where billete = v_parametros.billete and seleccionado = 'si'
+            limit 1;
+            if v_nro_liquidacion is not NULL then
+                RAISE EXCEPTION '%', 'EL BOLETO YA FUE DEVUELTO EN LA LIQUIDACION '||v_nro_liquidacion||', CUIDADO!!!!!';
+
+            END IF;
+
+            --Definicion de la respuesta
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'billete',v_parametros.billete::varchar);
 
 
             --Devuelve la respuesta

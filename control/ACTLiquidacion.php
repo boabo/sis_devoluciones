@@ -209,6 +209,18 @@ class ACTLiquidacion extends ACTbase{
     function getTicketInformationRecursive() {
 
 
+        // antes de buscar el boleto necesitamos verificar si el boleto ya fue emitido en alguna otra liquidacion
+        $this->objFunc=$this->create('MODLiquidacion');
+        $this->res=$this->objFunc->verificarSiExisteBoletoYaDevuelto($this->objParam);
+        // mirar el estado_actual para disparar una peticion a pxp-nd
+
+        if ($this->res->getTipo() != 'EXITO') {
+
+            $this->res->imprimirRespuesta($this->res->generarJson());
+            exit;
+        }
+
+       
         //solo por el momento
         $billete = $this->objParam->getParametro('billete');
         $array = array();

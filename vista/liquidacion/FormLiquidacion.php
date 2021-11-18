@@ -808,95 +808,106 @@ header("content-type: text/javascript; charset=UTF-8");
                 ],
             });
             this.storeBoletosRecursivo.baseParams.billete = billete;
+
+            this.storeBoletosRecursivo.on('exception', this.conexionFailure);
+
             this.storeBoletosRecursivo.load({
                 params: {start: 0, limit: 100},
                 callback: function (e,d,a,i,o,u) {
-                    let total = 0;
-                    const billetesSeleccionadosArray = [];
-                    e.forEach((data)=> {
-                        console.log(data)
-                        total = total + data.data.monto;
-                        billetesSeleccionadosArray.push(data.data.billete)
-                    });
-                    that.dataStage = e[0].json.dataStage;
-                    console.log('that.dataStage',that.dataStage)
-
-                    const { currency } = e[0].json;
-
-                    //total = that.convertirImportePorMoneda(total, currency)
-                    importeTotalComponente.setValue(total);
-                    billetesSeleccionados.setValue(billetesSeleccionadosArray.join(','));
-                    //const netAmount = that.convertirImportePorMoneda(e[0].json.netAmount, currency);
-                    const netAmount = e[0].json.netAmount;
-                    const tasasConvertido = total - netAmount;
-                    tramoComponente.setValue(e[0].json.itinerary);
+                    console.log('eeeeeee',e)
+                    console.log('dddd',d)
+                    if(e.length > 0 ) {
 
 
-                    //importeNeto.setValue(e[0].json.netAmount);
-                    importeNeto.setValue(netAmount);
+                        let total = 0;
+                        const billetesSeleccionadosArray = [];
+                        e.forEach((data) => {
+                            console.log(data)
+                            total = total + data.data.monto;
+                            billetesSeleccionadosArray.push(data.data.billete)
+                        });
+                        that.dataStage = e[0].json.dataStage;
+                        console.log('that.dataStage', that.dataStage)
 
-                    tasas.setValue(tasasConvertido);
-                    //exento.setValue(that.convertirImportePorMoneda(parseFloat(e[0].json.exento), currency));
-                    exento.setValue(parseFloat(e[0].json.exento));
-                    nombre.setValue(e[0].json.passengerName);
-                    monedaEmision.setValue(e[0].json.currency);
-                    puntoVenta.setValue(e[0].json.issueOfficeID);
-                    pvAgt.setValue(e[0].json.issueOfficeID);
-                    noiata.setValue(e[0].json.issueAgencyCode);
+                        const {currency} = e[0].json;
 
-                    const createPaymentsForErp = (dataTicket) => {
-                        console.log('dataTicket',dataTicket)
-                        const { payment, OriginalTicket } =  dataTicket;
+                        //total = that.convertirImportePorMoneda(total, currency)
+                        importeTotalComponente.setValue(total);
+                        billetesSeleccionados.setValue(billetesSeleccionadosArray.join(','));
+                        //const netAmount = that.convertirImportePorMoneda(e[0].json.netAmount, currency);
+                        const netAmount = e[0].json.netAmount;
+                        const tasasConvertido = total - netAmount;
+                        tramoComponente.setValue(e[0].json.itinerary);
 
-                        let paymentsData = [...( OriginalTicket !== null ? createPaymentsForErp(OriginalTicket) : [])];
-                        payment.forEach((p)=> {
-                            if(p.paymentCode === 'CC') {
-                                paymentsData.push({
-                                    code : p.paymentCode,
-                                    description: p.paymentDescription,
-                                    //amount: that.convertirImportePorMoneda(p.paymentAmount, currency),
-                                    amount: p.paymentAmount,
-                                    method_code: p.paymentMethodCode,
-                                    reference: p.reference,
-                                    administradora:'',
-                                    comprobante:'',
-                                    lote: '',
-                                    cod_est: '',
-                                    credit_card_number: p.creditCardNumber
-                                })
-                            }
 
-                        })
+                        //importeNeto.setValue(e[0].json.netAmount);
+                        importeNeto.setValue(netAmount);
 
-                        return paymentsData;
+                        tasas.setValue(tasasConvertido);
+                        //exento.setValue(that.convertirImportePorMoneda(parseFloat(e[0].json.exento), currency));
+                        exento.setValue(parseFloat(e[0].json.exento));
+                        nombre.setValue(e[0].json.passengerName);
+                        monedaEmision.setValue(e[0].json.currency);
+                        puntoVenta.setValue(e[0].json.issueOfficeID);
+                        pvAgt.setValue(e[0].json.issueOfficeID);
+                        noiata.setValue(e[0].json.issueAgencyCode);
+
+                        const createPaymentsForErp = (dataTicket) => {
+                            console.log('dataTicket', dataTicket)
+                            const {payment, OriginalTicket} = dataTicket;
+
+                            let paymentsData = [...(OriginalTicket !== null ? createPaymentsForErp(OriginalTicket) : [])];
+                            payment.forEach((p) => {
+                                if (p.paymentCode === 'CC') {
+                                    paymentsData.push({
+                                        code: p.paymentCode,
+                                        description: p.paymentDescription,
+                                        //amount: that.convertirImportePorMoneda(p.paymentAmount, currency),
+                                        amount: p.paymentAmount,
+                                        method_code: p.paymentMethodCode,
+                                        reference: p.reference,
+                                        administradora: '',
+                                        comprobante: '',
+                                        lote: '',
+                                        cod_est: '',
+                                        credit_card_number: p.creditCardNumber
+                                    })
+                                }
+
+                            })
+
+                            return paymentsData;
+                        }
+                        //debemos recorrer todos payments por si hay de un exchange
+                        let allPayments = [...createPaymentsForErp(that.dataStage)];
+                        console.log('allPayments', allPayments)
+
+                        /*
+                                            const paymentData = e[0].json.payment;
+                                            const dataPaymentForInsert = paymentData.reduce((valorAnterior, valorActual) => {
+
+                                                const data = [...valorAnterior,
+                                                    {
+                                                        code : valorActual.paymentCode,
+                                                        description: valorActual.paymentDescription,
+                                                        amount: valorActual.paymentAmount,
+                                                        method_code: valorActual.paymentMethodCode,
+                                                        reference: valorActual.reference,
+                                                    }
+                                                ]
+                                                return data;
+                                            }, []);
+                                            console.log('dataPaymentForInsert',dataPaymentForInsert)*/
+
+                        payment.setValue(JSON.stringify(allPayments, function replacer(key, value) {
+                            return value;
+                        }));
+
                     }
-                    //debemos recorrer todos payments por si hay de un exchange
-                    let allPayments = [...createPaymentsForErp(that.dataStage)];
-                    console.log('allPayments', allPayments)
-
-/*
-                    const paymentData = e[0].json.payment;
-                    const dataPaymentForInsert = paymentData.reduce((valorAnterior, valorActual) => {
-
-                        const data = [...valorAnterior,
-                            {
-                                code : valorActual.paymentCode,
-                                description: valorActual.paymentDescription,
-                                amount: valorActual.paymentAmount,
-                                method_code: valorActual.paymentMethodCode,
-                                reference: valorActual.reference,
-                            }
-                        ]
-                        return data;
-                    }, []);
-                    console.log('dataPaymentForInsert',dataPaymentForInsert)*/
-
-                    payment.setValue(JSON.stringify(allPayments, function replacer(key, value) {
-                        return value;
-                    }));
-
                     Phx.CP.loadingHide();
+
                 },
+
             });
 
         },
