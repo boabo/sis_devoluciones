@@ -1310,6 +1310,18 @@ BEGIN
 
         begin
 
+            select tl.nro_liquidacion
+            into v_nro_liquidacion
+            from decr.tliquidacion tl
+            inner join vef.tventa tv on tv.id_venta = tl.id_venta
+            inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
+            where td.nroaut = v_parametros.nro_aut::varchar
+            and tv.nro_factura = v_parametros.nro_fac::integer
+            LIMIT 1;
+
+            if v_nro_liquidacion is not null then
+                raise EXCEPTION '%','FACTURA YA DEVUELTA EN LA LIQUIDACION ' || v_nro_liquidacion;
+            END IF;
 
             SELECT TO_JSON(venta)::text
             into v_json
@@ -1341,6 +1353,18 @@ BEGIN
     elsif(p_transaccion='DECR_RECIBO_JSON')then
 
         begin
+
+            select tl.nro_liquidacion
+            into v_nro_liquidacion
+            from decr.tliquidacion tl
+                     inner join vef.tventa tv on tv.id_venta = tl.id_venta
+            where tv.nro_factura = v_parametros.nro_recibo::integer
+            and tv.fecha::date = v_parametros.fecha_recibo::date
+            LIMIT 1;
+
+            if v_nro_liquidacion is not null then
+                raise EXCEPTION '%','RECIBO YA DEVUELTO EN LA LIQUIDACION ' || v_nro_liquidacion;
+            END IF;
 
 
             SELECT TO_JSON(venta)::text
