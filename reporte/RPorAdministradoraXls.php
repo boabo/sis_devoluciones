@@ -149,20 +149,21 @@ class RPorAdministradoraXls
     function mainBox($sheet){
         //Cabecera caja
         $f = $this->fila;
-        $this->cell($sheet,'Nro Lugar.'						,"A$f" ,0, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'LUGAR.'						,"B$f" ,1, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'NRO LIQUIDACION'						,"C$f" ,2, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'PASAJERO'					,"D$f" ,3, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'ESTABLEC.'				,"E$f" ,4, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'DENOMINACION E.'				,"F$f" ,5, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'NRO DE TARJETA.'					,"G$f" ,6, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'FECHA PROCESO.'			,"H$f" ,7, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'FECHA ORIGEN.'			,"I$f" ,8, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'IMP.CRED. BS'					,"J$f" ,9, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'LOTE'						,"K$f" ,10, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'COMPROBANTE.'						,"L$f" ,11, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'COD AUT.'						,"M$f" ,12, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
-        $this->cell($sheet,'DOCUMENTO ORG(BOLETO, FACTURA, ETC).'						,"N$f" ,13, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'Administradora.'						,"A$f" ,0, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'Nro Lugar.'						,"B$f" ,1, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'LUGAR.'						,"C$f" ,2, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'NRO LIQUIDACION'						,"D$f" ,3, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'PASAJERO'					,"E$f" ,4, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'ESTABLEC.'				,"F$f" ,5, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'DENOMINACION E.'				,"G$f" ,6, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'NRO DE TARJETA.'					,"H$f" ,7, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'FECHA PROCESO.'			,"I$f" ,8, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'FECHA ORIGEN.'			,"J$f" ,9, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'IMP.CRED. BS'					,"K$f" ,10, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'LOTE'						,"L$f" ,11, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'COMPROBANTE.'						,"M$f" ,12, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'COD AUT.'						,"N$f" ,13, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'DOCUMENTO ORG(BOLETO, FACTURA, ETC).'						,"O$f" ,14, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
 
 
         $this->fila++;

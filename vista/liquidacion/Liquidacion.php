@@ -87,6 +87,22 @@ header("content-type: text/javascript; charset=UTF-8");
                 allowBlank: false,
                 fieldLabel: 'Nit',
             }),
+            cmbEstacionParaAdministradora: new Ext.form.ComboBox({
+
+                name: 'estacion',
+                fieldLabel: 'Estacion',
+                allowBlank: true,
+                emptyText: 'estacion...',
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'local',
+                store: ['CBB', 'SRZ', 'LPB', 'CBBWEB'],
+                width: 200,
+                type: 'ComboBox',
+
+            }),
+
             cmbTipoAdministradora: new Ext.form.ComboBox({
 
                 name: 'tipo_administradora',
@@ -316,7 +332,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             defaults: {width: 191},
                             // defaultType: 'textfield',
 
-                            items: [this.cmbTipoAdministradora,this.cmbEstadoAdministradora, this.cmbFecha_ini_reporte_administradora, this.cmbFecha_fin_reporte_administradora],
+                            items: [this.cmbEstacionParaAdministradora, this.cmbTipoAdministradora,this.cmbEstadoAdministradora, this.cmbFecha_ini_reporte_administradora, this.cmbFecha_fin_reporte_administradora],
 
                             buttons: [{
                                 text: 'Save',
@@ -2143,7 +2159,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 Ext.Ajax.request({
                     url: '../../sis_devoluciones/control/Liquidacion/genReportePorAdministradora',
-                    params: {'administradora': this.cmbTipoAdministradora.getValue(),'estado': this.cmbEstadoAdministradora.getValue(), fecha_ini: this.cmbFecha_ini_reporte_administradora.getValue(), fecha_fin: this.cmbFecha_fin_reporte_administradora.getValue()},
+                    params: {'estacion': this.cmbEstacionParaAdministradora.getValue(),'administradora': this.cmbTipoAdministradora.getValue(),'estado': this.cmbEstadoAdministradora.getValue(), fecha_ini: this.cmbFecha_ini_reporte_administradora.getValue(), fecha_fin: this.cmbFecha_fin_reporte_administradora.getValue()},
                     success: this.successGenerarReporteXls,
                     failure: this.conexionFailure,
                     timeout: this.timeout,

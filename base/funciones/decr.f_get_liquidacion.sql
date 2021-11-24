@@ -51,7 +51,7 @@ BEGIN
     END IF;
 
 
-    if(p_params->>'administradora' is not null and p_params->>'estado' is not null and p_params->>'fecha_ini' is not null and p_params->>'fecha_fin' is not null) then
+    if(p_params->>'administradora' is not null and p_params->>'estacion' is not null and p_params->>'estado' is not null and p_params->>'fecha_ini' is not null and p_params->>'fecha_fin' is not null) then
 
         --raise EXCEPTION '%',p_params->'fecha_ini';
         --obtenemos todas las liquidaciones que tengan forma de pago con tarjeta de credito y ademas entre un
@@ -59,10 +59,12 @@ BEGIN
         SELECT array_agg(tl.id_liquidacion)
         into v_id_liquidacion_array
         FROM decr.tliquidacion tl
-                 inner join decr.tliqui_forma_pago tlfp on tlfp.id_liquidacion = tl.id_liquidacion
+        inner join decr.tliqui_forma_pago tlfp on tlfp.id_liquidacion = tl.id_liquidacion
         where tl.estado = p_params->>'estado'::varchar
-          and tlfp.administradora = p_params->>'administradora'::varchar
-          AND tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date);
+        and (CASE WHEN p_params->>'estacion' IS NOT NULL THEN tl.estacion = p_params->>'estacion'::varchar ELSE 1 = 1 END)
+        and (CASE WHEN p_params->>'administradora' IS NOT NULL THEN tlfp.administradora = p_params->>'administradora'::varchar ELSE 1 = 1 END)
+          AND tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date)
+        ORDER BY tlfp.administradora ASC;
 
         --RAISE EXCEPTION '%',v_id_liquidacion_array;
         IF v_id_liquidacion_array is null then
