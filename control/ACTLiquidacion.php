@@ -703,7 +703,7 @@ class ACTLiquidacion extends ACTbase{
                     if(is_array($row->liqui_forma_pago)) {
                         foreach ($row->liqui_forma_pago as $liqui_forma_pago) {
                             array_push($dataDinamico, array(
-                                "administradora" => $row->administradora,
+                                "administradora" => $liqui_forma_pago->administradora,
                                 "codigo_punto_venta" => $row->codigo_punto_venta,
                                 "estacion" => $row->estacion,
                                 "nro_liquidacion" => $row->nro_liquidacion,
