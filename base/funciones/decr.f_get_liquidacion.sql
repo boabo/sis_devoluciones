@@ -64,7 +64,7 @@ BEGIN
         and (CASE WHEN p_params->>'estacion' IS NOT NULL THEN tl.estacion = p_params->>'estacion'::varchar ELSE 1 = 1 END)
         and (CASE WHEN p_params->>'administradora' IS NOT NULL THEN tlfp.administradora = p_params->>'administradora'::varchar ELSE 1 = 1 END)
           AND tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date)
-        ORDER BY tlfp.administradora ASC;
+        ;
 
         --RAISE EXCEPTION '%',v_id_liquidacion_array;
         IF v_id_liquidacion_array is null then
