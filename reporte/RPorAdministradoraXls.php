@@ -164,6 +164,7 @@ class RPorAdministradoraXls
         $this->cell($sheet,'COMPROBANTE.'						,"M$f" ,12, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
         $this->cell($sheet,'COD AUT.'						,"N$f" ,13, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
         $this->cell($sheet,'DOCUMENTO ORG(BOLETO, FACTURA, ETC).'						,"O$f" ,14, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
+        $this->cell($sheet,'FECHA LIQ PAGO'						,"P$f" ,15, $f,"center",true,$this->tam_letra_detalle,'Arial',true,true); //#55
 
 
         $this->fila++;
