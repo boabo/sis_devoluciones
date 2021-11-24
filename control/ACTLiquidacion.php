@@ -718,6 +718,7 @@ class ACTLiquidacion extends ACTbase{
                                 "comprobante" => $liqui_forma_pago->comprobante,
                                 "codigo_autorizacion" => $liqui_forma_pago->autorizacion,
                                 "_liqui_nro_doc_original" => $row->_liqui_nro_doc_original,
+                                "fecha_pago" => $row->fecha_pago,
                             ));
                         }
                     }
