@@ -61,8 +61,8 @@ BEGIN
         FROM decr.tliquidacion tl
         inner join decr.tliqui_forma_pago tlfp on tlfp.id_liquidacion = tl.id_liquidacion
         where tl.estado = p_params->>'estado'::varchar
-        and (CASE WHEN p_params->>'estacion' IS NOT NULL THEN tl.estacion = p_params->>'estacion'::varchar ELSE 1 = 1 END)
-        and (CASE WHEN p_params->>'administradora' IS NOT NULL THEN tlfp.administradora = p_params->>'administradora'::varchar ELSE 1 = 1 END)
+        and (CASE WHEN p_params->>'estacion' != 'TODOS' THEN tl.estacion = p_params->>'estacion'::varchar ELSE 1 = 1 END)
+        and (CASE WHEN p_params->>'administradora' != 'TODOS' THEN tlfp.administradora = p_params->>'administradora'::varchar ELSE 1 = 1 END)
           AND tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date)
         ;
 
