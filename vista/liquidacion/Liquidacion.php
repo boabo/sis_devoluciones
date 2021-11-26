@@ -1951,13 +1951,13 @@ header("content-type: text/javascript; charset=UTF-8");
                             console.log('out',out)
                             var url = 'data:application/pdf;base64,' + btoa(out);
 
-                            var iframe = "<iframe width='100%' height='100%' src='" + url + "'></iframe>"
-                            var x = window.open();
-                            x.document.open();
-                            x.document.write(iframe);
-                            x.document.close();
 
-                            document.location.href = url;
+                            let pdfWindow = window.open("")
+                            pdfWindow.document.write(
+                                "<iframe width='100%' height='100%' src='data:application/pdf;base64, " +
+                                btoa(out) + "'></iframe>"
+                            )
+
                         },
                         failure: this.conexionFailure,
                         timeout: this.timeout,

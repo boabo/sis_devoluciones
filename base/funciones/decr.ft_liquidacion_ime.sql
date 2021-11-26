@@ -1545,7 +1545,7 @@ BEGIN
             into v_nro_liquidacion
             FROM decr.tliqui_boleto_recursivo tlbr
             inner join decr.tliquidacion tl on tl.id_liquidacion = tlbr.id_liquidacion
-            where billete = v_parametros.billete and seleccionado = 'si'
+            where tl.estado != 'anulado' and billete = v_parametros.billete and seleccionado = 'si'
             limit 1;
             if v_nro_liquidacion is not NULL then
                 RAISE EXCEPTION '%', 'EL BOLETO YA FUE DEVUELTO EN LA LIQUIDACION '||v_nro_liquidacion||', CUIDADO!!!!!';
