@@ -60,6 +60,10 @@ class ACTLiquidacion extends ACTbase{
         }
 
         $data = $this->res->getDatos();
+        //dentro del mensaje esta datos en este caso lainterfaz no mostrara paginador y solo sera con busqueda mas rapidas
+        // por eso no enviaremos o modificaremos el count a total
+        echo $data["mensaje"];
+        exit;
 
         $dataJson = json_decode($data["mensaje"]);
         $send = array(
@@ -220,11 +224,11 @@ class ACTLiquidacion extends ACTbase{
             exit;
         }
 
-       
+
         //solo por el momento
         $billete = $this->objParam->getParametro('billete');
         $array = array();
-        
+
 
         $curl = curl_init();
 
@@ -629,7 +633,7 @@ class ACTLiquidacion extends ACTbase{
         if($tipo === 'dinamica') {
             //$this->objParam->addParametro('estado', 'pagado');
         } elseif($tipo === 'administradora') {
-           //no necesitamos agregar nada por que ya tenemos la logica para eso en la vista estamos enviando los parametros
+            //no necesitamos agregar nada por que ya tenemos la logica para eso en la vista estamos enviando los parametros
 
 
         }
@@ -679,7 +683,7 @@ class ACTLiquidacion extends ACTbase{
                             $nroCheque .= 'Nro: '. $liqui_forma_pago->nro_documento_pago. ' ,';
                             $nombreCheque .= $liqui_forma_pago->nombre. ' ,';
                         }
-                        
+
                     }
                 }
 
@@ -782,7 +786,7 @@ class ACTLiquidacion extends ACTbase{
 
         $dataForReport = $this->getLiquidacionDinamica('administradora');
 
-      
+
 
 
         //Parametros básicos
@@ -805,7 +809,7 @@ class ACTLiquidacion extends ACTbase{
         $this->mensajeExito->setArchivoGenerado($nombreArchivo);
         $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
     }
-    
+
     function ViewLiquiPdf() {
         $id_liquidacion = $this->objParam->getParametro('id_liquidacion');
 
@@ -839,8 +843,8 @@ class ACTLiquidacion extends ACTbase{
         echo $response;
         exit;
 
-      /*  var_dump($data_json);
-        exit;*/
+        /*  var_dump($data_json);
+          exit;*/
         $this->res->setDatos($data_json);
         $this->res->imprimirRespuesta($this->res->generarJson());
 
