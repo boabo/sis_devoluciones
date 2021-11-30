@@ -805,6 +805,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     {name: 'concepto_para_nota',     type: 'string'},
                     {name: 'foid',     type: 'string'},
                     {name: 'fecha_emision',     type: 'string'},
+                    {name: 'nit',     type: 'string'},
+                    {name: 'razon_social',     type: 'string'},
                 ],
             });
             this.storeBoletosRecursivo.baseParams.billete = billete;
@@ -1554,6 +1556,40 @@ header("content-type: text/javascript; charset=UTF-8");
                                  minValue: 1,
                                  maxLength: 10
                              }),
+                         },
+                         {
+                             header     : 'nit',
+                             flex     : 1,
+                             width    : 130,
+                             dataIndex: 'nit',
+                             editable : true,
+                             editor: new Ext.form.TextField({
+                                 name: 'nit',
+                                 msgTarget: 'title',
+                                 fieldLabel: 'nit',
+                                 allowBlank: true,
+                                 anchor: '80%',
+                                 maxLength: 1200,
+                                 disabled: false
+                             }),
+
+                         },
+                         {
+                             header     : 'razon_social',
+                             flex     : 1,
+                             width    : 130,
+                             dataIndex: 'razon_social',
+                             editable : true,
+                             editor: new Ext.form.TextField({
+                                 name: 'razon_social',
+                                 msgTarget: 'title',
+                                 fieldLabel: 'razon social',
+                                 allowBlank: true,
+                                 anchor: '80%',
+                                 maxLength: 1200,
+                                 disabled: false
+                             }),
+
                          },
                      ],
                      region:  'center',

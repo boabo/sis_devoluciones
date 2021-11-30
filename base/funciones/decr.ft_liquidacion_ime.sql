@@ -528,7 +528,7 @@ BEGIN
                         FROM json_populate_recordset(NULL::record, v_parametros.json_data_boletos_recursivo::json)
                                  AS
                                  (
-                                  seleccionado varchar,  billete varchar, monto varchar,  tiene_nota varchar,   concepto_para_nota varchar,  foid varchar, fecha_emision varchar,  iva varchar,  iva_contabiliza_no_liquida varchar,  exento varchar
+                                  seleccionado varchar,  billete varchar, monto varchar,  tiene_nota varchar,   concepto_para_nota varchar,  foid varchar, fecha_emision varchar,  iva varchar,  iva_contabiliza_no_liquida varchar,  exento varchar, nit varchar, razon_social varchar
                                      )
 
                     )
@@ -552,7 +552,9 @@ BEGIN
                             id_usuario_reg,
                             id_usuario_ai,
                             fecha_mod,
-                            id_usuario_mod
+                            id_usuario_mod,
+                                                                 nit,
+                                                                 razon_social
                         ) values(
                                     v_boletos_recursivo_json.seleccionado,
                                     v_boletos_recursivo_json.billete::numeric, --todo
@@ -571,7 +573,9 @@ BEGIN
                                     p_id_usuario,
                                     v_parametros._id_usuario_ai,
                                     null,
-                                    null
+                                    null,
+                                    v_boletos_recursivo_json.nit,
+                                    v_boletos_recursivo_json.razon_social
                                 );
 
                     END LOOP;

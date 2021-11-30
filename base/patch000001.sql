@@ -717,6 +717,13 @@ alter table decr.tliqui_manual_detalle
 
 
 
+alter table decr.tliqui_boleto_recursivo
+    add nit varchar(50);
+
+alter table decr.tliqui_boleto_recursivo
+    add razon_social varchar(100);
+
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
 

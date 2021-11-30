@@ -608,12 +608,14 @@ BEGIN
 
 
 
-            SELECT liqui.*, su.id_sucursal, ttdl.tipo_documento
+            SELECT liqui.*, su.id_sucursal, ttdl.tipo_documento, tlu.codigo as codigo_lugar
             INTO v_record_liquidacion
             FROM decr.tliquidacion liqui
                      INNER JOIN vef.tpunto_venta pv on pv.id_punto_venta = liqui.id_punto_venta
                      INNER JOIN vef.tsucursal su on su.id_sucursal = pv.id_sucursal
-                        INNER JOIN decr.ttipo_doc_liquidacion ttdl on ttdl.id_tipo_doc_liquidacion = liqui.id_tipo_doc_liquidacion
+                     inner join param.tlugar tlu on tlu.id_lugar = su.id_lugar
+
+                     INNER JOIN decr.ttipo_doc_liquidacion ttdl on ttdl.id_tipo_doc_liquidacion = liqui.id_tipo_doc_liquidacion
             WHERE liqui.id_liquidacion = v_parametros.id_liquidacion;
 
             if v_liquidacion_json->>'desc_tipo_documento' = 'BOLEMD' THEN
@@ -661,8 +663,14 @@ BEGIN
 
 
                             -- el numero nit es el primero row del detalle del servicio de devolucion tomar en cuenta eso
-                            v_nro_nit = v_liquidacion_json->>'nro_nit';
-                            v_razon_social = v_liquidacion_json->>'razon_social';
+
+                            --v_nro_nit = v_liquidacion_json->>'nro_nit';
+                            --v_razon_social = v_liquidacion_json->>'razon_social';
+                            if v_registros_json.nit is null or v_registros_json.razon_social is null THEN
+                                RAISE EXCEPTION '%', 'ERROR NO CONFIGURASTE TU NIT Y RAZON SOCIAL PARA GENERAR UNA O MAS NOTAS';
+                            END IF;
+                            v_nro_nit = v_registros_json.nit;
+                            v_razon_social = v_registros_json.razon_social;
 
                             --v_importe_total_devolver := v_registros_json.monto - v_registros_json.exento - v_registros_json.iva_contabiliza_no_liquida;
                             v_importe_total_devolver := v_registros_json.monto - v_registros_json.exento;
@@ -723,7 +731,7 @@ BEGIN
                                     'activo',
                                     v_parametros._id_usuario_ai,
                                     NULL,
-                                    v_record_liquidacion.id_sucursal,
+                                    v_record_liquidacion.codigo_lugar,
                                     '1',
                                     '1',
                                     v_nro_nota,
