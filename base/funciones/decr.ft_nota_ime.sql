@@ -664,13 +664,13 @@ BEGIN
 
                             -- el numero nit es el primero row del detalle del servicio de devolucion tomar en cuenta eso
 
-                            --v_nro_nit = v_liquidacion_json->>'nro_nit';
-                            --v_razon_social = v_liquidacion_json->>'razon_social';
-                            if v_registros_json.nit is null or v_registros_json.razon_social is null THEN
+                            v_nro_nit = v_liquidacion_json->>'nro_nit';
+                            v_razon_social = v_liquidacion_json->>'razon_social';
+                            /*if v_registros_json.nit is null or v_registros_json.razon_social is null THEN
                                 RAISE EXCEPTION '%', 'ERROR NO CONFIGURASTE TU NIT Y RAZON SOCIAL PARA GENERAR UNA O MAS NOTAS';
                             END IF;
                             v_nro_nit = v_registros_json.nit;
-                            v_razon_social = v_registros_json.razon_social;
+                            v_razon_social = v_registros_json.razon_social;*/
 
                             --v_importe_total_devolver := v_registros_json.monto - v_registros_json.exento - v_registros_json.iva_contabiliza_no_liquida;
                             v_importe_total_devolver := v_registros_json.monto - v_registros_json.exento;

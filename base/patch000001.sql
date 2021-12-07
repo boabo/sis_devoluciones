@@ -723,6 +723,8 @@ alter table decr.tliqui_boleto_recursivo
 alter table decr.tliqui_boleto_recursivo
     add razon_social varchar(100);
 
+alter table decr.tliquidacion
+    add glosa_pagado text;
 
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 

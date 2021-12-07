@@ -1193,7 +1193,7 @@ BEGIN
                     v_parametros._id_usuario_ai,
                     v_parametros._nombre_usuario_ai,
                     null,
-                    '',
+                    v_parametros.obs,
                     v_acceso_directo ,
                     v_clase,
                     v_parametros_ad,
@@ -1204,8 +1204,11 @@ BEGIN
             --Actualiza el estado actual del movimiento
             update decr.tliquidacion set
                                        id_estado_wf = v_id_estado_actual,
-                                       estado = v_codigo_estado_siguiente
+                                       estado = v_codigo_estado_siguiente,
+                                         glosa_pagado = CASE WHEN v_codigo_estado_siguiente = 'pagado'  then v_parametros.obs else null END
             where id_liquidacion = v_id_liquidacion;
+
+
 
 
             -- si es boleto la logica debe obtener los boletos relacionados a esta liquidacion

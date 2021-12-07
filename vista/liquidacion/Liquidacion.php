@@ -2483,6 +2483,10 @@ header("content-type: text/javascript; charset=UTF-8");
                     <td >Glosa: </td>
                     <td>${liquidacion.descripcion}</td>
                 </tr>
+                <tr align="left">
+                    <td >Glosa Pagado: </td>
+                    <td>${liquidacion.glosa_pagado}</td>
+                </tr>
             </table>
         </td>
     </tr>
