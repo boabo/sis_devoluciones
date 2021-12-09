@@ -876,23 +876,37 @@ window.onload=function(){self.print();}
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
     function listarNotaJson () {
-        $this->objFunc = $this->create('MODNota');
-        $this->res = $this->objFunc->listarNotaJson($this->objParam);
 
-        if ($this->res->getTipo() != 'EXITO') {
 
+        if ($this->objParam->getParametro('tipoReporte') == 'excel_grid' || $this->objParam->getParametro('tipoReporte') == 'pdf_grid') {
+            $this->objReporte = new Reporte($this->objParam, $this);
+            $this->res = $this->objReporte->generarReporteListado('MODNota', 'listarNotaJson', 'Y');
             $this->res->imprimirRespuesta($this->res->generarJson());
+
+        } else {
+            $this->objFunc = $this->create('MODNota');
+            $this->res = $this->objFunc->listarNotaJson($this->objParam);
+
+            if ($this->res->getTipo() != 'EXITO') {
+
+                $this->res->imprimirRespuesta($this->res->generarJson());
+                exit;
+            }
+
+            $data = $this->res->getDatos();
+            //dentro del mensaje esta datos en este caso lainterfaz no mostrara paginador y solo sera con busqueda mas rapidas
+            // por eso no enviaremos o modificaremos el count a total
+            echo $data["mensaje"];
             exit;
+
+
+
         }
 
 
-        $data = $this->res->getDatos();
-        //dentro del mensaje esta datos en este caso lainterfaz no mostrara paginador y solo sera con busqueda mas rapidas
-        // por eso no enviaremos o modificaremos el count a total
-        echo $data["mensaje"];
-        exit;
-        
-        $this->res->imprimirRespuesta($this->res->generarJson());
+
+
+
     }
 }
 

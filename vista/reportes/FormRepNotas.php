@@ -58,7 +58,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     id_grupo: 0,
                     filters: {pfiltro: 'movtip.nombre',type: 'string'},
                     grid: true,
-                    form: true
+                    form: false
                 },
                 {
                     config : {
@@ -135,7 +135,7 @@ header("content-type: text/javascript; charset=UTF-8");
             if (this.form.getForm().isValid()) {
                 var data={};
                 data.fecha_ini=this.getComponente('fecha_ini').getValue().dateFormat('d/m/Y');
-                data.id_punto_venta=this.getComponente('id_punto_venta').getValue();
+                //data.id_punto_venta=this.getComponente('id_punto_venta').getValue();
                 data.fecha_fin=this.getComponente('fecha_fin').getValue().dateFormat('d/m/Y');
 
                 Phx.CP.loadWindows('../../../sis_devoluciones/vista/reportes/GridRepNotas.php', 'Notas ', {

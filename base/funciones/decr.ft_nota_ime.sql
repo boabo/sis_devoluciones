@@ -676,7 +676,10 @@ BEGIN
                                       FROM t_nota_res
                                       --WHERE id_boleto = tn.id_boleto
                                   ) nota_res
-                            ) as datos
+                            ) as datos,
+                            (
+                                select count(*) from t_nota_res
+                            ) as total
                  ) jsonData;
 
 
