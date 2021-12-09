@@ -1089,6 +1089,7 @@ class MODNota extends MODbase
         return $this->respuesta;
     }
 
+
     function listarBoletoParaUsarEnNota(){
 
         //Definicion de variables para ejecucion del procedimientp
@@ -1149,7 +1150,24 @@ class MODNota extends MODbase
     }
 
 
+    function listarNotaJson(){
 
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento = 'decr.ft_nota_ime';
+        $this->transaccion = 'FAC_REPNOTA_JSON';
+        $this->tipo_procedimiento = 'IME';
+
+        $this->setParametro('fecha_ini','fecha_ini','date');
+        $this->setParametro('id_punto_venta','id_punto_venta','int4');
+        $this->setParametro('fecha_fin','fecha_fin','date');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
 
 }
 

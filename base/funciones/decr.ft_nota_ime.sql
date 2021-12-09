@@ -591,6 +591,106 @@ BEGIN
         end;
 
         /*********************************
+         #TRANSACCION:  'FAC_REPNOTA_JSON'
+         #DESCRIPCION:	Generar nota json
+         #AUTOR:		favio figueroa
+         #FECHA:		18-11-2020 19:30:03
+        ***********************************/
+
+    elsif(p_transaccion='FAC_REPNOTA_JSON')then
+
+        begin
+
+
+            WITH t_nota as (
+                SELECT tn.id_nota,
+                       tn.credfis,
+                       ts.nombre,
+                       td.glosa_empresa,
+                       td.glosa_impuestos,
+                       td.fecha_limite,
+                       td.nroaut as nroaut_dosificacion,
+                       tae.nombre      AS actividad_economica,
+                       tae.descripcion AS desc_actividad_economica,
+                       ts.nombre       AS desc_sucursal,
+                       ts.direccion,
+                       ts.telefono,
+                       tn.nro_nota,
+                       tn.nroaut,
+                       tn.estado,
+                       tn.fecha,
+                       tn.nit,
+                       tn.razon,
+                       tn.nrofac       AS factura,
+                       tn.nroaut_anterior,
+                       tn.fecha_fac,
+                       tn.codigo_control,
+                       tl.nro_liquidacion,
+                       tu.cuenta,
+                       tn.fecha_reg,
+                       tl.id_venta,
+                       tl.id_boleto,
+                       tl.id_liquidacion
+                       --necesitamos saber el nombre de la empresa su razon direccion telefonos y alcaldia
+                FROM decr.tnota tn
+                         INNER JOIN decr.tliquidacion tl
+                                    ON tl.id_liquidacion::integer = tn.id_liquidacion::integer AND tn.id_liquidacion::integer != 1
+                         INNER JOIN vef.tdosificacion td ON td.id_dosificacion = tn.id_dosificacion
+                         INNER JOIN vef.tsucursal ts ON ts.id_sucursal = td.id_sucursal
+                         INNER JOIN vef.tactividad_economica tae ON tae.id_actividad_economica = ANY (td.id_activida_economica)
+                         INNER JOIN segu.tusuario tu ON tu.id_usuario = tn.id_usuario_reg
+            ),
+                 t_nota_detalle AS (
+                     SELECT tnd.*
+                     FROM decr.tnota_detalle tnd
+                              INNER JOIN t_nota tn ON tn.id_nota = tnd.id_nota
+                 ),
+                 t_sum_nota_detalle AS (
+                     SELECT sum(tnd.exento)                      AS exento_total,
+                            sum(tnd.importe)                     AS importe_total,
+                            (sum(tnd.importe) - sum(tnd.exento)) AS total_devolver,
+                            id_nota
+                     FROM t_nota_detalle tnd
+                     GROUP BY tnd.id_nota
+                 ), t_nota_res as (
+                SELECT tn.nro_liquidacion as nro_liquidacion,
+                       estado,
+                       to_char(fecha, 'DD/MM/YYYY') as fecha,
+                       nit,
+                       razon,
+                       nro_nota,
+                       nroaut_dosificacion,
+                       tsnd.importe_total,
+                       tsnd.exento_total,
+                       tsnd.total_devolver,
+                       tn.codigo_control
+                FROM t_nota tn
+                         INNER JOIN t_sum_nota_detalle tsnd on tsnd.id_nota = tn.id_nota
+                where tn.estado ='1' and  fecha BETWEEN v_parametros.fecha_ini and v_parametros.fecha_fin
+            ) SELECT TO_JSON(ROW_TO_JSON(jsonData) :: TEXT) #>> '{}' AS json
+            into v_json
+            FROM (
+                     SELECT (SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(nota_res)))
+                             FROM (
+                                      SELECT *
+                                      FROM t_nota_res
+                                      --WHERE id_boleto = tn.id_boleto
+                                  ) nota_res
+                            ) as datos
+                 ) jsonData;
+
+
+
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'json',v_json);
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje',v_json);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+        end;
+
+        /*********************************
          #TRANSACCION:  'FAC_NOT_NOTLIQ'
          #DESCRIPCION:	Insertar notas desde la liquidacion
          #AUTOR:		favio figueroa
