@@ -639,6 +639,7 @@ BEGIN
                          INNER JOIN vef.tsucursal ts ON ts.id_sucursal = td.id_sucursal
                          INNER JOIN vef.tactividad_economica tae ON tae.id_actividad_economica = ANY (td.id_activida_economica)
                          INNER JOIN segu.tusuario tu ON tu.id_usuario = tn.id_usuario_reg
+                order by ts.id_sucursal asc
             ),
                  t_nota_detalle AS (
                      SELECT tnd.*

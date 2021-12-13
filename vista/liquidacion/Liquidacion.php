@@ -464,6 +464,12 @@ header("content-type: text/javascript; charset=UTF-8");
                     disabled: true,
                     handler: this.generarNotaCredito
                 });
+                this.addButton('AgregarNotaSiat', {
+                    argument: {imprimir: 'notaAgencia'},
+                    text: '<i class="fa fa-file-text-o fa-2x"></i> <br>Agregar Nota Siat',/*iconCls:'' ,*/
+                    disabled: false,
+                    handler: this.AgregarNotaSiat
+                });
                 this.addButton('notaAgencia', {
                     argument: {imprimir: 'notaAgencia'},
                     text: '<i class="fa fa-file-text-o fa-2x"></i> <br>Nota Agencia',/*iconCls:'' ,*/
@@ -2032,6 +2038,16 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
 
+            },
+            AgregarNotaSiat: function () {
+                var rec = this.sm.getSelected();
+
+                const data  = {};
+                data.id_liquidacion=rec.json.id_liquidacion;
+                Phx.CP.loadWindows('../../../sis_devoluciones/vista/liquidacion/FormNotaSiat.php', 'FormNotaSiat ', {
+                    width : '40%',
+                    height : '30%'
+                }, data	, this.idContenedor, 'FormNotaSiat')
             },
             generarNotaCredito : function () {
                 var rec = this.sm.getSelected();

@@ -726,6 +726,11 @@ alter table decr.tliqui_boleto_recursivo
 alter table decr.tliquidacion
     add glosa_pagado text;
 
+alter table decr.tliquidacion
+    add nota_siat json;
+
+
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
 

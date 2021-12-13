@@ -1570,6 +1570,65 @@ BEGIN
         end;
 
 
+/*********************************
+     #TRANSACCION:  'LIQ_SIAT_LI'
+     #DESCRIPCION:    VERIFICAR SI EL BOLETO YA SE DEVOLVIO
+     #AUTOR:        admin
+     #FECHA:        26-04-2021 21:14:13
+    ***********************************/
+
+    elsif(p_transaccion='LIQ_SIAT_LI')then
+
+        begin
+
+           UPDATE decr.tliquidacion
+               set nota_siat = v_parametros.nota::json
+           where id_liquidacion = v_parametros.id_liquidacion;
+
+            --Definicion de la respuesta
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'id_liquidacion',v_parametros.id_liquidacion::varchar);
+
+
+            --Devuelve la respuesta
+            return v_resp;
+
+        end;
+
+
+/*********************************
+     #TRANSACCION:  'LIQ_SIAT_SEL'
+     #DESCRIPCION:    mostrar nota siat
+     #AUTOR:        admin
+     #FECHA:        26-04-2021 21:14:13
+    ***********************************/
+
+    elsif(p_transaccion='LIQ_SIAT_SEL')then
+
+        begin
+
+            SELECT TO_JSON(nota_siat)::text
+            into v_json
+            from (
+                     select nota_siat->>'nro_aut' as nro_aut, nota_siat->>'nro_nota' as nro_nota
+                     from decr.tliquidacion
+                     where id_liquidacion = v_parametros.id_liquidacion
+                 ) nota_siat;
+
+            --RAISE EXCEPTION '%',v_json;
+
+
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'json',v_json);
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje',v_json);
+
+
+            --Devuelve la respuesta
+            return v_resp;
+
+        end;
+
+
     else
      
         raise exception 'Transaccion inexistente: %',p_transaccion;

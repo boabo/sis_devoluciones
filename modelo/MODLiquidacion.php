@@ -738,6 +738,40 @@ class MODLiquidacion extends MODbase{
 
     }
 
+    function insertarNotaSiat(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='decr.ft_liquidacion_ime';
+        $this->transaccion='LIQ_SIAT_LI';
+        $this->tipo_procedimiento='IME';
+
+        $this->setParametro('id_liquidacion','id_liquidacion','int4');
+        $this->setParametro('nota','nota','text');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+
+    }
+    function obtenerNotaSiat(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='decr.ft_liquidacion_ime';
+        $this->transaccion='LIQ_SIAT_SEL';
+        $this->tipo_procedimiento='IME';
+
+        $this->setParametro('id_liquidacion','id_liquidacion','int4');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+
+    }
+
     
 
 }
