@@ -927,6 +927,10 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
         },
+        jsonEscape: function(str)  {
+            return str.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t");
+        },
+
         obtenerDatosFactucom: function ({nroAut, nroFac}) {
 
             if(nroAut !== '' && nroFac !== '') {
@@ -945,7 +949,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         Phx.CP.loadingHide();
 
                         var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-                        const dataJson = JSON.parse(reg.ROOT.datos.mensaje);
+                        const dataJson = JSON.parse(this.jsonEscape(reg.ROOT.datos.mensaje));
                         console.log('dataJson',dataJson)
                         //this.cmpIdBoleto.setValue(reg.datos[0].id_boleto);
                         if(typeof dataJson === 'object') {
@@ -1010,7 +1014,7 @@ header("content-type: text/javascript; charset=UTF-8");
             this.Cmp.total_devuelto.setValue(0);
             this.Cmp.credfis.setValue(0);
             this.Cmp.id_moneda.setValue(1);
-            this.Cmp.id_moneda.setRawValue('Bolivianos');
+            this.Cmp.id_moneda.setRawValue('Bs');
             this.Cmp.id_periodo.setValue(this.data.id_periodo);
 
 

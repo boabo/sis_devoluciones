@@ -55,6 +55,7 @@ DECLARE
     v_importe_devolver numeric(10,2);
     v_sum_venta_seleccionados numeric(10,2);
     v_tipo_documento varchar;
+    v_fecha_pago date;
     v_id_venta integer;
     v_id_medio_pago_pw integer;
     v_importe_tramo_utilizado numeric(10,2);
@@ -1161,9 +1162,9 @@ BEGIN
         begin
 
             select
-                tl.id_liquidacion, ttdl.tipo_documento
+                tl.id_liquidacion, ttdl.tipo_documento, tl.fecha_pago
             into
-                v_id_liquidacion, v_tipo_documento
+                v_id_liquidacion, v_tipo_documento, v_fecha_pago
             from decr.tliquidacion tl
             inner join decr.ttipo_doc_liquidacion ttdl on ttdl.id_tipo_doc_liquidacion = tl.id_tipo_doc_liquidacion
             where tl.id_proceso_wf = v_parametros.id_proceso_wf_act;
@@ -1174,6 +1175,12 @@ BEGIN
                 v_codigo_estado_siguiente
             from wf.ttipo_estado tes
             where tes.id_tipo_estado =  v_parametros.id_tipo_estado;
+
+            if v_codigo_estado_siguiente not in ('pagado') then
+                IF v_fecha_pago is null THEN
+                    raise EXCEPTION '%', 'ERROR NO AGREGASTE FECHA DE PAGO';
+                END IF;
+            END IF;
 
             if v_codigo_estado_siguiente not in ('emitido') then
                 v_acceso_directo = '../../../sis_devoluciones/vista/liquidacion/Liquidacion.php';
