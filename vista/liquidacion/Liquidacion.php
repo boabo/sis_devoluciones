@@ -2228,10 +2228,12 @@ header("content-type: text/javascript; charset=UTF-8");
                     console.log('validado para generar factura inicial')
                     let validadoParaPagar = 'Y';
                     const hayDescuentoQueRequieraNota = rec.json.descuentos && rec.json.descuentos.find((descuento)=> descuento.tipo_descuento === 'HAY NOTA');
-                    validadoParaPagar = (hayDescuentoQueRequieraNota && !Array.isArray(rec.json.notas) ) ? 'N' : 'Y';
+                    //validadoParaPagar = (hayDescuentoQueRequieraNota && !Array.isArray(rec.json.notas) ) ? 'N' : 'Y';
+                    let tieneNotaSiat = 'Y';
+                    tieneNotaSiat = (hayDescuentoQueRequieraNota && !rec.json.nota_siat) ? 'N' : 'Y';
                     console.log('hayDescuentoQueRequieraNota',hayDescuentoQueRequieraNota);
                     console.log('validadoParaPagar',validadoParaPagar);
-                    if(rec.json.estado === 'emitido' &&  validadoParaPagar === 'Y') {
+                    if(rec.json.estado === 'emitido' &&  tieneNotaSiat === 'Y') {
 
                         const find = rec.json.descuentos.find((resq) => resq.tipo === 'FACTURABLE'); // preguntar
                         console.log('find',find);

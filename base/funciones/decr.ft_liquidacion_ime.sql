@@ -1176,7 +1176,7 @@ BEGIN
             from wf.ttipo_estado tes
             where tes.id_tipo_estado =  v_parametros.id_tipo_estado;
 
-            if v_codigo_estado_siguiente not in ('pagado') then
+            if v_codigo_estado_siguiente = 'pagado' then
                 IF v_fecha_pago is null THEN
                     raise EXCEPTION '%', 'ERROR NO AGREGASTE FECHA DE PAGO';
                 END IF;
