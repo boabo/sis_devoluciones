@@ -2785,31 +2785,34 @@ ${liqui_forma_pago ? liqui_forma_pago.map((forma_pago) => {
             },
 
             anularLiquidacion: function () {
+                var seguro = confirm('Esta seguro? La accion anulara los documentos asociados a esta liquidacion');
+                if(seguro){
+                    var rec = this.sm.getSelected();
+                    console.log('recccc',rec);
+                    const that = this;
+                    if(rec.json.estado === 'emitido' || rec.json.estado === 'borrador' || rec.json.estado === 'pagado') {
+                        alert(rec.json.id_liquidacion);
 
-                var rec = this.sm.getSelected();
-                console.log('recccc',rec);
-                const that = this;
-                if(rec.json.estado === 'emitido' || rec.json.estado === 'borrador') {
-                    alert(rec.json.id_liquidacion);
+                        Phx.CP.loadingShow();
+                        Ext.Ajax.request({
+                            url: '../../sis_devoluciones/control/Liquidacion/anularLiquidacion',
+                            params: {'id_liquidacion': rec.json.id_liquidacion},
+                            success: () => {
+                                Phx.CP.loadingHide();
+                                alert('Liquidacion Anulada');
+                                that.reload();
 
-                    Phx.CP.loadingShow();
-                    Ext.Ajax.request({
-                        url: '../../sis_devoluciones/control/Liquidacion/anularLiquidacion',
-                        params: {'id_liquidacion': rec.json.id_liquidacion},
-                        success: () => {
-                            Phx.CP.loadingHide();
-                            alert('Liquidacion Anulada');
-                            that.reload();
+                            },
+                            failure: this.conexionFailure,
+                            timeout: this.timeout,
+                            scope: this
+                        });
 
-                        },
-                        failure: this.conexionFailure,
-                        timeout: this.timeout,
-                        scope: this
-                    });
-
-                } else {
-                    alert('NO puedes anular una liquidacion finalizada');
+                    } else {
+                        alert('NO puedes anular una liquidacion finalizada');
+                    }
                 }
+
             },
 
             verNotas: function () {

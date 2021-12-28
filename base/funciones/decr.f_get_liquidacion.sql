@@ -77,14 +77,22 @@ BEGIN
 
         --raise EXCEPTION '%',p_params->'id_medio_pago';
         -- determinado rango de fechas y con el tipo de administradora
-        SELECT array_agg(tl.id_liquidacion)
-        into v_id_liquidacion_array
+
+
+        with liquidacion_filtrada as (
+            SELECT tl.id_liquidacion
         FROM decr.tliquidacion tl
-        inner join decr.tliqui_forma_pago tlfp on tlfp.id_liquidacion = tl.id_liquidacion
+                 inner join decr.tliqui_forma_pago tlfp on tlfp.id_liquidacion = tl.id_liquidacion
         where tlfp.id_medio_pago = cast(p_params->>'id_medio_pago' as integer)
-        and tl.estacion = p_params->>'estacion'::varchar
-        and tl.estado = p_params->>'estado'::varchar
-          AND tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date);
+          and tl.estacion = p_params->>'estacion'::varchar
+          and tl.estado = p_params->>'estado'::varchar
+          AND (CASE WHEN p_params->>'estado'::varchar = 'pagado'
+                        THEN tl.fecha_pago::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date)
+                    ELSE tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date) END)
+        ORDER BY tl.fecha_pago asc
+            ) SELECT array_agg(lf.id_liquidacion)
+        into v_id_liquidacion_array
+        from liquidacion_filtrada lf;
 
         --RAISE EXCEPTION '%',v_id_liquidacion_array;
         IF v_id_liquidacion_array is null then
@@ -142,7 +150,7 @@ BEGIN
               AND (CASE WHEN v_query_value is not null then tl.nro_liquidacion like '%' ||v_query_value|| '%' else 1=1 end)*/
               AND (CASE WHEN v_id_liquidacion_array is not null then tl.id_liquidacion = any (v_id_liquidacion_array) else 1=1 end)
             order by tl.id_liquidacion DESC
-            LIMIT cast(p_params->>'cantidad' as integer) OFFSET cast(p_params->>'puntero' as integer)
+            --LIMIT cast(p_params->>'cantidad' as integer) OFFSET cast(p_params->>'puntero' as integer)
 
         ),
          t_sum_descuentos as
@@ -336,6 +344,7 @@ BEGIN
                       ELSE 1 = 1 END
 
                       )
+                --WHERE tl.nro_liquidacion like '%CBB-DEVOL-20210181%'
 
             )
         SELECT TO_JSON(ROW_TO_JSON(jsonData) :: TEXT) #>> '{}' as json
@@ -348,6 +357,10 @@ BEGIN
                              (
                                  SELECT *
                                  FROM t_liqui_boleto tlb
+                                 --limit 10
+                                 order by tlb.fecha_pago asc, fecha_reg desc
+                                 LIMIT cast(p_params->>'cantidad' as integer)
+
                              ) liqui_boleto
                      ) as datos,
                      v_count as count

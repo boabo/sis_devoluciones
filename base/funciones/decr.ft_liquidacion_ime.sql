@@ -1331,6 +1331,7 @@ BEGIN
             inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
             where td.nroaut = v_parametros.nro_aut::varchar
             and tv.nro_factura = v_parametros.nro_fac::integer
+            and tl.estado != 'anulado'
             LIMIT 1;
 
             if v_nro_liquidacion is not null then

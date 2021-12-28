@@ -661,10 +661,15 @@ class ACTLiquidacion extends ACTbase{
 
             $data = $this->res->getDatos();
 
-            $dataJson = json_decode($data["mensaje"]);
+
+            // aca
+            $dataJson = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data["mensaje"]), true);
+
+            //$dataJson = json_decode($data["mensaje"]);
+
             $send = array(
-                "total" => $dataJson->count,
-                "datos"=> $dataJson->datos != null ? $dataJson->datos : []
+                "total" => $dataJson['count'],
+                "datos"=> $dataJson['datos'] != null ? $dataJson['datos'] : []
             );
 
 
@@ -714,25 +719,26 @@ class ACTLiquidacion extends ACTbase{
                     ));
                 } elseif($tipo === 'administradora') {
 
-                    if(is_array($row->liqui_forma_pago)) {
-                        foreach ($row->liqui_forma_pago as $liqui_forma_pago) {
+                    if(is_array($row['liqui_forma_pago'])) {
+                        foreach ($row['liqui_forma_pago'] as $liqui_forma_pago) {
+
                             array_push($dataDinamico, array(
-                                "administradora" => $liqui_forma_pago->administradora,
-                                "codigo_punto_venta" => $row->codigo_punto_venta,
-                                "estacion" => $row->estacion,
-                                "nro_liquidacion" => $row->nro_liquidacion,
-                                "pagar_a_nombre" => $row->nombre,
-                                "_liqui_codigo_agencia_doc_original" => $liqui_forma_pago->cod_est,
-                                "_liqui_oficina_emisora_original" => $liqui_forma_pago->nro_terminal,
-                                "nro_tarjeta" => $liqui_forma_pago->nro_tarjeta,
-                                "fecha_tarjeta" => $liqui_forma_pago->fecha_tarjeta,
-                                "fecha_origen" => $liqui_forma_pago->fecha_tarjeta,
-                                "importe_devolver" => $liqui_forma_pago->importe,
-                                "lote" => $liqui_forma_pago->lote,
-                                "comprobante" => $liqui_forma_pago->comprobante,
-                                "codigo_autorizacion" => $liqui_forma_pago->autorizacion,
-                                "_liqui_nro_doc_original" => $row->_liqui_nro_doc_original,
-                                "fecha_pago" => $row->fecha_pago,
+                                "administradora" => $liqui_forma_pago['administradora'],
+                                "codigo_punto_venta" => $row['codigo_punto_venta'],
+                                "estacion" => $row['estacion'],
+                                "nro_liquidacion" => $row['nro_liquidacion'],
+                                "pagar_a_nombre" => $row['nombre'],
+                                "_liqui_codigo_agencia_doc_original" => $liqui_forma_pago['cod_est'],
+                                "_liqui_oficina_emisora_original" => $liqui_forma_pago['nro_terminal'],
+                                "nro_tarjeta" => $liqui_forma_pago['nro_tarjeta'],
+                                "fecha_tarjeta" => $liqui_forma_pago['fecha_tarjeta'],
+                                "fecha_origen" => $liqui_forma_pago['fecha_tarjeta'],
+                                "importe_devolver" => $liqui_forma_pago['importe'],
+                                "lote" => $liqui_forma_pago['lote'],
+                                "comprobante" => $liqui_forma_pago['comprobante'],
+                                "codigo_autorizacion" => $liqui_forma_pago['autorizacion'],
+                                "_liqui_nro_doc_original" => $row['_liqui_nro_doc_original'],
+                                "fecha_pago" => $row['fecha_pago'],
                             ));
                         }
                     }
