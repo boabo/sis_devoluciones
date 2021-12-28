@@ -455,6 +455,21 @@ BEGIN
                          inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
                          INNER JOIN t_venta_detalle tvd on tvd.id_venta = tv.id_venta
                          LEFT JOIN sum_descuentos sd ON sd.id_liquidacion = tl.id_liquidacion
+                WHERE (
+                    CASE WHEN v_filtro_value IS NOT NULL
+                             THEN UPPER(tl.nro_liquidacion) LIKE '%' || v_filtro_value || '%'
+                            or UPPER(tl.pagar_a_nombre) LIKE '%' || v_filtro_value || '%'
+
+                         ELSE 1 = 1 END
+                    )
+                  AND (
+                    CASE WHEN v_query_value IS NOT NULL
+                             THEN tl.nro_liquidacion LIKE '%' || v_query_value || '%'
+                            or UPPER(tl.pagar_a_nombre) LIKE '%' || v_query_value || '%'
+
+                         ELSE 1 = 1 END
+
+                    )
             )
         SELECT TO_JSON(ROW_TO_JSON(jsonData) :: TEXT) #>> '{}' as json
         into v_json

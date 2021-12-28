@@ -729,7 +729,8 @@ alter table decr.tliquidacion
 alter table decr.tliquidacion
     add nota_siat json;
 
-
+alter table decr.tliquidacion
+add glosa_anulado text;
 
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 

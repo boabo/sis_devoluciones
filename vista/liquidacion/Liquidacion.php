@@ -1873,7 +1873,12 @@ header("content-type: text/javascript; charset=UTF-8");
                 var rec=this.sm.getSelected();
                 console.log(rec)
                 const {liqui_forma_pago, importe_devolver} = rec.json;
-                const sumFormaPago = liqui_forma_pago.reduce((sum, fp) => sum + parseFloat(fp.importe) , 0);
+                let sumFormaPago;
+                try {
+                    sumFormaPago = liqui_forma_pago.reduce((sum, fp) => sum + parseFloat(fp.importe) , 0);
+                } catch (error) {
+                    alert('no existe forma de pago')
+                }
                 console.log('sumFormaPago',sumFormaPago)
                 if(parseFloat(importe_devolver).toFixed(2) === parseFloat(sumFormaPago).toFixed(2)) {
                     this.objWizard = Phx.CP.loadWindows('../../../sis_workflow/vista/estado_wf/FormEstadoWf.php',
@@ -2790,7 +2795,8 @@ ${liqui_forma_pago ? liqui_forma_pago.map((forma_pago) => {
                     var rec = this.sm.getSelected();
                     console.log('recccc',rec);
                     const that = this;
-                    if(rec.json.estado === 'emitido' || rec.json.estado === 'borrador' || rec.json.estado === 'pagado') {
+                    //if(rec.json.estado === 'emitido' || rec.json.estado === 'borrador' || rec.json.estado === 'pagado') {
+                    if(rec.json.estado === 'emitido' || rec.json.estado === 'borrador') {
                         alert(rec.json.id_liquidacion);
 
                         Phx.CP.loadingShow();
