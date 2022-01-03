@@ -87,6 +87,14 @@ header("content-type: text/javascript; charset=UTF-8");
                 allowBlank: false,
                 fieldLabel: 'Nit',
             }),
+            cmbGlosaAnulacion: new Ext.form.TextField({
+
+                enableKeyEvents: true,
+                name: 'nit',
+                id: 'input_glosa_anulacion',
+                allowBlank: false,
+                fieldLabel: 'Glosa Anular',
+            }),
             cmbEstacionParaAdministradora: new Ext.form.ComboBox({
 
                 name: 'estacion',
@@ -426,6 +434,49 @@ header("content-type: text/javascript; charset=UTF-8");
 
                     });
 
+                this.popUpAnularLiquidacion = new Ext.Window(
+                    {
+                        layout: 'fit',
+                        width: 500,
+                        height: 250,
+                        modal: true,
+                        closeAction: 'hide',
+
+                        items: new Ext.FormPanel({
+                            labelWidth: 75, // label settings here cascade unless overridden
+
+                            frame: true,
+                            // title: 'Factura Manual Concepto',
+                            bodyStyle: 'padding:5px 5px 0',
+                            width: 339,
+                            defaults: {width: 191},
+                            // defaultType: 'textfield',
+
+                            items: [ this.cmbGlosaAnulacion ],
+
+                            buttons: [{
+                                text: 'Save',
+                                handler: () => {
+                                    if(this.cmbGlosaAnulacion.getValue()) {
+                                        this.popUpAnularLiquidacion.hide();
+                                        this.anularLiquidacion();
+                                    } else {
+                                        alert('debes llenar la glosa')
+
+                                    }
+
+
+                                },
+
+                                scope: this
+                            }, {
+                                text: 'Cancel',
+                                handler: ()=>{this.popUpGenerarFactura.hide()}
+                            }]
+                        }),
+
+                    });
+
 
 
 
@@ -505,7 +556,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     argument: {imprimir: 'anularLiquidacion'},
                     text: '<i class="fa fa-file-text-o fa-2x"></i><br> Anular Liquidacion',/*iconCls:'' ,*/
                     disabled: true,
-                    handler: this.anularLiquidacion
+                    //handler: this.anularLiquidacion
+                    handler:() =>  this.popUpAnularLiquidacion.show()
                 });
                 this.addButton('verNotas', {
                     argument: {imprimir: 'verNotas'},
@@ -2802,7 +2854,7 @@ ${liqui_forma_pago ? liqui_forma_pago.map((forma_pago) => {
                         Phx.CP.loadingShow();
                         Ext.Ajax.request({
                             url: '../../sis_devoluciones/control/Liquidacion/anularLiquidacion',
-                            params: {'id_liquidacion': rec.json.id_liquidacion},
+                            params: {'id_liquidacion': rec.json.id_liquidacion, 'glosa': this.cmbGlosaAnulacion.getValue()},
                             success: () => {
                                 Phx.CP.loadingHide();
                                 alert('Liquidacion Anulada');

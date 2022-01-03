@@ -1452,7 +1452,7 @@ BEGIN
             END IF;
 
             -- anulamos la liquidacion
-            update decr.tliquidacion set estado = 'anulado'
+            update decr.tliquidacion set estado = 'anulado', glosa_anulado = v_parametros.glosa
             where id_liquidacion = v_parametros.id_liquidacion;
 
 

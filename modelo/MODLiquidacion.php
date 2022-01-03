@@ -695,6 +695,7 @@ class MODLiquidacion extends MODbase{
         $this->tipo_procedimiento='IME';
 
         $this->setParametro('id_liquidacion','id_liquidacion','int4');
+        $this->setParametro('glosa','glosa','varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
