@@ -676,27 +676,27 @@ class ACTLiquidacion extends ACTbase{
             foreach ($send["datos"] as $row) {
 
                 $liquiDetData = '';
-                if(is_array($row->_desc_liqui_det)) {
-                    foreach ($row->_desc_liqui_det as $liquiDet) {
-                        $liquiDetData .= $liquiDet->_concepto .', ';
+                if(is_array($row['_desc_liqui_det'])) {
+                    foreach ($row['_desc_liqui_det'] as $liquiDet) {
+                        $liquiDetData .= $liquiDet['_concepto'] .', ';
                     }
                 } else {
-                    $liquiDetData = $row->_desc_liqui_det;
+                    $liquiDetData = $row['_desc_liqui_det'];
                 }
 
                 $nroCheque = '';
                 $nombreCheque = '';
-                if(is_array($row->liqui_forma_pago)) {
-                    foreach ($row->liqui_forma_pago as $liqui_forma_pago) {
-                        if($liqui_forma_pago->desc_forma_pago_pw == 'CREDIT CARD') {
-                            $nroCheque = $liqui_forma_pago->administradora .' / '. $liqui_forma_pago->nro_tarjeta;
-                            $nombreCheque = $liqui_forma_pago->nombre;
-                        } else if($liqui_forma_pago->desc_forma_pago_pw == 'CUENTA CORRIENTE') {
-                            $nroCheque = $liqui_forma_pago->codigo_auxiliar;
-                            $nombreCheque = $liqui_forma_pago->nombre_auxiliar;
+                if(is_array($row['liqui_forma_pago'])) {
+                    foreach ($row['liqui_forma_pago'] as $liqui_forma_pago) {
+                        if($liqui_forma_pago['desc_forma_pago_pw'] == 'CREDIT CARD') {
+                            $nroCheque = $liqui_forma_pago['administradora'] .' / '. $liqui_forma_pago['nro_tarjeta'];
+                            $nombreCheque = $liqui_forma_pago['nombre'];
+                        } else if($liqui_forma_pago['desc_forma_pago_pw'] == 'CUENTA CORRIENTE') {
+                            $nroCheque = $liqui_forma_pago['codigo_auxiliar'];
+                            $nombreCheque = $liqui_forma_pago['nombre_auxiliar'];
                         } else {
-                            $nroCheque .= 'Nro: '. $liqui_forma_pago->nro_documento_pago. ' ,';
-                            $nombreCheque .= $liqui_forma_pago->nombre. ' ,';
+                            $nroCheque .= 'Nro: '. $liqui_forma_pago['nro_documento_pago']. ' ,';
+                            $nombreCheque .= $liqui_forma_pago['nombre']. ' ,';
                         }
 
                     }
@@ -704,18 +704,18 @@ class ACTLiquidacion extends ACTbase{
 
                 if($tipo === 'dinamica') {
                     array_push($dataDinamico, array(
-                        "desc_tipo_documento" => $row->desc_tipo_documento,
-                        "nro_liquidacion" => $row->nro_liquidacion,
-                        "codigo_punto_venta" => $row->codigo_punto_venta,
-                        "fecha_pago" => $row->fecha_pago,
-                        "_liqui_nro_doc_original" => $row->_liqui_nro_doc_original,
-                        "_liqui_nombre_doc_original" => $row->_liqui_nombre_doc_original,
+                        "desc_tipo_documento" => $row['desc_tipo_documento'],
+                        "nro_liquidacion" => $row['nro_liquidacion'],
+                        "codigo_punto_venta" => $row['codigo_punto_venta'],
+                        "fecha_pago" => $row['fecha_pago'],
+                        "_liqui_nro_doc_original" => $row['_liqui_nro_doc_original'],
+                        "_liqui_nombre_doc_original" => $row['_liqui_nombre_doc_original'],
                         "_desc_liqui_det" => $liquiDetData,
                         "nombreCheque" => $nombreCheque,
-                        "importe_devolver" => $row->importe_devolver,
+                        "importe_devolver" => $row['importe_devolver'],
                         "nroCheque" => $nroCheque,
-                        "_liqui_codigo_agencia_doc_original" => $row->_liqui_codigo_agencia_doc_original,
-                        "_liqui_oficina_emisora_original" => $row->_liqui_oficina_emisora_original,
+                        "_liqui_codigo_agencia_doc_original" => $row['_liqui_codigo_agencia_doc_original'],
+                        "_liqui_oficina_emisora_original" => $row['_liqui_oficina_emisora_original'],
                     ));
                 } elseif($tipo === 'administradora') {
 
