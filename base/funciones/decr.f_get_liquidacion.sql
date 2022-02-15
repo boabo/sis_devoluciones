@@ -63,7 +63,9 @@ BEGIN
         where tl.estado = p_params->>'estado'::varchar
         and (CASE WHEN p_params->>'estacion' != 'TODOS' THEN tl.estacion = p_params->>'estacion'::varchar ELSE 1 = 1 END)
         and (CASE WHEN p_params->>'administradora' != 'TODOS' THEN tlfp.administradora = p_params->>'administradora'::varchar ELSE tlfp.administradora in ('CYBER SOURCE', 'LINKSER', 'ATC', 'WORLDPAY') END)
-          AND tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date)
+          AND (CASE WHEN p_params->>'estado'::varchar = 'pagado'
+                        THEN tl.fecha_pago::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date)
+                    ELSE tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date) END)
         ;
 
         --RAISE EXCEPTION '%',v_id_liquidacion_array;
@@ -184,6 +186,11 @@ BEGIN
                       inner join t_liqui tl on tl.id_liquidacion::integer = nota.id_liquidacion::integer
              where nota.estado::integer = 1::integer
          ),
+         t_nota_siat AS (
+             SELECT nota_siat.*
+             FROM decr.tnota_siat nota_siat
+                      inner join t_liqui tl on tl.id_liquidacion::integer = nota_siat.id_liquidacion::integer
+         ),
          t_factura_pagada AS (
              SELECT tv.nro_factura, td.nroaut, tv.fecha, tl.id_proceso_wf_factura
              FROM vef.tventa tv
@@ -231,6 +238,13 @@ BEGIN
                             ) nota
                    ) AS notas,
                    (
+                       SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(nota_siat)))
+                       FROM (
+                                SELECT *
+                                FROM t_nota_siat tn WHERE tn.id_liquidacion::integer = tl.id_liquidacion::integer
+                            ) nota_siat
+                   ) AS notas_siat,
+                   (
                        SELECT TO_JSON(factura_pagada) -- solo json por que devolvera un objeto
                        FROM (
                                 SELECT *
@@ -262,7 +276,8 @@ BEGIN
                        liqui_tabla.sum_descuentos,
                        liqui_tabla.liqui_forma_pago,
                        liqui_tabla.notas,
-                       liqui_tabla.factura_pagada
+                       liqui_tabla.factura_pagada,
+                       liqui_tabla.notas_siat
                 FROM decr.tliquidacion tl
                          INNER JOIN (SELECT * FROM json_populate_recordset(NULL::decr.json_type_liquidacion, v_liqui_json::json)
                 ) liqui_tabla ON liqui_tabla.id_liquidacion = tl.id_liquidacion

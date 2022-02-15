@@ -566,7 +566,8 @@ create type decr.json_type_liquidacion as (
                                          sum_descuentos json,
                                          liqui_forma_pago json,
                                          notas json,
-                                         factura_pagada json
+                                         factura_pagada json,
+                                         notas_siat json
                                      );
 
 
@@ -731,6 +732,19 @@ alter table decr.tliquidacion
 
 alter table decr.tliquidacion
 add glosa_anulado text;
+
+
+CREATE TABLE decr.tnota_siat (
+                                                 id_nota_siat SERIAL,
+                                                 id_liquidacion INTEGER,
+                                                 nro_nota varchar,
+                                                 nro_aut varchar,
+                                                 CONSTRAINT pk_tnota_siat__id_nota_siat PRIMARY KEY(id_nota_siat)
+) INHERITS (pxp.tbase)
+  WITHOUT OIDS;
+
+
+
 
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 

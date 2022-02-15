@@ -2099,12 +2099,23 @@ header("content-type: text/javascript; charset=UTF-8");
             AgregarNotaSiat: function () {
                 var rec = this.sm.getSelected();
 
-                const data  = {};
+               /* const data  = {};
                 data.id_liquidacion=rec.json.id_liquidacion;
                 Phx.CP.loadWindows('../../../sis_devoluciones/vista/liquidacion/FormNotaSiat.php', 'FormNotaSiat ', {
                     width : '40%',
                     height : '30%'
                 }, data	, this.idContenedor, 'FormNotaSiat')
+                                 sm.getSelected();
+
+                console.log(rec);*/
+
+                Phx.CP.loadWindows('../../../sis_devoluciones/vista/nota_siat/NotaSiat.php',
+                    'NotaSiat',
+                    {
+                        width:900,
+                        height:400
+                    },rec.data,this.idContenedor,'NotaSiat');
+
             },
             generarNotaCredito : function () {
                 var rec = this.sm.getSelected();
@@ -2287,7 +2298,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     const hayDescuentoQueRequieraNota = rec.json.descuentos && rec.json.descuentos.find((descuento)=> descuento.tipo_descuento === 'HAY NOTA');
                     //validadoParaPagar = (hayDescuentoQueRequieraNota && !Array.isArray(rec.json.notas) ) ? 'N' : 'Y';
                     let tieneNotaSiat = 'Y';
-                    tieneNotaSiat = (hayDescuentoQueRequieraNota && !rec.json.nota_siat) ? 'N' : 'Y';
+                    tieneNotaSiat = (hayDescuentoQueRequieraNota && !rec.json.notas_siat) ? 'N' : 'Y';
                     console.log('hayDescuentoQueRequieraNota',hayDescuentoQueRequieraNota);
                     console.log('validadoParaPagar',validadoParaPagar);
                     if(rec.json.estado === 'emitido' &&  tieneNotaSiat === 'Y') {
