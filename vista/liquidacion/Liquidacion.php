@@ -1876,7 +1876,13 @@ header("content-type: text/javascript; charset=UTF-8");
                 if(data.estado=='emitido' ){
                     this.getBoton('fechaPago').enable();
                 } else {
+                    if(data.fecha_pago === null || data.fecha_pago === undefined || data.fecha_pago === '') {
+                        this.getBoton('fechaPago').enable();
+
+                } else {
                     this.getBoton('fechaPago').disable();
+
+                    }
                 }
 
                 this.getBoton('anularLiquidacion').enable();

@@ -62,10 +62,8 @@ BEGIN
         inner join decr.tliqui_forma_pago tlfp on tlfp.id_liquidacion = tl.id_liquidacion
         where tl.estado = p_params->>'estado'::varchar
         and (CASE WHEN p_params->>'estacion' != 'TODOS' THEN tl.estacion = p_params->>'estacion'::varchar ELSE 1 = 1 END)
-        and (CASE WHEN p_params->>'administradora' != 'TODOS' THEN tlfp.administradora = p_params->>'administradora'::varchar ELSE tlfp.administradora in ('CYBER SOURCE', 'LINKSER', 'ATC', 'WORLDPAY') END)
-          AND (CASE WHEN p_params->>'estado'::varchar = 'pagado'
-                        THEN tl.fecha_pago::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date)
-                    ELSE tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date) END)
+        and (CASE WHEN p_params->>'administradora' != 'TODOS' THEN tlfp.administradora = p_params->>'administradora'::varchar ELSE tlfp.administradora in ('CYBER SOURCE', 'LINKSER', 'ATC', 'WORLDPAY', 'CYBERSOURCE') END)
+          AND tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date)
         ;
 
         --RAISE EXCEPTION '%',v_id_liquidacion_array;
