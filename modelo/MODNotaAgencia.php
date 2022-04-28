@@ -28,7 +28,7 @@ class MODNotaAgencia extends MODbase{
 		$this->captura('estado','varchar');
 		$this->captura('nit','varchar');
 		$this->captura('nro_nota','varchar');
-		$this->captura('nro_aut_nota','int8');
+		$this->captura('nro_aut_nota','varchar');
 		$this->captura('fecha','date');
 		$this->captura('razon','varchar');
 		$this->captura('tcambio','numeric');
@@ -80,7 +80,7 @@ class MODNotaAgencia extends MODbase{
 		$this->setParametro('estado','estado','varchar');
 		$this->setParametro('nit','nit','varchar');
 		$this->setParametro('nro_nota','nro_nota','varchar');
-		$this->setParametro('nro_aut_nota','nro_aut_nota','int8');
+		$this->setParametro('nro_aut_nota','nro_aut_nota','varchar');
 		$this->setParametro('fecha','fecha','date');
 		$this->setParametro('razon','razon','varchar');
 		$this->setParametro('tcambio','tcambio','numeric');
@@ -124,7 +124,7 @@ class MODNotaAgencia extends MODbase{
 		$this->setParametro('estado','estado','varchar');
 		$this->setParametro('nit','nit','varchar');
 		$this->setParametro('nro_nota','nro_nota','varchar');
-		$this->setParametro('nro_aut_nota','nro_aut_nota','int8');
+		$this->setParametro('nro_aut_nota','nro_aut_nota','varchar');
 		$this->setParametro('fecha','fecha','date');
 		$this->setParametro('razon','razon','varchar');
 		$this->setParametro('tcambio','tcambio','numeric');

@@ -745,6 +745,7 @@ CREATE TABLE decr.tnota_siat (
 
 
 
+alter table decr.tnota_agencia alter column nro_aut_nota type varchar(255) using nro_aut_nota::varchar(255);
 
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
