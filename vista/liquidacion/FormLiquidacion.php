@@ -1047,6 +1047,15 @@ header("content-type: text/javascript; charset=UTF-8");
                     maxLength: 1200,
                     disabled: false
                 }),
+                'nro_aut': new Ext.form.TextField({
+                    name: 'nro_aut',
+                    msgTarget: 'title',
+                    fieldLabel: 'Nro Aut',
+                    allowBlank: true,
+                    anchor: '80%',
+                    maxLength: 1200,
+                    disabled: false
+                }),
                 /*'fecha': new Ext.form.TextField({
                     name: 'fecha',
                     msgTarget: 'title',
@@ -1074,6 +1083,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     maxLength: 1200,
                     disabled: false
                 }),
+
                 'concepto_original': new Ext.form.TextField({
                     name: 'concepto_original',
                     msgTarget: 'title',
@@ -1252,6 +1262,13 @@ header("content-type: text/javascript; charset=UTF-8");
                         editor: this.CmpLiquiManDet.comprobante
                     },
                     {
+                        header: 'nro_aut',
+                        dataIndex: 'nro_aut',
+                        width: 100,
+                        sortable: false,
+                        editor: this.CmpLiquiManDet.nro_aut
+                    },
+                    {
                         header: 'fecha',
                         dataIndex: 'fecha',
                         width: 100,
@@ -1265,6 +1282,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         sortable: false,
                         editor: this.CmpLiquiManDet.nro_tarjeta
                     },
+
                     {
                         header: 'concepto_original',
                         dataIndex: 'concepto_original',
@@ -1369,6 +1387,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.CmpLiquiManDet.administradora.setDisabled(false);
                     this.CmpLiquiManDet.lote.setDisabled(false);
                     this.CmpLiquiManDet.comprobante.setDisabled(false);
+                    this.CmpLiquiManDet.nro_aut.setDisabled(false);
                     this.CmpLiquiManDet.fecha.setDisabled(false);
                     this.CmpLiquiManDet.nro_tarjeta.setDisabled(false);
 
@@ -1378,6 +1397,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.CmpLiquiManDet.administradora.setDisabled(true);
                     this.CmpLiquiManDet.lote.setDisabled(true);
                     this.CmpLiquiManDet.comprobante.setDisabled(true);
+                    this.CmpLiquiManDet.nro_aut.setDisabled(true);
                     this.CmpLiquiManDet.fecha.setDisabled(false);
                     this.CmpLiquiManDet.nro_tarjeta.setDisabled(true);
 
@@ -3436,9 +3456,84 @@ header("content-type: text/javascript; charset=UTF-8");
 */
 
 
+            // eventos para liquiman detalle datos
+            this.CmpLiquiManDet.nro_aut.on('blur', function () {
+               this.obtenerDatosPagoTarjeta();
+            }, this);
+            this.CmpLiquiManDet.fecha.on('blur', function () {
+               this.obtenerDatosPagoTarjeta();
+            }, this);
+            this.CmpLiquiManDet.nro_tarjeta.on('blur', function () {
+               this.obtenerDatosPagoTarjeta();
+            }, this);
+
+
         },
+        obtenerDatosPagoTarjeta: function () {
+            if(this.Cmp.tipo_manual.getValue() === 'ERRORES TARJETA') {
+                const nroAut = this.CmpLiquiManDet.nro_aut.getValue();
+                const fecha = this.CmpLiquiManDet.fecha.getValue();
+                const nroTarjeta = this.CmpLiquiManDet.nro_tarjeta.getValue();
+                if(nroAut && fecha && nroTarjeta) {
+                    const left = nroTarjeta.substring(0,4);
+                    const right = nroTarjeta.substr(nroTarjeta.length -4);
+                    Phx.CP.loadingShow();
 
+                    Ext.Ajax.request({
+                        url: '../../sis_devoluciones/control/Liquidacion/getPaymentInformation',
+                        params: {
+                            leftNumber: left,
+                            rigthNumber: right,
+                            authorizationNumber: nroAut,
+                            paymentDate: moment(fecha).format('YYYY-MM-DD')
+                        },
+                        success: this.successObtenerDatosPagoTarjeta,
+                        failure: this.conexionFailure,
+                        timeout: this.timeout,
+                        scope: this
+                    });
+                }
+            }
+        },
+        successObtenerDatosPagoTarjeta: function (resp) {
+            Phx.CP.loadingHide();
+            console.log('resp.responseText',resp.responseText)
+            var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+            console.log('reg',reg)
+            const {success, data, message} = reg;
+            if(success) {
+                const tarjetaData = data[0];
+                const {
+                    ArchivoId,
+                    AuthorizationCode,
+                    CommissionAmount,
+                    CommissionPercent,
+                    CreditCardNumber,
+                    Currency,
+                    EstablishmentCode,
+                    LotNumber,
+                    PaymentAmmount,
+                    PaymentDate,
+                    PaymentHour,
+                    PaymentKey,
+                    ReportDate,
+                    TerminalNumber,
+                    TicketNumber
+                } = tarjetaData;
+                this.CmpLiquiManDet.nro_tarjeta.setValue(CreditCardNumber);
+                this.CmpLiquiManDet.lote.setValue(LotNumber);
+                this.CmpLiquiManDet.importe_original.setValue(PaymentAmmount);
+                this.CmpLiquiManDet.importe_devolver.setValue(PaymentAmmount);
+                //this.CmpLiquiManDet.comprobante.setValue(false);
+                
 
+            } else {
+                this.CmpLiquiManDet.nro_tarjeta.setValue('');
+                alert(message)
+
+            }
+
+        },
         obtenerGestion: function (x) {
 
             var fecha = x.getValue().dateFormat(x.format);

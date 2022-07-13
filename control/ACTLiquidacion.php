@@ -62,7 +62,10 @@ class ACTLiquidacion extends ACTbase{
         $data = $this->res->getDatos();
         //dentro del mensaje esta datos en este caso lainterfaz no mostrara paginador y solo sera con busqueda mas rapidas
         // por eso no enviaremos o modificaremos el count a total
-        echo $data["mensaje"];
+        //echo $data["mensaje"];
+        $dataJson = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data["mensaje"]), true);
+
+        echo json_encode($dataJson);
         exit;
 
         $dataJson = json_decode($data["mensaje"]);
@@ -842,6 +845,91 @@ class ACTLiquidacion extends ACTbase{
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS =>'{
                 "id_liquidacion": '.$id_liquidacion.'
+            }
+            ',
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: ' . $_SESSION['_PXP_ND_TOKEN'],
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        $data_json = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $response), true);
+
+        echo $response;
+        exit;
+
+        /*  var_dump($data_json);
+          exit;*/
+        $this->res->setDatos($data_json);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+
+    }
+
+    function getLiquidacionTaxesMiami() {
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $_SESSION['_PXP_ND_URL'].'/api/boa-liqui-nd/LiquiReport/getLiquidacionTaxesMiami',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS =>'{
+                "id_liquidacion": "1"
+            }
+            ',
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: ' . $_SESSION['_PXP_ND_TOKEN'],
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        $data_json = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $response), true);
+
+        echo $response;
+        exit;
+
+        /*  var_dump($data_json);
+          exit;*/
+        $this->res->setDatos($data_json);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+
+    }
+
+    function getPaymentInformation() {
+        $leftNumber = $this->objParam->getParametro('leftNumber');
+        $rigthNumber = $this->objParam->getParametro('rigthNumber');
+        $authorizationNumber = $this->objParam->getParametro('authorizationNumber');
+        $paymentDate = $this->objParam->getParametro('paymentDate');
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $_SESSION['_PXP_ND_URL'].'/api/boa-stage-nd/Ticket/getPaymentInformation',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS =>'{
+               "leftNumber": "'.$leftNumber.'",
+                "rigthNumber": "'.$rigthNumber.'",
+                "authorizationNumber": "'.$authorizationNumber.'",
+                "paymentDate": "'.$paymentDate.'"
             }
             ',
             CURLOPT_HTTPHEADER => array(

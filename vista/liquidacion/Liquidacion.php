@@ -87,6 +87,79 @@ header("content-type: text/javascript; charset=UTF-8");
                 allowBlank: false,
                 fieldLabel: 'Nit',
             }),
+            cmbComplemento: new Ext.form.TextField({
+
+                enableKeyEvents: true,
+                name: 'complemento',
+                id: 'input_complemento',
+                allowBlank: true,
+                fieldLabel: 'Complemento',
+            }),
+            cmbEmailParaFactura: new Ext.form.TextField({
+
+                enableKeyEvents: true,
+                name: 'email',
+                id: 'input_email',
+                allowBlank: false,
+                fieldLabel: 'Email',
+            }),
+            cmbTelefonoParaFactura: new Ext.form.TextField({
+
+                enableKeyEvents: true,
+                name: 'input_telefono_para_facturar',
+                id: 'input_telefono_para_facturar',
+                allowBlank: false,
+                fieldLabel: 'Telefono',
+            }),
+
+            cmbTipoDocumentoIdentidad: new Ext.form.ComboBox({
+                name: 'tipo_documento_identidad',
+                fieldLabel: 'Tipo Documento',
+                allowBlank: false,
+                width:150,
+                id: 'testeoColor',
+                emptyText: 'Tipo Documento...',
+                store: new Ext.data.JsonStore({
+                    url: '../../sis_seguridad/control/Persona/listarDocumentoIdentificacion',
+                    id: 'id_tipo_doc_identificacion',
+                    root: 'datos',
+                    sortInfo:{
+                        field: 'nombre',
+                        direction: 'ASC'
+                    },
+                    totalProperty: 'total',
+                    fields: ['id_tipo_doc_identificacion','nombre', 'descripcion','codigo_clasificador_impuestos'],
+                    // turn on remote sorting
+                    remoteSort: true,
+                    baseParams:{par_filtro:'nombre#descripcion'}
+                }),
+                valueField: 'codigo_clasificador_impuestos',
+                displayField: 'nombre',
+                gdisplayField:'nombre',
+                hiddenName: 'codigo_clasificador_impuestos',
+                forceSelection : true,
+                typeAhead : false,
+                triggerAction : 'all',
+                lazyRender : true,
+                mode : 'remote',
+                pageSize : 10,
+                queryDelay : 1000,
+                width: 200,
+                gwidth : 250,
+                minChars : 2,
+                enableMultiSelect : false,
+                listWidth:'920',
+                resizable: true,
+                tpl: new Ext.XTemplate([
+                    '<tpl for=".">',
+                    '<div class="x-combo-list-item">',
+                    '<div class="awesomecombo-item {checked}">',
+                    '<p><b>Nombre: {nombre}</b></p>',
+                    '</div><p><b>Descripción: </b> <span style="color: green;">{descripcion}</span></p>',
+                    '</div></tpl>'
+                ])
+            }),
+
             cmbGlosaAnulacion: new Ext.form.TextField({
 
                 enableKeyEvents: true,
@@ -407,8 +480,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             width: 339,
                             defaults: {width: 191},
                             // defaultType: 'textfield',
-
-                            items: [this.cmbNitParaFactura, this.cmbRazonSocialParaFactura],
+                            items: [this.cmbTipoDocumentoIdentidad, this.cmbNitParaFactura, this.cmbComplemento, this.cmbRazonSocialParaFactura, this.cmbEmailParaFactura, this.cmbTelefonoParaFactura],
 
                             buttons: [{
                                 text: 'Save',
@@ -564,6 +636,12 @@ header("content-type: text/javascript; charset=UTF-8");
                     text: '<i class="fa fa-file-text-o fa-2x"></i><br> Ver Notas',/*iconCls:'' ,*/
                     disabled: true,
                     handler: this.verNotas
+                });
+                this.addButton('Liq.Pag Mia', {
+                    argument: {imprimir: 'verNotas'},
+                    text: '<i class="fa fa-file-text-o fa-2x"></i><br>Liq.Pag Mia',/*iconCls:'' ,*/
+                    disabled: false,
+                    handler: this.liqPagMia
                 });
 
                 function diagramGantt(){
@@ -1857,6 +1935,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 }
                 if(dataSelected.json.estado === 'emitido') {
                     this.getBoton('pagarFacturacion').enable();
+                    this.getBoton('notaAgencia').enable();
+
                 }
 
                 this.getBoton('generarNotaCredito').enable(); // SOLO DESARROLLO
@@ -1879,8 +1959,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     if(data.fecha_pago === null || data.fecha_pago === undefined || data.fecha_pago === '') {
                         this.getBoton('fechaPago').enable();
 
-                } else {
-                    this.getBoton('fechaPago').disable();
+                    } else {
+                        this.getBoton('fechaPago').disable();
 
                     }
                 }
@@ -2105,15 +2185,15 @@ header("content-type: text/javascript; charset=UTF-8");
             AgregarNotaSiat: function () {
                 var rec = this.sm.getSelected();
 
-               /* const data  = {};
-                data.id_liquidacion=rec.json.id_liquidacion;
-                Phx.CP.loadWindows('../../../sis_devoluciones/vista/liquidacion/FormNotaSiat.php', 'FormNotaSiat ', {
-                    width : '40%',
-                    height : '30%'
-                }, data	, this.idContenedor, 'FormNotaSiat')
-                                 sm.getSelected();
+                /* const data  = {};
+                 data.id_liquidacion=rec.json.id_liquidacion;
+                 Phx.CP.loadWindows('../../../sis_devoluciones/vista/liquidacion/FormNotaSiat.php', 'FormNotaSiat ', {
+                     width : '40%',
+                     height : '30%'
+                 }, data	, this.idContenedor, 'FormNotaSiat')
+                                  sm.getSelected();
 
-                console.log(rec);*/
+                 console.log(rec);*/
 
                 Phx.CP.loadWindows('../../../sis_devoluciones/vista/nota_siat/NotaSiat.php',
                     'NotaSiat',
@@ -2352,9 +2432,20 @@ header("content-type: text/javascript; charset=UTF-8");
 
                     const nitParaFactura = this.cmbNitParaFactura.getValue();
                     const razonSocialParaFactura = this.cmbRazonSocialParaFactura.getValue();
+                    // factura todo favio ismael
+                    const complemento = this.cmbComplemento.getValue() || '';
+                    const telefonoParaFactura = this.cmbTelefonoParaFactura.getValue() || '';
+                    const emailParaFactura = this.cmbEmailParaFactura.getValue() || '';
+                    const tipoDocumentoIdentidad = this.cmbTipoDocumentoIdentidad.getValue();
 
-                    if(!nitParaFactura || !razonSocialParaFactura || nitParaFactura == '' || razonSocialParaFactura == ''|| nitParaFactura == null || razonSocialParaFactura == null) {
-                        alert('no se puede generar factura por que nit y razon social pueden que esten vacios');
+                    if(!nitParaFactura || !razonSocialParaFactura || nitParaFactura == '' || razonSocialParaFactura == ''
+                        || nitParaFactura == null || razonSocialParaFactura == null
+                        || !emailParaFactura || emailParaFactura == '' || emailParaFactura == null
+                        || !tipoDocumentoIdentidad || tipoDocumentoIdentidad == '' || tipoDocumentoIdentidad == null
+                        || !telefonoParaFactura || telefonoParaFactura == '' || telefonoParaFactura == null
+
+                    ) {
+                        alert('tienes que llenar todo el formulario');
                     } else {
 
                         //crear objecto para enviar a pagar
@@ -2363,9 +2454,15 @@ header("content-type: text/javascript; charset=UTF-8");
                             punto_venta: dataLiqui.desc_punto_venta,
                             nit_cliente: nitParaFactura,
                             razon_social: razonSocialParaFactura,
+                            // factura todo favio ismael
+                            correo_electronico: emailParaFactura,
+                            telefono_cliente: telefonoParaFactura,
+                            complemento: complemento,
+                            enviar_correo: 'si',
+                            cod_tipo_documento_identidad: tipoDocumentoIdentidad,
                             moneda_boleto: dataLiqui.moneda_liq,
                             moneda: dataLiqui.moneda_liq,
-                            tipo_cambio: dataLiqui.tipo_de_cambio,
+                            tipo_cambio: 1,
                             exento: 0,
                             observaciones: dataLiqui.nro_liquidacion,
                             //conceptos: dataLiqui.descuentos,
@@ -2743,12 +2840,12 @@ header("content-type: text/javascript; charset=UTF-8");
                                 <td width="10%"></td>
                             </tr>
                             ${values.map((des)=> {
-                            return '<tr>'
-                                +'<td width="20%">'+(des.codigo) ? des.codigo : " "+'</td>'
-                                +'<td width="60%">'+des.desc_ingas+'</td>'
-                                +'<td width="10%">'+String.format('{0}', Ext.util.Format.number(des.importe, '0,000.00'))+'</td>'
-                                +'<td width="10%"></td>'
-                                +'</tr>';
+                            return `<tr>
+                                <td width="20%">${des.codigo ? des.codigo : '' }</td>'
+                                <td width="60%">${des.desc_ingas}</td>'
+                                <td width="10%">${String.format('{0}', Ext.util.Format.number(des.importe, '0,000.00'))}</td>'
+                                <td width="10%"></td>'
+                                </tr>`;
                         })}
 <tr>
                                 <td width="20%"></td>
@@ -2934,7 +3031,67 @@ ${liqui_forma_pago ? liqui_forma_pago.map((forma_pago) => {
                 }else {
                     alert('no tiene notas relacionadas')
                 }
-            }
+            },
+
+            liqPagMia : function () {
+
+
+                Ext.Ajax.request({
+                    url: '../../sis_devoluciones/control/Liquidacion/getLiquidacionTaxesMiami',
+                    params: {},
+                    params: {'id_liquidacion': 24},
+                    success: (resp) => {
+                        var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+
+                        console.log('resp',objRes)
+                        var out = objRes.fileBuffer;
+                        console.log('out',out)
+
+                        /*const blob = new Blob([out.data], {
+                            type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            //type:'application/octet-stream',
+                        });
+                        console.log('blob',blob)
+
+                        var a = document.createElement("a");
+
+                        var url = URL.createObjectURL(blob);
+                        a.href = url;
+                        a.download = "export.xlsx";
+                        document.body.appendChild(a);
+                        a.click();
+                        setTimeout(function() {
+                                document.body.removeChild(a);
+                                window.URL.revokeObjectURL(url);
+                            },
+                            0);*/
+
+                        var arr = out.data;
+                        var byteArray = new Uint8Array(arr);
+                        var a = window.document.createElement('a');
+
+                        a.href = window.URL.createObjectURL(new Blob([byteArray], { type: 'application/octet-stream' }));
+                        a.download ="export.xlsx";
+
+// Append anchor to body.
+                        document.body.appendChild(a)
+                        a.click();
+
+
+// Remove anchor from body
+                        document.body.removeChild(a)
+
+
+
+
+                    },
+                    failure: this.conexionFailure,
+                    timeout: this.timeout,
+                    scope: this
+                });
+
+
+            },
 
         }
     )

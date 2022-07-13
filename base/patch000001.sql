@@ -567,7 +567,8 @@ create type decr.json_type_liquidacion as (
                                          liqui_forma_pago json,
                                          notas json,
                                          factura_pagada json,
-                                         notas_siat json
+                                         notas_siat json,
+                                         notas_agencia json
                                      );
 
 
@@ -746,6 +747,13 @@ CREATE TABLE decr.tnota_siat (
 
 
 alter table decr.tnota_agencia alter column nro_aut_nota type varchar(255) using nro_aut_nota::varchar(255);
+
+
+alter table decr.tliqui_manual_detalle
+    add payment_key varchar(255);
+
+comment on column decr.tliqui_manual_detalle.payment_key is 'esta columna hace referencia a la base de datos stage';
+
 
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 

@@ -62,7 +62,7 @@ BEGIN
         inner join decr.tliqui_forma_pago tlfp on tlfp.id_liquidacion = tl.id_liquidacion
         where tl.estado = p_params->>'estado'::varchar
         and (CASE WHEN p_params->>'estacion' != 'TODOS' THEN tl.estacion = p_params->>'estacion'::varchar ELSE 1 = 1 END)
-        and (CASE WHEN p_params->>'administradora' != 'TODOS' THEN tlfp.administradora = p_params->>'administradora'::varchar ELSE tlfp.administradora in ('CYBER SOURCE', 'LINKSER', 'ATC', 'WORLDPAY', 'CYBERSOURCE') END)
+        and (CASE WHEN p_params->>'administradora' != 'TODOS' THEN tlfp.administradora = p_params->>'administradora'::varchar ELSE tlfp.administradora in ('CYBER SOURCE', 'LINKSER', 'ATC', 'WORLDPAY', 'CYBERSOURCE', 'AMEX') END)
           AND tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date)
         ;
 
@@ -189,6 +189,11 @@ BEGIN
              FROM decr.tnota_siat nota_siat
                       inner join t_liqui tl on tl.id_liquidacion::integer = nota_siat.id_liquidacion::integer
          ),
+         t_nota_agencia AS (
+             SELECT nota_agencia.*
+             FROM decr.tnota_agencia nota_agencia
+             inner join t_liqui tl on tl.id_liquidacion::integer = nota_agencia.id_liquidacion::integer
+         ),
          t_factura_pagada AS (
              SELECT tv.nro_factura, td.nroaut, tv.fecha, tl.id_proceso_wf_factura
              FROM vef.tventa tv
@@ -243,6 +248,14 @@ BEGIN
                             ) nota_siat
                    ) AS notas_siat,
                    (
+                       SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(nota_agencia)))
+                       FROM (
+                                SELECT ta.nro_nota, ta.nro_aut_nota, ta.monto_total
+                                FROM t_nota_agencia ta
+                                WHERE ta.id_liquidacion::integer = tl.id_liquidacion::integer
+                            ) nota_agencia
+                   ) AS notas_agencia,
+                   (
                        SELECT TO_JSON(factura_pagada) -- solo json por que devolvera un objeto
                        FROM (
                                 SELECT *
@@ -275,7 +288,8 @@ BEGIN
                        liqui_tabla.liqui_forma_pago,
                        liqui_tabla.notas,
                        liqui_tabla.factura_pagada,
-                       liqui_tabla.notas_siat
+                       liqui_tabla.notas_siat,
+                       liqui_tabla.notas_agencia
                 FROM decr.tliquidacion tl
                          INNER JOIN (SELECT * FROM json_populate_recordset(NULL::decr.json_type_liquidacion, v_liqui_json::json)
                 ) liqui_tabla ON liqui_tabla.id_liquidacion = tl.id_liquidacion
@@ -836,6 +850,7 @@ BEGIN
                      FROM decr.tliquidacion tl
                               INNER JOIN (SELECT * FROM json_populate_recordset(NULL::decr.json_type_liquidacion, v_liqui_json::json)
                      ) liqui_tabla ON liqui_tabla.id_liquidacion = tl.id_liquidacion
+                     order by tl.fecha_reg desc
                  ),t_liquiman_detalle AS
                  (
                      SELECT tlm.tipo_manual, tlmd.*
@@ -875,6 +890,19 @@ BEGIN
                      FROM t_liqui tl
                               INNER JOIN decr.tliqui_manual tlm on tlm.id_liqui_manual = tl.id_liqui_manual
                               INNER JOIN t_sum_totales_manual tstm on tstm.id_liqui_manual = tlm.id_liqui_manual
+                     where (
+                         CASE WHEN v_filtro_value IS NOT NULL
+                                  THEN UPPER(tl.nro_liquidacion) LIKE '%' || v_filtro_value || '%'
+                                 or UPPER(tl.pagar_a_nombre) LIKE '%' || v_filtro_value || '%'
+                              ELSE 1 = 1 END
+                         )
+                       AND (
+                         CASE WHEN v_query_value IS NOT NULL
+                                  THEN tl.nro_liquidacion LIKE '%' || v_query_value || '%'
+                                 or UPPER(tl.pagar_a_nombre) LIKE '%' || v_query_value || '%'
+                              ELSE 1 = 1 END
+
+                         )
                  )
         SELECT TO_JSON(ROW_TO_JSON(jsonData) :: TEXT) #>> '{}' as json
         into v_json

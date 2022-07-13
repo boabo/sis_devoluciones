@@ -26,7 +26,10 @@ DECLARE
     v_nombre_funcion        text;
     v_mensaje_error         text;
     v_id_liqui_forma_pago    integer;
-                
+    v_left_credit_card    varchar;
+    v_right_credit_card    varchar;
+    v_nro_liquidacion    varchar;
+
 BEGIN
 
     v_nombre_funcion = 'decr.ft_liqui_forma_pago_ime';
@@ -42,6 +45,27 @@ BEGIN
     if(p_transaccion='DECR_TLP_INS')then
                     
         begin
+
+            -- si es por tarjeta necesitamos validar que no se este pagando doble el mismo comprobante
+            IF v_parametros.administradora != '' then
+                v_left_credit_card := left(v_parametros.nro_tarjeta, 4);
+                v_right_credit_card := right(v_parametros.nro_tarjeta, 4);
+
+                SELECT tl.nro_liquidacion
+                into v_nro_liquidacion
+                FROM decr.tliqui_forma_pago tlfp
+                inner join decr.tliquidacion tl on tl.id_liquidacion = tlfp.id_liquidacion
+                where left(nro_tarjeta,4) = v_left_credit_card
+                  and right(nro_tarjeta, 4) = v_right_credit_card
+                  and trim(autorizacion) = trim(v_parametros.autorizacion);
+
+                IF v_nro_liquidacion is not null THEN
+                    RAISE EXCEPTION '%','ESTA AUTORIZACION Y TARJETA YA SE DEVOLVIO EN LIQ' || v_nro_liquidacion ;
+                END IF;
+
+
+            END IF;
+
             --Sentencia de la insercion
             insert into decr.tliqui_forma_pago(
             estado_reg,
