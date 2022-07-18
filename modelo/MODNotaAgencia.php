@@ -38,8 +38,8 @@ class MODNotaAgencia extends MODbase{
 		$this->captura('credfis','numeric');
 		$this->captura('billete','varchar');
 		$this->captura('codigo_control','varchar');
-		$this->captura('nrofac','int8');
-		$this->captura('nroaut','int8');
+		$this->captura('nrofac','varchar');
+		$this->captura('nroaut','varchar');
 		$this->captura('fecha_fac','date');
 		$this->captura('codito_control_fac','varchar');
 		$this->captura('monto_total_fac','numeric');
@@ -90,8 +90,8 @@ class MODNotaAgencia extends MODbase{
 		$this->setParametro('credfis','credfis','numeric');
 		$this->setParametro('billete','billete','varchar');
 		$this->setParametro('codigo_control','codigo_control','varchar');
-		$this->setParametro('nrofac','nrofac','int8');
-		$this->setParametro('nroaut','nroaut','int8');
+		$this->setParametro('nrofac','nrofac','varchar');
+		$this->setParametro('nroaut','nroaut','varchar');
 		$this->setParametro('fecha_fac','fecha_fac','date');
 		$this->setParametro('codito_control_fac','codito_control_fac','varchar');
 		$this->setParametro('monto_total_fac','monto_total_fac','numeric');
@@ -134,8 +134,8 @@ class MODNotaAgencia extends MODbase{
 		$this->setParametro('credfis','credfis','numeric');
 		$this->setParametro('billete','billete','varchar');
 		$this->setParametro('codigo_control','codigo_control','varchar');
-		$this->setParametro('nrofac','nrofac','int8');
-		$this->setParametro('nroaut','nroaut','int8');
+		$this->setParametro('nrofac','nrofac','varchar');
+		$this->setParametro('nroaut','nroaut','varchar');
 		$this->setParametro('fecha_fac','fecha_fac','date');
 		$this->setParametro('codito_control_fac','codito_control_fac','varchar');
 		$this->setParametro('monto_total_fac','monto_total_fac','numeric');

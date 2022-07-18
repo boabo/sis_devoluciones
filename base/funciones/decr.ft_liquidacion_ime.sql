@@ -1450,7 +1450,7 @@ BEGIN
             FROM decr.tliquidacion
             WHERE id_liquidacion = v_parametros.id_liquidacion;
 
-            IF v_liquidacion.estado = 'v_estado' THEN
+            IF v_liquidacion.estado = 'pagado' and p_id_usuario != 41 THEN
                 RAISE EXCEPTION '%','esta liquidacion ya esta pagada no puedes anular';
             END IF;
 

@@ -755,6 +755,10 @@ alter table decr.tliqui_manual_detalle
 comment on column decr.tliqui_manual_detalle.payment_key is 'esta columna hace referencia a la base de datos stage';
 
 
+alter table decr.tnota_agencia alter column nroaut type varchar(255) using nroaut::varchar(255);
+
+alter table decr.tnota_agencia alter column nrofac type varchar(255) using nrofac::varchar(255);
+
 /***********************************F-SCP-FFP-DECR-1-15/04/2020****************************************/
 
 
