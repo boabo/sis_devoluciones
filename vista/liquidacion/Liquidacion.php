@@ -2961,8 +2961,8 @@ ${liqui_forma_pago ? liqui_forma_pago.map((forma_pago) => {
                     var rec = this.sm.getSelected();
                     console.log('recccc',rec);
                     const that = this;
-                    //if(rec.json.estado === 'emitido' || rec.json.estado === 'borrador' || rec.json.estado === 'pagado') {
-                    if(rec.json.estado === 'emitido' || rec.json.estado === 'borrador') {
+                    if(rec.json.estado === 'emitido' || rec.json.estado === 'borrador' || rec.json.estado === 'pagado') {
+                    //if(rec.json.estado === 'emitido' || rec.json.estado === 'borrador') {
                         alert(rec.json.id_liquidacion);
 
                         Phx.CP.loadingShow();
