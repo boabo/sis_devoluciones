@@ -328,6 +328,24 @@ header("content-type: text/javascript; charset=UTF-8");
                 format: 'd/m/Y'
 
             }),
+            cmbFechaStartLiqPagMiami: new Ext.form.DateField({
+                name: 'fecha_start_liq_pag_miami',
+                fieldLabel: 'Fecha Inicio',
+                allowBlank: false,
+                disabled: false,
+                width: 105,
+                format: 'd/m/Y'
+
+            }),
+           cmbFechaEndLiqPagMiami: new Ext.form.DateField({
+                name: 'fecha_end_liq_pag_miami',
+                fieldLabel: 'Fecha Fin',
+                allowBlank: false,
+                disabled: false,
+                width: 105,
+                format: 'd/m/Y'
+
+            }),
 
             constructor:function(config){
                 this.maestro=config.maestro;
@@ -551,6 +569,50 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
 
+                this.popUpLiqPagMiami = new Ext.Window(
+                    {
+                        layout: 'fit',
+                        width: 500,
+                        height: 250,
+                        modal: true,
+                        closeAction: 'hide',
+
+                        items: new Ext.FormPanel({
+                            labelWidth: 75, // label settings here cascade unless overridden
+
+                            frame: true,
+                            // title: 'Factura Manual Concepto',
+                            bodyStyle: 'padding:5px 5px 0',
+                            width: 200,
+                            defaults: {width: 191},
+                            // defaultType: 'textfield',
+
+                            items: [this.cmbFechaStartLiqPagMiami, this.cmbFechaEndLiqPagMiami],
+
+                            buttons: [{
+                                text: 'Save',
+                                handler: () => {
+
+                                    const fechaStartLiqPagMiami = this.cmbFechaStartLiqPagMiami.getValue();
+                                    const fechaEndLiqPagMiami = this.cmbFechaEndLiqPagMiami.getValue();
+                                    if(fechaStartLiqPagMiami && fechaEndLiqPagMiami) {
+                                        this.liqPagMia({fechaStartLiqPagMiami, fechaEndLiqPagMiami});
+                                    }
+                                },
+
+                                scope: this
+                            }, {
+                                text: 'Cancel',
+                                handler: ()=>{this.popUpLiqPagMiami.hide()}
+                            }]
+                        }),
+
+                    });
+
+
+
+
+
 
                 this.init();
                 this.iniciarEventos();
@@ -641,7 +703,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     argument: {imprimir: 'verNotas'},
                     text: '<i class="fa fa-file-text-o fa-2x"></i><br>Liq.Pag Mia',/*iconCls:'' ,*/
                     disabled: false,
-                    handler: this.liqPagMia
+                    handler:() =>  this.popUpLiqPagMiami.show()
+
+                    //handler: this.liqPagMia
                 });
 
                 function diagramGantt(){
@@ -3033,13 +3097,13 @@ ${liqui_forma_pago ? liqui_forma_pago.map((forma_pago) => {
                 }
             },
 
-            liqPagMia : function () {
+            liqPagMia : function ({fechaStartLiqPagMiami, fechaEndLiqPagMiami}) {
 
 
                 Ext.Ajax.request({
                     url: '../../sis_devoluciones/control/Liquidacion/getLiquidacionTaxesMiami',
                     params: {},
-                    params: {'id_liquidacion': 24},
+                    params: {'id_liquidacion': 24, fechaStartLiqPagMiami, fechaEndLiqPagMiami},
                     success: (resp) => {
                         var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
 

@@ -870,6 +870,8 @@ class ACTLiquidacion extends ACTbase{
     }
 
     function getLiquidacionTaxesMiami() {
+        $fechaStartLiqPagMiami = $this->objParam->getParametro('fechaStartLiqPagMiami');
+        $fechaEndLiqPagMiami = $this->objParam->getParametro('fechaEndLiqPagMiami');
 
         $curl = curl_init();
 
@@ -883,7 +885,9 @@ class ACTLiquidacion extends ACTbase{
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS =>'{
-                "id_liquidacion": "1"
+                "id_liquidacion": "1",
+                "fechaStartLiqPagMiami": "'.$fechaStartLiqPagMiami.'",
+                "fechaEndLiqPagMiami": "'.$fechaEndLiqPagMiami.'"
             }
             ',
             CURLOPT_HTTPHEADER => array(
