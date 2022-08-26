@@ -12,6 +12,7 @@ header("content-type: text/javascript; charset=UTF-8");
 <script>
 Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
 
+    id_liquidacion: undefined,
 	constructor:function(config){
 		this.maestro=config.maestro;
 
@@ -42,6 +43,7 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
     	//llama al constructor de la clase padre
 		Phx.vista.NotaAgencia.superclass.constructor.call(this,config);
 		this.init();
+        this.id_liquidacion = config.id_liquidacion;
         this.iniciarEventos();
 		this.load({params:{start:0, limit:this.tam_pag, id_liquidacion:config.id_liquidacion}})
 	},
@@ -129,6 +131,16 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
                 labelSeparator:'',
                 inputType:'hidden',
                 name: 'id_periodo'
+            },
+            type:'Field',
+            form:true
+        },
+        {
+            //configuracion del componente
+            config:{
+                labelSeparator:'',
+                inputType:'hidden',
+                name: 'id_liquidacion'
             },
             type:'Field',
             form:true
@@ -851,6 +863,12 @@ Phx.vista.NotaAgencia=Ext.extend(Phx.gridInterfaz,{
     },
 
     iniciarEventos : function () {
+
+        console.log('this.id_liquidacion',this.id_liquidacion)
+        if(this.id_liquidacion) {
+            this.Cmp.id_liquidacion.setValue(this.id_liquidacion);
+        }
+
         this.Cmp.id_doc_compra_venta.on('select', function (rec, d) {
 
             console.log('llega')

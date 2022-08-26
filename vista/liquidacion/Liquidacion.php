@@ -2431,6 +2431,9 @@ header("content-type: text/javascript; charset=UTF-8");
                 var rec = this.sm.getSelected();
                 this.cmbNitParaFactura.setValue(rec.json.nro_nit);
                 this.cmbRazonSocialParaFactura.setValue(rec.json.razon_social);
+
+                // necesitamos solicitar los datos de la factura
+
                 this.popUpGenerarFactura.show();
 
             },
