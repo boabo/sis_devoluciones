@@ -3068,14 +3068,14 @@ ${liqui_forma_pago ? liqui_forma_pago.map((forma_pago) => {
                     if(rec.json.estado === 'emitido' || rec.json.estado === 'borrador' || rec.json.estado === 'pagado') {
                     //if(rec.json.estado === 'emitido' || rec.json.estado === 'borrador') {
                         alert(rec.json.id_liquidacion);
-
+                        
                         Phx.CP.loadingShow();
 
                         Ext.Ajax.request({
                             url:'../../sis_ventas_facturacion/control/ServicioImpuesto/anulacionFacturacionImpuestos',
                             params:{
-                                id_venta:  rec.data.id_venta,
-                                cuf: rec.data.cuf,
+                                id_venta:  rec.json.factura_pagada.id_venta,
+                                cuf: rec.json.factura_pagada.cuf,
                                 codigoMotivoAnulacion: 3
                             },
                             success: function (resp){
