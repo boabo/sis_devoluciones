@@ -3022,6 +3022,43 @@ ${liqui_forma_pago ? liqui_forma_pago.map((forma_pago) => {
 
             },
 
+            fallaServicioImpuestosAnulacion:function(resp){
+                var datos_respuesta = JSON.parse(resp.responseText);
+                if (datos_respuesta.ROOT.error == true) {
+                    var respuesta_servicio = datos_respuesta.ROOT.detalle.mensaje.split('|');
+                    //Aumentado para controlar el | si el arreglo es mayo a 1 entonces es error con Impuestos
+                    if (respuesta_servicio.length > 1) {
+                        Ext.Msg.show({
+                            title:'<center><h1 style="color:red; font-size:18px"><i style="color:red" class="fa fa-exclamation-circle" aria-hidden="true"></i> Error al Anular la Factura</h1></center>',
+                            msg: 'Se presento un incidente con el Servicio de Impuestos el mensaje es:<span style="font-size:15px">'+datos_respuesta.ROOT.detalle.mensaje + '.</span>' + '<br><br><b style="font-size:14px;">Favor contactarse con el Ecargado al corporativo 71723046 o al correo electrónico aldo.zeballos@boa.bo</b>',
+                            maxWidth : 500,
+                            width: 500,
+                            buttons: Ext.Msg.OK,
+                            fn: function () {
+                            },
+                            scope:this
+                        });
+                    } else {
+
+                        Ext.Msg.show({
+                            title:'<center><h1 style="color:red; font-size:18px"><i style="color:red" class="fa fa-exclamation-circle" aria-hidden="true"></i> AVISO</h1></center>',
+                            msg: '<span style="font-size:15px">'+datos_respuesta.ROOT.detalle.mensaje + '.</span>',
+                            maxWidth : 500,
+                            width: 500,
+                            buttons: Ext.Msg.OK,
+                            fn: function () {
+                            },
+                            scope:this
+                        });
+
+
+                    }
+                    Phx.CP.loadingHide();
+                }
+
+            },
+
+
             anularLiquidacion: function () {
                 var seguro = confirm('Esta seguro? La accion anulara los documentos asociados a esta liquidacion');
                 if(seguro){
@@ -3033,19 +3070,40 @@ ${liqui_forma_pago ? liqui_forma_pago.map((forma_pago) => {
                         alert(rec.json.id_liquidacion);
 
                         Phx.CP.loadingShow();
+
                         Ext.Ajax.request({
-                            url: '../../sis_devoluciones/control/Liquidacion/anularLiquidacion',
-                            params: {'id_liquidacion': rec.json.id_liquidacion, 'glosa': this.cmbGlosaAnulacion.getValue()},
-                            success: () => {
-                                Phx.CP.loadingHide();
-                                alert('Liquidacion Anulada');
-                                that.reload();
+                            url:'../../sis_ventas_facturacion/control/ServicioImpuesto/anulacionFacturacionImpuestos',
+                            params:{
+                                id_venta:  rec.data.id_venta,
+                                cuf: rec.data.cuf,
+                                codigoMotivoAnulacion: codMotivoAnulacion
+                            },
+                            success: function (resp){
+                                const objResAnulacionFacturacionImpuestos = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+                                console.log('objResAnulacionFacturacionImpuestos',objResAnulacionFacturacionImpuestos)
+
+                                Ext.Ajax.request({
+                                    url: '../../sis_devoluciones/control/Liquidacion/anularLiquidacion',
+                                    params: {'id_liquidacion': rec.json.id_liquidacion, 'glosa': this.cmbGlosaAnulacion.getValue()},
+                                    success: () => {
+                                        Phx.CP.loadingHide();
+                                        alert('Liquidacion Anulada');
+                                        that.reload();
+
+                                    },
+                                    failure: that.conexionFailure,
+                                    timeout: that.timeout,
+                                    scope: that
+                                });
 
                             },
-                            failure: this.conexionFailure,
-                            timeout: this.timeout,
-                            scope: this
+                            failure: that.fallaServicioImpuestosAnulacion,
+                            timeout: that.timeout,
+                            scope: that
                         });
+
+
+
 
                     } else {
                         alert('NO puedes anular una liquidacion finalizada');

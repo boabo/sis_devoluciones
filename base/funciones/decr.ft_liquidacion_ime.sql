@@ -1482,7 +1482,8 @@ BEGIN
                     END LOOP;
             END IF;
 
-            --verificamos si tiene factura y debemos anular
+            -- esto se comento por que ahora ya se hace antes conjuntamente con el siat
+           /* --verificamos si tiene factura y debemos anular
             if EXISTS(select 1 from vef.tventa where id_proceso_wf = v_liquidacion.id_proceso_wf_factura) then
                 v_tabla_factura =  pxp.f_crear_parametro(ARRAY[
                                                      'id_proceso_wf'
@@ -1499,7 +1500,7 @@ BEGIN
 
 
                 v_resp = vef.ft_facturacion_externa_ime(p_id_usuario,p_id_usuario,v_tabla_factura,'VEF_ANU_FAC_LIQ_EXT');
-            END IF;
+            END IF;*/
 
 
 

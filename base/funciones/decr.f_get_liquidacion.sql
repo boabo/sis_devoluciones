@@ -195,7 +195,7 @@ BEGIN
              inner join t_liqui tl on tl.id_liquidacion::integer = nota_agencia.id_liquidacion::integer
          ),
          t_factura_pagada AS (
-             SELECT tv.nro_factura, td.nroaut, tv.fecha, tl.id_proceso_wf_factura
+             SELECT tv.nro_factura, td.nroaut, tv.fecha, tl.id_proceso_wf_factura, tv.cuf, tv.id_venta
              FROM vef.tventa tv
                       inner join t_liqui tl on tl.id_proceso_wf_factura::integer = tv.id_proceso_wf::integer
              inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
