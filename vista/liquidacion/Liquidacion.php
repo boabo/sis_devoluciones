@@ -3076,7 +3076,7 @@ ${liqui_forma_pago ? liqui_forma_pago.map((forma_pago) => {
                             params:{
                                 id_venta:  rec.data.id_venta,
                                 cuf: rec.data.cuf,
-                                codigoMotivoAnulacion: codMotivoAnulacion
+                                codigoMotivoAnulacion: 3
                             },
                             success: function (resp){
                                 const objResAnulacionFacturacionImpuestos = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
