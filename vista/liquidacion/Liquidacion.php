@@ -3059,6 +3059,65 @@ ${liqui_forma_pago ? liqui_forma_pago.map((forma_pago) => {
             },
 
 
+            anularLiquiDoc: function () {
+                var rec = this.sm.getSelected();
+                const that = this;
+
+                Phx.CP.loadingShow();
+
+                Ext.Ajax.request({
+                    url: '../../sis_devoluciones/control/Liquidacion/anularLiquidacion',
+                    params: {'id_liquidacion': rec.json.id_liquidacion, 'glosa': this.cmbGlosaAnulacion.getValue()},
+                    success: () => {
+                        Phx.CP.loadingHide();
+                        alert('Liquidacion Anulada');
+                        that.reload();
+
+                    },
+                    failure: that.conexionFailure,
+                    timeout: that.timeout,
+                    scope: that
+                });
+
+            },
+            anulaFactura: function () {
+                var rec = this.sm.getSelected();
+                const that = this;
+
+                Phx.CP.loadingShow();
+
+                Ext.Ajax.request({
+                    url:'../../sis_ventas_facturacion/control/ServicioImpuesto/anulacionFacturacionImpuestos',
+                    params:{
+                        id_venta:  rec.json.factura_pagada.id_venta,
+                        cuf: rec.json.factura_pagada.cuf,
+                        codigoMotivoAnulacion: 3
+                    },
+                    success: function (resp){
+                        const objResAnulacionFacturacionImpuestos = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+                        console.log('objResAnulacionFacturacionImpuestos',objResAnulacionFacturacionImpuestos)
+                        Ext.Ajax.request({
+                            url: '../../sis_devoluciones/control/Liquidacion/anularLiquidacion',
+                            params: {'id_liquidacion': rec.json.id_liquidacion, 'glosa': that.cmbGlosaAnulacion.getValue()},
+                            success: () => {
+                                Phx.CP.loadingHide();
+                                alert('Liquidacion Anulada');
+                                that.reload();
+
+                            },
+                            failure: that.conexionFailure,
+                            timeout: that.timeout,
+                            scope: that
+                        });
+
+                    },
+                    failure: that.fallaServicioImpuestosAnulacion,
+                    timeout: that.timeout,
+                    scope: that
+                });
+
+            },
+
             anularLiquidacion: function () {
                 var seguro = confirm('Esta seguro? La accion anulara los documentos asociados a esta liquidacion');
                 if(seguro){
@@ -3068,42 +3127,13 @@ ${liqui_forma_pago ? liqui_forma_pago.map((forma_pago) => {
                     if(rec.json.estado === 'emitido' || rec.json.estado === 'borrador' || rec.json.estado === 'pagado') {
                     //if(rec.json.estado === 'emitido' || rec.json.estado === 'borrador') {
                         alert(rec.json.id_liquidacion);
-                        
+
                         Phx.CP.loadingShow();
-
-                        Ext.Ajax.request({
-                            url:'../../sis_ventas_facturacion/control/ServicioImpuesto/anulacionFacturacionImpuestos',
-                            params:{
-                                id_venta:  rec.json.factura_pagada.id_venta,
-                                cuf: rec.json.factura_pagada.cuf,
-                                codigoMotivoAnulacion: 3
-                            },
-                            success: function (resp){
-                                const objResAnulacionFacturacionImpuestos = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-                                console.log('objResAnulacionFacturacionImpuestos',objResAnulacionFacturacionImpuestos)
-
-                                Ext.Ajax.request({
-                                    url: '../../sis_devoluciones/control/Liquidacion/anularLiquidacion',
-                                    params: {'id_liquidacion': rec.json.id_liquidacion, 'glosa': this.cmbGlosaAnulacion.getValue()},
-                                    success: () => {
-                                        Phx.CP.loadingHide();
-                                        alert('Liquidacion Anulada');
-                                        that.reload();
-
-                                    },
-                                    failure: that.conexionFailure,
-                                    timeout: that.timeout,
-                                    scope: that
-                                });
-
-                            },
-                            failure: that.fallaServicioImpuestosAnulacion,
-                            timeout: that.timeout,
-                            scope: that
-                        });
-
-
-
+                        if(rec.json.factura_pagada && rec.json.factura_pagada.id_venta) {
+                            this.anulaFactura();
+                        } else {
+                            this.anularLiquiDoc();
+                        }
 
                     } else {
                         alert('NO puedes anular una liquidacion finalizada');
