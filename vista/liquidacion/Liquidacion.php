@@ -2437,8 +2437,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 console.log('data',data)
 
                 if(data.factura_libro_ventas) {
-                    this.cmbNitParaFactura.setValue(data.factura_libro_ventas.nit_ci_cli);
-                    this.cmbRazonSocialParaFactura.setValue(data.factura_libro_ventas.razon_social_cli);
+                    this.cmbNitParaFactura.setValue(data.factura_libro_ventas[0].nit_ci_cli);
+                    this.cmbRazonSocialParaFactura.setValue(data.factura_libro_ventas[0].razon_social_cli);
                 } else {
                     this.cmbNitParaFactura.setValue(rec.json.nro_nit);
                     this.cmbRazonSocialParaFactura.setValue(rec.json.razon_social);
