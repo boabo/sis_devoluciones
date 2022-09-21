@@ -2427,10 +2427,44 @@ header("content-type: text/javascript; charset=UTF-8");
                 });
             },
 
+            agregarNitRazonSiExisteEnErp: function (resp) {
+                var rec = this.sm.getSelected();
+
+                console.log(resp)
+                const objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+                const objetoDatos = (objRes.ROOT == undefined) ? objRes.datos : objRes.ROOT.datos;
+                const data = JSON.parse(objetoDatos.mensaje);
+                console.log('data',data)
+
+                if(data.factura_libro_ventas) {
+                    this.cmbNitParaFactura.setValue(data.factura_libro_ventas.nit_ci_cli);
+                    this.cmbRazonSocialParaFactura.setValue(data.factura_libro_ventas.razon_social_cli);
+                } else {
+                    this.cmbNitParaFactura.setValue(rec.json.nro_nit);
+                    this.cmbRazonSocialParaFactura.setValue(rec.json.razon_social);
+                }
+            },
             abrirFormPagarParaFacturar : function () {
                 var rec = this.sm.getSelected();
-                this.cmbNitParaFactura.setValue(rec.json.nro_nit);
-                this.cmbRazonSocialParaFactura.setValue(rec.json.razon_social);
+                // necesitamos saber si existe datos en el libre de ventas del erp para asignarles el nit y la razon que tenga ahi
+
+                console.log('rec',rec.json.desc_nro_boleto);
+                console.log('rec',rec.json.desc_tipo_documento);
+                if(rec.json.desc_tipo_documento === 'BOLEMD') {
+                    Ext.Ajax.request({
+                        url: '../../sis_boakiu/control/Boleto/verFacturaErpBoleto',
+                        params: {'nro_ticket': rec.json.desc_nro_boleto, fecha_boleto: rec.json.data_stage.issueDate,formato: rec.json.data_stage.source},
+                        success: this.agregarNitRazonSiExisteEnErp,
+                        failure: this.conexionFailure,
+                        timeout: this.timeout,
+                        scope: this
+                    });
+                } else {
+                    this.cmbNitParaFactura.setValue(rec.json.nro_nit);
+                    this.cmbRazonSocialParaFactura.setValue(rec.json.razon_social);
+                }
+
+
 
                 // necesitamos solicitar los datos de la factura
 
