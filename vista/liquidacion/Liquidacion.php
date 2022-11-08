@@ -615,7 +615,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.init();
                 this.iniciarEventos();
 
-                this.load({params:{start:0, limit:this.tam_pag}})
+                //this.load({params:{start:0, limit:this.tam_pag}})
 
                 this.addButton('ant_estado',{grupo: [0,1,2,3,4,5,6],argument: {estado: 'anterior'},text:'Anterior',iconCls: 'batras',disabled:true,handler:this.antEstado,tooltip: '<b>Pasar al Anterior Estado</b>'});
 
@@ -828,6 +828,11 @@ header("content-type: text/javascript; charset=UTF-8");
                                         },'');
                                         break
                                     case 'DEPOSITO MANUAL':
+                                        res = _desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
+                                            return `${valorAnterior} <br> <b>Con. Org:</b>${valorActual.concepto_original}<b>Imp. Org:</b>${valorActual.importe_original}<b>Imp Dev:</b> ${valorActual.importe_devolver}`;
+                                        },'');
+                                        break;
+                                    case 'INFORME CONCILIACION DEVOLUCION':
                                         res = _desc_liqui_det.reduce((valorAnterior, valorActual, indice, vector)=> {
                                             return `${valorAnterior} <br> <b>Con. Org:</b>${valorActual.concepto_original}<b>Imp. Org:</b>${valorActual.importe_original}<b>Imp Dev:</b> ${valorActual.importe_devolver}`;
                                         },'');
@@ -2889,7 +2894,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
             ${ liquidacion.desc_tipo_documento === 'LIQUIMAN'
                 &&  (liquidacion._desc_liqui_det[0].tipo_manual === 'RO MANUAL'
-                    ||  liquidacion._desc_liqui_det[0].tipo_manual === 'DEPOSITO MANUAL' ||  liquidacion._desc_liqui_det[0].tipo_manual === 'ERRORES TARJETA') ? (`
+                    ||  liquidacion._desc_liqui_det[0].tipo_manual === 'DEPOSITO MANUAL' ||  liquidacion._desc_liqui_det[0].tipo_manual === 'ERRORES TARJETA' ||  liquidacion._desc_liqui_det[0].tipo_manual === 'INFORME CONCILIACION DEVOLUCION') ? (`
                 <tr>
                     <td width="100%" colspan="4">
                     ${liquidacion._desc_liqui_det[0].tipo_manual === 'ERRORES TARJETA' ?  (
