@@ -2771,7 +2771,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     triggerAction: 'all',
                     lazyRender: true,
                     mode: 'local',
-                    store: ['ERRORES TARJETA', 'BOLETOS INEXISTENTE', 'RO MANUAL', 'DEPOSITO MANUAL'],
+                    store: ['ERRORES TARJETA', 'BOLETOS INEXISTENTE', 'RO MANUAL', 'DEPOSITO MANUAL', 'INFORME CONCILIACION DEVOLUCION'],
                     width: 200
                 },
                 type: 'ComboBox',

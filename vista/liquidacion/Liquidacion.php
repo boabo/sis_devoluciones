@@ -117,7 +117,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 fieldLabel: 'Tipo Documento',
                 allowBlank: false,
                 width:150,
-                id: 'testeoColor',
                 emptyText: 'Tipo Documento...',
                 store: new Ext.data.JsonStore({
                     url: '../../sis_seguridad/control/Persona/listarDocumentoIdentificacion',
@@ -267,7 +266,6 @@ header("content-type: text/javascript; charset=UTF-8");
                 fieldLabel: 'Medio de Pago',
                 allowBlank: false,
                 width:150,
-                id: 'testeoColor',
                 emptyText: 'Medio de pago...',
                 store: new Ext.data.JsonStore({
                     url: '../../sis_obingresos/control/MedioPagoPw/listarMedioPagoPw',
@@ -1042,7 +1040,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {
                     config: {
                         name: 'id_punto_venta',
-                        id: 'id_punto_venta',
+                        // id: 'id_punto_venta',
                         fieldLabel: 'Punto Venta',
                         allowBlank: true,
                         emptyText:'Punto de Venta...',
@@ -2455,7 +2453,11 @@ header("content-type: text/javascript; charset=UTF-8");
                         url: '../../sis_boakiu/control/Boleto/verFacturaErpBoleto',
                         params: {'nro_ticket': rec.json.desc_nro_boleto, fecha_boleto: rec.json.data_stage.issueDate,formato: rec.json.data_stage.source},
                         success: this.agregarNitRazonSiExisteEnErp,
-                        failure: this.conexionFailure,
+                        failure: () => {
+                            console.log('error en verFacturaErpBoleto')
+                            this.cmbNitParaFactura.setValue(rec.json.nro_nit);
+                            this.cmbRazonSocialParaFactura.setValue(rec.json.razon_social);
+                        },
                         timeout: this.timeout,
                         scope: this
                     });

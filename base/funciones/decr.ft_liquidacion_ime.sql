@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION "decr"."ft_liquidacion_ime" (    
+CREATE OR REPLACE FUNCTION "decr"."ft_liquidacion_ime" (
                 p_administrador integer, p_id_usuario integer, p_tabla character varying, p_transaccion character varying)
 RETURNS character varying AS
 $BODY$
@@ -9,11 +9,11 @@ $BODY$
  DESCRIPCION:   Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla 'decr.tliquidacion'
  AUTOR:          (admin)
  FECHA:            17-04-2020 01:54:37
- COMENTARIOS:    
+ COMENTARIOS:
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
 #ISSUE                FECHA                AUTOR                DESCRIPCION
- #0                17-04-2020 01:54:37                                Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla 'decr.tliquidacion'    
+ #0                17-04-2020 01:54:37                                Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla 'decr.tliquidacion'
  #
  ***************************************************************************/
 
@@ -78,15 +78,15 @@ BEGIN
     v_nombre_funcion = 'decr.ft_liquidacion_ime';
     v_parametros = pxp.f_get_record(p_tabla);
 
-    /*********************************    
+    /*********************************
      #TRANSACCION:  'DECR_LIQUI_INS'
      #DESCRIPCION:    Insercion de registros
-     #AUTOR:        admin    
+     #AUTOR:        admin
      #FECHA:        17-04-2020 01:54:37
     ***********************************/
 
     if(p_transaccion='DECR_LIQUI_INS')then
-                    
+
         begin
 
 
@@ -228,8 +228,8 @@ BEGIN
                        v_parametros.pagar_a_nombre,
                        v_parametros.billetes_seleccionados
 
-            
-            
+
+
             )RETURNING id_liquidacion into v_id_liquidacion;
 
 
@@ -708,6 +708,9 @@ BEGIN
                     LOOP
 
 
+                   /* raise exception '%',NULLIF(v_liquiman_det_json.id_cuenta_bancaria, '')::integer;
+                    raise exception '%',coalesce(v_liquiman_det_json.id_medio_pago, null);*/
+
                     --RAISE EXCEPTION '%', CASE WHEN v_liquiman_det_json.id_medio_pago is NOT null and v_liquiman_det_json.id_medio_pago != '' then v_liquiman_det_json.id_medio_pago else null END;
                         insert into decr.tliqui_manual_detalle(
                             estado_reg,
@@ -734,7 +737,21 @@ BEGIN
                         ) values(
                                     'activo',
                                     v_id_liqui_manual,
-                                    CASE WHEN v_liquiman_det_json.id_medio_pago is NOT null and v_liquiman_det_json.id_medio_pago != '' then v_liquiman_det_json.id_medio_pago::integer else null END,
+                                    NULLIF(v_liquiman_det_json.id_medio_pago, '')::integer,
+                                    NULLIF(v_liquiman_det_json.id_cuenta_bancaria, '')::integer,
+                                    NULLIF(v_liquiman_det_json.administradora, ''),
+                                    NULLIF(v_liquiman_det_json.lote, ''),
+                                    NULLIF(v_liquiman_det_json.comprobante, ''),
+                                    NULLIF(v_liquiman_det_json.nro_aut, ''),
+                                    NULLIF(v_liquiman_det_json.fecha, ''),
+                                    NULLIF(v_liquiman_det_json.nro_tarjeta, ''),
+                                    NULLIF(v_liquiman_det_json.concepto_original, ''),
+                                    NULLIF(v_liquiman_det_json.concepto_devolver, ''),
+                                    NULLIF(v_liquiman_det_json.importe_original, '')::numeric,
+                                    NULLIF(v_liquiman_det_json.importe_devolver, '')::numeric,
+                                    NULLIF(v_liquiman_det_json.descripcion, ''),
+
+                                    /*CASE WHEN v_liquiman_det_json.id_medio_pago is NOT null and v_liquiman_det_json.id_medio_pago != '' then v_liquiman_det_json.id_medio_pago::integer else null END,
                                     CASE WHEN v_liquiman_det_json.id_cuenta_bancaria is NOT null and v_liquiman_det_json.id_cuenta_bancaria != '' then v_liquiman_det_json.id_cuenta_bancaria::integer else null END,
                                     CASE WHEN v_liquiman_det_json.administradora is NOT null and v_liquiman_det_json.administradora != '' then v_liquiman_det_json.administradora else null END,
                                     CASE WHEN v_liquiman_det_json.lote is NOT null and v_liquiman_det_json.lote != '' then v_liquiman_det_json.lote else null END,
@@ -746,7 +763,7 @@ BEGIN
                                     CASE WHEN v_liquiman_det_json.concepto_devolver is NOT null and v_liquiman_det_json.concepto_devolver != '' then v_liquiman_det_json.concepto_devolver else null END,
                                     CASE WHEN v_liquiman_det_json.importe_original is NOT null and v_liquiman_det_json.importe_original != '' then v_liquiman_det_json.importe_original::numeric else null END,
                                     CASE WHEN v_liquiman_det_json.importe_devolver is NOT null and v_liquiman_det_json.importe_devolver != '' then v_liquiman_det_json.importe_devolver::numeric else null END,
-                                    CASE WHEN v_liquiman_det_json.descripcion is NOT null and v_liquiman_det_json.descripcion != '' then v_liquiman_det_json.descripcion else null END,
+                                    CASE WHEN v_liquiman_det_json.descripcion is NOT null and v_liquiman_det_json.descripcion != '' then v_liquiman_det_json.descripcion else null END,*/
                                     p_id_usuario,
                                     now(),
                                     v_parametros._id_usuario_ai,
@@ -757,8 +774,11 @@ BEGIN
                                 );
 
 
-                    if v_parametros.tipo_manual not in ('DEPOSITO MANUAL', 'RO MANUAL')
+
+                    if v_parametros.tipo_manual not in ('DEPOSITO MANUAL', 'RO MANUAL','INFORME CONCILIACION DEVOLUCION')
                     THEN
+
+
                         insert into decr.tliqui_forma_pago(
                             estado_reg,
                             id_liquidacion,
@@ -855,10 +875,10 @@ BEGIN
 
         end;
 
-    /*********************************    
+    /*********************************
      #TRANSACCION:  'DECR_LIQUI_MOD'
      #DESCRIPCION:    Modificacion de registros
-     #AUTOR:        admin    
+     #AUTOR:        admin
      #FECHA:        17-04-2020 01:54:37
     ***********************************/
 
@@ -968,18 +988,18 @@ BEGIN
 
 
             --Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Liquidacion modificado(a)'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Liquidacion modificado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'id_liquidacion',v_parametros.id_liquidacion::varchar);
-               
+
             --Devuelve la respuesta
             return v_resp;
-            
+
         end;
 
-    /*********************************    
+    /*********************************
      #TRANSACCION:  'DECR_LIQUI_ELI'
      #DESCRIPCION:    Eliminacion de registros
-     #AUTOR:        admin    
+     #AUTOR:        admin
      #FECHA:        17-04-2020 01:54:37
     ***********************************/
 
@@ -989,11 +1009,11 @@ BEGIN
             --Sentencia de la eliminacion
             delete from decr.tliquidacion
             where id_liquidacion=v_parametros.id_liquidacion;
-               
+
             --Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Liquidacion eliminado(a)'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Liquidacion eliminado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'id_liquidacion',v_parametros.id_liquidacion::varchar);
-              
+
             --Devuelve la respuesta
             return v_resp;
 
@@ -1039,7 +1059,7 @@ BEGIN
             return v_resp;
 
         end;
-         
+
     /*********************************
      #TRANSACCION:  'DECR_LIQUI_VERJSON'
      #DESCRIPCION:    Eliminacion de registros
@@ -1642,20 +1662,20 @@ BEGIN
 
 
     else
-     
+
         raise exception 'Transaccion inexistente: %',p_transaccion;
 
     end if;
 
 EXCEPTION
-                
+
     WHEN OTHERS THEN
         v_resp='';
         v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
         v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
         v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
         raise exception '%',v_resp;
-                        
+
 END;
 $BODY$
 LANGUAGE 'plpgsql' VOLATILE
