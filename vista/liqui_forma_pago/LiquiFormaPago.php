@@ -217,7 +217,7 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
                     triggerAction: 'all',
                     lazyRender: true,
                     mode: 'local',
-                    store: ['LINKSER', 'ATC', 'CYBER SOURCE', 'WORLDPAY'],
+                    store: ['LINKSER', 'ATC', 'CYBER SOURCE', 'WORLDPAY', 'AMEX'],
                     width: 200
                 },
                 type: 'ComboBox',
