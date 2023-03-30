@@ -1398,6 +1398,7 @@ BEGIN
                      inner join vef.tventa tv on tv.id_venta = tl.id_venta
             where tv.nro_factura = v_parametros.nro_recibo::integer
             and tv.fecha::date = v_parametros.fecha_recibo::date
+            AND tl.estado != 'anulado'
             LIMIT 1;
 
             if v_nro_liquidacion is not null then

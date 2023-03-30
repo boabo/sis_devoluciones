@@ -344,6 +344,24 @@ header("content-type: text/javascript; charset=UTF-8");
                 format: 'd/m/Y'
 
             }),
+            cmbFechaStartLiqPagPeru: new Ext.form.DateField({
+                name: 'fecha_start_liq_pag_peru',
+                fieldLabel: 'Fecha Inicio',
+                allowBlank: false,
+                disabled: false,
+                width: 105,
+                format: 'd/m/Y'
+
+            }),
+           cmbFechaEndLiqPagPeru: new Ext.form.DateField({
+                name: 'fecha_end_liq_pag_peru',
+                fieldLabel: 'Fecha Fin',
+                allowBlank: false,
+                disabled: false,
+                width: 105,
+                format: 'd/m/Y'
+
+            }),
 
             constructor:function(config){
                 this.maestro=config.maestro;
@@ -607,6 +625,49 @@ header("content-type: text/javascript; charset=UTF-8");
 
                     });
 
+                this.popUpLiqPagPeru = new Ext.Window(
+                    {
+                        layout: 'fit',
+                        width: 500,
+                        height: 250,
+                        modal: true,
+                        closeAction: 'hide',
+
+                        items: new Ext.FormPanel({
+                            labelWidth: 75, // label settings here cascade unless overridden
+
+                            frame: true,
+                            // title: 'Factura Manual Concepto',
+                            bodyStyle: 'padding:5px 5px 0',
+                            width: 200,
+                            defaults: {width: 191},
+                            // defaultType: 'textfield',
+
+                            items: [this.cmbFechaStartLiqPagPeru, this.cmbFechaEndLiqPagPeru],
+
+                            buttons: [{
+                                text: 'Save',
+                                handler: () => {
+
+                                    const fechaStartLiqPagPeru = this.cmbFechaStartLiqPagPeru.getValue();
+                                    const fechaEndLiqPagPeru = this.cmbFechaEndLiqPagPeru.getValue();
+                                    if(fechaStartLiqPagPeru && fechaEndLiqPagPeru) {
+                                        this.liqPagPeru({
+                                            fechaStartLiqPagLima:fechaStartLiqPagPeru,
+                                            fechaEndLiqPagLima: fechaEndLiqPagPeru
+                                        });
+                                    }
+                                },
+
+                                scope: this
+                            }, {
+                                text: 'Cancel',
+                                handler: ()=>{this.popUpLiqPagPeru.hide()}
+                            }]
+                        }),
+
+                    });
+
 
 
 
@@ -702,6 +763,14 @@ header("content-type: text/javascript; charset=UTF-8");
                     text: '<i class="fa fa-file-text-o fa-2x"></i><br>Liq.Pag Mia',/*iconCls:'' ,*/
                     disabled: false,
                     handler:() =>  this.popUpLiqPagMiami.show()
+
+                    //handler: this.liqPagMia
+                });
+                this.addButton('Liq.Pag Lima', {
+                    argument: {imprimir: 'verNotasLima'},
+                    text: '<i class="fa fa-file-text-o fa-2x"></i><br>Liq.Pag Lima',/*iconCls:'' ,*/
+                    disabled: false,
+                    handler:() =>  this.popUpLiqPagPeru.show()
 
                     //handler: this.liqPagMia
                 });
@@ -3035,7 +3104,7 @@ ${notas ? notas.map(function (nota) {
                 <tr><td align="center">Forma de Pago:</td></tr>
 ${liqui_forma_pago ? liqui_forma_pago.map((forma_pago) => {
                     const formaPagoMostrar = forma_pago.desc_medio_pago_pw === 'CASH' ? 'CHEQUE' : forma_pago.desc_medio_pago_pw;
-                    return `<tr><td align="center">${forma_pago.desc_forma_pago_pw === 'CREDIT CARD' ? `${forma_pago.administradora} / ${forma_pago.desc_medio_pago_pw} / ${forma_pago.nro_tarjeta} / ${forma_pago.pais}` : `${formaPagoMostrar}/A Nombre de:${forma_pago.nombre}/ Nro Cheque: ${forma_pago.nro_documento_pago}` }</td></tr>`
+                    return `<tr><td align="center">${forma_pago.desc_forma_pago_pw === 'CREDIT CARD' ? `${forma_pago.administradora} / ${forma_pago.desc_medio_pago_pw} / ${forma_pago.nro_tarjeta} / ${forma_pago.pais}/ ${forma_pago.autorizacion}` : `${formaPagoMostrar}/A Nombre de:${forma_pago.nombre}/ Nro Cheque: ${forma_pago.nro_documento_pago}` }</td></tr>`
 
                 }).join(""): ""}
             </table>
@@ -3236,6 +3305,66 @@ ${liqui_forma_pago ? liqui_forma_pago.map((forma_pago) => {
                     url: '../../sis_devoluciones/control/Liquidacion/getLiquidacionTaxesMiami',
                     params: {},
                     params: {'id_liquidacion': 24, fechaStartLiqPagMiami, fechaEndLiqPagMiami},
+                    success: (resp) => {
+                        var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+
+                        console.log('resp',objRes)
+                        var out = objRes.fileBuffer;
+                        console.log('out',out)
+
+                        /*const blob = new Blob([out.data], {
+                            type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            //type:'application/octet-stream',
+                        });
+                        console.log('blob',blob)
+
+                        var a = document.createElement("a");
+
+                        var url = URL.createObjectURL(blob);
+                        a.href = url;
+                        a.download = "export.xlsx";
+                        document.body.appendChild(a);
+                        a.click();
+                        setTimeout(function() {
+                                document.body.removeChild(a);
+                                window.URL.revokeObjectURL(url);
+                            },
+                            0);*/
+
+                        var arr = out.data;
+                        var byteArray = new Uint8Array(arr);
+                        var a = window.document.createElement('a');
+
+                        a.href = window.URL.createObjectURL(new Blob([byteArray], { type: 'application/octet-stream' }));
+                        a.download ="export.xlsx";
+
+// Append anchor to body.
+                        document.body.appendChild(a)
+                        a.click();
+
+
+// Remove anchor from body
+                        document.body.removeChild(a)
+
+
+
+
+                    },
+                    failure: this.conexionFailure,
+                    timeout: this.timeout,
+                    scope: this
+                });
+
+
+            },
+
+            liqPagPeru : function ({fechaStartLiqPagLima, fechaEndLiqPagLima}) {
+
+
+                Ext.Ajax.request({
+                    url: '../../sis_devoluciones/control/Liquidacion/getLiquidacionTaxesLima',
+                    params: {},
+                    params: {'id_liquidacion': 24, fechaStartLiqPagLima, fechaEndLiqPagLima},
                     success: (resp) => {
                         var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
 

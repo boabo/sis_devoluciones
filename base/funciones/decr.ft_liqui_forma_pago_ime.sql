@@ -46,15 +46,16 @@ BEGIN
                     
         begin
 
+
             -- si es por tarjeta necesitamos validar que no se este pagando doble el mismo comprobante
             IF v_parametros.administradora != '' then
                 v_left_credit_card := left(v_parametros.nro_tarjeta, 4);
                 v_right_credit_card := right(v_parametros.nro_tarjeta, 4);
 
-                SELECT tl.nro_liquidacion
+                SELECT string_agg(tl.nro_liquidacion::varchar, ',')
                 into v_nro_liquidacion
                 FROM decr.tliqui_forma_pago tlfp
-                inner join decr.tliquidacion tl on tl.id_liquidacion = tlfp.id_liquidacion
+                inner join decr.tliquidacion tl on tl.id_liquidacion = tlfp.id_liquidacion and tl.estado != 'anulado'
                 where left(nro_tarjeta,4) = v_left_credit_card
                   and right(nro_tarjeta, 4) = v_right_credit_card
                   and trim(autorizacion) = trim(v_parametros.autorizacion);
@@ -145,6 +146,28 @@ BEGIN
     elsif(p_transaccion='DECR_TLP_MOD')then
 
         begin
+
+
+            -- si es por tarjeta necesitamos validar que no se este pagando doble el mismo comprobante
+            IF v_parametros.administradora != '' then
+                v_left_credit_card := left(v_parametros.nro_tarjeta, 4);
+                v_right_credit_card := right(v_parametros.nro_tarjeta, 4);
+
+                SELECT string_agg(tl.nro_liquidacion::varchar,',')
+                into v_nro_liquidacion
+                FROM decr.tliqui_forma_pago tlfp
+                         inner join decr.tliquidacion tl on tl.id_liquidacion = tlfp.id_liquidacion and tl.id_liquidacion != v_parametros.id_liquidacion and tl.estado != 'anulado'
+                where left(nro_tarjeta,4) = v_left_credit_card
+                  and right(nro_tarjeta, 4) = v_right_credit_card
+                  and trim(autorizacion) = trim(v_parametros.autorizacion);
+
+                IF v_nro_liquidacion is not null THEN
+                    RAISE EXCEPTION '%','ESTA AUTORIZACION Y TARJETA YA SE DEVOLVIO EN LIQ' || v_nro_liquidacion ;
+                END IF;
+
+
+            END IF;
+
             --Sentencia de la modificacion
             update decr.tliqui_forma_pago set
             id_liquidacion = v_parametros.id_liquidacion,

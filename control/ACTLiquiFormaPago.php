@@ -30,7 +30,7 @@ class ACTLiquiFormaPago extends ACTbase{
 	}
 				
 	function insertarLiquiFormaPago(){
-		$this->objFunc=$this->create('MODLiquiFormaPago');	
+		$this->objFunc=$this->create('MODLiquiFormaPago');
 		if($this->objParam->insertar('id_liqui_forma_pago')){
 			$this->res=$this->objFunc->insertarLiquiFormaPago($this->objParam);			
 		} else{			
