@@ -104,7 +104,7 @@ class ACTLiquidacion extends ACTbase{
                 'Content-Type: application/json'
             ),
         ));
-
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         $response = curl_exec($curl);
         curl_close($curl);
         $data_json = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $response), true);
@@ -255,7 +255,7 @@ class ACTLiquidacion extends ACTbase{
                 'Content-Type: application/json'
             ),
         ));
-
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         $response = curl_exec($curl);
 
         curl_close($curl);
@@ -855,7 +855,7 @@ class ACTLiquidacion extends ACTbase{
                 'Content-Type: application/json'
             ),
         ));
-
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         $response = curl_exec($curl);
 
         curl_close($curl);
@@ -898,7 +898,7 @@ class ACTLiquidacion extends ACTbase{
                 'Content-Type: application/json'
             ),
         ));
-
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         $response = curl_exec($curl);
 
         curl_close($curl);
@@ -941,7 +941,7 @@ class ACTLiquidacion extends ACTbase{
                 'Content-Type: application/json'
             ),
         ));
-
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         $response = curl_exec($curl);
 
         curl_close($curl);
@@ -987,7 +987,7 @@ class ACTLiquidacion extends ACTbase{
                 'Content-Type: application/json'
             ),
         ));
-
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         $response = curl_exec($curl);
 
         curl_close($curl);

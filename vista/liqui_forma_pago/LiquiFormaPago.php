@@ -613,7 +613,53 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
     onSubmit:function(o) {
 
         this.refreshPadre = true;
-        Phx.vista.LiquiFormaPago.superclass.onSubmit.call(this, o, undefined, true);//habilita el boton y se abre
+console.log('0',o)
+
+
+
+        const autorizacion = this.Cmp.autorizacion.getValue();
+        const fecha_tarjeta = this.Cmp.fecha_tarjeta.getValue();
+        const nro_tarjeta = this.Cmp.nro_tarjeta.getValue();
+        const left = nro_tarjeta.substring(0,4);
+        const right = nro_tarjeta.substr(nro_tarjeta.length -4);
+
+        console.log('fecha_tarjeta',fecha_tarjeta)
+        //Phx.CP.loadingShow();
+
+        if(left && right && autorizacion && fecha_tarjeta) {
+            Ext.Ajax.request({
+                url: '../../sis_devoluciones/control/Liquidacion/getPaymentInformation',
+                params: {
+                    leftNumber: left,
+                    rigthNumber: right,
+                    authorizationNumber: autorizacion,
+                    paymentDate: moment(fecha_tarjeta).format('YYYY-MM-DD')
+                },
+                success: (resp) => {
+                    console.log('resp',resp)
+                    const reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+                    if(!reg.success) {
+                        var seguro = confirm(`${reg.message} Deseas Continuar??? si presionas ok registrara`);
+                        if(seguro){
+                            Phx.vista.LiquiFormaPago.superclass.onSubmit.call(this, o, undefined, true);//habilita el boton y se abre
+                        }
+
+                    } else {
+                        Phx.vista.LiquiFormaPago.superclass.onSubmit.call(this, o, undefined, true);//habilita el boton y se abre
+
+                    }
+
+                },
+                failure: this.conexionFailure,
+                timeout: this.timeout,
+                scope: this
+            });
+        } else {
+            Phx.vista.LiquiFormaPago.superclass.onSubmit.call(this, o, undefined, true);//habilita el boton y se abre
+
+        }
+
+
 
 
     }

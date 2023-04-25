@@ -449,7 +449,8 @@ BEGIN
                 ) liqui_tabla ON liqui_tabla.id_liquidacion = tl.id_liquidacion
             ),t_venta_detalle_original AS
             (
-                SELECT tvd.*, tci.codigo as desc_codigo, tci.desc_ingas, tci.desc_ingas as _concepto, 1 as _cantidad, tvd.precio as _importe, tvd.id_venta_detalle as _id
+                --el  _importe ahora se saca con multiplicacoin esto se puso despues de la nueva forma de facturacion
+                SELECT tvd.*, tci.codigo as desc_codigo, tci.desc_ingas, tci.desc_ingas as _concepto, 1 as _cantidad, (tvd.precio * tvd.cantidad) as _importe, tvd.id_venta_detalle as _id
                 from vef.tventa_detalle tvd
                          inner join vef.tventa tv on tv.id_venta = tvd.id_venta
                          inner join param.tconcepto_ingas tci on tci.id_concepto_ingas = tvd.id_producto
@@ -479,7 +480,7 @@ BEGIN
                        tv.fecha as fecha_doc_original, -- este campo deberia ser la fecha del documento vinculado a la liquidacion en este caso la venta (factura)
                        --tvd.id_venta_detalle,
                        (select  string_agg(tvd2.id_venta_detalle::text, ',')::varchar as id_venta_detalle from t_venta_detalle tvd2 where tvd2.id_venta = tl.id_venta  GROUP BY tvd2.id_venta ) as id_venta_detalle,
-                       (select  sum(tvd3.precio) from t_venta_detalle tvd3 where tvd3.id_venta = tl.id_venta  GROUP BY tvd3.id_venta ) as sum_venta_seleccionados,
+                       (select  sum(tvd3.precio * tvd3.cantidad) from t_venta_detalle tvd3 where tvd3.id_venta = tl.id_venta  GROUP BY tvd3.id_venta ) as sum_venta_seleccionados,
                        --data para boleto tienen
                        tv.nro_factura as _desc_liqui,
                        (

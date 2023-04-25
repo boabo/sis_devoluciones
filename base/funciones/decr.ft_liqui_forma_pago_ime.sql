@@ -48,7 +48,7 @@ BEGIN
 
 
             -- si es por tarjeta necesitamos validar que no se este pagando doble el mismo comprobante
-            IF v_parametros.administradora != '' then
+            /*IF v_parametros.administradora != '' then
                 v_left_credit_card := left(v_parametros.nro_tarjeta, 4);
                 v_right_credit_card := right(v_parametros.nro_tarjeta, 4);
 
@@ -65,7 +65,7 @@ BEGIN
                 END IF;
 
 
-            END IF;
+            END IF;*/
 
             --Sentencia de la insercion
             insert into decr.tliqui_forma_pago(
@@ -149,7 +149,7 @@ BEGIN
 
 
             -- si es por tarjeta necesitamos validar que no se este pagando doble el mismo comprobante
-            IF v_parametros.administradora != '' then
+            /*IF v_parametros.administradora != '' then
                 v_left_credit_card := left(v_parametros.nro_tarjeta, 4);
                 v_right_credit_card := right(v_parametros.nro_tarjeta, 4);
 
@@ -166,7 +166,7 @@ BEGIN
                 END IF;
 
 
-            END IF;
+            END IF;*/
 
             --Sentencia de la modificacion
             update decr.tliqui_forma_pago set

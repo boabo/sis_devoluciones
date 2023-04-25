@@ -363,7 +363,30 @@ header("content-type: text/javascript; charset=UTF-8");
 
             }),
 
-            constructor:function(config){
+        cmbFilterBy : new Ext.form.ComboBox({
+
+            name: 'resol',
+            fieldLabel: 'resol',
+            allowBlank: true,
+            emptyText: 'resol...',
+            typeAhead: true,
+            triggerAction: 'all',
+            lazyRender: true,
+            mode: 'local',
+            store: ['NRO_LIQUIDACION', 'NRO_BOLETO', 'A_NOMBRE_DE'],
+            width: 200,
+            type: 'ComboBox',
+
+        }),
+
+
+        constructor:function(config){
+
+               /* this.tbarItems = ['-',
+                    this.cmbFilterBy,
+
+                ];*/
+
                 this.maestro=config.maestro;
                 //llama al constructor de la clase padre
                 Phx.vista.Liquidacion.superclass.constructor.call(this,config);
@@ -805,6 +828,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 this.tipoTabLiqui = name;
                 this.getParametrosFiltro();
+                // descomentar eso si existe error
                 this.load({params:{start:0, limit:this.tam_pag}});
                 //Phx.vista.Liquidacion.superclass.onButtonAct.call(this);
 
@@ -1884,6 +1908,11 @@ header("content-type: text/javascript; charset=UTF-8");
 
             iniciarEventos : function () {
 
+
+                this.cmbFilterBy.on('select', function(combo, record, index){
+                    console.log('record.data.field1',record.data.field1)
+                },this);
+
                 this.Cmp.tramo_devolucion.disable();
 
                 this.Cmp.estacion.on('select', function (rec, d) {
@@ -2903,7 +2932,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 <tr>
                     <td width="80%" colspan="2">
                         ${ liquidacion.desc_tipo_documento === 'BOLEMD' ? (`BOLETO: ${liquidacion.desc_nro_boleto} ${liquidacion._liqui_fecha_doc_original}`) : `` }
-                        ${ liquidacion.desc_tipo_documento === 'FACCOM' ? (`FACTURA COMPUTARIZADA: ${liquidacion._liqui_nombre_doc_original} / ${liquidacion.nro_factura} / ${liquidacion._liqui_nro_aut_doc_original} / ${liquidacion._liqui_fecha_doc_original}`) : ``}
+                        ${ liquidacion.desc_tipo_documento === 'FACCOM' ? (`FACTURA COMPUTARIZADA: ${liquidacion._liqui_nombre_doc_original} / ${liquidacion.nro_factura} / ${liquidacion._liqui_nro_aut_doc_original} / ${liquidacion._liqui_fecha_doc_original} / Total Fac: ${liquidacion._liqui_importe_doc_original}`) : ``}
                         ${ liquidacion.desc_tipo_documento === 'RO' ? (`RECIBO COMPUTARIZADA: ${liquidacion._liqui_nombre_doc_original} / ${liquidacion.nro_factura}  / ${liquidacion._liqui_fecha_doc_original}`) : ``}
                     </td>
                     <td width="10%"></td>
@@ -2950,7 +2979,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     ${_desc_liqui_det.map((detalleSeleccionado)=> (`
                         <tr>
                             <td width="80%" colspan="2" align="left">${detalleSeleccionado.desc_ingas}</td>
-                            <td width="10%" >${ String.format('{0}', Ext.util.Format.number(detalleSeleccionado.precio, '0,000.00'))}</td>
+                            <td width="10%" >${ String.format('{0}', Ext.util.Format.number(detalleSeleccionado._importe, '0,000.00'))}</td>
                            <td width="10%" align="right"></td>
                         </tr>`))};
 

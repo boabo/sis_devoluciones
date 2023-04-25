@@ -602,7 +602,7 @@ class MODLiquidacion extends MODbase{
         $this->transaccion='DECR_FACTURA_JSON';
         $this->tipo_procedimiento='IME';//tipo de transaccion
 
-        $this->setParametro('nro_aut','nro_aut','numeric');
+        $this->setParametro('nro_aut','nro_aut','varchar');
         $this->setParametro('nro_fac','nro_fac','numeric');
 
 
