@@ -33,6 +33,7 @@ DECLARE
 
     v_filtro_value varchar;
     v_query_value varchar;
+    v_filter_by varchar;
     v_tipo_tab_liqui varchar;
     v_ids_liqui int[];
     v_ids_factucom varchar;
@@ -80,6 +81,11 @@ BEGIN
             if(pxp.f_existe_parametro(p_tabla, 'query' )) then
                 if(v_parametros.query != '') then
                     v_query_value := v_parametros.query;
+                END IF;
+            END IF;
+            if(pxp.f_existe_parametro(p_tabla, 'filter_by' )) then
+                if(v_parametros.filter_by != '') then
+                    v_filter_by := v_parametros.filter_by;
                 END IF;
             END IF;
 
@@ -138,6 +144,7 @@ BEGIN
                                                       'puntero', v_parametros.puntero,
                                                       'filtro_value', v_filtro_value,
                                                       'query_value', v_query_value,
+                                                      'filter_by', v_filter_by,
                                                       'tipo_tab_liqui', v_tipo_tab_liqui,
                                                       'ids_liqui', v_ids_liqui,
                                                       'ids_factucom', v_ids_factucom,

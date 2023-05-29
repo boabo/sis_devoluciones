@@ -135,7 +135,7 @@ Phx.vista.LiquiFormaPago=Ext.extend(Phx.gridInterfaz,{
                     totalProperty: 'total',
                     fields: ['id_medio_pago_pw', 'name', 'fop_code'],
                     remoteSort: true,
-                    baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'dev', regional: 'BOL'}
+                    baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'dev', regional: 'BO'}
                 }),
                 valueField: 'id_medio_pago_pw',
                 displayField: 'name',

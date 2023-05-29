@@ -278,7 +278,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     totalProperty: 'total',
                     fields: ['id_medio_pago_pw', 'name', 'fop_code'],
                     remoteSort: true,
-                    baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'dev', regional: 'BOL'}
+                    baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'dev', regional: 'BO'}
                 }),
                 valueField: 'id_medio_pago_pw',
                 displayField: 'name',
@@ -382,10 +382,10 @@ header("content-type: text/javascript; charset=UTF-8");
 
         constructor:function(config){
 
-               /* this.tbarItems = ['-',
+                this.tbarItems = ['-',
                     this.cmbFilterBy,
 
-                ];*/
+                ];
 
                 this.maestro=config.maestro;
                 //llama al constructor de la clase padre
@@ -1911,6 +1911,8 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 this.cmbFilterBy.on('select', function(combo, record, index){
                     console.log('record.data.field1',record.data.field1)
+                    this.store.baseParams.filter_by = record.data.field1;
+
                 },this);
 
                 this.Cmp.tramo_devolucion.disable();

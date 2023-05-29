@@ -76,12 +76,37 @@ BEGIN
        , t_all_liqui_forma_pago_json as (select json_array_elements(liqui_forma_pago) json
                                          from t_data_all)
        , t_all_liqui_forma_pago_columns as (select json ->> 'id_liquidacion'     as id_liquidacion,
+                                               json ->> 'id_liqui_forma_pago' as id_liqui_forma_pago,
                                                    json ->> 'id_medio_pago'      as id_medio_pago,
                                                    json ->> 'importe'            as importe,
                                                    json ->> 'desc_medio_pago_pw' as desc_medio_pago_pw,
                                                    json ->> 'desc_forma_pago_pw' as desc_forma_pago_pw,
                                                    json ->> 'administradora'     as administradora
                                             from t_all_liqui_forma_pago_json)
+   , t_all_liqui_forma_pago_det as (
+       select talfpc.*,
+              tda.importe_devolver,
+              tl.nro_liquidacion,
+              tl.fecha_pago,
+              tl.descripcion,
+              tl.pagar_a_nombre,
+              tl.importe_total,
+              tl.importe_neto,
+              tlm.tipo_manual,
+              tlfp.administradora,
+              tlfp.nro_tarjeta,
+              tlfp.fecha_tarjeta,
+              tlfp.autorizacion,
+              tlfp.nro_documento_pago,
+              tlfp.nombre
+
+
+       from t_all_liqui_forma_pago_columns talfpc
+       inner join decr.tliqui_forma_pago tlfp on tlfp.id_liqui_forma_pago = talfpc.id_liqui_forma_pago::integer
+       inner join t_data_all tda on tda.id_liquidacion::integer = talfpc.id_liquidacion::integer
+       inner join decr.tliquidacion tl on tl.id_liquidacion = talfpc.id_liquidacion::integer
+       left join decr.tliqui_manual tlm on tlm.id_liquidacion = tl.id_liquidacion
+)
        , t_bolemd_forma_pago as (select cast(tjtcb.id_liquidacion::text as integer) as    id_liquidacion,
                                         json_array_elements(tjtcb.liqui_forma_pago::json) j
                                  from t_json_to_columns_bolemd tjtcb)
@@ -126,6 +151,9 @@ BEGIN
                   FROM (SELECT desc_forma_pago_pw, count(*), sum(importe::numeric)
                         FROM t_all_liqui_forma_pago_columns
                         group by desc_forma_pago_pw) all_liqui_forma_pago_columns)  as forma_pago_por_forma_pago,
+             (SELECT ARRAY_TO_JSON(ARRAY_AGG(ROW_TO_JSON(all_liqui_forma_pago_det)))
+              FROM (SELECT *
+                    FROM t_all_liqui_forma_pago_det ) all_liqui_forma_pago_det)  as forma_pago_por_forma_pago_det,
                  (select sum(importe::numeric) from t_all_liqui_forma_pago_columns) as total_forma_pago) jsonData;
 
 

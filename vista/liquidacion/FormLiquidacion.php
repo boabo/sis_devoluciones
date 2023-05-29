@@ -993,7 +993,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         totalProperty: 'total',
                         fields: ['id_medio_pago_pw', 'name', 'fop_code'],
                         remoteSort: true,
-                        baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'dev', regional: 'BOL'}
+                        baseParams: {par_filtro: 'mppw.name#fp.fop_code', emision:'dev', regional: 'BO'}
                     }),
                     valueField: 'id_medio_pago_pw',
                     displayField: 'name',
@@ -3528,7 +3528,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 
 
             } else {
-                this.CmpLiquiManDet.nro_tarjeta.setValue('');
+                //this.CmpLiquiManDet.nro_tarjeta.setValue('');
                 alert(message)
 
             }

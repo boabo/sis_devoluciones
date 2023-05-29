@@ -115,6 +115,7 @@ class MODLiquidacion extends MODbase{
         $this->setParametro('nro_liquidacion','nro_liquidacion','varchar');
         $this->setParametro('bottom_filtro_value','bottom_filtro_value','varchar');
         $this->setParametro('query','query','varchar');
+        $this->setParametro('filter_by','filter_by','varchar');
 
 
         $this->setParametro('administradora','administradora','varchar');

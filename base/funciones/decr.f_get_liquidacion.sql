@@ -32,6 +32,7 @@ DECLARE
     v_tipo_tab_liqui varchar DEFAULT p_params->>'tipo_tab_liqui';
     v_filtro_value varchar DEFAULT UPPER(p_params->>'filtro_value');
     v_query_value varchar DEFAULT UPPER(p_params->>'query_value');
+    v_filter_by varchar DEFAULT UPPER(p_params->>'filter_by');
 
 
 BEGIN
@@ -48,6 +49,27 @@ BEGIN
         from decr.ttipo_doc_liquidacion ttdl
                  inner join decr.tliquidacion tl on tl.id_tipo_doc_liquidacion = ttdl.id_tipo_doc_liquidacion
         where tl.id_liquidacion = v_id_liquidacion;
+    END IF;
+
+    if(v_filter_by is not null and v_filter_by = 'NRO_LIQUIDACION') then
+
+
+        SELECT array_agg(tl.id_liquidacion)
+        into v_id_liquidacion_array
+        FROM decr.tliquidacion tl
+        where tl.nro_liquidacion  LIKE '%' || v_filtro_value || '%';
+
+    END IF;
+
+    if(v_filter_by is not null and v_filter_by = 'NRO_BOLETO') then
+
+
+        SELECT array_agg(tl.id_liquidacion)
+        into v_id_liquidacion_array
+        FROM decr.tliquidacion tl
+        INNER JOIN decr.tliqui_boleto tlb on tlb.id_liquidacion = tl.id_liquidacion
+        where upper(cast(tlb.data_stage->>'ticketNumber' as varchar)) like '%' || v_filtro_value || '%';
+
     END IF;
 
 
