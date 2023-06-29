@@ -159,9 +159,83 @@ class ACTLiquidacion extends ACTbase{
         $billete = $this->objParam->getParametro('billete');
         $param_conex = array();
 
-        $conexion = new ConexionSqlServer('172.17.110.6', 'SPConnection', 'Passw0rd', 'DBStage');
-        $conn = $conexion->conectarSQL();
+        //$conexion = new ConexionSqlServer('172.17.110.6', 'SPConnection', 'Passw0rd', 'DBStage');
+        //$conexion = new ConexionSqlServer('172.17.110.6', 'DBStage', 'SPConnection', 'Passw0rd');
+        //$conn = $conexion->conectarSQL();
 
+        $this->link = new ConexionSqlServer($_SESSION['_SQL_HOST_STAGE'], $_SESSION['_SQL_BD_STAGE'],$_SESSION['_SQL_USER_STAGE'], $_SESSION['_SQL_PASS_STAGE']);
+        $this->conexion = $this->link->conectarSQL();
+
+
+
+        try {
+            /***************Realizamos la conexion y el registro de datos********************/
+            $sql = "EXEC [DBStage].[dbo].[spa_getRoutingTicket] @ticketNumber= $billete ;";
+            //$sql = "EXEC DBStage.dbo.spa_getRoutingTicket @ticketNumber= $billete ;"; // boleto miami 9303852215072
+
+            //$consulta = @mssql_query($sql, $this->conexion);
+            $consulta = $this->link->sqlQuery($sql);
+
+            //$row = mssql_fetch_array($consulta, MSSQL_ASSOC);
+            //$row = $this->conexion->sqlFetch($consulta);
+            //$row = $this->link->sqlFetch($consulta);
+
+
+            $data = array();
+
+            while ($row = $this->link->sqlFetch($consulta)){
+
+                $row["id"] = $row["Origin"] .'-'.$row["Destination"];
+                $row["desc"] = $row["Origin"] .'-'.$row["Destination"] . '(' .$row["CouponStatus"] . ')';
+
+                $data[] = $row;
+            }
+
+
+            $send = array(
+                "total" => isset($row) ? count($row) : 0,
+                "datos"=> $data
+            );
+            $send = json_encode($send, true);
+            echo $send;
+
+
+            //var_dump("aqui llega data",$row);
+            // $evento = "enviarMensajeUsuario";
+            // if ($row['Estado'] == 0) {
+            // 	$mensaje = 'Estimado usuario ocurrio un error al momento de procesar el Archivo, por favor vuelva a intentar';
+            // }else {
+            // 	$mensaje = 'Estimado usuario se proceso correctamente el Archivo puede verificarlo desde la interfaz de comparacion de SIAT vs ERP,CARGA,BOLETOS';
+            // }
+            //
+            // //mandamos datos al websocket
+            // $data = array(
+            // 		"mensaje" => $mensaje,
+            // 		"tipo_mensaje" => 'alert',
+            // 		"titulo" => 'Notificacion',
+            // 		"id_usuario" => $_SESSION["ss_id_usuario"],
+            // 		"destino" => 'Unico',
+            // 		"evento" => $evento,
+            // 		"url" => 'url_prueba'
+            // );
+            //
+            // $send = array(
+            // 		"tipo" => "enviarMensajeUsuario",
+            // 		"data" => $data
+            // );
+            //
+            // $usuarios_socket = $this->dispararEventoWS($send);
+            //
+            // $usuarios_socket =json_decode($usuarios_socket, true);
+
+            /*************************************************************************************************/
+        }catch (Exception $e) {
+            throw new Exception("La conexion a la bd POSTGRESQL ha fallado.");
+        }
+        $this->link->closeSQL();
+
+
+/*
         //EXECUTE [dbo].[spa_getRoutingTicket] @ticketNumber
         if($conn=='connect') {
             $error = 'connect';
@@ -171,17 +245,19 @@ class ACTLiquidacion extends ACTbase{
             throw new Exception("select_db: La seleccion de la bd SQL Server ".$param_conex[1]." ha fallado.");
         }else {
 
-            $query_string = "exec DBStage.dbo.spa_getRoutingTicket @ticketNumber= $billete "; // boleto miami 9303852215072
+            $query_string = "exec DBStage.dbo.spa_getRoutingTicket @ticketNumber= $billete ;"; // boleto miami 9303852215072
 
             //$query_string = "select * from AuxBSPVersion";
             //$query_string = utf8_decode("select FlightItinerary from FactTicket where TicketNumber = '9302400056027'");
 
-            $query = @mssql_query($query_string, $conn);
+            //$query = @mssql_query($query_string, $conn);
+
+            $query = $conexion->sqlQuery($query_string);
             //$query = @mssql_query(utf8_decode('select * from AuxBSPVersion'), $conn);
 
             $data = array();
 
-            while ($row = mssql_fetch_array($query, MSSQL_ASSOC)){
+            while ($row = $conexion->sqlFetch($query)){
 
                 $row["id"] = $row["Origin"] .'-'.$row["Destination"];
                 $row["desc"] = $row["Origin"] .'-'.$row["Destination"] . '(' .$row["CouponStatus"] . ')';
@@ -198,7 +274,7 @@ class ACTLiquidacion extends ACTbase{
             echo $send;
             mssql_free_result($query);
             $conexion->closeSQL();
-        }
+        }*/
     }
 
     function verLiquidacion() {

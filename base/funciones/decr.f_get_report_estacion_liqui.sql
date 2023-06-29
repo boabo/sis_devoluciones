@@ -29,6 +29,7 @@ DECLARE
     v_estado varchar DEFAULT UPPER(p_params->>'estado');
     v_fecha_ini varchar DEFAULT UPPER(p_params->>'fecha_ini');
     v_fecha_fin varchar DEFAULT UPPER(p_params->>'fecha_fin');
+    v_tipo_documento varchar DEFAULT UPPER(p_params->>'tipo_documento');
     v_json_params_to_send json;
 
 BEGIN
@@ -40,18 +41,19 @@ BEGIN
 
 
 
-
     with t_datos_por_tipo_doc_json as (SELECT ttdl.tipo_documento,
                                               (select coalesce(j ->> 'datos', '[]')
                                                FROM decr.f_get_liquidacion(json_strip_nulls(json_build_object(
                                                        'reporte', 'si',
                                                        'estacion', 'CBBWEB',
                                                        'estado', 'pagado',
-                                                       'fecha_ini', '2023-02-01',
-                                                       'fecha_fin', '2023-02-28',
+                                                       'fecha_ini', '2023-01-01',
+                                                       'fecha_fin', '2023-05-31',
                                                        'tipo_tab_liqui', ttdl.tipo_documento
                                                    ))) j) as data_json
-                                       FROM decr.ttipo_doc_liquidacion ttdl)
+                                       FROM decr.ttipo_doc_liquidacion ttdl
+                                       WHERE CASE WHEN v_tipo_documento is not null then ttdl.tipo_documento = v_tipo_documento::varchar else 1=1 end
+                                       )
        , t_data_json_det_por_tipo_doc as (select tipo_documento, json_array_elements(data_json::json) as json
                                           from t_datos_por_tipo_doc_json)
        , t_json_to_columns_bolemd as (select json ->> 'id_liquidacion'                  as id_liquidacion,
@@ -98,13 +100,15 @@ BEGIN
               tlfp.fecha_tarjeta,
               tlfp.autorizacion,
               tlfp.nro_documento_pago,
-              tlfp.nombre
+              tlfp.nombre,
+              ttdl.tipo_documento
 
 
        from t_all_liqui_forma_pago_columns talfpc
        inner join decr.tliqui_forma_pago tlfp on tlfp.id_liqui_forma_pago = talfpc.id_liqui_forma_pago::integer
        inner join t_data_all tda on tda.id_liquidacion::integer = talfpc.id_liquidacion::integer
        inner join decr.tliquidacion tl on tl.id_liquidacion = talfpc.id_liquidacion::integer
+       inner join decr.ttipo_doc_liquidacion ttdl on ttdl.id_tipo_doc_liquidacion = tl.id_tipo_doc_liquidacion
        left join decr.tliqui_manual tlm on tlm.id_liquidacion = tl.id_liquidacion
 )
        , t_bolemd_forma_pago as (select cast(tjtcb.id_liquidacion::text as integer) as    id_liquidacion,
