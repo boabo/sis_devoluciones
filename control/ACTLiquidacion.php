@@ -725,24 +725,27 @@ class ACTLiquidacion extends ACTbase{
                     if(is_array($row['liqui_forma_pago'])) {
                         foreach ($row['liqui_forma_pago'] as $liqui_forma_pago) {
 
-                            array_push($dataDinamico, array(
-                                "administradora" => $liqui_forma_pago['administradora'],
-                                "codigo_punto_venta" => $row['codigo_punto_venta'],
-                                "estacion" => $row['estacion'],
-                                "nro_liquidacion" => $row['nro_liquidacion'],
-                                "pagar_a_nombre" => $row['nombre'],
-                                "_liqui_codigo_agencia_doc_original" => $liqui_forma_pago['cod_est'],
-                                "_liqui_oficina_emisora_original" => $liqui_forma_pago['nro_terminal'],
-                                "nro_tarjeta" => $liqui_forma_pago['nro_tarjeta'],
-                                "fecha_tarjeta" => $liqui_forma_pago['fecha_tarjeta'],
-                                "fecha_origen" => $liqui_forma_pago['fecha_tarjeta'],
-                                "importe_devolver" => $liqui_forma_pago['importe'],
-                                "lote" => $liqui_forma_pago['lote'],
-                                "comprobante" => $liqui_forma_pago['comprobante'],
-                                "codigo_autorizacion" => $liqui_forma_pago['autorizacion'],
-                                "_liqui_nro_doc_original" => $row['_liqui_nro_doc_original'],
-                                "fecha_pago" => $row['fecha_pago'],
-                            ));
+                            if($liqui_forma_pago['desc_forma_pago_pw'] == 'CREDIT CARD') {
+                                array_push($dataDinamico, array(
+                                    "administradora" => $liqui_forma_pago['administradora'],
+                                    "codigo_punto_venta" => $row['codigo_punto_venta'],
+                                    "estacion" => $row['estacion'],
+                                    "nro_liquidacion" => $row['nro_liquidacion'],
+                                    "pagar_a_nombre" => $row['nombre'],
+                                    "_liqui_codigo_agencia_doc_original" => $liqui_forma_pago['cod_est'],
+                                    "_liqui_oficina_emisora_original" => $liqui_forma_pago['nro_terminal'],
+                                    "nro_tarjeta" => $liqui_forma_pago['nro_tarjeta'],
+                                    "fecha_tarjeta" => $liqui_forma_pago['fecha_tarjeta'],
+                                    "fecha_origen" => $liqui_forma_pago['fecha_tarjeta'],
+                                    "importe_devolver" => $liqui_forma_pago['importe'],
+                                    "lote" => $liqui_forma_pago['lote'],
+                                    "comprobante" => $liqui_forma_pago['comprobante'],
+                                    "codigo_autorizacion" => $liqui_forma_pago['autorizacion'],
+                                    "_liqui_nro_doc_original" => $row['_liqui_nro_doc_original'],
+                                    "fecha_pago" => $row['fecha_pago'],
+                                ));
+                            }
+
                         }
                     }
 
@@ -888,6 +891,49 @@ class ACTLiquidacion extends ACTbase{
                 "id_liquidacion": "1",
                 "fechaStartLiqPagMiami": "'.$fechaStartLiqPagMiami.'",
                 "fechaEndLiqPagMiami": "'.$fechaEndLiqPagMiami.'"
+            }
+            ',
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: ' . $_SESSION['_PXP_ND_TOKEN'],
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        $data_json = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $response), true);
+
+        echo $response;
+        exit;
+
+        /*  var_dump($data_json);
+          exit;*/
+        $this->res->setDatos($data_json);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+
+    }
+
+    function getLiquidacionTaxesLima() {
+        $fechaStartLiqPagLima = $this->objParam->getParametro('fechaStartLiqPagLima');
+        $fechaEndLiqPagLima = $this->objParam->getParametro('fechaEndLiqPagLima');
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $_SESSION['_PXP_ND_URL'].'/api/boa-liqui-nd/LiquiReport/getLiquidacionTaxesPeru',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS =>'{
+                "id_liquidacion": "1",
+                "fechaStartLiqPagLima": "'.$fechaStartLiqPagLima.'",
+                "fechaEndLiqPagLima": "'.$fechaEndLiqPagLima.'"
             }
             ',
             CURLOPT_HTTPHEADER => array(

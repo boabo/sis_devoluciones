@@ -60,10 +60,12 @@ BEGIN
         into v_id_liquidacion_array
         FROM decr.tliquidacion tl
         inner join decr.tliqui_forma_pago tlfp on tlfp.id_liquidacion = tl.id_liquidacion
+        inner join obingresos.tmedio_pago_pw tmpw on tmpw.id_medio_pago_pw = tlfp.id_medio_pago
+        inner join obingresos.tforma_pago_pw tfpp on tfpp.id_forma_pago_pw = tmpw.forma_pago_id and  tfpp.name = 'CREDIT CARD'
         where tl.estado = p_params->>'estado'::varchar
         and (CASE WHEN p_params->>'estacion' != 'TODOS' THEN tl.estacion = p_params->>'estacion'::varchar ELSE 1 = 1 END)
-        and (CASE WHEN p_params->>'administradora' != 'TODOS' THEN tlfp.administradora = p_params->>'administradora'::varchar ELSE tlfp.administradora in ('CYBER SOURCE', 'LINKSER', 'ATC', 'WORLDPAY', 'CYBERSOURCE', 'AMEX') END)
-          AND tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date)
+        and (CASE WHEN p_params->>'administradora' != 'TODOS' THEN tlfp.administradora = p_params->>'administradora'::varchar ELSE 1=1 END)
+          AND tl.fecha_pago::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date)
         ;
 
         --RAISE EXCEPTION '%',v_id_liquidacion_array;
@@ -89,6 +91,34 @@ BEGIN
           AND (CASE WHEN p_params->>'estado'::varchar = 'pagado'
                         THEN tl.fecha_pago::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date)
                     ELSE tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date) END)
+        ORDER BY tl.fecha_pago asc
+            ) SELECT array_agg(lf.id_liquidacion)
+        into v_id_liquidacion_array
+        from liquidacion_filtrada lf;
+
+        --RAISE EXCEPTION '%',v_id_liquidacion_array;
+        IF v_id_liquidacion_array is null then
+            RAISE EXCEPTION '%', 'NO EXISTE DATOS PARA ESTOS PARAMETROS DE BUSQUEDA CON ESTADO';
+        END IF;
+
+    END IF;
+
+    if(p_params->'reporte' is not null and p_params->>'estado' is not null and p_params->>'fecha_ini' is not null and p_params->>'fecha_fin' is not null) then
+
+        --raise EXCEPTION '%',p_params->'id_medio_pago';
+        -- determinado rango de fechas y con el tipo de administradora
+
+
+        with liquidacion_filtrada as (
+            SELECT tl.id_liquidacion
+        FROM decr.tliquidacion tl
+                 inner join decr.tliqui_forma_pago tlfp on tlfp.id_liquidacion = tl.id_liquidacion
+        where tl.estacion = p_params->>'estacion'::varchar
+          and tl.estado = p_params->>'estado'::varchar
+          AND (CASE WHEN p_params->>'estado'::varchar = 'pagado'
+                        THEN tl.fecha_pago::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date)
+                    ELSE tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date) END)
+
         ORDER BY tl.fecha_pago asc
             ) SELECT array_agg(lf.id_liquidacion)
         into v_id_liquidacion_array
