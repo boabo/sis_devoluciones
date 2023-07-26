@@ -1411,7 +1411,7 @@ BEGIN
             from (
                      select tv.id_venta
                      FROM vef.tventa tv
-                     where tv.fecha::date = v_parametros.fecha_recibo::date
+                     where tv.tipo_factura in ('recibo', 'recibo_manual') and tv.fecha::date = v_parametros.fecha_recibo::date
                        AND tv.nro_factura = v_parametros.nro_recibo::integer
                      limit 1
                  ) venta;
