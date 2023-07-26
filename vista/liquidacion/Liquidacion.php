@@ -829,7 +829,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.tipoTabLiqui = name;
                 this.getParametrosFiltro();
                 // descomentar eso si existe error
-                this.load({params:{start:0, limit:this.tam_pag}});
+                this.load({params:{start:0, limit:this.tam_pag, limit_from_grid: 10}});
                 //Phx.vista.Liquidacion.superclass.onButtonAct.call(this);
 
 
@@ -1804,7 +1804,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     form:false
                 }
             ],
-            tam_pag:50,
+            tam_pag:5,
             title:'Liquidacion',
             ActSave:'../../sis_devoluciones/control/Liquidacion/insertarLiquidacion',
             ActDel:'../../sis_devoluciones/control/Liquidacion/eliminarLiquidacion',
@@ -1861,7 +1861,7 @@ header("content-type: text/javascript; charset=UTF-8");
             ],
             sortInfo:{
                 field: 'id_liquidacion',
-                direction: 'ASC'
+                direction: 'DESC'
             },
             bdel:false,
             bsave:true,

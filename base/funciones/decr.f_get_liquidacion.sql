@@ -33,6 +33,7 @@ DECLARE
     v_filtro_value varchar DEFAULT UPPER(p_params->>'filtro_value');
     v_query_value varchar DEFAULT UPPER(p_params->>'query_value');
     v_filter_by varchar DEFAULT UPPER(p_params->>'filter_by');
+    v_limit_from_grid integer DEFAULT UPPER(p_params->>'limit_from_grid');
 
 
 BEGIN
@@ -154,7 +155,7 @@ BEGIN
     END IF;
 
 
-    SELECT count(tl.id_liquidacion)
+  /*  SELECT count(tl.id_liquidacion)
     INTO v_count
     FROM decr.tliquidacion tl
     INNER JOIN segu.tusuario usu1 ON usu1.id_usuario = tl.id_usuario_reg
@@ -171,7 +172,8 @@ BEGIN
             ELSE 1 = 1 END)
         AND (CASE WHEN v_query_value IS NOT NULL THEN tl.nro_liquidacion LIKE '%' || v_query_value || '%' ELSE 1 = 1 END)*/
     AND (CASE WHEN v_id_liquidacion_array IS NOT NULL THEN tl.id_liquidacion = ANY (v_id_liquidacion_array) ELSE 1 = 1 END);
-
+*/
+    v_count:=0;
 
 
     with t_liqui
@@ -203,8 +205,10 @@ BEGIN
               AND (CASE WHEN v_id_liquidacion_array is not null then tl.id_liquidacion = any (v_id_liquidacion_array) else 1=1 end)
             order by tl.id_liquidacion DESC
             --LIMIT cast(p_params->>'cantidad' as integer) OFFSET cast(p_params->>'puntero' as integer)
+            LIMIT COALESCE(v_limit_from_grid, 9223372036854775807)
 
-        ),
+
+    ),
          t_sum_descuentos as
              (
                  SELECT tl.id_liquidacion, tdl.tipo, sum(tdl.importe) as sum_total_por_tipo, tci.tipo_descuento
@@ -316,6 +320,9 @@ BEGIN
                    ) AS factura_pagada
             FROM t_liqui tl
         ) liqui;
+
+
+
 
 
     --agregamos datos dependiendo el tipo de documento

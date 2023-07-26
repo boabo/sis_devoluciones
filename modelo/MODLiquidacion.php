@@ -12,17 +12,17 @@
 */
 
 class MODLiquidacion extends MODbase{
-    
+
     function __construct(CTParametro $pParam){
         parent::__construct($pParam);
     }
-            
+
     function listarLiquidacion(){
         //Definicion de variables para ejecucion del procedimientp
         $this->procedimiento='decr.ft_liquidacion_sel';
         $this->transaccion='DECR_LIQUI_SEL';
         $this->tipo_procedimiento='SEL';//tipo de transaccion
-                
+
         //Definicion de la lista del resultado del query
         $this->captura('id_liquidacion','int4');
         $this->captura('estacion','varchar');
@@ -99,7 +99,7 @@ class MODLiquidacion extends MODbase{
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();
-        
+
         //Devuelve la respuesta
         return $this->respuesta;
     }
@@ -124,6 +124,7 @@ class MODLiquidacion extends MODbase{
         $this->setParametro('fecha_fin','fecha_fin','date');
         $this->setParametro('estacion','estacion','varchar');
         $this->setParametro('id_medio_pago','id_medio_pago','int4');
+        $this->setParametro('limit_from_grid','limit_from_grid','varchar');
 
 
         //Ejecuta la instruccion
@@ -223,7 +224,7 @@ class MODLiquidacion extends MODbase{
         $this->procedimiento='decr.ft_liquidacion_ime';
         $this->transaccion='DECR_LIQUI_INS';
         $this->tipo_procedimiento='IME';
-                
+
         //Define los parametros para la funcion
         $this->setParametro('estacion','estacion','varchar');
         $this->setParametro('nro_liquidacion','nro_liquidacion','varchar');
@@ -283,7 +284,7 @@ class MODLiquidacion extends MODbase{
         //Devuelve la respuesta
         return $this->respuesta;
     }
-            
+
     function modificarLiquidacion(){
         //Definicion de variables para ejecucion del procedimiento
         $this->procedimiento='decr.ft_liquidacion_ime';
@@ -337,13 +338,13 @@ class MODLiquidacion extends MODbase{
         //Devuelve la respuesta
         return $this->respuesta;
     }
-            
+
     function eliminarLiquidacion(){
         //Definicion de variables para ejecucion del procedimiento
         $this->procedimiento='decr.ft_liquidacion_ime';
         $this->transaccion='DECR_LIQUI_ELI';
         $this->tipo_procedimiento='IME';
-                
+
         //Define los parametros para la funcion
         $this->setParametro('id_liquidacion','id_liquidacion','int4');
 
@@ -774,7 +775,7 @@ class MODLiquidacion extends MODbase{
 
     }
 
-    
+
 
 }
 ?>

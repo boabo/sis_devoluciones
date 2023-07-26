@@ -34,6 +34,7 @@ DECLARE
     v_filtro_value varchar;
     v_query_value varchar;
     v_filter_by varchar;
+    v_limit_from_grid integer;
     v_tipo_tab_liqui varchar;
     v_ids_liqui int[];
     v_ids_factucom varchar;
@@ -86,6 +87,11 @@ BEGIN
             if(pxp.f_existe_parametro(p_tabla, 'filter_by' )) then
                 if(v_parametros.filter_by != '') then
                     v_filter_by := v_parametros.filter_by;
+                END IF;
+            END IF;
+            if(pxp.f_existe_parametro(p_tabla, 'limit_from_grid' )) then
+                if(v_parametros.limit_from_grid != '') then
+                    v_limit_from_grid := cast(v_parametros.limit_from_grid as numeric);
                 END IF;
             END IF;
 
@@ -153,7 +159,9 @@ BEGIN
                                                       'estacion', v_estacion,
                                                       'id_medio_pago', v_id_medio_pago,
                                                       'fecha_ini', v_fecha_ini,
-                                                      'fecha_fin', v_fecha_fin))
+                                                      'fecha_fin', v_fecha_fin,
+                                                      'limit_from_grid', v_limit_from_grid
+                ))
             into v_params;
 
 
