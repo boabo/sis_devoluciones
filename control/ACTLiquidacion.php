@@ -339,6 +339,7 @@ class ACTLiquidacion extends ACTbase{
         $data_json = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $response), true);
 
 
+
         if($data_json != null) {
 
 
@@ -403,7 +404,7 @@ class ACTLiquidacion extends ACTbase{
 
             $OriginalTicket = $data["OriginalTicket"];
             //var_dump($OriginalTicket);
-            while ($OriginalTicket != '') {
+            while ($OriginalTicket != '' && property_exists($OriginalTicket, 'passengerName') && property_exists($OriginalTicket, 'totalAmount')) {
 
                 $exento_hijo = 0;
                 $iva_hijo = 0;

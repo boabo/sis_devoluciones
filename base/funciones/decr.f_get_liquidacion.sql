@@ -86,9 +86,13 @@ BEGIN
         inner join obingresos.tmedio_pago_pw tmpw on tmpw.id_medio_pago_pw = tlfp.id_medio_pago
         inner join obingresos.tforma_pago_pw tfpp on tfpp.id_forma_pago_pw = tmpw.forma_pago_id and  tfpp.name = 'CREDIT CARD'
         where tl.estado = p_params->>'estado'::varchar
+            AND (CASE WHEN p_params->>'estado'::varchar = 'pagado'
+                        THEN tl.fecha_pago::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date)
+                    ELSE tl.fecha_reg::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date) END)
+
         and (CASE WHEN p_params->>'estacion' != 'TODOS' THEN tl.estacion = p_params->>'estacion'::varchar ELSE 1 = 1 END)
         and (CASE WHEN p_params->>'administradora' != 'TODOS' THEN tlfp.administradora = p_params->>'administradora'::varchar ELSE 1=1 END)
-          AND tl.fecha_pago::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date)
+         -- AND tl.fecha_pago::date BETWEEN cast(p_params->>'fecha_ini' as date) and cast(p_params->>'fecha_fin' as date)
         ;
 
         --RAISE EXCEPTION '%',v_id_liquidacion_array;
