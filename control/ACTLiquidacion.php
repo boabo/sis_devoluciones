@@ -193,7 +193,7 @@ class ACTLiquidacion extends ACTbase{
 
 
             $send = array(
-                "total" => isset($row) ? count($row) : 0,
+                "total" => isset($data) ? count($data) : 0,
                 "datos"=> $data
             );
             $send = json_encode($send, true);
@@ -851,7 +851,7 @@ class ACTLiquidacion extends ACTbase{
         $estacion = $this->objParam->getParametro('estacion');
         $estado = $this->objParam->getParametro('estado');
 
-        $nombreArchivo = uniqid('liq_'+$estacion+'_'+$estado+'_XLS_'.md5(session_id())).'.xls';
+        $nombreArchivo = uniqid('liq_'.$estacion.'_'.$estado.'_XLS_'.md5(session_id())).'.xls';
 
 
         $dataForReport = $this->getLiquidacionDinamica('dinamica');
