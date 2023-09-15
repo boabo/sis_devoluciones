@@ -859,7 +859,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             if(dataTicket && dataTicket.payment, dataTicket.OriginalTicket ) {
                                 const {payment, OriginalTicket} = dataTicket;
 
-                                let paymentsData = [...(OriginalTicket !== null && OriginalTicket.payment ? createPaymentsForErp(OriginalTicket) : [])];
+                                let paymentsData = [...((!OriginalTicket && OriginalTicket.payment) ? createPaymentsForErp(OriginalTicket) : [])];
                                 payment.forEach((p) => {
                                     if (p.paymentCode === 'CC') {
                                         paymentsData.push({
