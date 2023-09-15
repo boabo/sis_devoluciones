@@ -856,29 +856,32 @@ header("content-type: text/javascript; charset=UTF-8");
 
                         const createPaymentsForErp = (dataTicket) => {
                             console.log('dataTicket', dataTicket)
-                            const {payment, OriginalTicket} = dataTicket;
+                            if(dataTicket && dataTicket.payment, dataTicket.OriginalTicket ) {
+                                const {payment, OriginalTicket} = dataTicket;
 
-                            let paymentsData = [...(OriginalTicket !== null ? createPaymentsForErp(OriginalTicket) : [])];
-                            payment.forEach((p) => {
-                                if (p.paymentCode === 'CC') {
-                                    paymentsData.push({
-                                        code: p.paymentCode,
-                                        description: p.paymentDescription,
-                                        //amount: that.convertirImportePorMoneda(p.paymentAmount, currency),
-                                        amount: p.paymentAmount,
-                                        method_code: p.paymentMethodCode,
-                                        reference: p.reference,
-                                        administradora: '',
-                                        comprobante: '',
-                                        lote: '',
-                                        cod_est: '',
-                                        credit_card_number: p.creditCardNumber
-                                    })
-                                }
+                                let paymentsData = [...(OriginalTicket !== null && OriginalTicket.payment ? createPaymentsForErp(OriginalTicket) : [])];
+                                payment.forEach((p) => {
+                                    if (p.paymentCode === 'CC') {
+                                        paymentsData.push({
+                                            code: p.paymentCode,
+                                            description: p.paymentDescription,
+                                            //amount: that.convertirImportePorMoneda(p.paymentAmount, currency),
+                                            amount: p.paymentAmount,
+                                            method_code: p.paymentMethodCode,
+                                            reference: p.reference,
+                                            administradora: '',
+                                            comprobante: '',
+                                            lote: '',
+                                            cod_est: '',
+                                            credit_card_number: p.creditCardNumber
+                                        })
+                                    }
 
-                            })
+                                })
 
-                            return paymentsData;
+                                return paymentsData;
+                            }
+
                         }
                         //debemos recorrer todos payments por si hay de un exchange
                         let allPayments = [...createPaymentsForErp(that.dataStage)];
