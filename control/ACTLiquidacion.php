@@ -340,6 +340,9 @@ class ACTLiquidacion extends ACTbase{
 
 
 
+
+
+
         if($data_json != null) {
 
 
@@ -403,44 +406,59 @@ class ACTLiquidacion extends ACTbase{
             ));
 
             $OriginalTicket = $data["OriginalTicket"];
-            //var_dump($OriginalTicket);
-            while ($OriginalTicket != '' && property_exists($OriginalTicket, 'passengerName') && property_exists($OriginalTicket, 'totalAmount')) {
 
-                $exento_hijo = 0;
-                $iva_hijo = 0;
-                foreach ($OriginalTicket["taxes"] as $tax) {
-                    if($OriginalTicket["taxCode"] != 'BO' && $tax["taxCode"] != 'QM' && $tax["taxCode"] != 'CP') {
-                        $exento_hijo = $exento_hijo + $tax["taxAmount"];
-                    }
-                    if(trim($tax["taxCode"]) === 'BO') {
-                        $iva_hijo = $iva_hijo + $tax["taxAmount"]; // solo deberia ser uno pero por si acaso
-                    }
+            if (!empty($OriginalTicket) && isset($OriginalTicket['ticketNumber'])) {
+                $ticketNumberAux = $OriginalTicket['ticketNumber'];
+
+
+                if (strpos($ticketNumberAux, '930') === false) {
+                    $data["OriginalTicket"] = null;
                 }
-                array_push($array, array('seleccionado' => 'si',
-                    'billete' => $OriginalTicket["ticketNumber"],
-                    'monto' => $OriginalTicket["totalAmount"],
-                    'itinerary' => $OriginalTicket["itinerary"],
-                    'passengerName' => $data["passengerName"],
-                    'currency' => $data["currency"],
-                    'issueOfficeID' => $data["issueOfficeID"],
-                    'issueAgencyCode' => $data["issueAgencyCode"],
-                    'netAmount' => $data["netAmount"],
-                    'exento' => $exento_hijo,
-                    'payment' => $OriginalTicket["payment"],
-                    'taxes' => $OriginalTicket["taxes"],
-                    'iva' => $iva_hijo,
-                    'iva_contabiliza_no_liquida' => $iva_hijo,
-                    'tiene_nota' => 'no',
-                    'concepto_para_nota'=> trim($OriginalTicket["ticketNumber"]).'/'.trim($OriginalTicket["itinerary"]),
-                    'foid'=> trim($OriginalTicket["FOID"]),
-                    'fecha_emision'=> trim($OriginalTicket["issueDate"]),
-                    'concilliation' => $OriginalTicket["concilliation"],
-                    'dataStage' => $data
-
-                ));
-
-                $OriginalTicket = $OriginalTicket["OriginalTicket"];
             }
+
+            while ($OriginalTicket != '') {
+                if (!empty($OriginalTicket) && isset($OriginalTicket['passengerName']) && isset($OriginalTicket['totalAmount'])) {
+
+
+                    $exento_hijo = 0;
+                    $iva_hijo = 0;
+                    foreach ($OriginalTicket["taxes"] as $tax) {
+                        if ($OriginalTicket["taxCode"] != 'BO' && $tax["taxCode"] != 'QM' && $tax["taxCode"] != 'CP') {
+                            $exento_hijo = $exento_hijo + $tax["taxAmount"];
+                        }
+                        if (trim($tax["taxCode"]) === 'BO') {
+                            $iva_hijo = $iva_hijo + $tax["taxAmount"]; // solo deberia ser uno pero por si acaso
+                        }
+                    }
+                    array_push($array, array('seleccionado' => 'si',
+                        'billete' => $OriginalTicket["ticketNumber"],
+                        'monto' => $OriginalTicket["totalAmount"],
+                        'itinerary' => $OriginalTicket["itinerary"],
+                        'passengerName' => $data["passengerName"],
+                        'currency' => $data["currency"],
+                        'issueOfficeID' => $data["issueOfficeID"],
+                        'issueAgencyCode' => $data["issueAgencyCode"],
+                        'netAmount' => $data["netAmount"],
+                        'exento' => $exento_hijo,
+                        'payment' => $OriginalTicket["payment"],
+                        'taxes' => $OriginalTicket["taxes"],
+                        'iva' => $iva_hijo,
+                        'iva_contabiliza_no_liquida' => $iva_hijo,
+                        'tiene_nota' => 'no',
+                        'concepto_para_nota' => trim($OriginalTicket["ticketNumber"]) . '/' . trim($OriginalTicket["itinerary"]),
+                        'foid' => trim($OriginalTicket["FOID"]),
+                        'fecha_emision' => trim($OriginalTicket["issueDate"]),
+                        'concilliation' => $OriginalTicket["concilliation"],
+                        'dataStage' => $data
+
+                    ));
+
+                    $OriginalTicket = $OriginalTicket["OriginalTicket"];
+                } else {
+                    $OriginalTicket = '';
+                }
+            }
+
 
 
 
