@@ -881,6 +881,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
                                 return paymentsData;
                             }
+                            return []
 
                         }
                         //debemos recorrer todos payments por si hay de un exchange
