@@ -73,6 +73,8 @@ DECLARE
     v_boleto_seleccionado record;
     v_nro_liquidacion_validado varchar;
     v_nro_liquidacion varchar;
+    v_estacion varchar;
+    v_cuenta varchar;
 BEGIN
 
     v_nombre_funcion = 'decr.ft_liquidacion_ime';
@@ -1184,13 +1186,29 @@ BEGIN
 
         begin
 
+            select cuenta
+            into v_cuenta
+            from segu.tusuario
+            where id_usuario = p_id_usuario;
+            -- validar por usuario para que solo  algunos puedan cambiar de estado a pagar
+
+
             select
-                tl.id_liquidacion, ttdl.tipo_documento, tl.fecha_pago
+                tl.id_liquidacion, ttdl.tipo_documento, tl.fecha_pago, tl.estacion
             into
-                v_id_liquidacion, v_tipo_documento, v_fecha_pago
+                v_id_liquidacion, v_tipo_documento, v_fecha_pago, v_estacion
             from decr.tliquidacion tl
             inner join decr.ttipo_doc_liquidacion ttdl on ttdl.id_tipo_doc_liquidacion = tl.id_tipo_doc_liquidacion
             where tl.id_proceso_wf = v_parametros.id_proceso_wf_act;
+
+            --act adalid LPB
+            --lah lissando SRZ
+            --igc ingrid CBB
+
+
+            IF (v_cuenta = 'act' and v_estacion != 'LPB') OR (v_cuenta = 'lah' and v_estacion != 'SRZ') OR (v_cuenta = 'igc' and v_estacion != 'CBB') THEN
+                RAISE EXCEPTION '%', 'NO PUEDES CAMBIAR DE ESTADO PARA ESTA ESTACION';
+            END IF;
 
             select
                 codigo
