@@ -1206,7 +1206,7 @@ BEGIN
             --igc ingrid CBB
 
 
-            IF (v_cuenta = 'act' and v_estacion != 'LPB') OR (v_cuenta = 'lah' and v_estacion != 'SRZ') OR (v_cuenta = 'igc' and v_estacion != 'CBB') THEN
+            IF (v_cuenta = 'act' and v_estacion != 'LPB') OR (v_cuenta = 'lah' and v_estacion != 'SRZ') THEN
                 RAISE EXCEPTION '%', 'NO PUEDES CAMBIAR DE ESTADO PARA ESTA ESTACION';
             END IF;
 
