@@ -1028,7 +1028,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     triggerAction: 'all',
                     lazyRender: true,
                     mode: 'local',
-                    store: ['LINKSER', 'ATC'],
+                    store: ['LINKSER', 'ATC', 'AMEX'],
                     allowBlank: false,
 
 
