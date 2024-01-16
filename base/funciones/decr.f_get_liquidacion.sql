@@ -30,6 +30,7 @@ DECLARE
 
     v_id_liquidacion integer DEFAULT p_params->>'id_liquidacion';
     v_tipo_tab_liqui varchar DEFAULT p_params->>'tipo_tab_liqui';
+    v_tipo_manual varchar DEFAULT p_params->>'tipo_manual'; -- es un filtro solo si el tab sera LIQUIMAN OSEA LIQUIDACION MANUAL
     v_filtro_value varchar DEFAULT UPPER(p_params->>'filtro_value');
     v_query_value varchar DEFAULT UPPER(p_params->>'query_value');
     v_filter_by varchar DEFAULT UPPER(p_params->>'filter_by');
@@ -976,6 +977,12 @@ BEGIN
                          CASE WHEN v_query_value IS NOT NULL
                                   THEN tl.nro_liquidacion LIKE '%' || v_query_value || '%'
                                  or UPPER(tl.pagar_a_nombre) LIKE '%' || v_query_value || '%'
+                              ELSE 1 = 1 END
+
+                         )
+                       AND (
+                         CASE WHEN v_tipo_manual IS NOT NULL
+                                  THEN tlm.tipo_manual = v_tipo_manual
                               ELSE 1 = 1 END
 
                          )
