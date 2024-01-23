@@ -26,7 +26,7 @@ DECLARE
 
     v_id_liquidacion integer DEFAULT p_params->>'id_liquidacion';
     v_estacion varchar DEFAULT p_params->>'estacion';
-    v_estado varchar DEFAULT UPPER(p_params->>'estado');
+    v_estado varchar DEFAULT p_params->>'estado';
     v_fecha_ini varchar DEFAULT UPPER(p_params->>'fecha_ini');
     v_fecha_fin varchar DEFAULT UPPER(p_params->>'fecha_fin');
     v_tipo_documento varchar DEFAULT UPPER(p_params->>'tipo_documento');
@@ -41,14 +41,15 @@ BEGIN
 
 
 
+
     with t_datos_por_tipo_doc_json as (SELECT ttdl.tipo_documento,
                                               (select coalesce(j ->> 'datos', '[]')
                                                FROM decr.f_get_liquidacion(json_strip_nulls(json_build_object(
                                                        'reporte', 'si',
-                                                       'estacion', 'CBBWEB',
-                                                       'estado', 'pagado',
-                                                       'fecha_ini', '2023-01-01',
-                                                       'fecha_fin', '2023-05-31',
+                                                       'estacion', v_estacion::varchar,
+                                                       'estado',  v_estado::varchar,
+                                                       'fecha_ini', v_fecha_ini::varchar,
+                                                       'fecha_fin', v_fecha_fin::varchar,
                                                        'tipo_tab_liqui', ttdl.tipo_documento
                                                    ))) j) as data_json
                                        FROM decr.ttipo_doc_liquidacion ttdl

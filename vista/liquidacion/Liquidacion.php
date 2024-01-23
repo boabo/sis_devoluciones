@@ -739,6 +739,53 @@ header("content-type: text/javascript; charset=UTF-8");
 
                     });
 
+                this.popUpLiqReportWithPointSaleAndType = new Ext.Window(
+                    {
+                        layout: 'fit',
+                        width: 500,
+                        height: 250,
+                        modal: true,
+                        closeAction: 'hide',
+
+                        items: new Ext.FormPanel({
+                            labelWidth: 75, // label settings here cascade unless overridden
+
+                            frame: true,
+                            // title: 'Factura Manual Concepto',
+                            bodyStyle: 'padding:5px 5px 0',
+                            width: 200,
+                            defaults: {width: 191},
+                            // defaultType: 'textfield',
+
+                            items: [this.cmbEstado, this.cmbEstacion, this.cmbFecha_ini, this.cmbFecha_fin],
+
+                            buttons: [{
+                                text: 'Save',
+                                handler: () => {
+
+                                    const estado = this.cmbEstado.getValue();
+                                    const estacion = this.cmbEstacion.getValue();
+                                    const fechaIni = this.cmbFecha_ini.getValue();
+                                    const fechaFin = this.cmbFecha_fin.getValue();
+                                    if(fechaIni && fechaFin && estacion && estado) {
+                                        this.getReportWithPointSaleAndType({
+                                            estado,
+                                            estacion,
+                                            fechaIni,
+                                            fechaFin,
+                                        });
+                                    }
+                                },
+
+                                scope: this
+                            }, {
+                                text: 'Cancel',
+                                handler: ()=>{this.popUpLiqReportWithPointSaleAndType.hide()}
+                            }]
+                        }),
+
+                    });
+
 
 
 
@@ -850,6 +897,14 @@ header("content-type: text/javascript; charset=UTF-8");
                     text: '<i class="fa fa-file-text-o fa-2x"></i><br>Liq Errores Tarjeta',/*iconCls:'' ,*/
                     disabled: false,
                     handler:() =>  this.popUpLiqErroresTarjeta.show()
+
+                    //handler: this.liqPagMia
+                });
+                this.addButton('liq_resumen_todo', {
+                    argument: {imprimir: 'liq_errores_tarjeta'},
+                    text: '<i class="fa fa-file-text-o fa-2x"></i><br>Liq Resumen Todo',/*iconCls:'' ,*/
+                    disabled: false,
+                    handler:() =>  this.popUpLiqReportWithPointSaleAndType.show()
 
                     //handler: this.liqPagMia
                 });
@@ -3533,6 +3588,40 @@ ${liqui_forma_pago ? liqui_forma_pago.map((forma_pago) => {
 
 
             },
+        getReportWithPointSaleAndType : function (params) {
+            Phx.CP.loadingShow();
+
+            Ext.Ajax.request({
+                url: '../../sis_devoluciones/control/Liquidacion/getReportWithPointSaleAndType',
+                params: {},
+                params: params,
+                success: (resp) => {
+                    Phx.CP.loadingHide();
+
+                    var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+
+                    console.log('resp',objRes)
+                    var out = objRes.fileBuffer;
+                    console.log('out',out)
+
+                    var arr = out.data;
+                    var byteArray = new Uint8Array(arr);
+                    var a = window.document.createElement('a');
+
+                    a.href = window.URL.createObjectURL(new Blob([byteArray], { type: 'application/octet-stream' }));
+                    a.download ="getReportWithPointSaleAndType.xlsx";
+                    document.body.appendChild(a)
+                    a.click();
+                    document.body.removeChild(a)
+
+                },
+                failure: this.conexionFailure,
+                timeout: this.timeout,
+                scope: this
+            });
+
+
+        },
 
         }
     )
