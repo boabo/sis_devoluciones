@@ -246,7 +246,67 @@ header("content-type: text/javascript; charset=UTF-8");
                 type: 'ComboBox',
 
             }),
+            cmbEstadoErroresTarjeta: new Ext.form.ComboBox({
+
+                name: 'estado',
+                fieldLabel: 'estado',
+                allowBlank: true,
+                emptyText: 'estado...',
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'local',
+                store: ['emitido', 'borrador', 'pagado', 'anulado'],
+                width: 200,
+                type: 'ComboBox',
+
+            }),
+            cmbEstadoReportWithPointSaleAndType: new Ext.form.ComboBox({
+
+                name: 'estado',
+                fieldLabel: 'estado',
+                allowBlank: true,
+                emptyText: 'estado...',
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'local',
+                store: ['emitido', 'borrador', 'pagado', 'anulado'],
+                width: 200,
+                type: 'ComboBox',
+
+            }),
             cmbEstacion: new Ext.form.ComboBox({
+
+                name: 'estacion',
+                fieldLabel: 'Estacion',
+                allowBlank: true,
+                emptyText: 'estacion...',
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'local',
+                store: ['CBB', 'SRZ', 'LPB', 'CBBWEB'],
+                width: 200,
+                type: 'ComboBox',
+
+            })
+            cmbEstacionErroresTarjeta: new Ext.form.ComboBox({
+
+                name: 'estacion',
+                fieldLabel: 'Estacion',
+                allowBlank: true,
+                emptyText: 'estacion...',
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'local',
+                store: ['CBB', 'SRZ', 'LPB', 'CBBWEB'],
+                width: 200,
+                type: 'ComboBox',
+
+            }),
+            cmbEstacionReportWithPointSaleAndType: new Ext.form.ComboBox({
 
                 name: 'estacion',
                 fieldLabel: 'Estacion',
@@ -309,6 +369,42 @@ header("content-type: text/javascript; charset=UTF-8");
 
             }),
             cmbFecha_fin: new Ext.form.DateField({
+                name: 'fecha_fim',
+                fieldLabel: 'Fecha fin',
+                allowBlank: true,
+                disabled: false,
+                width: 105,
+                format: 'd/m/Y'
+
+            }),
+            cmbFecha_iniErroresTarjeta: new Ext.form.DateField({
+                name: 'fecha_ini',
+                fieldLabel: 'Fecha',
+                allowBlank: false,
+                disabled: false,
+                width: 105,
+                format: 'd/m/Y'
+
+            }),
+            cmbFecha_finErroresTarjeta: new Ext.form.DateField({
+                name: 'fecha_fim',
+                fieldLabel: 'Fecha fin',
+                allowBlank: true,
+                disabled: false,
+                width: 105,
+                format: 'd/m/Y'
+
+            }),
+            cmbFecha_iniReportWithPointSaleAndType: new Ext.form.DateField({
+                name: 'fecha_ini',
+                fieldLabel: 'Fecha',
+                allowBlank: false,
+                disabled: false,
+                width: 105,
+                format: 'd/m/Y'
+
+            }),
+            cmbFecha_finReportWithPointSaleAndType: new Ext.form.DateField({
                 name: 'fecha_fim',
                 fieldLabel: 'Fecha fin',
                 allowBlank: true,
@@ -710,16 +806,16 @@ header("content-type: text/javascript; charset=UTF-8");
                             defaults: {width: 191},
                             // defaultType: 'textfield',
 
-                            items: [this.cmbEstado, this.cmbEstacion, this.cmbFecha_ini, this.cmbFecha_fin],
+                            items: [this.cmbEstadoErroresTarjeta, this.cmbEstacionErroresTarjeta, this.cmbFecha_iniErroresTarjeta, this.cmbFecha_finErroresTarjeta],
 
                             buttons: [{
                                 text: 'Save',
                                 handler: () => {
 
-                                    const estado = this.cmbEstado.getValue();
-                                    const estacion = this.cmbEstacion.getValue();
-                                    const fechaIni = this.cmbFecha_ini.getValue();
-                                    const fechaFin = this.cmbFecha_fin.getValue();
+                                    const estado = this.cmbEstadoErroresTarjeta.getValue();
+                                    const estacion = this.cmbEstacionErroresTarjeta.getValue();
+                                    const fechaIni = this.cmbFecha_iniErroresTarjeta.getValue();
+                                    const fechaFin = this.cmbFecha_finErroresTarjeta.getValue();
                                     if(fechaIni && fechaFin && estacion && estado) {
                                         this.liqErroresTarjetas({
                                             estado,
@@ -757,16 +853,16 @@ header("content-type: text/javascript; charset=UTF-8");
                             defaults: {width: 191},
                             // defaultType: 'textfield',
 
-                            items: [this.cmbEstado, this.cmbEstacion, this.cmbFecha_ini, this.cmbFecha_fin],
+                            items: [this.cmbEstadoReportWithPointSaleAndType, this.cmbEstacionReportWithPointSaleAndType, this.cmbFecha_iniReportWithPointSaleAndType, this.cmbFecha_finReportWithPointSaleAndType],
 
                             buttons: [{
                                 text: 'Save',
                                 handler: () => {
 
-                                    const estado = this.cmbEstado.getValue();
-                                    const estacion = this.cmbEstacion.getValue();
-                                    const fechaIni = this.cmbFecha_ini.getValue();
-                                    const fechaFin = this.cmbFecha_fin.getValue();
+                                    const estado = this.cmbEstadoReportWithPointSaleAndType.getValue();
+                                    const estacion = this.cmbEstacionReportWithPointSaleAndType.getValue();
+                                    const fechaIni = this.cmbFecha_iniReportWithPointSaleAndType.getValue();
+                                    const fechaFin = this.cmbFecha_finReportWithPointSaleAndType.getValue();
                                     if(fechaIni && fechaFin && estacion && estado) {
                                         this.getReportWithPointSaleAndType({
                                             estado,
