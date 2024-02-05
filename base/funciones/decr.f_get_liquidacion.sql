@@ -545,7 +545,7 @@ BEGIN
                     INNER JOIN vef.tpunto_venta tpv on tpv.id_punto_venta = tv.id_punto_venta
                     INNER JOIN vef.tsucursal ts on ts.id_sucursal = tpv.id_sucursal
                          inner join vef.tdosificacion td on td.id_dosificacion = tv.id_dosificacion
-                         INNER JOIN t_venta_detalle tvd on tvd.id_venta = tv.id_venta
+                         --INNER JOIN t_venta_detalle tvd on tvd.id_venta = tv.id_venta
                          LEFT JOIN sum_descuentos sd ON sd.id_liquidacion = tl.id_liquidacion
                 WHERE (
                     CASE WHEN v_filtro_value IS NOT NULL
@@ -873,7 +873,7 @@ BEGIN
                          INNER JOIN vef.tventa tv on tv.id_venta = tl.id_venta
                          INNER JOIN vef.tpunto_venta tpv on tpv.id_punto_venta = tv.id_punto_venta
                          INNER JOIN vef.tsucursal ts on ts.id_sucursal = tpv.id_sucursal
-                         INNER JOIN t_venta_detalle tvd on tvd.id_venta = tv.id_venta
+                         --INNER JOIN t_venta_detalle tvd on tvd.id_venta = tv.id_venta
                          LEFT JOIN sum_descuentos sd ON sd.id_liquidacion = tl.id_liquidacion
 
                         WHERE (
