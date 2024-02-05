@@ -193,7 +193,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 triggerAction: 'all',
                 lazyRender: true,
                 mode: 'local',
-                store: ['TODOS', 'LINKSER', 'ATC', 'WORLDPAY', 'CYBER SOURCE', 'AMEX'],
+                store: ['TODOS', 'LINKSER', 'ATC', 'WORLDPAY', 'CYBER SOURCE', 'AMEX', 'KIOSKOS'],
                 width: 200,
                 type: 'ComboBox',
 
@@ -290,7 +290,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 width: 200,
                 type: 'ComboBox',
 
-            })
+            }),
             cmbEstacionErroresTarjeta: new Ext.form.ComboBox({
 
                 name: 'estacion',

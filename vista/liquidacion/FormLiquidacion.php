@@ -1028,7 +1028,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     triggerAction: 'all',
                     lazyRender: true,
                     mode: 'local',
-                    store: ['LINKSER', 'ATC', 'AMEX'],
+                    store: ['LINKSER', 'ATC', 'CYBER SOURCE', 'WORLDPAY', 'AMEX', 'KIOSKOS'],
                     allowBlank: false,
 
 
