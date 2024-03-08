@@ -113,6 +113,19 @@ class ACTLiquidacion extends ACTbase{
     }
 
     function insertarLiquidacion(){
+
+        $json_new_records = $this->objParam->getParametro('json_new_records');
+        $json_data_boletos_recursivo = $this->objParam->getParametro('json_data_boletos_recursivo');
+        $json_data_boleto_stage = $this->objParam->getParametro('json_data_boleto_stage');
+
+        $json_string_decoded = html_entity_decode($json_data_boleto_stage);
+        $json_array = json_decode($json_string_decoded, true);
+        $json_encode_string = json_encode($json_array);
+        $base64String = base64_encode($json_encode_string);
+
+        $this->objParam->addParametro('json_data_boleto_stage_encoded', $base64String);
+
+
         $this->objFunc=$this->create('MODLiquidacion');
         if($this->objParam->insertar('id_liquidacion')){
             $this->res=$this->objFunc->insertarLiquidacion($this->objParam);

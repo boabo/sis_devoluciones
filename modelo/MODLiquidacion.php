@@ -272,7 +272,7 @@ class MODLiquidacion extends MODbase{
         $this->setParametro('id_factucomcon','id_factucomcon','varchar');
         $this->setParametro('tipo_manual','tipo_manual','varchar');
         $this->setParametro('pagar_a_nombre','pagar_a_nombre','varchar');
-        $this->setParametro('json_data_boleto_stage','json_data_boleto_stage','html');
+        $this->setParametro('json_data_boleto_stage','json_data_boleto_stage_encoded','varchar');
         $this->setParametro('razon_nombre_liquiman','razon_nombre_liquiman','varchar');
         $this->setParametro('billetes_seleccionados','billetes_seleccionados','varchar');
 
