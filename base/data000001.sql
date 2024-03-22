@@ -74,3 +74,28 @@ select pxp.f_insert_tgui ('Nota Agencia', 'Nota Agencia', 'RGA', 'si', 1, 'sis_d
 
 
 /********************************************F-DAT-FFP-DECR-0-07/07/2020********************************************/
+
+/********************************************I-DAT-FFP-DECR-0-22/03/2023********************************************/
+
+SELECT param.f_import_tdocumento('insert', 'LIQTJADEV', 'LIQTJADEV', 'DECR', 'tabla', 'gestion', '',
+                                 'TJA-DEVOL-gestioncorrelativo');
+
+SELECT param.f_import_tdocumento('insert', 'LIQSREDEV', 'LIQSREDEV', 'DECR', 'tabla', 'gestion', '',
+                                 'SRE-DEVOL-gestioncorrelativo');
+
+SELECT param.f_import_tdocumento('insert', 'LIQCIJDEV', 'LIQCIJDEV', 'DECR', 'tabla', 'gestion', '',
+                                 'CIJ-DEVOL-gestioncorrelativo');
+
+SELECT param.f_import_tdocumento('insert', 'LIQTDDDEV', 'LIQTDDDEV', 'DECR', 'tabla', 'gestion', '',
+                                 'TDD-DEVOL-gestioncorrelativo');
+
+select param.f_import_tcatalogo ('insert','DECR','TJA','TJA','tliquidacion_estacion');
+select param.f_import_tcatalogo ('insert','DECR','SRE','SRE','tliquidacion_estacion');
+select param.f_import_tcatalogo ('insert','DECR','CIJ','CIJ','tliquidacion_estacion');
+select param.f_import_tcatalogo ('insert','DECR','TDD','TDD','tliquidacion_estacion');
+
+
+/********************************************F-DAT-FFP-DECR-0-22/03/2023********************************************/
+
+
+
