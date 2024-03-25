@@ -319,10 +319,20 @@ class ACTLiquidacion extends ACTbase{
 
         //solo por el momento
         $billete = $this->objParam->getParametro('billete');
+
         $array = array();
 
 
         $curl = curl_init();
+
+        $postData = array(
+            "ticketNumber" => $billete,
+            "recursive" => true,
+            "convertTo" => "BO"
+        );
+        $postDataJson = json_encode($postData);
+
+
 
         curl_setopt_array($curl, array(
             CURLOPT_URL => $_SESSION['_PXP_ND_URL'].'/api/boa-stage-nd/Ticket/getTicketInformation',
@@ -333,12 +343,8 @@ class ACTLiquidacion extends ACTbase{
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS =>'{
-                "ticketNumber": '.$billete.',
-                "recursive": true,
-                "convertTo": "BO"
-            }
-            ',
+            CURLOPT_POSTFIELDS => $postDataJson,
+
             CURLOPT_HTTPHEADER => array(
                 'Authorization: ' . $_SESSION['_PXP_ND_TOKEN'],
                 'Content-Type: application/json'
