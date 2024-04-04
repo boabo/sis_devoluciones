@@ -170,6 +170,7 @@ class ACTLiquidacion extends ACTbase{
     function obtenerTramosSql(){
 
         $billete = $this->objParam->getParametro('billete');
+        $issueDate = $this->objParam->getParametro('issueDate');
         $param_conex = array();
 
         //$conexion = new ConexionSqlServer('172.17.110.6', 'SPConnection', 'Passw0rd', 'DBStage');
@@ -183,7 +184,7 @@ class ACTLiquidacion extends ACTbase{
 
         try {
             /***************Realizamos la conexion y el registro de datos********************/
-            $sql = "EXEC [DBStage].[dbo].[spa_getRoutingTicket] @ticketNumber= $billete ;";
+            $sql = "EXEC [DBStage].[dbo].[spa_getRoutingTicket] @ticketNumber= $billete, @issueDate= '$issueDate';";
             //$sql = "EXEC DBStage.dbo.spa_getRoutingTicket @ticketNumber= $billete ;"; // boleto miami 9303852215072
 
             //$consulta = @mssql_query($sql, $this->conexion);

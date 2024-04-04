@@ -771,6 +771,7 @@ header("content-type: text/javascript; charset=UTF-8");
             const importeNeto = this.getComponente('importe_neto');
             const importeTotalComponente = this.getComponente('importe_total');
             const billetesSeleccionados = this.getComponente('billetes_seleccionados');
+            const fecha_emision_boleto = this.getComponente('fecha_emision_boleto');
 
             const tasas = this.getComponente('tasas');
             const exento = this.getComponente('exento');
@@ -827,9 +828,22 @@ header("content-type: text/javascript; charset=UTF-8");
                             console.log(data)
                             total = total + data.data.monto;
                             billetesSeleccionadosArray.push(data.data.billete)
+                            fecha_emision_boleto.setValue(data.data.issueDate)
                         });
                         that.dataStage = e[0].json.dataStage;
                         console.log('that.dataStage', that.dataStage)
+
+
+                        //actualizasr servicios para obtener tramos
+                        that.cmpTramo_devolucion.store.setBaseParam('billete', that.dataStage.ticketNumber);
+                        that.cmpTramo_devolucion.store.setBaseParam('issueDate', moment(that.dataStage.issueDate).format("YYYYMMDD"));
+                        that.cmpTramo_devolucion.enable();
+                        that.cmpTramo_devolucion.reset();
+                        that.cmpTramo_devolucion.store.baseParams.billete = that.dataStage.ticketNumber;
+                        that.cmpTramo_devolucion.store.baseParams.issueDate = moment(that.dataStage.issueDate).format("YYYYMMDD");
+                        that.cmpTramo_devolucion.modificado = true;
+                        //end actualizasr servicios para obtener tramos
+
 
                         const {currency} = e[0].json;
 
@@ -1935,6 +1949,25 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 type:'TextField',
                 filters:{pfiltro:'liqui.billetes_seleccionados',type:'string'},
+                id_grupo:1,
+                grid:true,
+                form:true,
+                bottom_filter : true
+
+            },
+            {
+                config:{
+                    name: 'fecha_emision_boleto',
+                    fieldLabel: 'Fecha Emision Boleto',
+                    allowBlank: false,
+                    width:200,
+                    gwidth: 100,
+                    maxLength:255,
+                    disabled: true,
+
+                },
+                type:'TextField',
+                filters:{pfiltro:'liqui.fecha_emision_boleto',type:'string'},
                 id_grupo:1,
                 grid:true,
                 form:true,
@@ -3205,6 +3238,7 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
                 const nro_boleto = this.cmpNroBoleto.getValue();
+                console.log('cmpBilletesSeleccionados', this.cmpBilletesSeleccionados.getValue())
                 console.log(this.cmpNroBoleto.getValue());
                 Phx.CP.loadingShow();
 
@@ -3220,8 +3254,11 @@ header("content-type: text/javascript; charset=UTF-8");
 
                 that.crearStoreBoletosRecursivo(nro_boleto);
 
+                console.log('acaaaaa', this.dataStage)
+
 
                 this.cmpTramo_devolucion.store.setBaseParam('billete', nro_boleto);
+                //this.cmpTramo_devolucion.store.setBaseParam('issueDate', nro_boleto);
                 this.cmpTramo_devolucion.enable();
                 this.cmpTramo_devolucion.reset();
                 this.cmpTramo_devolucion.store.baseParams.billete = nro_boleto;

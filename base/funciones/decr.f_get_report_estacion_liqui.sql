@@ -61,14 +61,18 @@ BEGIN
                                              json ->> 'importe_devolver'                as importe_devolver,
                                              json -> 'data_stage' ->> 'issueAgencyCode' as issueAgencyCode,
                                              json -> 'data_stage' ->> 'pointOfSale'     as pointOfSale,
-                                             json -> 'liqui_forma_pago'                 as liqui_forma_pago
+                                             json -> 'liqui_forma_pago'                 as liqui_forma_pago,
+                                             json ->> '_liqui_codigo_agencia_doc_original'                 as liqui_codigo_agencia_doc_original,
+                                             json ->> '_desc_liqui'                 as _desc_liqui
                                       from t_data_json_det_por_tipo_doc tdj
                                       where tipo_documento = 'BOLEMD')
        , t_json_to_columns_otros as (select json ->> 'id_liquidacion'   as id_liquidacion,
                                             json ->> 'importe_devolver' as importe_devolver,
                                             tipo_documento              as issueAgencyCode,
                                             tipo_documento              as pointOfSale,
-                                            json -> 'liqui_forma_pago'  as liqui_forma_pago
+                                            json -> 'liqui_forma_pago'  as liqui_forma_pago,
+                                            json ->> '_liqui_codigo_agencia_doc_original'  as liqui_codigo_agencia_doc_original,
+                                            json ->> '_desc_liqui'  as _desc_liqui
                                      from t_data_json_det_por_tipo_doc tdj
                                      where tipo_documento != 'BOLEMD')
        , t_data_all as (select *
@@ -89,6 +93,8 @@ BEGIN
    , t_all_liqui_forma_pago_det as (
        select talfpc.*,
               tda.importe_devolver,
+              tda.liqui_codigo_agencia_doc_original,
+              tda._desc_liqui,
               tl.nro_liquidacion,
               tl.fecha_pago,
               tl.descripcion,
