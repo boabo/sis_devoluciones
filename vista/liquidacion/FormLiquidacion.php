@@ -828,11 +828,11 @@ header("content-type: text/javascript; charset=UTF-8");
                             console.log(data)
                             total = total + data.data.monto;
                             billetesSeleccionadosArray.push(data.data.billete)
-                            fecha_emision_boleto.setValue(data.data.issueDate)
                         });
                         that.dataStage = e[0].json.dataStage;
                         console.log('that.dataStage', that.dataStage)
 
+                        fecha_emision_boleto.setValue(moment(that.dataStage.issueDate).format("YYYYMMDD"))
 
                         //actualizasr servicios para obtener tramos
                         that.cmpTramo_devolucion.store.setBaseParam('billete', that.dataStage.ticketNumber);
