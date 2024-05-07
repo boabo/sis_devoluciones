@@ -16,7 +16,7 @@ header("content-type: text/javascript; charset=UTF-8");
 <script src="../../../sis_devoluciones/vista/liquidacion/ReportesLiquidacion.js"></script>
 <script>
     Phx.vista.Liquidacion=Ext.extend(Phx.gridInterfaz,{
-
+            //estacionArray: ['CBB', 'SRZ', 'LPB', 'CBBWEB', 'TJA', 'SRE', 'CIJ', 'TDD'],
             tipoTabLiqui: 'BOLEMD',
             vista_transferencia:'mandar',
             gruposBarraTareas: [
@@ -177,7 +177,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 triggerAction: 'all',
                 lazyRender: true,
                 mode: 'local',
-                store: ['TODOS', 'CBB', 'SRZ', 'LPB', 'CBBWEB'],
+                store: ['TODOS', 'CBB', 'SRZ', 'LPB', 'CBBWEB', 'TJA', 'SRE', 'CIJ', 'TDD'],
                 width: 200,
                 type: 'ComboBox',
 
@@ -286,7 +286,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 triggerAction: 'all',
                 lazyRender: true,
                 mode: 'local',
-                store: ['CBB', 'SRZ', 'LPB', 'CBBWEB'],
+                store: ['CBB', 'SRZ', 'LPB', 'CBBWEB', 'TJA', 'SRE', 'CIJ', 'TDD'],
                 width: 200,
                 type: 'ComboBox',
 
@@ -301,7 +301,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 triggerAction: 'all',
                 lazyRender: true,
                 mode: 'local',
-                store: ['CBB', 'SRZ', 'LPB', 'CBBWEB'],
+                store: ['CBB', 'SRZ', 'LPB', 'CBBWEB', 'TJA', 'SRE', 'CIJ', 'TDD'],
                 width: 200,
                 type: 'ComboBox',
 
@@ -316,7 +316,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 triggerAction: 'all',
                 lazyRender: true,
                 mode: 'local',
-                store: ['CBB', 'SRZ', 'LPB', 'CBBWEB'],
+                store: ['CBB', 'SRZ', 'LPB', 'CBBWEB', 'TJA', 'SRE', 'CIJ', 'TDD'],
                 width: 200,
                 type: 'ComboBox',
 
